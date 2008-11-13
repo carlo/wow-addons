@@ -1,25 +1,1 @@
-## Interface: 20300
-## Author: arJUna
-## Title: simpleMinimap |cff7fff7f -Ace2-|r
-## Notes: manipulate the minimap in numerous ways; move, scale, skin.
-## Title-zhCN: |cff7fff7f-Ace2-|r simpleMinimap
-## Notes-deDE: manipuliere die minimap in verschiedenen wegen: bewegen, skalieren, skinnen.
-## Notes-esES: Manipula el minimapa de varias formas: mover, escalar, skin.
-## Version: 20100-6
-## OptionalDeps: Ace2, DewdropLib
-## SavedVariables: smmConfig
-## X-Category: Map
-## X-AceForum: 2228
-## X-Embeds: Ace2, DewdropLib
-embeds.xml
-
-localizations.lua
-simpleMinimap.lua
-
-modules\autozoom.lua
-modules\compass.lua
-modules\coords.lua
-modules\gui.lua
-modules\movers.lua
-modules\pings.lua
-modules\skins.lua
+## Interface: 30000## Author: arJUna## Title: simpleMinimap |cff7fff7f -Ace2-|r## Notes: manipulate the minimap in numerous ways; move, scale, skin.## Title-zhCN: |cff7fff7f-Ace2-|r simpleMinimap## Notes-deDE: manipuliere die minimap in verschiedenen wegen: bewegen, skalieren, skinnen.## Notes-esES: Manipula el minimapa de varias formas: mover, escalar, skin.## Version: 20100-6## OptionalDeps: Ace2, DewdropLib## SavedVariables: smmConfig## X-Category: Map## X-AceForum: 2228## X-Embeds: Ace2, DewdropLibembeds.xmllocalizations.luasimpleMinimap.luamodules\autozoom.luamodules\compass.luamodules\coords.luamodules\gui.luamodules\movers.luamodules\pings.luamodules\skins.lua

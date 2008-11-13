@@ -1,9 +1,1 @@
-## Interface: 20200
-## Title: Dhask's FlightMap v2.2-1
-## Notes: Adds a tooltip to the world map showing flightpaths into and out of regions, and region level ranges.
-## SavedVariables: FlightMap
-## OptionalDeps: myAddOns, Sea
-FlightMapUtil.lua
-FlightMap.xml
-FlightMapTimes.xml
-FlightMapTaxi.xml
+## Interface: 30000## Title: Dhask's FlightMap v2.2-1## Notes: Adds a tooltip to the world map showing flightpaths into and out of regions, and region level ranges.## SavedVariables: FlightMap## OptionalDeps: myAddOns, SeaFlightMapUtil.luaFlightMap.xmlFlightMapTimes.xmlFlightMapTaxi.xml

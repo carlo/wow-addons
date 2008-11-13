@@ -1157,9 +1157,9 @@ GlobalStringFuncs[EVENTTYPE_CREATE] = function()
 	globalStringInfo["LOOT_MONEY"] = {eventType = EVENTTYPE_CREATE, captureMap = {1, false, 2, false, false}}
 end
 
-local GOLD_MATCH = "(%d+) " .. _G.GOLD
-local SILVER_MATCH = "(%d+) " .. _G.SILVER
-local COPPER_MATCH = "(%d+) " .. _G.COPPER
+local GOLD_MATCH = "(%d+) " .. "Gold"
+local SILVER_MATCH = "(%d+) " .. "Silver"
+local COPPER_MATCH = "(%d+) " .. "Copper"
 PopulateFuncs[EVENTTYPE_CREATE] = function(captureMap, capturedData)
 	-- Create captureMap = { source, item, amount, isLink, isCreated }
 	parserEvent.eventType = EVENTTYPE_CREATE

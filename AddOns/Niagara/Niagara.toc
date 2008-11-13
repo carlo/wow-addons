@@ -1,19 +1,1 @@
-## Interface: 20300
-## Author: Ominous
-## Title: Niagara |cff7fff7f -Ace2-|r
-## Version: 1.0
-## Notes: Makes an Interface for ace2 /commands using Waterfall.
-## Notes-zhTW: 提供管理 Ace2 插件的圖形介面。
-## OptionalDeps: Ace2, FuBar, FuBarPlugin-2.0, Waterfall-1.0, TabletLib, DewdropLib
-## X-Embeds: Ace2, FuBarPlugin-2.0, TabletLib, Waterfall-1.0
-## X-Category: Miscellaneous
-## X-Credits: Neronix
-## X-eMail: Decollate@googlemail.com
-## X-Website: http://www.wowace.com/wiki/Niagara
-## X-Wiki-Discussion: [http://groups.google.com/group/wow-ominous/topics  GoogleGroups]
-## X-Wiki-BugTracker: [http://code.google.com/p/wow-ominous/  GoogleCode]
-## SavedVariables: NiagaraDB
-
-embeds.xml
-
-Niagara.lua
+## Interface: 30000## Author: Ominous## Title: Niagara |cff7fff7f -Ace2-|r## Version: 1.0## Notes: Makes an Interface for ace2 /commands using Waterfall.## Notes-zhTW: 提供管理 Ace2 插件的圖形介面。## OptionalDeps: Ace2, FuBar, FuBarPlugin-2.0, Waterfall-1.0, TabletLib, DewdropLib## X-Embeds: Ace2, FuBarPlugin-2.0, TabletLib, Waterfall-1.0## X-Category: Miscellaneous## X-Credits: Neronix## X-eMail: Decollate@googlemail.com## X-Website: http://www.wowace.com/wiki/Niagara## X-Wiki-Discussion: [http://groups.google.com/group/wow-ominous/topics  GoogleGroups]## X-Wiki-BugTracker: [http://code.google.com/p/wow-ominous/  GoogleCode]## SavedVariables: NiagaraDBembeds.xmlNiagara.lua

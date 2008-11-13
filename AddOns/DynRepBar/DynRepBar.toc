@@ -1,17 +1,1 @@
-## Interface: 20100
-## Title: DynRepBar |cff7fff7f -Ace2-|r
-## Author: Damjau
-## Author: oers
-## Notes: Sets the Reputation bar automatically to the faction you last gained reputation from.
-## Notes-deDE: Setzt die Reputationsleiste auf die aktuelle Fraktion.
-## DefaultState: Enabled
-## LoadOnDemand: 0
-## SavedVariables: DynRepBarDB
-## SavedVariablesPerCharacter: DynRepBarDBPC
-## X-RelSite-Curse: http://wow-en.curse-gaming.com/files/details/2724/dynamic-reputation-bar/
-## X-Category: Interface Enhancements
-
-embeds.xml
-
-dyn_rep_global_parser.lua
-DynRepBar.lua
+## Interface: 30000## Title: DynRepBar |cff7fff7f -Ace2-|r## Author: Damjau## Author: oers## Notes: Sets the Reputation bar automatically to the faction you last gained reputation from.## Notes-deDE: Setzt die Reputationsleiste auf die aktuelle Fraktion.## DefaultState: Enabled## LoadOnDemand: 0## SavedVariables: DynRepBarDB## SavedVariablesPerCharacter: DynRepBarDBPC## X-RelSite-Curse: http://wow-en.curse-gaming.com/files/details/2724/dynamic-reputation-bar/## X-Category: Interface Enhancementsembeds.xmldyn_rep_global_parser.luaDynRepBar.lua

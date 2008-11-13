@@ -1,33 +1,1 @@
-﻿## Interface: 20300
-## Version: 1.0b
-## X-Build: $Revision: 55025 $
-## X-ReleaseDate: $Date: 2007-11-16 08:21:51 -0500 (Fri, 16 Nov 2007) $
-## Title: Omen |cff7fff7f -Ace2-|r
-## Notes: A lightweight, flexible, multi-target threat meter [beta, use at own risk!]
-## Notes-frFR: Un "threat meter" léger, flexible et multi-cibles.
-## Notes-zhCN: 一个灵活的，多目标的，低资源占用的威胁值计量器，官方版由Taburiss汉化。
-## Author: Antiarc
-## OptionalDeps: Ace2, FuBar, Threat-1.0, SW_Stats, SinkLib, SpecialEvents-Aura-2.0, Babble-Spell-2.2, Dewdrop-2.0, LibSharedMedia-2.0, SharedMedia-2.0
-## X-Category: Combat
-## SavedVariables: OmenDB
-## SavedVariablesPerCharacter: OmenDBPC
-## X-Embeds: Ace2, LibSharedMedia-2.0, FuBarPlugin-2.0, Threat-1.0, SpecialEventsEmbed, Babble-2.2, Parser-3.0, SinkLib, Dewdrop-2.0
-## X-Donate: PayPal:cheald AT gmail DOT com
-
-embeds.xml
-
-localization_enUS.lua
-localization_deDE.lua
-localization_koKR.lua
-localization_frFR.lua
-localization_zhTW.lua
-localization_zhCN.lua
-localization_esES.lua
-
-DefaultSkins.lua
-
-Omen.lua
-OmenDisplay.lua
-OmenMenu.lua
-OmenThreatBar.lua
-
+## Interface: 30000## Version: 1.0b## X-Build: $Revision: 55025 $## X-ReleaseDate: $Date: 2007-11-16 08:21:51 -0500 (Fri, 16 Nov 2007) $## Title: Omen |cff7fff7f -Ace2-|r## Notes: A lightweight, flexible, multi-target threat meter [beta, use at own risk!]## Notes-frFR: Un "threat meter" léger, flexible et multi-cibles.## Notes-zhCN: 一个灵活的，多目标的，低资源占用的威胁值计量器，官方版由Taburiss汉化。## Author: Antiarc## OptionalDeps: Ace2, FuBar, Threat-1.0, SW_Stats, SinkLib, SpecialEvents-Aura-2.0, Babble-Spell-2.2, Dewdrop-2.0, LibSharedMedia-2.0, SharedMedia-2.0## X-Category: Combat## SavedVariables: OmenDB## SavedVariablesPerCharacter: OmenDBPC## X-Embeds: Ace2, LibSharedMedia-2.0, FuBarPlugin-2.0, Threat-1.0, SpecialEventsEmbed, Babble-2.2, Parser-3.0, SinkLib, Dewdrop-2.0## X-Donate: PayPal:cheald AT gmail DOT comembeds.xmllocalization_enUS.lualocalization_deDE.lualocalization_koKR.lualocalization_frFR.lualocalization_zhTW.lualocalization_zhCN.lualocalization_esES.luaDefaultSkins.luaOmen.luaOmenDisplay.luaOmenMenu.luaOmenThreatBar.lua

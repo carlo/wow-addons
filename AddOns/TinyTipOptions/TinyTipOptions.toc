@@ -1,21 +1,1 @@
-﻿## Interface: 20200
-## Author: Thrae
-## Title: TinyTipOptions |cff7fff7f -Ace2-|r
-## Notes: Slash command interface for |cFF0000FFTinyTip|r (LoadOnDemand).
-## Notes-zhCN: |cFF0000FFTinyTip|r设置菜单模块。(LoadOnDemand)
-## Notes-zhTW: TinyTip 設定選單。(LoadOnDemand)
-## Notes-esES: Interfaz de comandos para |cFF0000FFTinyTip|r (LoadOnDemand).
-## Dependencies: TinyTip
-## LoadOnDemand: 1
-## $Revision: 50005 $
-
-embeds.xml
-
-TinyTipChatLocale_frFR.lua
-TinyTipChatLocale_deDE.lua
-TinyTipChatLocale_zhCN.lua
-TinyTipChatLocale_koKR.lua
-TinyTipChatLocale_enEN.lua
-TinyTipChatLocale_zhTW.lua
-TinyTipChatLocale_esES.lua
-TinyTipOptions.lua
+## Interface: 30000## Author: Thrae## Title: TinyTipOptions |cff7fff7f -Ace2-|r## Notes: Slash command interface for |cFF0000FFTinyTip|r (LoadOnDemand).## Notes-zhCN: |cFF0000FFTinyTip|r设置菜单模块。(LoadOnDemand)## Notes-zhTW: TinyTip 設定選單。(LoadOnDemand)## Notes-esES: Interfaz de comandos para |cFF0000FFTinyTip|r (LoadOnDemand).## Dependencies: TinyTip## LoadOnDemand: 1## $Revision: 50005 $embeds.xmlTinyTipChatLocale_frFR.luaTinyTipChatLocale_deDE.luaTinyTipChatLocale_zhCN.luaTinyTipChatLocale_koKR.luaTinyTipChatLocale_enEN.luaTinyTipChatLocale_zhTW.luaTinyTipChatLocale_esES.luaTinyTipOptions.lua

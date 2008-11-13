@@ -1,34 +1,1 @@
-﻿## Interface: 20300
-## Title: DrDamage |cff7fff7f-Ace2-|r
-## Author: Gagorian
-## Notes: In-game theorycraft. Calculates actual damage/healing based on gear, talents and buffs.
-## Notes-zhCN: 根据技能、天赋和Buff计算法术和技能的实际伤害或治疗效果。
-## Version: 1.2.1
-## SavedVariables: DrDamageDB
-
-## X-Category: Interface Enhancements
-## OptionalDeps: Ace2, FuBar, FlexBar2, InfiniBar
-## X-Embeds: Ace2, Babble-2.2, GratuityLib, Deformat, SpecialEventsEmbed, DewdropLib, FuBarPlugin-2.0
-
-embeds.xml
-
-DrDamage-enUS.lua
-Locales\Localization-koKR.lua
-Locales\Localization-zhCN.lua
-Locales\Localization-zhTW.lua
-
-Caster.lua
-Melee.lua
-
-BuffScanning.lua
-DrDamage.lua
-
-Data\Druid.lua
-Data\Hunter.lua
-Data\Mage.lua
-Data\Paladin.lua
-Data\Priest.lua
-Data\Rogue.lua
-Data\Shaman.lua
-Data\Warlock.lua
-Data\Warrior.lua
+## Interface: 30000## Title: DrDamage |cff7fff7f-Ace2-|r## Author: Gagorian## Notes: In-game theorycraft. Calculates actual damage/healing based on gear, talents and buffs.## Notes-zhCN: 根据技能、天赋和Buff计算法术和技能的实际伤害或治疗效果。## Version: 1.2.1## SavedVariables: DrDamageDB## X-Category: Interface Enhancements## OptionalDeps: Ace2, FuBar, FlexBar2, InfiniBar## X-Embeds: Ace2, Babble-2.2, GratuityLib, Deformat, SpecialEventsEmbed, DewdropLib, FuBarPlugin-2.0embeds.xmlDrDamage-enUS.luaLocales\Localization-koKR.luaLocales\Localization-zhCN.luaLocales\Localization-zhTW.luaCaster.luaMelee.luaBuffScanning.luaDrDamage.luaData\Druid.luaData\Hunter.luaData\Mage.luaData\Paladin.luaData\Priest.luaData\Rogue.luaData\Shaman.luaData\Warlock.luaData\Warrior.lua

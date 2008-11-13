@@ -1,7 +1,1 @@
-## Interface: 20000
-## Title: Item Cache
-## Notes: Item Cache
-## Version: Release v2.0
-## Written By: Kenix & Deqth
-## SavedVariables:
-ItemCache.xml
+## Interface: 30000## Title: Item Cache## Notes: Item Cache## Version: Release v2.0## Written By: Kenix & Deqth## SavedVariables:ItemCache.xml

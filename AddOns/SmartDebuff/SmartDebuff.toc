@@ -1,15 +1,1 @@
-## Interface: 20300
-## Title: Smart|cffffffffDebuff|r by |cff00ff00Aeldra|r
-## Version: 2.3a
-## Author: |cff20d2ffAeldra|r (EU-Proudmoore)
-## Notes: Use << /sdb >> for debuff frame.
-## Notes-deDE: Benutze << /sdb >> um das Debuff-Fenster zu \195\182ffnen
-## Notes-frFR: Use << /sdb >> for debuff menu.
-## eMail: aeldra@sonnenkinder.org
-## URL: http://www.ndb.ch.vu
-## DefaultState: Enabled
-## LoadOnDemand: 0
-## OptionalDeps: Titan, FuBar
-## SavedVariablesPerCharacter: SMARTDEBUFF_Options
-
-SmartDebuff.xml
+## Interface: 30000## Title: Smart|cffffffffDebuff|r by |cff00ff00Aeldra|r## Version: 2.3a## Author: |cff20d2ffAeldra|r (EU-Proudmoore)## Notes: Use << /sdb >> for debuff frame.## Notes-deDE: Benutze << /sdb >> um das Debuff-Fenster zu \195\182ffnen## Notes-frFR: Use << /sdb >> for debuff menu.## eMail: aeldra@sonnenkinder.org## URL: http://www.ndb.ch.vu## DefaultState: Enabled## LoadOnDemand: 0## OptionalDeps: Titan, FuBar## SavedVariablesPerCharacter: SMARTDEBUFF_OptionsSmartDebuff.xml

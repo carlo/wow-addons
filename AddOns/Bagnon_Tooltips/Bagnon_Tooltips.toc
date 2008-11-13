@@ -1,8 +1,1 @@
-## Interface: 20300
-## Title: Bagnon Tooltips
-## Author: Tuller
-## Notes: Tooltips for telling who has what
-## RequiredDeps: Bagnon_Forever
-localization\localization.lua
-localization\localization.tw.lua
-tooltips.lua
+## Interface: 30000## Title: Bagnon Tooltips## Author: Tuller## Notes: Tooltips for telling who has what## RequiredDeps: Bagnon_Foreverlocalization\localization.lualocalization\localization.tw.luatooltips.lua

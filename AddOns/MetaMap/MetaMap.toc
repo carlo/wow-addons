@@ -1,9 +1,1 @@
-## Interface: 20100
-## Title: MetaMap
-## Author: MetaHawk
-## Notes: MetaMap adds many enhancements to the WoW WorldMap.
-## Dependencies:
-## OptionalDeps: Gatherer, FlightMap, NotesUNeed, Titan, myAddOns
-## DefaultState: enabled
-## SavedVariables: MetaMapOptions, MetaMap_Notes, MetaMap_Lines, MetaMap_MiniNote_Data, MetaMap_NoteFilter, MetaMap_ZoneCapture
-MetaMap.xml
+## Interface: 30000## Title: MetaMap## Author: MetaHawk## Notes: MetaMap adds many enhancements to the WoW WorldMap.## Dependencies:## OptionalDeps: Gatherer, FlightMap, NotesUNeed, Titan, myAddOns## DefaultState: enabled## SavedVariables: MetaMapOptions, MetaMap_Notes, MetaMap_Lines, MetaMap_MiniNote_Data, MetaMap_NoteFilter, MetaMap_ZoneCaptureMetaMap.xml

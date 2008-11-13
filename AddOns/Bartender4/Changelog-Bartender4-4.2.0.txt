@@ -1,0 +1,73 @@
+tag 4.2.0
+f86f80655e0fe3a95e1fc9d30dbf3f42385b743a
+Hendrik Leppkes <h.leppkes@gmail.com>
+2008-11-12 22:37:30 +0100
+
+Tag as 4.2.0 release
+
+
+--------------------
+
+Hendrik Leppkes (58):
+      62e8a48: Small cleanup
+      8a8a28c: Updated zhCN locale from wowui.cn
+      bb83d20: Added support for Focus-Cast
+      3998774: Fix enabling/disabling of selfcast/focuscast
+      7fab93e: Save the current binding set when changing the Focus/Self Cast modifiers
+      24bf38f: Properly enable/disable Auto-Assist when changing the option in the config
+      bde7969: Properly reset visibility when enabling/disabling a bar
+      9fdc622: Added LibDBIcon-1.0 to externals and use no-lib-strip
+      925ba03: Add a minimap icon using LibDBIcon-1.0
+      7470579: Fix .pkgmeta
+      36110a4: Fix Focus-Casting for enemy-targets in focus with Auto-Assist active
+      21f3569: Properly unregister the harm statedriver in UpdateStates and bail out earlier in returnOnly mode (used for configuration)
+      5a5e8cb: Use label instead of text in the LDB plugin
+      e2c3d6c: Update Version number to 4.2.0-Alpha
+      d03e403: Updated Forum Link in the FAQ
+      fe16bbc: Disable and hide all other bars that Bartender4 replaces
+      f4ee55d: Fixed removing of keybinds from Stance and Pet bar
+      29f204b: Moved Hotkey and MacroText handling to the ButtonBar prototype and show the Hotkey on Pet and Stance Bar (default off)
+      170a11c: Tweaks to the state and visibility configuration
+      d96d0ae: Merge commit 'zh/master'
+      9adffaf: Moved Fade Out options to visibility page
+      9d7ed64: Added support for specifying the fade-out alpha in the custom visibility header
+      67261e8: Don't show the border of the Bar Overlay when moving a bar
+      94b3dec: Fixed an error in the visibility handler code on profile change
+      d01e9cd: Update version in .toc and TODO.txt
+      d97bb65: Minor cleanup of unneeded upvalues
+      9d77edc: MicroMenu now uses the default ButtonBar template, which enables it to use full Row control
+      6073cc7: Updated frFR locale by Pettigrow
+      4ca8075: Added Bindings.xml to allow binding of keys through the Blizzard KeyBinding menu
+      670913e: Linked the PetButton action dragging to the master "Button Lock" setting in the config
+      453773a: First draft of conversion to the Blizzard template
+      88a71de: Hotkeys work properly again
+      82af623: Hook UpdateUsable and OnUpdate
+      0ebc4c4: Hide MacroText works again
+      832e94c: Removed OnUpdate hook and made keybindings show properly
+      0c50bf8: Updated Bindings.xml to remove the Secure from the name
+      21a325c: Remove old code
+      15f2706: Fixed NormalTexture display
+      170b825: Fix moving of actions
+      293e41b: Prevent taint in UpdateAction
+      ff11807: Fix showing of the icon for special buttons
+      2f5605a: Fixed Show Grid option
+      c41ac73: Properly apply the Grid settings when switching profile
+      1665e10: Added compat var to not break every addon using the old button frame names to access BT4 buttons
+      ebd489c: Only try to set our special-action-icon on our own buttons
+      48e68d1: Fix display of Leave Vehicle button
+      eb5572a: Hide the MultiBar Buttons but keep the bars alive, so we actually can leave them enabled to remove them from the paging rotation
+      7f57e78: More fixes to HideBlizzard function
+      90c5859: Fixed issues with position saving and reseting profiles
+      4189110: Fix disabling/enabling bars in unlock mode
+      7c2610c: Use the correct ApplyConfig when enabling a module
+      63952f1: Added safeguard against GetCurrentBindingSet() returning nil in rare cases during login
+      ccf041b: Renamed "Zoom" to "Button Border" and make it do its thing again
+      c96d1a0: Adjust default padding and scale of the micromenu
+      598e2af: Slightly adjusted the NormalTexture of the buttons to feel like before
+      7c53a32: Revert "Renamed "Zoom" to "Button Border" and make it do its thing again"
+      130afe7: Fixed the NormalTexture again to behave like it used to 4.1.x
+      0db63ca: Ensure that buttons that should be hidden stay hidden
+
+ananhaid (1):
+      a049e1b: Signed-off-by: ananhaid <ananhaid@gmail.com>
+

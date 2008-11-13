@@ -1,14 +1,1 @@
-## Interface: 20300
-## Version: 5.03
-## Title: MSBT [|cffffff80Options|r]
-## Author: Mik
-## Notes: Load on demand options for Mik's Scrolling Battle Text
-## Dependencies: MikScrollingBattleText
-## LoadOnDemand: 1
-localization.lua
-localization.de.lua
-localization.fr.lua
-MSBTOptionsControls.lua
-MSBTOptionsPopups.lua
-MSBTOptionsMain.lua
-MSBTOptionsTabs.lua
+## Interface: 30000## Version: 5.03## Title: MSBT [|cffffff80Options|r]## Author: Mik## Notes: Load on demand options for Mik's Scrolling Battle Text## Dependencies: MikScrollingBattleText## LoadOnDemand: 1localization.lualocalization.de.lualocalization.fr.luaMSBTOptionsControls.luaMSBTOptionsPopups.luaMSBTOptionsMain.luaMSBTOptionsTabs.lua

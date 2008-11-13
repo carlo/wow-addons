@@ -1,21 +1,1 @@
-﻿## Title: AutoProfitX
-## Notes: Automatically sells low quality gray items and selected white items to the vendor.
-## Notes-zhTW: 在和NPC交易時一鍵/自動販售灰色物品。
-## Interface: 20300
-## Version: 2.03
-## Author: Bigzero
-## X-Credits: Trouncer (original author)
-## SavedVariables: AutoProfitXDB, AutoProfitX_ExceptionlistVersion, AutoProfitX_Settings
-## SavedVariablesPerCharacter: AutoProfitXDBPerChar
-## OptionalDeps: Ace2, GratuityLib, Waterfall-1.0
-## X-Embeds: Ace2, GratuityLib, Waterfall-1.0
-## X-Category: Inventory
-## X-eMail: vinaur@gmail.com
-## X-Notes: Based on Trouncer's AutoProfit v4.00.
-
-embeds.xml
-
-Locale-enUS.lua
-Locale-zhTW.lua
-proficiencies.lua
-AutoProfitX.xml
+﻿## Title: AutoProfitX## Notes: Automatically sells low quality gray items and selected white items to the vendor.## Notes-zhTW: 在和NPC交易時一鍵/自動販售灰色物品。## Interface: 30000## Version: 2.03## Author: Bigzero## X-Credits: Trouncer (original author)## SavedVariables: AutoProfitXDB, AutoProfitX_ExceptionlistVersion, AutoProfitX_Settings## SavedVariablesPerCharacter: AutoProfitXDBPerChar## OptionalDeps: Ace2, GratuityLib, Waterfall-1.0## X-Embeds: Ace2, GratuityLib, Waterfall-1.0## X-Category: Inventory## X-eMail: vinaur@gmail.com## X-Notes: Based on Trouncer's AutoProfit v4.00.embeds.xmlLocale-enUS.luaLocale-zhTW.luaproficiencies.luaAutoProfitX.xml

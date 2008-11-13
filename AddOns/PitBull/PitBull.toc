@@ -1,28 +1,1 @@
-﻿## Interface: 20300
-## Title: PitBull 2.0
-## Notes: Unit Frames of awesomeness. Woof. It'll bite your face off.
-## Author: ckknight
-## X-eMail: ckknight AT gmail DOT com
-## X-Website: http://www.wowace.com/
-## X-Category: UnitFrame
-## X-Credits: Kemayo (Portraits)
-## SavedVariables: PitBullDB
-## OptionalDeps: LibRock-1.0, Ace2, Threat-1.0
-## X-Embeds: LibRock-1.0, LibRockComm-1.0, LibRockConfig-1.0, LibRockConsole-1.0, LibRockDB-1.0, LibRockEvent-1.0, LibRockHook-1.0, LibRockModuleCore-1.0, LibRockTimer-1.0, LibBabble-Spell-3.0, LibBabble-Zone-3.0, LibDogTag-2.0, LibParser-4.0, LibSharedMedia-2.0, LibSpecialEvents-Aura-3.0, LibGratuity-3.0, Ace2, Threat-1.0, Babble-2.2, BanzaiLib, SpecialEvents-Aura-2.0
-## X-WoWIPortal: ckknight
-## X-License: GPL v2 or later
-## X-Donate: PayPal:ckknight AT gmail DOT com
-## X-IssueTracker: Wowace:10026
-
-embeds.xml
-
-PitBull.lua
-PitBull_MetaLayout.lua
-
-Layouts\ABF.lua
-# Layouts\Buu.lua
-# Layouts\Industrial.lua
-# Layouts\oUF.lua
-# Layouts\Seerah.lua
-
-modules.xml
+## Interface: 30000## Title: PitBull 2.0## Notes: Unit Frames of awesomeness. Woof. It'll bite your face off.## Author: ckknight## X-eMail: ckknight AT gmail DOT com## X-Website: http://www.wowace.com/## X-Category: UnitFrame## X-Credits: Kemayo (Portraits)## SavedVariables: PitBullDB## OptionalDeps: LibRock-1.0, Ace2, Threat-1.0## X-Embeds: LibRock-1.0, LibRockComm-1.0, LibRockConfig-1.0, LibRockConsole-1.0, LibRockDB-1.0, LibRockEvent-1.0, LibRockHook-1.0, LibRockModuleCore-1.0, LibRockTimer-1.0, LibBabble-Spell-3.0, LibBabble-Zone-3.0, LibDogTag-2.0, LibParser-4.0, LibSharedMedia-2.0, LibSpecialEvents-Aura-3.0, LibGratuity-3.0, Ace2, Threat-1.0, Babble-2.2, BanzaiLib, SpecialEvents-Aura-2.0## X-WoWIPortal: ckknight## X-License: GPL v2 or later## X-Donate: PayPal:ckknight AT gmail DOT com## X-IssueTracker: Wowace:10026embeds.xmlPitBull.luaPitBull_MetaLayout.luaLayouts\ABF.lua# Layouts\Buu.lua# Layouts\Industrial.lua# Layouts\oUF.lua# Layouts\Seerah.luamodules.xml

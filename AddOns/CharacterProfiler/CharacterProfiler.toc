@@ -1,16 +1,1 @@
-## Interface: 20100
-## Title: rpgo-CharacterProfiler v2.1.1
-## Notes: Export Character Profiles for use out-of-game
-## Version: 2.1.1
-## Author: calvin
-## X-Date: May 22, 2007
-## X-Email: calvin@rpgoutfitter.com
-## X-Publisher: RPG Outfitter
-## X-Website: http://www.rpgoutfitter.com/CharacterProfiler/
-## OptionalDeps:
-## SavedVariables: rpgoCPpref,myProfile
-## License: http://rpgoutfitter.com/addons/license.cfm
-rpgo.core.lua
-rpgo.lib.lua
-localization.lua
-CharacterProfiler.lua
+## Interface: 30000## Title: rpgo-CharacterProfiler v2.1.1## Notes: Export Character Profiles for use out-of-game## Version: 2.1.1## Author: calvin## X-Date: May 22, 2007## X-Email: calvin@rpgoutfitter.com## X-Publisher: RPG Outfitter## X-Website: http://www.rpgoutfitter.com/CharacterProfiler/## OptionalDeps:## SavedVariables: rpgoCPpref,myProfile## License: http://rpgoutfitter.com/addons/license.cfmrpgo.core.luarpgo.lib.lualocalization.luaCharacterProfiler.lua

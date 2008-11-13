@@ -1,7 +1,1 @@
-## Interface: 20300
-## Title: BindPad
-## Version: 1.6.1
-## Author: Tageshi
-## Notes: BindPad - Keybinding UI for Items, Spells and Macroes. Drag anything into BindPad's slot and click it to bind a key.
-## SavedVariables: BindPadVars
-BindPad.xml
+## Interface: 30000## Title: BindPad## Version: 1.6.1## Author: Tageshi## Notes: BindPad - Keybinding UI for Items, Spells and Macroes. Drag anything into BindPad's slot and click it to bind a key.## SavedVariables: BindPadVarsBindPad.xml

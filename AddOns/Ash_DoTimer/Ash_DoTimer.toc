@@ -1,9 +1,1 @@
-## Interface: 20100
-## Title: Ash_DoTimer
-## Author: Asheyla
-## Version: 3.1
-## eMail: ross456@gmail.com
-## URL: http://www.curse-gaming.com/en/wow/addons-4304-1-dotimer.html
-## Notes: Displays duration timers for DoTs
-## RequiredDeps: Ash_Core
-DoTimer.xml
+## Interface: 30000## Title: Ash_DoTimer## Author: Asheyla## Version: 3.1## eMail: ross456@gmail.com## URL: http://www.curse-gaming.com/en/wow/addons-4304-1-dotimer.html## Notes: Displays duration timers for DoTs## RequiredDeps: Ash_CoreDoTimer.xml

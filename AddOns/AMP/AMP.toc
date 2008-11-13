@@ -1,20 +1,1 @@
-## Interface: 20000
-## Title: Answering Machine Plus
-## Author: Krakhaan of Khaz'goroth
-## Version: 3.4
-## Notes: Stores your tells and now Auction House messages while you are AFK or DND and plays them back to you when you return.
-## eMail: krakhaan@gmail.com
-## URL: http://ui.worldofwar.net/ui.php?id=3544
-## X-Date: 14th Dec 2006
-## X-Email: krakhaan@gmail.com
-## X-Website: http://ui.worldofwar.net/ui.php?id=3544
-## X-Category: MYADDONS_CATEGORY_CHAT
-## X-Help: 
-## X-OptionsFrame: 
-## OptionalDeps: Titan
-## DefaultState: Enabled
-## LoadOnDemand: 0
-## SavedVariablesPerCharacter: AMPConfig,AMP_Missed_Auctions,AMP_Missed_Tells,AMP_Missed_Authors
-localization.lua
-AMP.lua
-AMP.xml
+## Interface: 30000## Title: Answering Machine Plus## Author: Krakhaan of Khaz'goroth## Version: 3.4## Notes: Stores your tells and now Auction House messages while you are AFK or DND and plays them back to you when you return.## eMail: krakhaan@gmail.com## URL: http://ui.worldofwar.net/ui.php?id=3544## X-Date: 14th Dec 2006## X-Email: krakhaan@gmail.com## X-Website: http://ui.worldofwar.net/ui.php?id=3544## X-Category: MYADDONS_CATEGORY_CHAT## X-Help: ## X-OptionsFrame: ## OptionalDeps: Titan## DefaultState: Enabled## LoadOnDemand: 0## SavedVariablesPerCharacter: AMPConfig,AMP_Missed_Auctions,AMP_Missed_Tells,AMP_Missed_Authorslocalization.luaAMP.luaAMP.xml

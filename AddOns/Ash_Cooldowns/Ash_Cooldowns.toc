@@ -1,10 +1,1 @@
-## Interface: 20100
-## Title: Ash_Cooldowns
-## Author: Asheyla
-## Version: 3.1
-## eMail: ross456@gmail.com
-## URL: http://www.curse-gaming.com/en/wow/addons-4304-1-dotimer.html
-## Notes: Creates timers for cooldowns
-## RequiredDeps: Ash_Core
-## OptionalDeps: DoTimer
-Cooldowns.xml
+## Interface: 30000## Title: Ash_Cooldowns## Author: Asheyla## Version: 3.1## eMail: ross456@gmail.com## URL: http://www.curse-gaming.com/en/wow/addons-4304-1-dotimer.html## Notes: Creates timers for cooldowns## RequiredDeps: Ash_Core## OptionalDeps: DoTimerCooldowns.xml
