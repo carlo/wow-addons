@@ -1,0 +1,63 @@
+## Interface: 20100
+## Title: SpamSentry |cff7fff7f -Ace2-|r
+## Title-zhTW: [管理]廣告剋星 SpamSentry |cff7fff7f -Ace2-|r
+## Notes: Blocks goldspam messages from showing. Type /sentry for options
+## Notes-enDE: Tippe /sentry für wahlen
+## Notes-enFR: Taper /sentry en pour les options
+## Notes-esES: Escribe /sentry para las opciones
+## Notes-zhTW: 擋廣告商訊息並回報GM,輸入 /sentry 查看選項.
+## Version: 20070613
+## Author: Anea 
+## OptionalDeps: Ace2, FuBarPlugin-2.0, FuBar, TabletLib, DewdropLib, Titan, WhoLib, Deformat
+## X-Embeds: Ace2, FuBarPlugin-2.0, TabletLib, DewdropLib, WhoLib, Deformat
+## X-Category: Chat/Communication
+## SavedVariables: SpamSentryDB, SpamSentryDBchar
+
+libs\AceLibrary\AceLibrary.lua
+libs\AceOO-2.0\AceOO-2.0.lua
+
+libs\AceEvent-2.0\AceEvent-2.0.lua
+libs\AceHook-2.1\AceHook-2.1.lua
+libs\AceDB-2.0\AceDB-2.0.lua
+libs\AceLocale-2.2\AceLocale-2.2.lua
+libs\AceConsole-2.0\AceConsole-2.0.lua
+libs\AceAddon-2.0\AceAddon-2.0.lua
+libs\AceModuleCore-2.0\AceModuleCore-2.0.lua
+
+libs\Deformat-2.0\Deformat-2.0.lua
+libs\WhoLib-1.0\WhoLib-1.0.lua
+libs\Tablet-2.0\Tablet-2.0.lua
+libs\Dewdrop-2.0\Dewdrop-2.0.lua
+libs\FuBarPlugin-2.0\FuBarPlugin-2.0.lua
+
+report\locale-enUS.lua
+report\locale-deDE.lua
+report\locale-esES.lua
+report\locale-frFR.lua
+report\locale-zhTW.lua
+report\report.lua
+report\report.xml
+
+bot\locale-enUS.lua
+bot\locale-deDE.lua
+bot\locale-esES.lua
+bot\locale-frFR.lua
+bot\locale-zhTW.lua
+bot\bot.lua
+
+rp\locale-enUS.lua
+rp\locale-deDE.lua
+rp\locale-esES.lua
+rp\locale-frFR.lua
+rp\locale-zhTW.lua
+rp\rp.lua
+
+locale-enUS.lua
+locale-deDE.lua
+locale-esES.lua
+locale-frFR.lua
+locale-zhTW.lua
+core.lua
+lod.lua
+options.lua
+compatibility.lua

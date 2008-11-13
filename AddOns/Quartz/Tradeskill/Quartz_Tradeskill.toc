@@ -1,0 +1,12 @@
+## Interface: 20300
+## LoadOnDemand: 1
+## Title: Quartz |cff7777ffTradeskill|r
+## Notes: Quartz module to condense multiple-cast tradeskills into one casting bar.
+## Author: Nymbia
+## Version: 1.0
+## Dependencies: Quartz
+## X-License: GPL v2
+## X-Quartz-Module: Tradeskill
+## X-Quartz-RequiredModules: Player
+
+Tradeskill.lua

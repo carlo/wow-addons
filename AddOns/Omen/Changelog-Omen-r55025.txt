@@ -1,0 +1,37 @@
+------------------------------------------------------------------------
+r55025 | funkydude | 2007-11-16 08:21:51 -0500 (Fri, 16 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Omen/Libs
+   M /trunk/Omen/Omen.lua
+   M /trunk/Omen/Omen.toc
+   M /trunk/Omen/OmenDisplay.lua
+   M /trunk/Omen/OmenMenu.lua
+   M /trunk/Omen/OmenThreatBar.lua
+   M /trunk/Omen/embeds.xml
+
+Omen: swap to LibSharedMedia-2.0
+------------------------------------------------------------------------
+r54414 | antiarc | 2007-11-12 15:15:13 -0500 (Mon, 12 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Omen/Omen.toc
+
+Omen: Update the TOC for 2.3
+------------------------------------------------------------------------
+r54048 | antiarc | 2007-11-06 15:47:09 -0500 (Tue, 06 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Omen/Omen.toc
+
+Omen: Added Dewdrop the the X-Embeds.
+------------------------------------------------------------------------
+r54047 | antiarc | 2007-11-06 15:37:41 -0500 (Tue, 06 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Omen/OmenDisplay.lua
+
+Omen: Prevent drag-out bars while Omen window is locked.
+------------------------------------------------------------------------
+r53213 | kuja | 2007-10-25 13:09:59 -0400 (Thu, 25 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/Omen/localization_deDE.lua
+
+Omen: small deDE update
+------------------------------------------------------------------------

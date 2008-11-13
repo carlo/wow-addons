@@ -1,0 +1,13 @@
+﻿## Interface: 20300
+## Title: PitBull |r[|cffeda55fRangeCheck|r]
+## Notes: Range checking for PitBull unit frames
+## Author: AP
+## Version: 0.1
+## X-Category: Combat
+## OptionalDeps: Ace2, Babble-2.2
+## X-Embeds: Ace2, Babble-2.2
+## Dependencies: PitBull
+## DefaultState: enabled
+## LoadOnDemand: 1
+
+RangeCheck.lua

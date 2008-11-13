@@ -1,0 +1,16 @@
+## Interface: 20100
+## Author: Moonsorrow
+## Title: XArtC |cff7fff7f -Ace2-|r
+## Notes: Provides a background texture at the bottom
+## Version: 1.12.1
+## DefaultState: Enabled
+## X-Build: $Revision: 41195 $
+## X-ReleaseDate: "$Date: 2007-06-21 22:29:18 -0400 (Thu, 21 Jun 2007) $"
+## X-Category: Miscellaneous
+## X-eMail: moonsorrow@gmx.de
+## X-Website: http://www.for-the-horde.de
+## SavedVariables: XArtCDB
+
+embeds.xml
+
+XArt.lua

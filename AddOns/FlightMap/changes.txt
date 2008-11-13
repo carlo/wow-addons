@@ -1,0 +1,14 @@
+2.2-1   October 08, 2007
+        * TOC and version bump
+2.1-1   May 28, 2007
+        * TOC and version bump
+2.0-3   February 6, 2007
+        * Add Neutral zone type
+        * Disable auto-dismount (default UI seems to do it now)
+        * Disable default data for non-enUS locales
+        * Add Burning Crusade zones, with level information
+2.0-2   December 19, 2006
+        * Compatible with ChatBar (and other Sea embedding mods)
+        * Don't reset timers when World Map is shown or UI hidden
+2.0-1   December 06, 2006
+        * WoW 2.0 compatibility

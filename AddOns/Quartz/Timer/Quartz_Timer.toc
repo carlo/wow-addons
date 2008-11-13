@@ -1,0 +1,12 @@
+## Interface: 20300
+## LoadOnDemand: 1
+## Title: Quartz |cff7777ffTimer|r
+## Notes: Quartz module to display simple timers on the Mirror bar.
+## Author: Nymbia
+## Version: 1.0
+## Dependencies: Quartz
+## X-License: GPL v2
+## X-Quartz-Module: Timer
+## X-Quartz-RequiredModules: Mirror
+
+Timer.lua

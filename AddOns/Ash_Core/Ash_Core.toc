@@ -1,0 +1,9 @@
+## Interface: 20100
+## Title: Ash_Core
+## Author: Asheyla
+## Version: 3.1
+## eMail: ross456@gmail.com
+## URL: http://www.curse-gaming.com/en/wow/addons-4304-1-dotimer.html
+## Notes: A compilation of libraries for my other addons to use
+## SavedVariables: AsheylaLib_Settings
+Ash_Core.xml

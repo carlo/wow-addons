@@ -1,0 +1,16 @@
+## Interface: 20300
+## Title: ItemPriceTooltip |cff7fff7f-Ace2-|r
+## Notes: Adds vendor sell value to item tooltips.
+## Notes-zhTW: 在物品提示訊息加上賣出價。
+## Author: Bam
+## Version: 1.2
+## SavedVariables: ItemPriceTooltipDB
+## OptionalDeps: LibStub, Ace2, AbacusLib, ItemPrice-1.1, FuBarPlugin-2.0, DewdropLib
+## X-Embeds: LibStub, Ace2, AbacusLib, ItemPrice-1.1, FuBarPlugin-2.0, DewdropLib
+## X-Category: Inventory
+## X-AceForum: 5918
+## X-License: LGPL v2.1
+
+embeds.xml
+
+ItemPriceTooltip.lua

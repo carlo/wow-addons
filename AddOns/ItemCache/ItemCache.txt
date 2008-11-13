@@ -1,0 +1,31 @@
+Item Cache Search (v1.1) - use to search for item links in the item
+cache (items that your client has seen). To use type
+
+  /ic find <text>
+
+For example:
+
+  /ic find Sulfuras
+
+And ItemCache will output the following (if you have ever seen these
+items).
+
+  17182 [Sulfuras, Hand of Ragnaros]
+  17204 [Eye of Sulfuras]
+  19138 [Band of Sulfuras]
+
+The links can be sent to others using shift-click.
+
+Be careful with sending links of rare items to others (whispers, say
+etc). after a realm reset as you will be disconnected.
+
+
+Changelogs
+
+v1.0 - First Release
+
+v1.1 - Limited search to itemid 0 to 30000 (still a safe margin).
+     - Limited the number of results to 15.
+     - Print out the number of matches.
+
+-deqth

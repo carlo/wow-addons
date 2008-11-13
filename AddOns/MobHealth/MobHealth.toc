@@ -1,0 +1,17 @@
+﻿## Interface: 20300
+## Author: Neronix
+## Title: MobHealth3 |cff7fff7f -Ace2-|r
+## X-eMail: neronix@gmail.com
+## X-Category: Combat
+## X-Date: 2006-08-29
+## Version: 3.2
+## OptionalDeps: Ace2, MobInfo2
+## Notes: Estimates a mob's health
+## Notes-zhTW: 估算怪物的生命力。
+## SavedVariables: MobHealth3DB, MobHealth3Config, MobHealthDB
+## LoadManagers: AddonLoader, ForkliftGnome
+## X-LoadOn-NotResting: true
+
+embeds.xml
+
+MobHealth3.lua

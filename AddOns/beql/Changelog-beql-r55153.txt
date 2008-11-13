@@ -1,0 +1,94 @@
+------------------------------------------------------------------------
+r55153 | damjau | 2007-11-17 08:09:13 -0500 (Sat, 17 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/beql/locales/localization-ko.lua
+
+beql: - update koKR
+------------------------------------------------------------------------
+r54784 | silviu | 2007-11-15 04:54:05 -0500 (Thu, 15 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/beql/beql.toc
+
+beql: - Bump toc to 20300
+------------------------------------------------------------------------
+r53862 | zhucc | 2007-11-04 05:09:45 -0500 (Sun, 04 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/beql/locales/localization-tw.lua
+
+beql: - update zhTW translate
+------------------------------------------------------------------------
+r53242 | bayi | 2007-10-25 19:04:31 -0400 (Thu, 25 Oct 2007) | 4 lines
+Changed paths:
+   M /trunk/beql/extra/questhistory.lua
+   M /trunk/beql/extra/questhistory.xml
+
+beql: 
+- QuestHistory: Added Description panel to display stored data about the actual quest
+- QuestHistory: Added Filters to display only completed/notcompleted/daily/ or simply all quests
+- QuestHistory: Added Filter select button
+------------------------------------------------------------------------
+r52947 | samuelcup | 2007-10-23 02:12:35 -0400 (Tue, 23 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/beql/locales/localization-cn.lua
+
+beql: - zhCN updated
+------------------------------------------------------------------------
+r52733 | bayi | 2007-10-20 21:42:06 -0400 (Sat, 20 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/beql/extra/questhistory.xml
+
+beql: - Fixed a typo in the Quest History Frame title
+------------------------------------------------------------------------
+r52732 | bayi | 2007-10-20 21:36:40 -0400 (Sat, 20 Oct 2007) | 4 lines
+Changed paths:
+   M /trunk/beql/questlog.lua
+   M /trunk/beql/tracker.lua
+
+beql: 
+- Core: Removed Tracker Update workaround code
+- Core: Added Quixote issue workaround in the QUEST_LOG_UPDATE event
+- Core: Fixed broken features with the old workaround
+------------------------------------------------------------------------
+r52721 | bayi | 2007-10-20 18:22:01 -0400 (Sat, 20 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/beql/options.lua
+
+beql: - Fixed a nil error in options.lua when tracker is disabled
+------------------------------------------------------------------------
+r52686 | bayi | 2007-10-20 13:12:35 -0400 (Sat, 20 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/beql/tracker.lua
+
+beql: - Core: Removed a debug print line 
+------------------------------------------------------------------------
+r52586 | bayi | 2007-10-19 15:33:09 -0400 (Fri, 19 Oct 2007) | 12 lines
+Changed paths:
+   A /trunk/beql/Bindings.xml
+   M /trunk/beql/beql.lua
+   M /trunk/beql/locales/localization-cn.lua
+   M /trunk/beql/locales/localization-de.lua
+   M /trunk/beql/locales/localization-es.lua
+   M /trunk/beql/locales/localization-fr.lua
+   M /trunk/beql/locales/localization-hu.lua
+   M /trunk/beql/locales/localization-ko.lua
+   M /trunk/beql/locales/localization-ru.lua
+   M /trunk/beql/locales/localization-tw.lua
+   M /trunk/beql/locales/localization.lua
+   M /trunk/beql/options.lua
+   M /trunk/beql/questlog.lua
+   M /trunk/beql/tooltip.lua
+   M /trunk/beql/tracker.lua
+
+beql:
+- Core: Added Keybindging for Minimizing/Maximizing the tracker
+- Core: ChatBox is now hidden after printing a quest information with CTRL+Click
+- Core: Adjusted Icon Positions and Size... again
+- Core: Added "H" Icon for the Quest History Frame
+- Tracker: Unhooking Mouse Events thus enabling camera rotation through the Tracker frame if Tracker is Locked, Tooltips are off and Click options are off
+- Tracker: Tracker Background and Background Border Alpha can now be set
+- Tracker: Quest can be CTRL Clicked to copy questname and objectives to the current active Chatbox
+- Tracker: Tracker width can now be set and fixed
+- Tracker: Text is wrapped if Tracker Fixed width is on
+- Tracker: Fixed a Quixote Bug with forced Updates, now an update can only be happen if Quixote sends an "Update_Ready" event
+- History: Storing Quest Info, Displaying Quest List, Change Characters for display, Slidebar are working now
+------------------------------------------------------------------------

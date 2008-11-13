@@ -1,0 +1,17 @@
+﻿## Interface: 20200
+## Title: AutoBar Config |cff7fff7f -Ace2-|r
+## Version: 2.01.03.06 beta
+## Notes: Config menu for AutoBar (LoadOnDemand)
+## Notes-zhTW: AutoBar 設定選單 (隨需求載入)。
+## Author: Toadkiller
+## Dependencies: AutoBar
+## LoadOnDemand: 1
+## X-Category: Interface Enhancements
+
+AutoBarConfig.lua
+AutoBarConfig.xml
+AutoBarConfigSlot.lua
+AutoBarConfigSlot.xml
+AutoBarChooseCategory.lua
+AutoBarChooseCategory.xml
+

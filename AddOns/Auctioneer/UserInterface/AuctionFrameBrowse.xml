@@ -1,0 +1,127 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+<!--
+	Version: 5.0.PRE.2544 (BillyGoat)
+	Revision: $Id: AuctionFrameBrowse.xml 1331 2007-01-12 10:09:49Z norganna $
+
+	License:
+		This program is free software; you can redistribute it and/or
+		modify it under the terms of the GNU General Public License
+		as published by the Free Software Foundation; either version 2
+		of the License, or (at your option) any later version.
+
+		This program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
+
+		You should have received a copy of the GNU General Public License
+		along with this program(see GPL.txt); if not, write to the Free Software
+		Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+	Note:
+		This AddOn's source code is specifically designed to work with
+		World of Warcraft's interpreted AddOn system.
+		You have an implicit licence to use this AddOn with these facilities
+		since that is it's designated purpose as per:
+		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
+-->
+	<Script file="AuctionFrameBrowse.lua"/>
+	<Button name="BrowseScanButton" inherits="UIPanelButtonTemplate" hidden="true">
+		<Size>
+			<AbsDimension x="80" y="22"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				BrowseScanButton_OnClick();
+			</OnClick>
+			<OnUpdate>
+				if (CanSendAuctionQuery()) then
+					self:Enable();
+				else
+					self:Disable();
+				end
+			</OnUpdate>
+			<OnLoad>
+				Auctioneer_RegisterRevision("$URL: http://svn.norganna.org/auctioneer/trunk/Auctioneer/UserInterface/AuctionFrameBrowse.xml $", "$Rev: 1331 $")
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Button name="BrowseClearButton" hidden="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				BrowseClearButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="BrowseRefreshButton" hidden="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				BrowseRefreshButton_OnClick();
+			</OnClick>
+			<OnUpdate>
+				if (CanSendAuctionQuery() and AuctionFrameBrowse.page) then
+					self:Enable();
+				else
+					self:Disable();
+				end
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	<Button name="BrowseBuySortButton" hidden="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				BrowseBuySortButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<CheckButton name="AuctFilterTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<Scripts>
+			<OnClick>
+				if (this.filterVal) then
+					if (self:GetChecked()) then
+						Auctioneer.Command.SetFilter(this.filterVal, "on");
+					else
+						Auctioneer.Command.SetFilter(this.filterVal, "off");
+					end
+				end
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="AuctionFilterButton1Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton2Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton3Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton4Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton5Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton6Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton7Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton8Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton9Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton10Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton11Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton12Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton13Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton14Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+	<CheckButton name="AuctionFilterButton15Checkbox" inherits="AuctFilterTemplate" hidden="true"/>
+</Ui>
+

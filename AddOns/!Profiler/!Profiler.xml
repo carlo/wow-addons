@@ -1,0 +1,423 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="!Profiler.lua"/>
+	<Frame name="ProfilerUpdateFrame" hidden="false">
+		<Scripts>
+			<OnUpdate>
+				ProfilerUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+<!-- ======================================== Profiler ================================ -->
+	<Button name="ProfilerColumnHeaderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="10" y="18"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="5" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="53" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont inherits="GameFontHighlightSmall"/>
+		<Scripts>
+			<OnClick>
+				this:GetParent().sortType = this:GetID();
+				ProfilerScrollFrame_Update();
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="ProfilerItemButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="533" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="120" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCPUCurr" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCPUMax" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCPUCurr" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCPUAvg" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCPUMax" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMemCurr" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCPUAvg" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentMemMax" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMemCurr" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				--this:RegisterForClicks("LeftButtonUp");
+			</OnLoad>
+			<OnClick>
+				--Profiler_ShowDetail(TradeLog_TradesHistory[this.offset]);
+			</OnClick>
+			<OnEnter>
+				--Profiler_TradeTooltip(TradeLog_TradesHistory[this.offset]);
+			</OnEnter>
+			<OnLeave>
+				--GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="533" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Frame name="Profiler" parent="UIParent" movable="true" enableMouse="true" hidden="false">
+		<TitleRegion setAllPoints="true"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Size>
+			<AbsDimension x="565" y="448"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Frames>
+			<Button name="ProfilerClose" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="ProfilerStart" inherits="UIPanelButtonTemplate" Text="START">
+				<Size>
+					<AbsDimension x="90" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Profiler_AddonData = {};
+						ResetCPUUsage();
+						ProfilerUpdateFrame.TimeSinceLastUpdate = 0;
+						ProfilerUpdateFrame.TimeSinceLastStart = 0;
+						ProfilerUpdateFrame.cpuCountLast = nil;
+						PROFILER_STARTED = 1;
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="ProfilerStop" inherits="UIPanelButtonTemplate" Text="STOP">
+				<Size>
+					<AbsDimension x="90" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="125" y="-18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PROFILER_STARTED = nil;
+						ProfilerStart:SetText("START");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+<!-- =================== Table Head ======================== -->
+			<Button name="ProfilerColumnHeader1" inherits="ProfilerColumnHeaderTemplate" text="NAME" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-55"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(125);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="ProfilerColumnHeader2" inherits="ProfilerColumnHeaderTemplate" text="CPU" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ProfilerColumnHeader1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(80);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="ProfilerColumnHeader3" inherits="ProfilerColumnHeaderTemplate" text="CPU Peak" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ProfilerColumnHeader2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(80);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="ProfilerColumnHeader4" inherits="ProfilerColumnHeaderTemplate" text="CPU Avg." id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ProfilerColumnHeader3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(80);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="ProfilerColumnHeader5" inherits="ProfilerColumnHeaderTemplate" text="Mem" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ProfilerColumnHeader4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(80);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<Button name="ProfilerColumnHeader6" inherits="ProfilerColumnHeaderTemplate" text="Mem Peak" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ProfilerColumnHeader5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						WhoFrameColumn_SetWidth(80);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<Button name="ProfilerButton1" inherits="ProfilerItemButtonTemplate" id="1"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerColumnHeader1" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton2" inherits="ProfilerItemButtonTemplate" id="2"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton1" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton3" inherits="ProfilerItemButtonTemplate" id="3"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton2" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton4" inherits="ProfilerItemButtonTemplate" id="4"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton3" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton5" inherits="ProfilerItemButtonTemplate" id="5"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton4" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton6" inherits="ProfilerItemButtonTemplate" id="6"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton5" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton7" inherits="ProfilerItemButtonTemplate" id="7"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton6" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton8" inherits="ProfilerItemButtonTemplate" id="8"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton7" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton9" inherits="ProfilerItemButtonTemplate" id="9"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton8" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton10" inherits="ProfilerItemButtonTemplate" id="10"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton9" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton11" inherits="ProfilerItemButtonTemplate" id="11"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton10" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton12" inherits="ProfilerItemButtonTemplate" id="12"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton11" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton13" inherits="ProfilerItemButtonTemplate" id="13"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton12" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton14" inherits="ProfilerItemButtonTemplate" id="14"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton13" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton15" inherits="ProfilerItemButtonTemplate" id="15"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton14" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton16" inherits="ProfilerItemButtonTemplate" id="16"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton15" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton17" inherits="ProfilerItemButtonTemplate" id="17"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton16" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton18" inherits="ProfilerItemButtonTemplate" id="18"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton17" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton19" inherits="ProfilerItemButtonTemplate" id="19"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton18" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton20" inherits="ProfilerItemButtonTemplate" id="20"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton19" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton21" inherits="ProfilerItemButtonTemplate" id="21"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton20" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton22" inherits="ProfilerItemButtonTemplate" id="22"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton21" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton23" inherits="ProfilerItemButtonTemplate" id="23"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton22" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton24" inherits="ProfilerItemButtonTemplate" id="24"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton23" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton25" inherits="ProfilerItemButtonTemplate" id="25"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton24" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton26" inherits="ProfilerItemButtonTemplate" id="26"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton25" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton27" inherits="ProfilerItemButtonTemplate" id="27"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton26" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton28" inherits="ProfilerItemButtonTemplate" id="28"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton27" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton29" inherits="ProfilerItemButtonTemplate" id="29"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton28" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+			<Button name="ProfilerButton30" inherits="ProfilerItemButtonTemplate" id="30"><Anchors><Anchor point="TOPLEFT" relativeTo="ProfilerButton29" relativePoint="BOTTOMLEFT"/></Anchors></Button>
+
+			<ScrollFrame name="ProfilerScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="40" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-79"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-31" y="9"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(12, ProfilerScrollFrame_Update);
+					</OnVerticalScroll>
+					<OnShow>
+						ProfilerScrollFrame_Update(arg1);
+					</OnShow>
+					<OnLoad>
+						ScrollFrame_OnLoad();
+						local scrollBar = getglobal(this:GetName().."ScrollBar");
+						scrollBar:SetBackdrop( 
+						{
+							bgFile = "Interface\\ChatFrame\\ChatFrameBackground", 
+							tile = true, 
+							tileSize = 16,
+							edgeFile = "Interface\\AddOns\\!Profiler\\ScrollTrack", 
+							edgeSize = 16,
+							insets = {
+								left = 4, 
+								right = 4, 
+								top = 4, 
+								bottom = 4},
+						})
+						scrollBar:SetBackdropBorderColor(.2, .2, .2, 1)
+						scrollBar:SetBackdropColor(.1, .1, .1, 1)
+					</OnLoad>
+				</Scripts>
+				<Layers>
+				</Layers>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				ProfilerScrollFrame_Update();
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+</Ui>

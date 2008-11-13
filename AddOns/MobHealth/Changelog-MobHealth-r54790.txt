@@ -1,0 +1,16 @@
+------------------------------------------------------------------------
+r54790 | silviu | 2007-11-15 04:58:20 -0500 (Thu, 15 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/MobHealth/MobHealth.toc
+
+MobHealth3:
+- Bump toc to 20300
+------------------------------------------------------------------------
+r53569 | helium | 2007-10-31 04:48:52 -0400 (Wed, 31 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/MobHealth/MobHealth.toc
+   M /trunk/MobHealth/MobHealth3.lua
+
+MobHealth3:
+- update zhTW localization
+------------------------------------------------------------------------

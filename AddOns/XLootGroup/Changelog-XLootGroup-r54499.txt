@@ -1,0 +1,14 @@
+------------------------------------------------------------------------
+r54499 | xuerian | 2007-11-13 11:14:28 -0500 (Tue, 13 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/XLootGroup/XLootGroup.toc
+
+XLootGroup: Bumped toc (No group comments ftl.)
+------------------------------------------------------------------------
+r51851 | cwdg | 2007-10-13 04:47:10 -0400 (Sat, 13 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/XLootGroup/XLootGroup.toc
+   A /trunk/XLootGroup/localization.zhCN.lua
+
+XLootGroup: add zhCN local
+------------------------------------------------------------------------

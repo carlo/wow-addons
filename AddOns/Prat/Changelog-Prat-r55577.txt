@@ -1,0 +1,54 @@
+------------------------------------------------------------------------
+r55577 | arrowmaster | 2007-11-20 20:34:35 -0500 (Tue, 20 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat_Modules/modules/ChatButtons.lua
+   M /trunk/Prat/Prat_Modules/modules/PlayerNames.lua
+   M /trunk/Prat/Prat_Modules/modules/Timestamps.lua
+
+Prat: much less accidental global creation
+------------------------------------------------------------------------
+r54519 | sylvanaar | 2007-11-13 12:54:27 -0500 (Tue, 13 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat_AutoLoD/Prat_AutoLoD.toc
+   M /trunk/Prat/Prat_Modules/Prat_Modules.toc
+   M /trunk/Prat/Prat_Modules_AutoLoD/Prat_Modules_AutoLoD.toc
+
+Prat: TOC 20300 for packaged components
+------------------------------------------------------------------------
+r54518 | sylvanaar | 2007-11-13 12:51:12 -0500 (Tue, 13 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat.toc
+
+Prat: TOC 20300
+------------------------------------------------------------------------
+r53322 | sylvanaar | 2007-10-27 10:10:02 -0400 (Sat, 27 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat.lua
+   M /trunk/Prat/Prat_Modules/modules/ChannelNames.lua
+
+Prat: Support channel-link functionality for channels /1 - /10 unless the channel name has been completely removed. ie. click on the channel name to open chat to that channel.
+------------------------------------------------------------------------
+r53296 | sylvanaar | 2007-10-27 00:21:47 -0400 (Sat, 27 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat_Modules/modules/ChatLink.lua
+
+Prat: Drycode to restore GEM compatibility mode, which was reverted with the change which broke item linking in trade
+------------------------------------------------------------------------
+r53282 | sylvanaar | 2007-10-26 18:10:31 -0400 (Fri, 26 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat_Modules/modules/CopyChat.lua
+
+Prat: Added support for copying formatted chat. Only implemented bbcode even though the HTML option is there
+------------------------------------------------------------------------
+r53180 | sylvanaar | 2007-10-25 05:29:21 -0400 (Thu, 25 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat_Modules/modules/Editbox.lua
+
+Prat: Restore the hideborder setting onenable
+------------------------------------------------------------------------
+r53179 | sylvanaar | 2007-10-25 05:22:47 -0400 (Thu, 25 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/Prat/Prat_Modules/modules/ChatLink.lua
+
+Prat: revert change - defect introduced - chatlinks being encoded in trade channel
+------------------------------------------------------------------------

@@ -1,0 +1,12 @@
+## Interface: 20300
+## LoadOnDemand: 1
+## Title: Quartz |cff7777ffBuff|r
+## Notes: Quartz module to display target/focus buffs and debuffs.
+## Author: Nymbia
+## Version: 1.0
+## Dependencies: Quartz
+## X-License: GPL v2
+## X-Quartz-Module: Buff
+## X-Quartz-RequiredModules: Player
+
+Buff.lua

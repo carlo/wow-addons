@@ -1,0 +1,8 @@
+## Interface: 20300
+## Version: 1.3
+## Title: MSBT [|cffffff80Icons|r]
+## Author: Mik
+## Notes: Adds support for spell icons to MSBT.
+LibStub.lua
+LibBabble-Spell-3.0.lua
+MSBTIcons.lua

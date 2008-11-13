@@ -1,0 +1,135 @@
+------------------------------------------------------------------------
+r55716 | gagorian | 2007-11-22 12:50:29 -0500 (Thu, 22 Nov 2007) | 3 lines
+Changed paths:
+   M /trunk/DrDamage/DrDamage-enUS.lua
+   M /trunk/DrDamage/Locales/Localization-koKR.lua
+   M /trunk/DrDamage/Locales/Localization-zhCN.lua
+   M /trunk/DrDamage/Locales/Localization-zhTW.lua
+   M /trunk/DrDamage/Melee.lua
+
+DrDamage:
+- Added tooltip display options to melee module
+- Added manual target level option to melee module
+------------------------------------------------------------------------
+r55658 | gagorian | 2007-11-21 20:28:44 -0500 (Wed, 21 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/Melee.lua
+
+DrDamage:
+- Changed the average total display for next melee attacks so I don't get more whine
+------------------------------------------------------------------------
+r55656 | gagorian | 2007-11-21 20:09:44 -0500 (Wed, 21 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/Data/Druid.lua
+   M /trunk/DrDamage/DrDamage.toc
+
+DrDamage:
+- Added Brambles to druid module. Version bump.
+------------------------------------------------------------------------
+r55558 | gagorian | 2007-11-20 15:54:26 -0500 (Tue, 20 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/Caster.lua
+
+DrDamage:
+- Fixed tick count while using spell haste with dot type spells with cast time (drain soul)
+------------------------------------------------------------------------
+r55476 | gagorian | 2007-11-19 17:26:07 -0500 (Mon, 19 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/Data/Mage.lua
+
+DrDamage:
+- Added Frost and Fire Ward scaling
+------------------------------------------------------------------------
+r55474 | gagorian | 2007-11-19 17:20:30 -0500 (Mon, 19 Nov 2007) | 3 lines
+Changed paths:
+   M /trunk/DrDamage/Data/Hunter.lua
+   M /trunk/DrDamage/Data/Warlock.lua
+
+DrDamage:
+- Added scaling to shadow ward
+- Added RAP scaling to serpent sting
+------------------------------------------------------------------------
+r55472 | gagorian | 2007-11-19 17:09:12 -0500 (Mon, 19 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/DrDamage.lua
+
+DrDamage:
+- Fixed Nurfed support according to Apoco. Thanks.
+------------------------------------------------------------------------
+r55471 | gagorian | 2007-11-19 16:55:09 -0500 (Mon, 19 Nov 2007) | 3 lines
+Changed paths:
+   M /trunk/DrDamage/Data/Druid.lua
+   M /trunk/DrDamage/Data/Hunter.lua
+   M /trunk/DrDamage/Data/Paladin.lua
+   M /trunk/DrDamage/Data/Shaman.lua
+
+DrDamage:
+- Added new lifebloom idol, new SoR libram
+- Added explosive and immolation trap
+------------------------------------------------------------------------
+r55468 | gagorian | 2007-11-19 16:30:30 -0500 (Mon, 19 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/DrDamage.lua
+
+DrDamage:
+- Fixed TrinityBars 1 & 2 support
+------------------------------------------------------------------------
+r55466 | gagorian | 2007-11-19 16:18:14 -0500 (Mon, 19 Nov 2007) | 3 lines
+Changed paths:
+   M /trunk/DrDamage/Data/Warrior.lua
+   M /trunk/DrDamage/Melee.lua
+
+DrDamage:
+- First attempt at fixing melee hit calculation post patch 2.3
+- Added block value into shield slam calculations due to new API support
+------------------------------------------------------------------------
+r55181 | gagorian | 2007-11-17 13:32:52 -0500 (Sat, 17 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/Data/Shaman.lua
+
+DrDamage:
+- Shaman LB and CL 2.3 coeffs, needs verification
+------------------------------------------------------------------------
+r54689 | gagorian | 2007-11-14 12:43:25 -0500 (Wed, 14 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/DrDamage/DrDamage.toc
+
+DrDamage:
+- TOC update for 2.3
+------------------------------------------------------------------------
+r54668 | gagorian | 2007-11-14 10:23:28 -0500 (Wed, 14 Nov 2007) | 7 lines
+Changed paths:
+   M /trunk/DrDamage/Caster.lua
+   M /trunk/DrDamage/Data/Mage.lua
+   M /trunk/DrDamage/Data/Paladin.lua
+   M /trunk/DrDamage/Data/Priest.lua
+   M /trunk/DrDamage/Data/Rogue.lua
+
+DrDamage:
+- More 2.3 changes:
+- Priest coefficients (need someone to verify) on HN, CoH, PoH, PW:S
+- Mage ice barrier
+- BoL and talent changes on Paladins
+- Hemorraghe -> 1.25
+
+------------------------------------------------------------------------
+r54345 | gagorian | 2007-11-11 14:09:44 -0500 (Sun, 11 Nov 2007) | 5 lines
+Changed paths:
+   M /trunk/DrDamage/BuffScanning.lua
+   M /trunk/DrDamage/Caster.lua
+   M /trunk/DrDamage/Data/Hunter.lua
+   M /trunk/DrDamage/Data/Mage.lua
+   M /trunk/DrDamage/Data/Paladin.lua
+   M /trunk/DrDamage/Data/Priest.lua
+   M /trunk/DrDamage/Data/Shaman.lua
+   M /trunk/DrDamage/Data/Warlock.lua
+   M /trunk/DrDamage/Data/Warrior.lua
+   M /trunk/DrDamage/DrDamage.lua
+   M /trunk/DrDamage/Melee.lua
+
+DrDamage:
+- A few bugfixes (including incorrect scorch crit %)
+- Execute now correctly uses current amount of rage for DPR calculation
+- Fixes to 2.2 coefficients to blizzard, hurricane, rain of fire, healing way
+- Initial batch of 2.3 changes
+------------------------------------------------------------------------

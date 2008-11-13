@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="SmartBuffTitan.lua"/>
+	
+	<!-- Titan Panel support -->
+	<Frame parent="UIParent">
+		<Frames>
+			<Button name="TitanPanelSmartBuffButton" inherits="TitanPanelIconTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+					  if (TitanPanelBarButton) then
+						  TitanPanelSmartBuffButton_OnLoad();
+						  TitanPanelButton_OnLoad();
+						end
+					</OnLoad>
+					<OnShow>
+					  if (TitanPanelBarButton) then
+						  TitanPanelSmartBuffButton_OnShow();
+						end
+					</OnShow>					
+					<OnEvent>
+					  if (TitanPanelBarButton) then
+						  TitanPanelSmartBuffButton_OnEvent();
+						end
+					</OnEvent>
+					<OnClick>
+					  if (TitanPanelBarButton) then
+  						TitanPanelSmartBuffButton_OnClick(arg1);
+	  			  end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
+</Ui>

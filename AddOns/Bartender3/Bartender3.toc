@@ -1,0 +1,49 @@
+## Interface: 20200
+
+## Title: Bartender3 |cff7fff7f -Ace2-|r
+## Notes: Simple and Advanced combined - Bartender3 ActionBar AddOn
+## Notes-frFR: AddOn pour modifier les barres d'actions
+## Notes-esES: Accesorio de Barras de Accion que modifica la distribucion de los botones que ves
+## Notes-zhTW: 美化並強化原有的動作列。
+
+## Author: Nevcairiel
+## X-Credits: Mikma, Tuller, rabbit, Cladhaire
+
+## SavedVariables: BT3DB
+
+## OptionalDeps: FuBar, Ace2
+## X-Embeds: Ace2, DewdropLib, TabletLib, FuBarPlugin-2.0, Waterfall-1.0
+
+## X-Category: Action Bars
+## X-RelSite-WoWI: 6342
+## X-RelSite-Curse: 5653
+## X-AceForum: 3110
+
+## X-License: BSD
+## X-Donate: PayPal:h.leppkes AT gmail DOT com
+
+## Version: 3.1.2
+
+embeds.xml
+
+libs\StickyFrames.lua
+
+locales\Bartender3-enUS.lua
+locales\Bartender3-frFR.lua
+locales\Bartender3-deDE.lua
+locales\Bartender3-koKR.lua
+locales\Bartender3-esES.lua
+locales\Bartender3-zhTW.lua
+locales\Bartender3-zhCN.lua
+
+Bartender3.lua
+Options.lua
+Defaults.lua
+Style.lua
+Bar.lua
+ActionBar.lua
+ActionBarStates.lua
+SpecialBar.lua
+Button.lua
+
+Bartender3_FuBar.lua

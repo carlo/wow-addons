@@ -1,0 +1,25 @@
+-----------------------------------
+-----------------------------------
+-- SpamSentry by Anea
+-----------------------------------
+-- LoD
+-- Load-on-Demand
+-----------------------------------
+
+Several modules of SpamSentry are available as load-on-demand.
+These will only be loaded when used, thus lowering memory usage
+and load-time.
+
+To enable load-on-demand:
+1. Quit WoW
+2. Run one of the two installation scripts:
+- ss_lod.cmd for windows
+- ss_lod.sh for mac
+3. Start WoW
+
+Attention: Do not delete or disable the newly created folders.
+They are required for this mod, but will only be loaded when used.
+
+Note: You will have to run these scripts after each update!
+Note 2: Scripts are based on those shipped with Ora2, all credit to 
+their idea on how to create optional lod-modules.

@@ -1,0 +1,72 @@
+------------------------------------------------------------------------
+r54793 | silviu | 2007-11-15 05:01:01 -0500 (Thu, 15 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/PitBull/Aura/PitBull_Aura.toc
+   M /trunk/PitBull/Banzai/PitBull_Banzai.toc
+   M /trunk/PitBull/BarFader/PitBull_BarFader.toc
+   M /trunk/PitBull/CastBar/PitBull_CastBar.toc
+   M /trunk/PitBull/CombatFader/PitBull_CombatFader.toc
+   M /trunk/PitBull/CombatIcon/PitBull_CombatIcon.toc
+   M /trunk/PitBull/CombatText/PitBull_CombatText.toc
+   M /trunk/PitBull/ComboPoints/PitBull_ComboPoints.toc
+   M /trunk/PitBull/DruidManaBar/PitBull_DruidManaBar.toc
+   M /trunk/PitBull/EstimatedHeals/PitBull_EstimatedHeals.toc
+   M /trunk/PitBull/ExperienceBar/PitBull_ExperienceBar.toc
+   M /trunk/PitBull/HealthBar/PitBull_HealthBar.toc
+   M /trunk/PitBull/HideBlizzard/PitBull_HideBlizzard.toc
+   M /trunk/PitBull/Highlight/PitBull_Highlight.toc
+   M /trunk/PitBull/InteractLines/PitBull_InteractLines.toc
+   M /trunk/PitBull/LeaderIcon/PitBull_LeaderIcon.toc
+   M /trunk/PitBull/MasterLooterIcon/PitBull_MasterLooterIcon.toc
+   M /trunk/PitBull/PitBull.toc
+   M /trunk/PitBull/Portrait/PitBull_Portrait.toc
+   M /trunk/PitBull/PowerBar/PitBull_PowerBar.toc
+   M /trunk/PitBull/PvPIcon/PitBull_PvPIcon.toc
+   M /trunk/PitBull/RaidTargetIcon/PitBull_RaidTargetIcon.toc
+   M /trunk/PitBull/RangeCheck/PitBull_RangeCheck.toc
+   M /trunk/PitBull/ReputationBar/PitBull_ReputationBar.toc
+   M /trunk/PitBull/RestIcon/PitBull_RestIcon.toc
+   M /trunk/PitBull/Spark/PitBull_Spark.toc
+   M /trunk/PitBull/ThreatBar/PitBull_ThreatBar.toc
+   M /trunk/PitBull/VoiceIcon/PitBull_VoiceIcon.toc
+
+PitBull
+- Bump toc to 20300 ( Modules too )
+------------------------------------------------------------------------
+r54194 | funkydude | 2007-11-09 01:45:26 -0500 (Fri, 09 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/Cartographer/embeds.xml
+   M /trunk/Cartographer/libs
+   M /trunk/CowTip/embeds.xml
+   M /trunk/CowTip/libs
+   M /trunk/FuBar/embeds.xml
+   M /trunk/FuBar/libs
+   M /trunk/LibBabble-Inventory-3.0/LibBabble-Inventory-3.0.toc
+   M /trunk/LibBabble-Inventory-3.0/lib.xml
+   M /trunk/LibBabble-Spell-3.0/LibBabble-Spell-3.0.toc
+   M /trunk/LibBabble-Spell-3.0/lib.xml
+   M /trunk/LibBabble-Zone-3.0/LibBabble-Zone-3.0.toc
+   M /trunk/LibBabble-Zone-3.0/lib.xml
+   M /trunk/LibDogTag-2.0/LibDogTag-2.0.toc
+   M /trunk/LibDogTag-2.0/lib.xml
+   M /trunk/LibGratuity-3.0/LibGratuity-3.0.toc
+   M /trunk/LibGratuity-3.0/lib.xml
+   M /trunk/LibInventory-2.1/LibInventory-2.1.toc
+   M /trunk/LibInventory-2.1/lib.xml
+   M /trunk/LibRock-1.0/LibRock-1.0.toc
+   M /trunk/LibRock-1.0/lib.xml
+   M /trunk/LibRoman-1.0/LibRoman-1.0.toc
+   M /trunk/LibRoman-1.0/lib.xml
+   M /trunk/LibSharedMedia-2.0/LibSharedMedia-2.0.toc
+   M /trunk/LibSharedMedia-2.0/lib.xml
+   M /trunk/PitBull/embeds.xml
+   M /trunk/PitBull/libs
+
+.trunk: revert back to having LibStub in toc's so we don't load 5 billion copies when we have addons with embeds. Authors, if you use a library that uses LibStub, embed the LibStub tag version with it, not the trunk. Carto/CowTip/FuBar/PitBull have been changed accordingly.
+------------------------------------------------------------------------
+r53016 | aviana | 2007-10-23 18:18:33 -0400 (Tue, 23 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/PitBull/CastBar/CastBar.lua
+
+PitBull_CastBar - fixed castbar not showing when targeting in middle of a cast
+------------------------------------------------------------------------

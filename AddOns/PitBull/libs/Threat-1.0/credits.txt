@@ -1,0 +1,35 @@
+Threat-1.0 has been the work of a number of people besides myself. The community has really stepped up and pulled together to make this happen.
+
+To that end, special thanks to...
+
+- ckknight for general auditing and improvements, KTM interop code
+- Gagorian for the Warlock and Shaman modules, improvements to the Druid module, and general enhancements
+- Killmore for extensive priest module testing
+- hyperactiveChipmunk for the Hunter and pet modules
+- nevcariel for the Druid module
+- rabbit for parser agnosticism and general improvements/enhancements
+- rophy for parser agnosticism 
+- nekoh for fantastic code review and recommended bugfixes, as well as extensive and comprehensive testing
+- Ammo for general updates and KTM interop
+- sbu and nekoh for debugging and fixes to the automatic mob localization functionality
+- Jerry for codebase review and performance improvements
+- shieldb for various NPC modules and design work
+- Adirelle for the pet growl scaling and KTM interop
+- Silviu- for fantastic testing and feedback
+- Funkeh` for bugfixes and testing
+- sayclub for many Korean localizations
+- Fenlis for Korean localization
+- darchon for a bugfix and Korean localization
+- Leialyn for German localization
+- Roartindon for various bugfixes
+- Saroz for a few bugfixes
+- Moonsorrow for a few bugfixes
+- Gandharva for a few bugfixes
+- Kergoth for a few bugfixes
+- ulic for a bugfix
+- Helium for a bugfix
+- Saint-N for doing nothing at all
+- The Guild of Guilds for being my crash test dummies
+- The Elitist Jerks crew for theorycrafting, testing, and design inspiration
+- The rest of #wowace for inspiration, testing, bug reports, support, and various other help
+- Special thanks to Kenco for all his work in testing and reverse engineering the threat mechanics that we're so familiar with today.

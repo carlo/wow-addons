@@ -1,0 +1,5 @@
+<Bindings>	
+	<Binding name="OMENTOGGLE" description="Toggle Omen!" header="OMEN">
+		Omen:Toggle()
+	</Binding>
+</Bindings>

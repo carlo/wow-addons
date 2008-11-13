@@ -1,0 +1,12 @@
+## Interface: 20300
+## LoadOnDemand: 1
+## Title: Quartz |cff7777ffGCD|r
+## Notes: Quartz module to display the global cooldown in a helpful way.
+## Author: Nymbia
+## Version: 1.0
+## Dependencies: Quartz
+## X-License: GPL v2
+## X-Quartz-Module: GCD
+## X-Quartz-RequiredModules: Player
+
+GCD.lua

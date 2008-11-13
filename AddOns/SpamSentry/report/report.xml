@@ -1,0 +1,510 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+  <!--Basic template for SpamSentry windows -->
+  <Frame name="SpamSentryPanel" enableMouse="false" virtual="true">
+    <!--Border-->
+    <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+      <BackgroundInsets>
+        <AbsInset left="4" right="4" top="4" bottom="4"/>
+      </BackgroundInsets>
+      <EdgeSize>
+        <AbsValue val="16"/>
+      </EdgeSize>
+      <BorderColor r="0.6" g="0.6" b="0.6"/>
+    </Backdrop>
+
+    <Layers>
+      <!-- Icon -->
+      <Layer level ="BACKGROUND">
+        <Texture file="Interface\ChatFrame\ChatFrameBackground">
+          <Size x="592" y="35"/>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset x="4" y="-4"/>
+            </Anchor>
+          </Anchors>
+          <Gradient orientation="HORIZONTAL">
+            <MinColor r="0" g="0" b="0" a="0.35"/>
+            <MaxColor r="0.3" g="0.3" b="0.3" a="0.35"/>
+          </Gradient>
+        </Texture>
+      </Layer>
+
+      <!-- Title -->
+      <Layer level = "OVERLAY">
+        <Texture name="$parentIcon" file="Interface\AddOns\SpamSentry\icon">
+          <Size x="24" y="24"/>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset x="-60" y="-10"/>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.07" right="0.93" top="0.07" bottom="0.93"/>
+        </Texture>
+      
+        <FontString name="$parentTitle" font="Fonts\FRIZQT__.TTF" text="SpamSentry">
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset x="10" y="-12"/>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="16"/>
+          </FontHeight>
+          <Color r="0.6" g="0.6" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+      </Layer>    
+      
+      <!-- Background -->
+      <Layer level ="BACKGROUND">
+        <Texture file="Interface\ChatFrame\ChatFrameBackground">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset x="4" y="-4"/>
+            </Anchor>
+            <Anchor point="BOTTOMRIGHT">
+              <Offset x="-4" y="4"/>
+            </Anchor>
+          </Anchors>
+          <Gradient orientation="VERTICAL">
+            <MinColor r="0" g="0" b="0" a="0.75"/>
+            <MaxColor r="0.3" g="0.3" b="0.3" a="0.75"/>
+          </Gradient>
+        </Texture>
+      </Layer>
+    </Layers>
+    
+    <!--Close button -->
+    <Frames>
+      <Button name="$parentClose" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT"/>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HideUIPanel(this:GetParent():GetParent())
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    
+    <Scripts>
+      <OnMouseDown>
+        this:GetParent():StartMoving()
+      </OnMouseDown>
+      <OnMouseUp>
+        this:GetParent():StopMovingOrSizing()
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+  
+  <!--Normal style buttons -->
+  <Button name="SpamSentryButton" virtual="true">
+    <NormalFont font="GameFontNormal"/>
+    <HighlightFont font="GameFontHighlight"/>
+    <DisabledFont font="GameFontDisable"/>
+
+    <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+      <BackgroundInsets>
+        <AbsInset left="4" right="4" top="4" bottom="4"/>
+      </BackgroundInsets>
+      <EdgeSize>
+        <AbsValue val="16"/>
+      </EdgeSize>
+      <BorderColor r="0.6" g="0.6" b="0.6"/>
+    </Backdrop>
+
+    <ButtonText name="$parentText">
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset x="0" y="1"/>
+        </Anchor>
+      </Anchors>
+    </ButtonText>
+
+    <NormalTexture file="Interface\ChatFrame\ChatFrameBackground">
+      <Anchors>
+        <Anchor point="TOPLEFT">
+          <Offset x="4.5" y="-4.5"/>
+        </Anchor>
+        <Anchor point="BOTTOMRIGHT">
+          <Offset x="-4.5" y="4.5"/>
+        </Anchor>
+      </Anchors>
+
+      <Gradient orientation="VERTICAL">
+        <MinColor r="0.2" g="0" b="0"/>
+        <MaxColor r="0.5" g="0" b="0"/>
+      </Gradient>
+    </NormalTexture>
+
+    <PushedTexture file="Interface\ChatFrame\ChatFrameBackground">
+      <Anchors>
+        <Anchor point="TOPLEFT">
+          <Offset x="4.5" y="-4.5"/>
+        </Anchor>
+        <Anchor point="BOTTOMRIGHT">
+          <Offset x="-4.5" y="4.5"/>
+        </Anchor>
+      </Anchors>
+
+      <Gradient orientation="VERTICAL">
+        <MinColor r="0.1" g="0" b="0"/>
+        <MaxColor r="0.4" g="0" b="0"/>
+      </Gradient>
+    </PushedTexture>
+
+    <DisabledTexture file="Interface\ChatFrame\ChatFrameBackground">
+      <Anchors>
+        <Anchor point="TOPLEFT">
+          <Offset x="4.5" y="-4.5"/>
+        </Anchor>
+        <Anchor point="BOTTOMRIGHT">
+          <Offset x="-4.5" y="4.5"/>
+        </Anchor>
+      </Anchors>
+
+      <Color r="0.5" g="0.5" b="0.5"/>
+    </DisabledTexture>
+
+    <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+  </Button>
+
+  <!--Message buttons -->
+  <Button name="SpamSentryItem" justifyH="LEFT" virtual="true">
+    <Size x="540" y="55"/>
+
+    <ButtonText>
+      <Anchors>
+        <Anchor point="TOPLEFT">
+          <Offset x="10" y="0"/>
+        </Anchor>
+        <Anchor point="BOTTOMRIGHT"/>
+      </Anchors>
+    </ButtonText>
+
+    <NormalFont font="GameFontNormal" justifyH="LEFT"/>
+    <HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+
+    <Scripts>
+      <OnClick>
+        if IsControlKeyDown() then
+          SS_Report:RemoveSpam(SS.spamReportList[this:GetID()].player, true)
+        else
+          SS_Report:ShowCopyPopup(SS.spamReportList[this:GetID()].message)
+        end
+      </OnClick>
+      <OnEnter>
+        SS_Report.tablet:Open(this)
+      </OnEnter>
+      <OnLeave>
+        SS_Report.tablet:Close(this)
+      </OnLeave>
+      <OnMouseWheel>
+        SS_Report:OnMousewheel(SpamSentryUIScrollFrame, arg1)
+      </OnMouseWheel>
+    </Scripts>
+  </Button>
+
+  <!--New style reporting frame-->
+  <Frame name="SpamSentryUIDisplayTemplate" inherits="SpamSentryPanel" enableMouse="false" virtual="true">
+    <Size x="600" y="470"/>
+
+    <Layers>        
+      <!-- Helptext -->
+      <Layer level="OVERLAY">
+        <FontString name="SpamSentry_HelpText" inherits="ChatFontNormal" text="SSGUIHELP" justifyH="CENTER">
+          <Size x="580" y="24"/>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+              <Offset x="10" y="40"/>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>   
+
+      <!-- Reportlist count -->
+      <Layer level="OVERLAY">
+        <FontString name="SpamSentry_Counter" inherits="GameFontHighlightSmall" text="" justifyH="CENTER">
+          <Size x="580" y="24"/>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+              <Offset x="10" y="90"/>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>          
+    </Layers>
+
+    <Frames>
+      <!-- Report button -->
+      <Button name="SpamSentrySend" inherits="SpamSentryButton" text="SSGUISEND">
+        <Size x="100" y="24"/>
+        <Anchors>
+          <Anchor point="BOTTOM">
+            <Offset x="60" y="5"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            SS_Report:SendSpamReport()
+            HideUIPanel(this:GetParent():GetParent())
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!-- Clear button -->
+      <Button name="SpamSentryClear" inherits="SpamSentryButton" text="SSGUICLEAR">
+        <Size x="100" y="24"/>
+        <Anchors>
+          <Anchor point="BOTTOM">
+            <Offset x="-60" y="5"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            SS_Report:ClearSpam(0, true)
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!--Scrollframe-->
+      <ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentClose" relativePoint="BOTTOMLEFT">
+            <Offset x="-30" y="-16"/>
+          </Anchor>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset x="-30" y="116"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(SS_Report.shown, SS_Report.Update)
+          </OnVerticalScroll>
+        </Scripts>
+      </ScrollFrame>
+    </Frames>
+    
+    <Scripts>
+      <OnShow>
+        SS_Report:Update()
+      </OnShow>
+      <OnMouseWheel>
+        SS_Report:OnMousewheel(SpamSentryUIScrollFrame, arg1)
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+
+  <!--Old style reporting frame-->
+  <Frame name="SpamSentryUITicketTemplate" inherits="SpamSentryPanel" enableMouse="false" virtual="true">
+    <Size x="600" y="550"/>
+
+    <Layers>        
+      <!-- Helptext -->
+      <Layer level="OVERLAY">
+        <FontString name="SpamSentry_TicketHelpText" inherits="ChatFontNormal" text="" justifyH="CENTER">
+          <Size x="580" y="24"/>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset x="10" y="-44"/>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>   
+    </Layers>
+    
+    <Frames>
+      <!-- Scroll panel with large editbox -->
+      <ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate" toplevel="true">
+        <Size x="540" y="430"/>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset x="20" y="-70"/>
+          </Anchor>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset x="-30" y="40"/>
+          </Anchor>
+        </Anchors>
+
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+          <BackgroundInsets>
+            <AbsInset left="2" right="2" top="2" bottom="2"/>
+          </BackgroundInsets>
+          <EdgeSize>
+            <AbsValue val="16"/>
+          </EdgeSize>
+          <BorderColor r="0.8" g="0.8" b="0.8"/>
+        </Backdrop>
+        
+        <Layers>        
+          <Layer level ="BACKGROUND">
+            <Texture file="Interface\ChatFrame\ChatFrameBackground">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset x="4" y="-4"/>
+                </Anchor>
+                <Anchor point="BOTTOMRIGHT">
+                  <Offset x="-4" y="4"/>
+                </Anchor>
+              </Anchors>
+              <Gradient orientation="HORIZONTAL">
+                <MinColor r="0" g="0" b="0" a="0.35"/>
+                <MaxColor r="0.2" g="0.2" b="0.2" a="0.35"/>
+              </Gradient>
+            </Texture>
+          </Layer>
+        </Layers>
+        
+        <ScrollChild>
+          <EditBox name="SpamSentry_TicketEditBox" multiLine="true" letters="500">
+            <Size x="540" y="430"/>
+
+            <FontString inherits="ChatFontNormal"/>  
+            <Scripts>
+              <OnLoad>
+                this:SetTextInsets(8, 8, 8, 8)
+                this:SetAutoFocus(false)
+              </OnLoad>
+              <OnTextChanged>
+                local s = SpamSentryTicketUIScrollFrameScrollBar
+                this:GetParent():UpdateScrollChildRect()
+                local _, m = s:GetMinMaxValues()
+                if m > 0 and this.max ~= m then
+                  this.max = m
+                  s:SetValue(m)
+                end
+              </OnTextChanged>
+              <OnCursorChanged>
+                ScrollingEdit_OnCursorChanged(arg1, arg2, arg3, arg4)
+              </OnCursorChanged>
+              <OnUpdate>
+                ScrollingEdit_OnUpdate()
+              </OnUpdate>              
+            </Scripts>
+          </EditBox>
+        </ScrollChild>
+      </ScrollFrame>
+
+      <!-- Edit button Bot-->
+      <Button name="SpamSentry_TicketButtonEditBot" inherits="SpamSentryButton" text="ACCEPT">
+        <Size x="100" y="24"/>
+        <Anchors>
+          <Anchor point="BOTTOM">
+            <Offset x="0" y="5"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            SS.dbr.realm.botTicketText = SpamSentry_TicketEditBox:GetText()
+            SpamSentryUITicketParent:Hide()
+          </OnClick>
+        </Scripts>
+      </Button>
+      
+      <!-- Edit button RP -->
+      <Button name="SpamSentry_TicketButtonEditRP" inherits="SpamSentryButton" text="ACCEPT">
+        <Size x="100" y="24"/>
+        <Anchors>
+          <Anchor point="BOTTOM">
+            <Offset x="0" y="5"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            SS.dbr.realm.rpTicketText = SpamSentry_TicketEditBox:GetText()
+            SpamSentryUITicketParent:Hide()
+          </OnClick>
+        </Scripts>
+      </Button>
+      
+      <!-- Clear button Bot-->
+      <Button name="SpamSentry_TicketButtonClearBot" inherits="SpamSentryButton" text="CLEAR_ALL">
+        <Size x="100" y="24"/>
+        <Anchors>
+          <Anchor point="BOTTOM">
+            <Offset x="0" y="5"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            SS:Load("bot")
+            SS_Bot:Clear(min(5, getn(SS.dbr.realm.botReportList)), true)
+            SpamSentry_TicketEditBox:SetText(SS_Report:MakeBotReport())
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!-- Clear button RP-->
+      <Button name="SpamSentry_TicketButtonClearRP" inherits="SpamSentryButton" text="CLEAR_ALL">
+        <Size x="100" y="24"/>
+        <Anchors>
+          <Anchor point="BOTTOM">
+            <Offset x="0" y="5"/>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            SS:Load("rp")
+            SS_RP:Clear(min(5, getn(SS.dbr.realm.rpReportList)), true)
+            SpamSentry_TicketEditBox:SetText(SS_Report:MakeRPReport())
+          </OnClick>
+        </Scripts>
+      </Button>
+
+    </Frames>
+  </Frame>
+  
+  <!--Create new style window -->
+  <Frame name="SpamSentryUIParent" clampedToScreen="true" toplevel="false" hidden="true" movable="true" parent="UIParent">
+    <Size x="600" y="550"/>
+    
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+
+    <Frames>
+      <Frame name="SpamSentryUI" inherits="SpamSentryUIDisplayTemplate">
+        <Anchors>
+          <Anchor point="CENTER"/>
+        </Anchors>
+      </Frame>
+    </Frames>
+
+    <Scripts>
+      <OnLoad>
+        tinsert(UISpecialFrames, this:GetName())
+      </OnLoad>
+    </Scripts>
+  </Frame>
+  
+  <!--Create old style window -->
+  <Frame name="SpamSentryUITicketParent" clampedToScreen="true" toplevel="false" hidden="true" movable="true" parent="UIParent">
+    <Size x="600" y="550"/>
+
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+
+    <Frames>
+      <Frame name="SpamSentryTicketUI" inherits="SpamSentryUITicketTemplate">
+        <Anchors>
+          <Anchor point="CENTER"/>
+        </Anchors>
+      </Frame>
+    </Frames>
+
+    <Scripts>
+      <OnLoad>
+        tinsert(UISpecialFrames, this:GetName())
+      </OnLoad>
+    </Scripts>
+  </Frame>
+</Ui>

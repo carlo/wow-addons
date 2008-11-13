@@ -1,0 +1,57 @@
+<Bindings>
+	<Binding name="SHOWCHATUI" header="CHATKEYS">
+		ChatKeysOptions();
+	</Binding>
+	
+	<Binding name="SAYMESSAGE" header="CHATKEYS">
+		ckTapeMessage("/s ");
+	</Binding>
+	<Binding name="YELLMESSAGE" header="CHATKEYS">
+		ckTapeMessage("/y ");
+	</Binding>
+	<Binding name="PARTYMESSAGE" header="CHATKEYS">
+		ckMessageParty();
+	</Binding>
+	<Binding name="RAIDMESSAGE" header="CHATKEYS">
+		ckMessageRaid();
+	</Binding>
+	<Binding name="RWRAIDMESSAGE" header="CHATKEYS">
+		ckWarningRaid();
+	</Binding>
+	<Binding name="BGDEFMESSAGE" header="CHATKEYS">
+		ckBattleDef();
+	</Binding>
+	<Binding name="GUILDMESSAGE" header="CHATKEYS">
+		ckMessageGuilde();
+	</Binding>
+	<Binding name="GUILDOFFMESSAGE" header="CHATKEYS">
+		ckMessageGuildeOfficier();
+	</Binding>
+	<Binding name="GENERALMESSAGE" header="CHATKEYS">
+		ckMessageCanal(GENERALCHANNELNAME.." - ");
+	</Binding>
+	<Binding name="TRADEMESSAGE" header="CHATKEYS">
+		ckMessageCanal(TRADECHANNELNAME.." - ");
+	</Binding>
+	<Binding name="GROUPMESSAGE" header="CHATKEYS">
+		ckMessageCanal(GROUPCHANNELNAME.." - ");
+	</Binding>
+	<Binding name="WHISPER" header="CHATKEYS">
+		ckMessageCible();
+	</Binding>
+	<Binding name="CUSTOMMESSAGE" header="CHATKEYS">
+		ckMessagePerso();
+	</Binding>
+	<Binding name="CUSTOMCHANNEL1" header="CHATKEYS">
+		ckMessageCanalPerso(1);
+	</Binding>
+	<Binding name="CUSTOMCHANNEL2" header="CHATKEYS">
+		ckMessageCanalPerso(2);
+	</Binding>
+	<Binding name="CUSTOMCHANNEL3" header="CHATKEYS">
+		ckMessageCanalPerso(3);
+	</Binding>
+	<Binding name="EMOTE" header="CHATKEYS">
+		ckMessageEmote();
+	</Binding>
+</Bindings>

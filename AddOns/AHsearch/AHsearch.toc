@@ -1,0 +1,16 @@
+﻿## Interface: 20300
+## Author: kunda
+## Title: AHsearch
+## Notes: Saves Auction House search queries
+## Notes-deDE: Speichert Auktionshaussuchabfragen
+## OptionalDeps: Ace2, DewdropLib
+## SavedVariables: AHsearchDB
+## X-Category: Auction
+## X-AceForum: 4409
+## X-Embeds: Ace2, DewdropLib
+
+embeds.xml
+
+AHsearchLocal-enUS.lua
+AHsearchLocal-deDE.lua
+AHsearch.lua

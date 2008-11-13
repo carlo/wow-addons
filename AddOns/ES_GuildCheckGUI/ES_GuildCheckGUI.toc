@@ -1,0 +1,13 @@
+﻿## Interface: 20100
+## Title: ES_GuildCheckGUI (1.61)
+## Credits: Thanks to Drizzd for the GUI.
+## Notes: A GUI for ES_GuildCheck.
+## Notes-deDE: Eine GUI für ES_GuildCheck.
+## Author: Tunhadil
+## Dependencies: ES_GuildCheck
+## OptionalDeps: 
+## SavedVariables: 
+## SavedVariablesPerCharacter: 
+## LoadOnDemand: 1
+
+ES_GuildCheckGUI.xml

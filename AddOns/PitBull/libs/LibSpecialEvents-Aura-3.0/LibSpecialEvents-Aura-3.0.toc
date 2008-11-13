@@ -1,0 +1,11 @@
+﻿## Interface: 20300
+## LoadOnDemand: 1
+
+## Author: Tekkub Stoutwrithe
+## Title: LibSpecialEvents-Aura-3.0
+## Notes: Some handy events that should exist in the default UI
+## X-Category: Library
+
+## Dependencies: LibRock-1.0, LibRockEvent-1.0, LibRockTimer-1.0
+
+lib.xml

@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<!--the other files for the addon-->
+	<Script file="DoTimer.lua"></Script>
+	<Script file="DoTimer_Data.lua"></Script>
+	<Script file="DoTimer_Menu.lua"></Script>
+	<!--a simple frame; it just handles the onload and onevent for the entire addon-->
+	<Frame name="DoTimerFrame">
+		<Scripts>
+			<OnLoad> DoTimer:OnLoad(); </OnLoad>
+			<OnEvent> DoTimer:OnEvent(event); </OnEvent>
+			<OnUpdate> DoTimer:OnUpdate(elapsed); </OnUpdate>
+		</Scripts>
+	</Frame>
+	<!--a bunch of frames i use to delay certain actions for a few seconds, or whatever-->
+	<Frame name="DoTimerAfterFrame"/>
+	<Frame name="DoTimerPetFrame"/>
+	<Frame name="DoTimerPetDelayFrame"/>
+	<Frame name="DoTimerPetIconFrame"/>
+	<Frame name="DoTimerCombatFrame"/>
+	<Frame name="DoTimerHealDelayFrame"/>
+	<Frame name="DoTimerClassFrame"/>
+	<Frame name="DoTimerTargetFrame"/>
+</Ui>

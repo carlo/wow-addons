@@ -1,0 +1,21 @@
+﻿## Interface: 20300
+## Title: Addon Control Panel
+## Author: sylvanaar
+## Notes: Adds an addon manager in game via the 'Addons' menu. Special support for multi-part addons. Based on rMCP by Rophy.
+## Notes-zhTW: 在系統選單按「插件管理」按鈕管理插件。ACP 以 rMCP (MCP，由Rophy修改) 為基礎。
+## Version: 2.3.1.$Revision: 54562 $
+## SavedVariables: ACP_Data
+
+## X-Category: Interface Enhancements
+## X-Website: http://www.wowace.com/wiki/ACP
+## X-AceForum: 5443
+
+## OptionalDeps: BugSack, !BugGrabber
+
+ACP.lua
+localization-enUS.lua
+localization-zhTW.lua
+localization-koKR.lua
+localization-deDE.lua
+localization-zhCN.lua
+ACP.xml

@@ -1,0 +1,25 @@
+------------------------------------------------------------------------
+r54498 | xuerian | 2007-11-13 11:13:56 -0500 (Tue, 13 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/XLoot/XLoot.toc
+
+XLoot: Bumped toc
+------------------------------------------------------------------------
+r54117 | xuerian | 2007-11-07 16:49:43 -0500 (Wed, 07 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/XLoot/XLoot.lua
+
+XLoot: We REALLY don't need to debug Link All. Works at the moment.
+------------------------------------------------------------------------
+r54071 | xuerian | 2007-11-06 23:15:59 -0500 (Tue, 06 Nov 2007) | 1 line
+Changed paths:
+   M /trunk/XLoot/XLoot.lua
+
+XLoot: Upped forgotten change required by Monitor. Might've broken XLoot itself.. not sure :D
+------------------------------------------------------------------------
+r53167 | xuerian | 2007-10-25 02:04:54 -0400 (Thu, 25 Oct 2007) | 1 line
+Changed paths:
+   M /trunk/XLoot/XLoot.lua
+
+XLoot: Backported stretchy frame fix. Three pages of ruckus over one line...
+------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Cooldowns.lua"></Script>
+	<Script file="Cooldowns_Data.lua"></Script>
+	<Script file="Cooldowns_Menu.lua"></Script>
+	<Frame name="CooldownsFrame">
+		<Scripts>
+			<OnLoad> Cooldowns:OnLoad(); </OnLoad>
+			<OnEvent> Cooldowns:OnEvent(event); </OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

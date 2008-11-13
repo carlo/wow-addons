@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	
+	<Script file="AutoProfitX.lua"/>
+
+	<Button name="AutoProfitX_SellButton" parent="MerchantFrame" frameStrata="HIGH">
+		<Size>
+			<AbsDimension x="33" y="33" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MerchantFrame">
+				<Offset>
+					<AbsDimension x="-41" y="-37"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnEnter>
+				AutoProfitX:OnEnterButton()					
+			</OnEnter>
+			<OnLeave>
+				AutoProfitX:OnLeaveButton()
+			</OnLeave>
+			<OnClick>
+				AutoProfitX:OnClickButton()
+			</OnClick>
+			<OnLoad>
+				this:RegisterForDrag("RightButton")
+				this.dragging = false
+			</OnLoad>
+			<OnShow>
+				AutoProfitX:OnShowButton()
+			</OnShow>
+			<OnDragStart>
+				this.dragging = true;
+			</OnDragStart> 
+			<OnDragStop>
+				this.dragging = false;
+			</OnDragStop>
+			<OnUpdate>
+				if this.dragging then
+					AutoProfitX:DragButton()
+				end
+			</OnUpdate>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Quickslot2">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-14" y="14"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="15" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+		<Frames>
+			<PlayerModel name="$parent_TreasureModel">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="-1"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="2" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.rotRate = 0
+					</OnLoad>
+					<OnUpdate>
+						if this.rotRate > 0 then
+							this.rotation = this.rotation + (elapsed * this.rotRate)
+						end
+						this:SetRotation(this.rotation)
+					</OnUpdate>
+					<OnShow>
+						this:SetModel("World/Generic/PassiveDoodads/TreasurePiles/GoldPileLarge01.m2")
+						this.rotation = 0
+					</OnShow>
+					<OnHide>
+						this.rotation = 0
+					</OnHide>
+				</Scripts>
+			</PlayerModel>
+		</Frames>
+	</Button>
+
+	<GameTooltip name="AutoProfitX_Tooltip" inherits="GameTooltipTemplate" hidden="true">
+		<Scripts>
+			<OnLoad>
+				this:SetScript("OnTooltipAddMoney", AutoProfitX.AddTooltipMoney)
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

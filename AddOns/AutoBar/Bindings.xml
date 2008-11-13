@@ -1,0 +1,29 @@
+<Bindings>
+	<Binding name="AUTOBAR_CONFIG" header="AUTOBAR_SEP">
+		AutoBarConfig_Toggle();
+	</Binding>
+	<Binding name="AUTOBAR_BUTTON1" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON2" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON3" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON4" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON5" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON6" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON7" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON8" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON9" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON10" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON11" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON12" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON13" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON14" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON15" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON16" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON17" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON18" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON19" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON20" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON21" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON22" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON23" runOnUp="true">--[[ dummy ]]</Binding>
+	<Binding name="AUTOBAR_BUTTON24" runOnUp="true">--[[ dummy ]]</Binding>
+</Bindings>

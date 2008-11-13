@@ -1,0 +1,19 @@
+------------------------------------------------------------------------
+r48203 | totalpackage | 2007-09-05 03:43:17 -0400 (Wed, 05 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/Cellular/core.lua
+
+Cellular
+- fixed anchoring for 2.2
+------------------------------------------------------------------------
+r46794 | totalpackage | 2007-08-17 13:23:46 -0400 (Fri, 17 Aug 2007) | 4 lines
+Changed paths:
+   M /trunk/Cellular
+   M /trunk/Cellular/Cellular.toc
+   M /trunk/Cellular/core.lua
+
+Cellular
+- position saving updated for 2.2
+- added alpha option to all color settings
+- updated externals
+------------------------------------------------------------------------

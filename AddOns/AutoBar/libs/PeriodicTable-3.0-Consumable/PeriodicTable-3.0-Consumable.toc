@@ -1,0 +1,12 @@
+﻿## Interface: 20200
+## LoadOnDemand: 1
+## Title: Lib: Periodic Table 3.0 [|cffeda55fConsumable|r]
+## Notes: PeriodicTable data module.
+## Author: Nymbia
+## Version: 3.0
+## Dependencies: PeriodicTable-3.0
+## X-Category: Library
+## X-License: LGPL v2.1
+## X-PeriodicTable-3.0-Module: Consumable
+
+PeriodicTable-3.0-Consumable.lua

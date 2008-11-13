@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Mail reporting -->
+	<Button name="OpenMailReportButton" parent="OpenMailFrame" inherits="UIPanelButtonTemplate" text="|cffdd0000Spam|r">
+		<Size>
+			<AbsDimension x="85" y="22"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="-122" y="208"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				SS:ReportMail()
+			</OnClick>
+		</Scripts>
+	</Button>
+</Ui>

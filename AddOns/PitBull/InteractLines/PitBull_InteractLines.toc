@@ -1,0 +1,15 @@
+﻿## Interface: 20300
+## Title: PitBull |r[|cffeda55fInteractLines|r]
+## Notes: Eye candy that shows lines connecting units that interact with each other.
+## Author: Nymbia
+## Version: 1.0
+## DefaultState: enabled
+## LoadOnDemand: 1
+## X-eMail: nymbia@gmail.com
+## X-Category: UnitFrame
+## X-License: GPL v2
+## X-Website: http://www.wowace.com/wiki/PitBull
+## X-PitBull-DefaultState: 0
+## Dependencies: PitBull
+
+InteractLines.lua

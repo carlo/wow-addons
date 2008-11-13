@@ -1,0 +1,21 @@
+﻿## Interface: 20300
+## Author: Neronix
+## Title: DeuceCommander |cff7fff7f -Ace2-|r
+## Title-koKR: |CFFFF9966D|CFFFFFFFFeuse|CFFFF9966C|CFFFFFFFFommander |cff7fff7f -Ace2-|r
+## eMail: neronix@gmail.com
+## Version: 1.1
+## Notes: Provides a graphical interface to Ace2 addon /commands
+## Notes-frFR: Fournit une interface graphique aux /commandes des AddOns Ace2
+## Note-koKR: Ace2 계열의 애드온의 슬래쉬 명령어에 대한 GUI를 지원합니다.
+## Notes-esES: Interfaz grafica para los accesorios/comandos de Ace2
+## Notes-zhCN: 提供图形化界面来设定 Ace2 相关插件。
+## Notes-zhTW: 提供圖形化介面來設定 Ace2 相關插件。
+## OptionalDeps: Ace2, DewdropLib, TabletLib, FuBar, FuBarPlugin-2.0
+## X-Category: Miscellaneous
+## X-eMail: neronix@gmail.com
+## SavedVariables: DeuceCommanderDB
+
+embeds.xml
+
+DeuceCommander.lua
+
