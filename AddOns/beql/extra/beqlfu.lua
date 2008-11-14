@@ -11,25 +11,19 @@ beqlfu.title = "bEQL"
 beqlfu.name = "beql"
 beqlfu.revision = beql.revision
 beqlfu.defaultPosition = "LEFT"
-beqlfu.defaultMinimapPosition = 270
+beqlfu.defaultMinimapPosition = 240
 beqlfu.hideWithoutStandby = true
 beqlfu.clickableTooltip = true
 beqlfu.cannotDetachTooltip = false
 beqlfu.hasIcon = "Interface\\Icons\\INV_Letter_03"
 beqlfu.independentProfile = false
+beqlfu.overrideMenu = true
 
 function beqlfu:OnInitialize()
     local _,questEntries = GetNumQuestLogEntries()
+
 	self.db = beql:AcquireDBNamespace("fubar")
 	beqlfu:SetText(questEntries.."/25")
-	beql.options.args.fubar = {
-		type = "group",
-		name = L["FubarPlugin Config"],
-		desc = L["FubarPlugin Config"],
-		args = {},
-	}
-	AceLibrary("AceConsole-2.0"):InjectAceOptionsTable(self, beql.options.args.fubar)	
-	beqlfu.OnMenuRequest = beql.options		
 end
 
 function beqlfu:OnTooltipUpdate()
@@ -63,8 +57,8 @@ end
 
 function beqlfu:OnClick()
 	if IsShiftKeyDown() then
-		beqlwaterfall:Open("bEQL")
+		InterfaceOptionsFrame_OpenToCategory(beql3.optionsFrames["main"])
 	else
-		ToggleQuestLog()
+		ToggleFrame(QuestLogFrame);
 	end
 end

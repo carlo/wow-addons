@@ -2,11 +2,11 @@
 beql = AceLibrary("AceAddon-2.0"):new("AceEvent-2.0", "AceHook-2.1", "AceDB-2.0", "AceConsole-2.0")
 beqlQ = AceLibrary("Quixote-1.0")
 local L = AceLibrary("AceLocale-2.2"):new("beql")
-local beqldewdrop = AceLibrary("Dewdrop-2.0")
-beqlwaterfall = AceLibrary("Waterfall-1.0")
+--local beqldewdrop = AceLibrary("Dewdrop-2.0")
+--beqlwaterfall = AceLibrary("Waterfall-1.0")
 local beql, self = beql, beql
 local beqlfu = beqlfu
-local VERSION = "0.89"
+local VERSION = GetAddOnMetadata("beql", "Version")
 beql.revision = VERSION
 beql.versionstring = VERSION
 
@@ -36,43 +36,65 @@ function beql:Nyelv(l,realy)
 	end
 end
 
+
+function beql:Disabletracker(value ,realy)
+    if not beql.db.profile.disabledtracker then
+        if not realy then 
+		    StaticPopup_Show("CONFIRM_DISABLETRACKER")
+		    beql.disabletracker = value
+	    else
+			beql.db.profile.disabledtracker = beql.disabletracker
+            ReloadUI()
+	    end
+	else
+	   beql.db.profile.disabledtracker = value
+	   beql:InitTracker();
+       beql:setmovabletracker(beql.db.profile.lockedtracker);
+    end
+end
+
+function beql:Disableaddon(value ,realy)
+    if beql:IsActive() then
+        if not realy then 
+		    StaticPopup_Show("CONFIRM_DISABLEADDON")
+	    else
+			beql:ToggleActive()
+            ReloadUI()
+	    end
+	else
+        beql:ToggleActive()
+    end
+end
+
+function beql:DisableQuestLog(value ,realy)
+    if not beql.db.profile.simplequestlog then
+        if not realy then 
+		    StaticPopup_Show("CONFIRM_SIMPLEQUESTLOG")
+		    beql.simplequestlog = value
+	    else
+			beql.db.profile.simplequestlog = beql.simplequestlog
+            ReloadUI()
+	    end
+	else
+	   beql.db.profile.simplequestlog = value
+	   beql:ExtendedQuestLog()
+	   QuestLog_Update();
+    end
+end
 -- Addon functions
 
 function beql:OnInitialize()
 	beql:RegisterDB("beqlDB","beqlDBPC")
+	LibStub("AceDB-2.0"):GetAceOptionsDataTable(beql)
 	if beql.db.profile.locale and L:HasLocale(beql.db.profile.locale) then
 		L:SetLocale(beql.db.profile.locale)
 		if BEQL_PostTransFunc[beql.db.profile.locale] then
 			BEQL_PostTransFunc[beql.db.profile.locale]()
 		end
 	end
-	beql:CreateOptions()
-	beql:addlocaleoptions()
-	-- Add Sounds to Options
-	beql.options.args.qlogoption.args.QuestCompletionSound.args[1] = {
-		type = 'toggle',
-		name = " ",
-		desc = " ",
-		get = function() if not beql.db.profile.InfoSound or beql.db.profile.InfoSound == "" then return true else return false end end,
-		set = function(newval) if newval then beql.db.profile.InfoSound = "" end end,
-	}
-	local i = 1
-	for k, v in pairs (beql.sounds) do 
-		i = i +1
-		beql.options.args.qlogoption.args.QuestCompletionSound.args[i] = {
-			type = 'toggle',
-			name = k,
-			desc = k,
-			get = function() if beql.db.profile.InfoSound == v then return true else return false end end,
-			set = function(newval) if newval then beql.db.profile.InfoSound = v end PlaySoundFile(v) end,
-		}
-	end	
 	beql:SetupDefaults()
-	beql:RegisterChatCommand({"/beql"}, beql.options)
-	beqlwaterfall:Register("bEQL",
-	'title',"bEQL",
-	'aceOptions',beql.options)
-	
+	beql:BlizzardSetupOptions()
+	beql:RegisterChatCommand({"/beql"}, function() InterfaceOptionsFrame_OpenToCategory(beql3.optionsFrames["main"]) end)
 
 
 end
@@ -80,21 +102,37 @@ end
 
 function beql:OnEnable()
     if Expo then self.debugFrame = Expo:ReturnDebugFrame() end
-    beql:Compatibility()	
+	-- Check for other addons
+    beql:Compatibility()
+	-- Init Questlog
 	beql:InitQuestLog()
+	-- Load Questtracker if used
 	if not beql.db.profile.disabled.tracker and not beql.db.profile.disabledtracker then
 		beql:InitTracker()
 	end
+	-- init Tooltip
 	beql:InitTooltip()
-	beql:HistoryInit()
 	beql:setmovable(beql.db.profile.locked)
-	beql:setmovabletracker(beql.db.profile.lockedtracker)	
+	beql:setmovabletracker(beql.db.profile.lockedtracker)
+	
+	-- Achievements
+	if beql.db.profile.atracker.savelast and beql.db.char.AchievementTracker.Achievement >= 1 then
+		-- this is needed, because it will not effect before entering world
+		beql:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
+
+	beql:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+
+	if beql.db.profile.atracker.Enable then
+		beql:InitAchievementTracker()
+		beql:ATrackerEnable()
+	end
 end
 
 function beql:OnDisable()
 	QUESTS_DISPLAYED = 6
 	beql:UnhookAll()
-	ReloadUI()
+--	ReloadUI()
 end
 
 -- Internal for Compatiblity with other addons
@@ -104,14 +142,16 @@ function beql:Compatibility()
 		-- CT_Core fix
 		beql.db.profile.disabled.lockedtracker = true
 		beql.db.profile.lockedtracker = true
-		beql.options.args.qtrackeroption.args.LockedTracker.desc = beql.options.args.qtrackeroption.args.LockedTracker.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000CT_Core|r"
+		optionsmain.args.qtracker.args.LockedTracker.desc = optionsmain.args.qtracker.args.LockedTracker.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000CT_Core|r"
 		
-		beql.options.args.qtrackeroption.args.ForceUnlockTracker = {
+		optionsmain.args.qtracker.args.ForceUnlockTracker = {
 					type = 'toggle',
+					order = 1,
+					width = 'full',
 					name = L["Force Tracker Unlock"],
 					desc = L["Make the Tracker movable even with CTMod loaded. Please check your CTMod config before using it"],
-					get = function() return beql.db.profile.forcemove end,
-					set = function(newval)
+					get = function(info) return beql.db.profile.forcemove end,
+					set = function(info, newval)
 						self.db.profile.forcemove = newval
 						if not self.db.profile.disabled.tracker and not self.db.profile.disabledtracker then
 							if not self.db.profile.forcemove then
@@ -123,7 +163,6 @@ function beql:Compatibility()
 							end			
 						end
 					end,
-					order = 2,		
 		}
 		
 		-- leaving there for old users
@@ -135,8 +174,8 @@ function beql:Compatibility()
 	
 	if IsAddOnLoaded("Mobmap") then
 		beql.db.profile.disabled.markers = true
-		beql.options.args.qtrackeroption.args.MarkerOptions.desc = beql.options.args.qtrackeroption.args.MarkerOptions.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000Mobmap|r"
-		beql.options.args.qtrackeroption.args.MarkerOptions.args.ShowObjectiveMarkers.desc = beql.options.args.qtrackeroption.args.MarkerOptions.args.ShowObjectiveMarkers.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000Mobmap|r"
+		optionsmain.args.qtracker.args.MarkerOptions.desc = optionsmain.args.qtracker.args.MarkerOptions.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000Mobmap|r"
+		optionsmain.args.qtracker.args.MarkerOptions.args.ShowObjectiveMarkers.desc = optionsmain.args.qtracker.args.MarkerOptions.args.ShowObjectiveMarkers.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000Mobmap|r"
 		if beql.db.profile.ShowObjectiveMarkers then
 			beql.db.profile.ShowObjectiveMarkers = false
 		end
@@ -147,7 +186,7 @@ function beql:Compatibility()
 		beql.db.profile.disabled.tracker = false
 	
 	if (QuestLogFrame_MidTextures) ~= nil then
-		beql.options.args.qlogoption.args.SimpleQuestLog.desc = beql.options.args.qlogoption.args.SimpleQuestLog.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000FramesResized|r"
+		optionsmain.args.qlogoption.args.SimpleQuestLog.desc = optionsmain.args.qlogoption.args.SimpleQuestLog.desc.." "..L[" |cffff0000Disabled by|r"].." |cffe0c000FramesResized|r"
 		beql.db.profile.disabled.simplequestlog = true
 		beql.db.profile.simplequestlog = true
 	else
@@ -164,6 +203,13 @@ function beql:SetupDefaults()
 		QuestWatches = {},	
 		saved = {},
 		TrackerQuests = {},
+		AchievementTracker = {
+			Achievement = 0,
+			minimized = false,
+			posy = 0,
+			posx = 0,
+
+		},
 	})
 	
 	beql:RegisterDefaults("profile", {
@@ -252,6 +298,7 @@ function beql:SetupDefaults()
 			},
 		},
 		
+-- QuestLog
 		locked = true,
 		alwaysminimize = false,
 		alwaysmaximize = false,
@@ -263,6 +310,7 @@ function beql:SetupDefaults()
 		QuestLogScale = 1,
 		forcemove = false,
 		
+-- QuestTracker
 		lockedtracker = false,
 		disabledtracker = false,
 		ShowTrackerHeader = false,
@@ -283,11 +331,13 @@ function beql:SetupDefaults()
 		TrackerSymbol = 0,
 		SortTrackerItems = true,
 		AddNew = true,
+		AddUntracked = true,
 		FadeColor = false,
 		QuestTrackerAlpha = 1,
 		TrackerAutoResize = true,
 		TrackerFixedWidth = 250,
 		
+-- Tooltip
 		tooltipmob = true,
 		tooltipitem = true,
 		activetracker = true,
@@ -301,7 +351,32 @@ function beql:SetupDefaults()
 		TooltipTitleDiff = true,
 		TooltipObjFade = true,
 		TooltipItemFade = true,
-		QuestHistory= {},
+
+-- Fubar
+
+-- Achievementtracker
+		atracker = {
+			savelast	= true,
+			Enable	= true,
+			Locked	= true,
+			headline	= true,
+			alpha		= 1,
+			scale 	= 0.9,
+			RemoveFinished 	= true,
+			showbg		= false,
+			ownbgcolor	= false,
+			BgColor 	= {
+				r	= TOOLTIP_DEFAULT_BACKGROUND_COLOR.r,
+				g	= TOOLTIP_DEFAULT_BACKGROUND_COLOR.g,
+				b	= TOOLTIP_DEFAULT_BACKGROUND_COLOR.r,
+			},
+			BgCornerColor 	= {
+				r	= TOOLTIP_DEFAULT_BACKGROUND_COLOR.r,
+				g	= TOOLTIP_DEFAULT_BACKGROUND_COLOR.g,
+				b	= TOOLTIP_DEFAULT_BACKGROUND_COLOR.r,			
+			},
+		},
+
 	})		
 	
 end
@@ -386,7 +461,7 @@ function beql:ManageQuests()
 	local numEntries = GetNumQuestLogEntries()
 	local questLogTitleText, level, questTag, isHeader, isCollapsed, isComplete
 	local currentHeader = nil
-	local temp
+	local temp, _
 	
 	local oldTitle
 	

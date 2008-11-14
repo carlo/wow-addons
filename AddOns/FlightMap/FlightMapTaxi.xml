@@ -16,10 +16,10 @@
     </Anchors>
     <Scripts>
       <OnEnter>
-        FlightMapTaxiButton_OnEnter(this);
+        FlightMapTaxiButton_OnEnter(self);
       </OnEnter>
       <OnLeave>
-        FlightMapTaxiButton_OnLeave(this);
+        FlightMapTaxiButton_OnLeave(self);
       </OnLeave>
     </Scripts>
     <NormalTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Gray"/>
@@ -102,10 +102,10 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            FlightMapTaxiContinents_OnLoad();
+            FlightMapTaxiContinents_OnLoad(self);
           </OnLoad>
           <OnShow>
-            FlightMapTaxiContinents_OnLoad();
+            FlightMapTaxiContinents_OnLoad(self);
           </OnShow>
         </Scripts>
       </Frame>
@@ -178,10 +178,10 @@
     </Frames>
     <Scripts>
       <OnLoad>
-        FlightMapTaxiFrame_OnLoad();
+        FlightMapTaxiFrame_OnLoad(self);
       </OnLoad>
       <OnEvent>
-        FlightMapTaxiFrame_OnEvent(event);
+        FlightMapTaxiFrame_OnEvent(self, event, ...);
       </OnEvent>
     </Scripts>
   </Frame>

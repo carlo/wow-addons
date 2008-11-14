@@ -25,6 +25,10 @@ L:RegisterTranslations("zhTW", function() return {
 	["Decline all incoming duels. Like the wuss you are."] = "自動拒絕決鬥邀請",
     ["Canceling duel..."] = "自動拒絕決鬥邀請...",
 } end)
+L:RegisterTranslations("zhCN", function() return {
+	["Decline all incoming duels. Like the wuss you are."] = "像一个懦夫一般英勇地自动拒绝决斗邀请！",
+    ["Canceling duel..."] = "决斗邀请已拒绝……",
+} end)
 
 module.description = L["Decline all incoming duels. Like the wuss you are."]
 module.options = {}

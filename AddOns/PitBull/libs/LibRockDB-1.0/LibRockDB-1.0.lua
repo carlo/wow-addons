@@ -1,6 +1,6 @@
 ﻿--[[
 Name: LibRockDB-1.0
-Revision: $Rev: 53218 $
+Revision: $Rev: 240 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for fast, clean, and featureful saved variable access.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockDB-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 53218 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 240 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 
@@ -107,6 +107,28 @@ elseif GetLocale() == "frFR" then
 	L["Clear all settings of the current profile."] = "Efface tous les paramètres du profil actuel."
 	L["Reset all settings."] = "Réinitialiser tous les paramètres"
 	L["Reset"] = "Réinitialiser"
+elseif GetLocale() == "zhCN" then
+	L["Character: "] = "角色: "
+	L["%s of %s"] = "%s - %s"
+	L["Realm: "] = "服务器: "
+	L["Class: "] = "职业: "
+	L["Default"] = "默认值"
+	L["Alternative"] = "替换"
+	L["Profile"] = "个人配置"
+	L["Set profile for this addon."] = "设置插件的个人配置。"
+	L["Choose"] = "选择"
+	L["Choose a profile."] = "选择配置文件。"
+	L["Copy from"] = "复制"
+	L["Copy settings from another profile."] = "从其他配置文件复制设置。"
+	L["Other"] = "其他"
+	L["Choose another profile."] = "选择其他配置文件。"
+	L["<profile name>"] = "<个人配置文件名>"
+	L["Remove"] = "删除"
+	L["Removes a profile. Note that no check is made whether this profile is in use by other characters or not."] = "删除此配置。注意：有可能其他角色使用了。"
+	L["Reset profile"] = "重置个人配置"
+	L["Clear all settings of the current profile."] = "清除当前个人配置上所有设置。"
+	L["Reset all settings."] = "重置全部设置。"
+	L["Reset"] = "重置"	
 end
 
 RockDB.frame = oldLib and oldLib.frame or _G.CreateFrame("Frame")
@@ -238,6 +260,11 @@ local function inheritDefaults(t, defaults)
 					return value
 				end
 				setmetatable(t, mt)
+				for key in pairs(t) do
+					if (defaults[key] == nil or key == k) and type(t[key]) == "table" then
+						inheritDefaults(t[key], v)
+					end
+				end
 			else
 				local mt = newList()
 				function mt:__index(key)
@@ -249,18 +276,13 @@ local function inheritDefaults(t, defaults)
 				end
 				setmetatable(t, mt)
 			end
-			for key in pairs(t) do
-				if (defaults[key] == nil or key == k) and type(t[key]) == "table" then
-					inheritDefaults(t[key], v)
-				end
-			end
 		else
 			if type(v) == "table" then
 				if type(rawget(t, k)) ~= "table" then
 					t[k] = newList()
 				end
 				inheritDefaults(t[k], v)
-				if defaults["**"] then
+				if type(defaults["**"] == "table") then
 					inheritDefaults(t[k], defaults["**"])
 				end
 			elseif rawget(t, k) == nil then
@@ -1008,8 +1030,8 @@ function RockDB:SetProfile(name)
 		db.currentProfile = del(db_currentProfile)
 	end
 	rawset(self_db, 'profile', nil)
-	if self_db.namespaces then
-		for k,v in pairs(self_db.namespaces) do
+	if data_self.namespaces then
+		for k,v in pairs(data_self.namespaces) do
 			rawset(v, 'profile', nil)
 		end
 	end
@@ -1352,18 +1374,19 @@ function RockDB:CopyProfile(name)
 	inheritDefaults(oldProfileData, data_self.defaults and data_self.defaults.profile)
 	if data_self.namespaces then
 		for namespace,u in pairs(data_self.namespaces) do
-			for k,v in pairs(u) do
-				u[k] = nil
+			local u_profile = u.profile
+			for k,v in pairs(u_profile) do
+				u_profile[k] = nil
 			end
 			if db.namespaces and db.namespaces[namespace] then
 				local _,copyFromData = caseInsensitiveLookup(db.namespaces[namespace].profiles, name)
 				if copyFromData then
 					for k,v in pairs(copyFromData) do
-						u[copy(k)] = copy(v)
+						u_profile[copy(k)] = copy(v)
 					end
 				end
-				inheritDefaults(u, data_self.namespaceDefaults and data_self.namespaceDefaults[namespace] and data_self.namespaceDefaults[namespace].profile)
-			end
+				inheritDefaults(u_profile, data_self.namespaceDefaults and data_self.namespaceDefaults[namespace] and data_self.namespaceDefaults[namespace].profile)
+			end	
 		end
 	end
 

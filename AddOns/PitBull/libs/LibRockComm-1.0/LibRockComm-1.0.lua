@@ -1,6 +1,6 @@
 ﻿--[[
 Name: LibRockComm-1.0
-Revision: $Rev: 53824 $
+Revision: $Rev: 260 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for inter-player addon communications.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockComm-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 53824 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 260 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 
@@ -612,9 +612,9 @@ local function sendMessage(self, priority, distribution, person, ...)
 		recentGuildMessage = GetTime() + 10
 	end
 
-	local max = math_floor(messageLen/243 + 1)
+	local segment = 243 
+	local max = math_floor(messageLen/segment + 1 ) 
 	if max > 1 then
-		local segment = math_floor(messageLen / max + 0.5)
 		local last = 0
 		local message = table_concat(sb)
 		sb = del(sb)
@@ -640,7 +640,7 @@ local function sendMessage(self, priority, distribution, person, ...)
 				point = "c"
 			end
 
-			bit = string_char(id) .. point .. "-" .. bit
+			bit = string_char(byte_id) .. point .. "-" .. bit
 			if whisperToSelf then
 				frame:GetScript("OnEvent")(frame, "CHAT_MSG_ADDON", prefix, bit, distribution, person)
 			else
@@ -1350,12 +1350,12 @@ frame:SetScript("OnEvent", function(this, event, ...)
 	end
 end)
 
-if not hooks.ChatFrame_MessageEventHandler then
-	local orig = _G.ChatFrame_MessageEventHandler
-	function _G.ChatFrame_MessageEventHandler(...)
+if not hooks.ChatFrame_OnEvent then
+	local orig = _G.ChatFrame_OnEvent
+	function _G.ChatFrame_OnEvent(...)
 		local hooks = RockComm.hooks
-		if hooks and hooks.ChatFrame_MessageEventHandler then
-			return hooks.ChatFrame_MessageEventHandler(orig, ...)
+		if hooks and hooks.ChatFrame_OnEvent then
+			return hooks.ChatFrame_OnEvent(orig, ...)
 		else
 			return orig(...)
 		end
@@ -1364,7 +1364,7 @@ end
 
 local recentNotSeen = {}
 local notSeenString, ambiguousString, ERR_GUILD_PERMISSIONS
-function hooks.ChatFrame_MessageEventHandler(orig, event, ...)
+function hooks.ChatFrame_OnEvent(orig, event, ...)
 	if event == "CHAT_MSG_SYSTEM" then
 		local arg1 = _G.arg1
 		if not notSeenString then
@@ -1486,15 +1486,15 @@ function RockComm:QueryTalents(distribution, player)
 		player = player:sub(1, -2)
 	end
 	if distribution == "WHISPER" then
-		self.talentPinger:SendCommMessage("WHISPER", player, "PING", addon)
+		self.talentPinger:SendCommMessage("WHISPER", player, "PING")
 	else
-		self.talentPinger:SendCommMessage(distribution, "PING", addon)
+		self.talentPinger:SendCommMessage(distribution, "PING")
 	end
 end
 precondition(RockComm, 'QueryTalents', function(self, distribution, player)
 	argCheck(distribution, 2, "string")
 	if distribution ~= "WHISPER" and distribution ~= "GROUP" and distribution ~= "GUILD" then
-		error(("Bad argument #2 to `QueryAddonVersion'. Expected %q, %q, or %q, got %q."):format("WHISPER", "GROUP", "GUILD", distribution), 3)
+		error(("Bad argument #2 to `QueryTalents'. Expected %q, %q, or %q, got %q."):format("WHISPER", "GROUP", "GUILD", distribution), 3)
 	end
 	if distribution == "WHISPER" then
 		argCheck(player, 3, "string")
@@ -1619,7 +1619,7 @@ do
 				return
 			end
 			local version = ""
-			if Rock:HasLibrary(addon) then
+			if Rock:HasLibrary(addon) and  Rock(addon).GetLibraryVersion then
 				local revision
 				version, revision = Rock(addon):GetLibraryVersion()
 				version = version .. "-" .. revision
@@ -1633,11 +1633,14 @@ do
 					version = version .. "." .. revision
 				end
 				if not version and revision then version = revision end
-			elseif AceLibrary and AceLibrary:HasInstance(addon) then
+			elseif AceLibrary and AceLibrary:HasInstance(addon) and AceLibrary(addon).GetLibraryVersion then
 				-- Ace2
 				local revision
 				version, revision = AceLibrary(addon):GetLibraryVersion()
 				version = version .. "-" .. revision
+			elseif LibStub:GetLibrary(addon, true) then
+				local _
+				_, version = LibStub:GetLibrary(addon)
 			else
 				local revision
 				local _G_addon = _G[addon]

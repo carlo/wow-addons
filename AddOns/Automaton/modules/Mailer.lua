@@ -22,6 +22,11 @@ L:RegisterTranslations("zhTW", function() return {
 ["Options for easy mailing."] = "使收發郵件更加快捷",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Options for easy mailing."] = "使邮件收发更加简单",
+} end)
+
+
 module.description = L["Options for easy mailing."]
 module.options = {
 }

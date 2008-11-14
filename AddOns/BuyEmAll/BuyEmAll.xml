@@ -5,7 +5,7 @@
 		<Size x="64" y="24"/>
 		<Scripts>
 			<OnClick>
-				BuyEmAll:OnClick()
+				BuyEmAll:OnClick(self)
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -14,7 +14,7 @@
 	<Button name="BuyEmAllTooltipButtonTemplate" inherits="BuyEmAllButtonTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
-				BuyEmAll:OnEnter()
+				BuyEmAll:OnEnter(self)
 			</OnEnter>
 			<OnLeave>
 				BuyEmAll:OnLeave()
@@ -120,7 +120,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						BuyEmAll:MoneyFrame_OnLoad()
+						BuyEmAll:MoneyFrame_OnLoad(self)
 					</OnLoad>
 				</Scripts>
 			</Frame>
@@ -164,10 +164,10 @@
 				BuyEmAll:OnHide()
 			</OnHide>
 			<OnChar>
-				BuyEmAll:OnChar()
+				BuyEmAll:OnChar(text)
 			</OnChar>
 			<OnKeyDown>
-				BuyEmAll:OnKeyDown()
+				BuyEmAll:OnKeyDown(key)
 			</OnKeyDown>
 		</Scripts>
 	</Frame>

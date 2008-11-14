@@ -1,6 +1,6 @@
-﻿## Interface: 20300
+﻿## Interface: 30000
 
-## Title: LibRockModuleCore-1.0
+## Title: Lib: RockModuleCore-1.0
 ## Notes: Module library
 ## Author: ckknight
 ## X-Website: http://www.wowace.com

@@ -6,16 +6,28 @@
 BagnonSpot = {}
 
 local function SearchBox_Create()
-	local frame = CreateFrame("EditBox", nil, UIParent, "GooeyPopup")
-	frame:SetAutoFocus(false)
-	frame:SetTextInsets(8, 8, 0, 0)
-	frame:SetFontObject("ChatFontNormal")
+	local f = CreateFrame("EditBox", nil, UIParent)
+	f:SetBackdrop{
+		edgeFile = 'Interface\\Tooltips\\UI-Tooltip-Border',
+		bgFile = 'Interface\\ChatFrame\\ChatFrameBackground',
+		insets = {left = 2, right = 2, top = 2, bottom = 2},
+		tile = true,
+		tileSize = 16,
+		edgeSize = 16,
+	}
+	f:SetBackdropColor(0, 0, 0, 0.8)
+	f:SetBackdropBorderColor(1, 1, 1, 0.8)
+	
+	f:SetToplevel(true)
+	f:SetFrameStrata('DIALOG')
+	f:SetTextInsets(8, 8, 0, 0)
+	f:SetFontObject("ChatFontNormal")
 
-	frame:SetScript("OnShow", function(self) self:SetFocus(); self:HighlightText() end)
-	frame:SetScript("OnTextChanged", function(self) BagnonSpot:SetTextSearch(self:GetText()) end)
-	frame:SetScript("OnEscapePressed", function(self) BagnonSpot:Hide() end)
+	f:SetScript("OnShow", function(self) self:SetFocus(); self:HighlightText() end)
+	f:SetScript("OnTextChanged", function(self) BagnonSpot:SetTextSearch(self:GetText()) end)
+	f:SetScript("OnEscapePressed", function(self) BagnonSpot:Hide() end)
 
-	return frame
+	return f
 end
 
 --shows the search box

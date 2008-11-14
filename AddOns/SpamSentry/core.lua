@@ -10,7 +10,7 @@
 -----------------------------------
 
 -- Create Ace2 instance
-SS = AceLibrary("AceAddon-2.0"):new("AceEvent-2.0", "AceDB-2.0", "AceConsole-2.0", "AceHook-2.1", "FuBarPlugin-2.0", "AceModuleCore-2.0", "WhoLib-1.0")
+SS = AceLibrary("AceAddon-2.0"):new("AceEvent-2.0", "AceDB-2.0", "AceConsole-2.0", "AceHook-2.1", "FuBarPlugin-2.0", "WhoLib-1.0")
 local L = AceLibrary("AceLocale-2.2"):new("SpamSentry")
 
 -- Default settings and variables
@@ -23,13 +23,16 @@ local defaultsProfile = {
                  [L["general"]] = true,
                  [L["trade"]] = true,
                  [L["guildrecruitment"]] = true,
+                 [L["emote"]] = true,
+                 [L["lookingforgroup"]] = true,
+                 [L["localdefense"]] = true,
                 },
   totalBlocked = 0,                  -- Blocked messages
   enableDelay = true,                -- Enables delaying of messages
   notifyMessage = true,              -- Shows a warning when a message has been blocked
   notifyHourly = true,               -- Shows an hourly reminder when messages have been blocked
   notifyDebug = false,               -- Shows debug messages
-  showSpamCounter = true,            -- Show counter in fubar/titan
+  showSpamCounter = false,           -- Show counter in fubar/titan
   showBotCounter = false,            -- Show counter in fubar/titan
   showRPCounter = false,             -- Show counter in fubar/titan
   minimumLevel = 1,                  -- Set the minimum level of players to be able to whisper you
@@ -50,14 +53,14 @@ local defaultsChar = {
 }
 
 -- local variables
-SS.currentBuild = 20070613           -- Latest build
+SS.currentBuild = 20081027           -- Latest build
 SS.variablesLoaded = false           -- True once the mod has properly started up.
 
 SS.spamReportList = {}               -- List with caught spammers
 SS.message = {}                      -- Spam and Ham scores from messages
 SS.character = {}                    -- List with characters
 SS.characterBlackList = {}           -- Blacklisted characters for this session
-SS.spamFeedbackList = {}                 -- List with manually reported spammers cached for later feedback
+SS.spamFeedbackList = {}             -- List with manually reported spammers cached for later feedback
 
 SS.lastPlayer = ""                   -- Last player that a who-query was send for
 SS.lastMessage = ""                  -- Last message that was send to you (skip duplicate entries sent by the interface)
@@ -69,8 +72,9 @@ SS.guildList={}                      -- Cache of the guildlist
 SS.partyList={}                      -- Cache of the current party/raid
 SS.friendsList = {}                  -- Cache of the friendslist
 SS.knownList={}                      -- Cache of people you have talked to
+SS.statistics={seen=0,delayed=0,who=0,spam=0}  -- For debugging purposes only
 
-SS.strip = "[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$\194\163\226\130\172=,.]+"    -- Pattern for stripping spacers from messages.
+SS.strip = "[^abcdefghijklmnopqrstuvwxyz0123456789$\194\163\226\130\172=,.]+"    -- Pattern for stripping spacers from messages.
 SS.clean = "[^a-zA-Z0-9$\194\163\226\130\172=,.%s]+"  -- Pattern for cleaning messages.
 
 SS.blackList = {
@@ -80,24 +84,27 @@ SS.blackList = {
                 "gbp",
                 "$%d+.+%d+g",
                 "%d+g.+$%d+",
+                "%d+eur.+%d+g",
+                "%d+g.+%d+eur",
                 "\226\130\172%d+.+%d+g",
                 "%d+g.+\226\130\172%d+",
                 "\194\163%d+.+%d+g",
                 "%d+g.+\194\163%d+",
                 "powerlevel",
                 "www",
-                "[,.]com", "[,.]corn", "[,.]conn", "[,.]c0m", "[,.]c0rn", "[,.]c0nn",
+                "[,.]com", "[,.]corn", "[,.]conn", "[,.]c0m", "[,.]c0rn", "[,.]c0nn", "dotcom","cRT2m","[,.]cqm",
                 "peons", "p3ons", "pe0ns", "p30ns", "peon5", "p3on5", "pe0n5", "p30n5",
                 "1to70",
                 "pl170",
                 "gameworker",
+                "wowgold",            
                }
 SS.greyList = {
                 "cheap",
                 "visit",
-                "buy",
+                "buy", "kauf",
                 "delivery",
-                "discount",
+                "discount", "rabatt",
                 "peons",
                 "170",
                 "375",
@@ -106,12 +113,23 @@ SS.greyList = {
                 "website",
                 "bucks",
                 "safe",
+                "statchanger",
+                "hack",
+                "20,000",
+                "100,000",
+                "eur",
+                "code",
+                "bonus",
+                "stock",
+                "company",
               }
 SS.websites = {
                 "100g.ca",
                 "1225game",
                 "29games",
+                "2joygame",
                 "365ige",
+                "5uneed",
                 "agamegold",
                 "agamegoid",
                 "auctionwowhouse",
@@ -119,31 +137,43 @@ SS.websites = {
                 "buyw0wgame",
                 "buyvvowgame",
                 "championshall",
+                "cheapsgold",
+                "cocwow",
+                "dewowgold",
+                "dgamesky",
                 "eusupplier",
                 "eugspa",
+                "fastgg",
                 "gagora",
                 "gamenoble",
+                "getlevels",
                 "gmauthorization",
                 "gmworker",
                 "gmw0rker",
                 "gmworking",
                 "gmw0rking",
+                "godmod",
+                "goldbuy",
                 "gold4guild",
                 "goldwithyou",
                 "goldwow",
                 "helpugame",
                 "heygt",
+                "heypk",
                 "hugold",
                 "igdollar",
                 "igamebuy",
                 "igm365",
                 "igs36five",
                 "igs365",
+                "gm963",
                 "gs365",
                 "itembay",
                 "itemrate",
                 "iuc365",
+                "k4gold",
                 "kgs",
+                "m8gold",
                 "mmoinn",
                 "mmospa",
                 "ogchannel",
@@ -161,19 +191,33 @@ SS.websites = {
                 "hir3",
                 "pkpkg",
                 "player123",
+                "scggame",
+                "scswow",
                 "ssegames",
+                "svswow",
                 "speedpanda",
+                "susanexpress",
+                "www.-tbgold",
+                "tbgold.-com",
                 "terrarpg",
+                "tulongold",
                 "tusongame",
                 "ucgogo",
                 "ucatm",
+                "ukwowgold",
                 "whoyo",
+                "worldofgolds",
                 "wow4s",
+                "wow7gold",
                 "wowcoming",
-                "woweuropecn",
+                "wowcnn",
+                "wowdupe",
+                "woweurope.cn",
                 "woweuropegold",
                 "wowforever",
                 "wowfreebuy",
+                "wowgoldget",
+                "wowgoldbuy",
                 "wowgoldsky",
                 "wowgoldex",
                 "wowgshop",
@@ -181,9 +225,13 @@ SS.websites = {
                 "wowmine",
                 "wowpanning",
                 "wowpfs",
+                "wowseller",
                 "wowspa",
                 "wowstar2008",
                 "wowsupplier",
+                "wowtoolbox",
+                "x5gold",
+                "yesdaq",
                 "zlywy",
               } 
 
@@ -201,13 +249,13 @@ function SS:OnInitialize()
   self:RegisterDefaults("dbc", "char", defaultsChar)
 
   self:SetupOptions()
-  self:DetectAddonFiles()
   
   -- Add entries to the unit-pop-up menu's.
-  UnitPopupButtons["SPAMSENTRY_RP"] = { text = L["|cffff8833Report Name|r"], dist = 0 }
-  NEWBIE_TOOLTIP_UNIT_SPAMSENTRY = L["Add this player to the SpamSentry naming violation reportlist"]
-  table.insert(UnitPopupMenus["FRIEND"], 8, "SPAMSENTRY_RP")
-  end
+  UnitPopupButtons["SPAMSENTRY_RP"] = { text = L["|cffff8833Report Name|r"], dist = 0, func= SS.UnitPopup_OnClick}
+  tinsert(UnitPopupMenus["FRIEND"], #UnitPopupMenus["FRIEND"] - 1, "SPAMSENTRY_RP")
+  tinsert(UnitPopupMenus["PLAYER"],   #UnitPopupMenus["PLAYER"] - 1,  "SPAMSENTRY_RP")
+  NEWBIE_TOOLTIP_UNIT_SPAMSENTRY_RP = L["Add this player to the SpamSentry naming violation reportlist"]
+end
 
 function SS:OnEnable()
   -- Cache guild and partylist
@@ -218,7 +266,7 @@ function SS:OnEnable()
   self:UpdatePartyList()
   self:UpdateFriendsList()
   
-  -- 
+  -- Register party-invite requests
   self:RegisterEvent("PARTY_INVITE_REQUEST", "CheckPartyInvite")
 
   -- Register localised blacklist
@@ -271,7 +319,7 @@ end
 -- Hooks and events
 
 -- Chat message event
-function SS:ChatFrame_MessageEventHandler(event, handler)
+function SS:ChatFrame_MessageEventHandler(cf, event, handler)
   local msg = arg1
   local plr = arg2
   local chn = strlower(tostring(arg4))
@@ -291,28 +339,41 @@ function SS:ChatFrame_MessageEventHandler(event, handler)
     elseif event== "CHAT_MSG_YELL" and channels[L["yell"]] then
       chn = L["yell"]
       spam = self:SpamCheck1(msg, plr, chn, event)
-    elseif event=="CHAT_MSG_CHANNEL" and channels[L["trade"]] and strfind(chn, L["trade"]) then
-      chn = L["trade"]
+    elseif event=="CHAT_MSG_EMOTE" and channels[L["emote"]] then
+      chn = L["emote"]
       spam = self:SpamCheck1(msg, plr, chn, event)
-    elseif event=="CHAT_MSG_CHANNEL" and channels[L["general"]] and strfind(chn, L["general"]) then
-      chn = L["general"]
-      spam = self:SpamCheck1(msg, plr, chn, event)
-    elseif event=="CHAT_MSG_CHANNEL" and channels[L["guildrecruitment"]] and strfind(chn, L["guildrecruitment"]) then
-      chn = L["guildrecruitment"]
-      spam = self:SpamCheck1(msg, plr, chn, event)
+    elseif event=="CHAT_MSG_CHANNEL" then
+      if channels[L["trade"]] and strfind(chn, L["trade"]) then
+        chn = L["trade"]
+        spam = self:SpamCheck1(msg, plr, chn, event)
+      elseif channels[L["general"]] and strfind(chn, L["general"]) then
+        chn = L["general"]
+        spam = self:SpamCheck1(msg, plr, chn, event)
+      elseif channels[L["guildrecruitment"]] and strfind(chn, L["guildrecruitment"]) then
+        chn = L["guildrecruitment"]
+        spam = self:SpamCheck1(msg, plr, chn, event)
+      elseif channels[L["lookingforgroup"]] and strfind(chn, L["lookingforgroup"]) then
+        chn = L["lookingforgroup"]
+        spam = self:SpamCheck1(msg, plr, chn, event)
+      elseif channels[L["localdefense"]] and strfind(chn, L["localdefense"]) then
+        chn = L["localdefense"]
+        spam = self:SpamCheck1(msg, plr, chn, event)
+      end
     elseif (strfind(event, "CHAT_MSG_SYSTEM") and self:SupressIgnoreMsg(msg)) then
       return
     end
   end
 
+  self.statistics.seen = SS.statistics.seen + 1
   if spam == -2 then
-    self:CallChatEvent(event, handler)
+    self:CallChatEvent(cf, event, handler)
   elseif spam == -1 then
     if self.db.profile.enableDelay then
-      local mIndex = self:AddChatQueue(plr, msg, event, chn, id, handler)
+      local mIndex = self:AddChatQueue(plr, msg, event, chn, id, handler, cf)
       self.chatQueue[mIndex].queued = true
+      self.statistics.delayed = SS.statistics.delayed + 1
     else
-      self:CallChatEvent(event, handler)
+      self:CallChatEvent(cf, event, handler)
     end
   elseif spam == 1 then
     self:SpamFound(plr, self:GetChatHistory(plr), chn, id)
@@ -320,40 +381,38 @@ function SS:ChatFrame_MessageEventHandler(event, handler)
   elseif spam ==2 then
     self.knownList[plr] = false
   elseif spam == 0 then
-    self:SendWho(plr, msg, event, chn, id)
+    self:SendWho(plr, msg, event, chn, id, handler, cf)
   end
 end
 
 -- Set query for player info
-function SS:SendWho(plr, msg, event, chn, id)
+function SS:SendWho(plr, msg, event, chn, id, handler, cf)
   local result = self:UserInfo(plr, 
                                {
                                  queue = self.WHOLIB_QUEUE_QUIET, 
                                  timeout = -1,
                                  callback = "WhoCallback"
                                })
-  local index = self:AddChatQueue(plr, msg, event, chn, id)
+  local index = self:AddChatQueue(plr, msg, event, chn, id, handler, cf)
   if result then
     SS.character[result.Name] = {}
-    SS.character[result.Name].level = result.Level
-    SS.character[result.Name].guild = result.Guild
+    SS.character[result.Name].level = result.Level or 1
+    SS.character[result.Name].guild = result.Guild or ""
     self:ChatQueueProcessMessage(index)
   else
+    self.statistics.who = self.statistics.who + 1
     self.chatQueue[index].waiting = true
   end
 end
 
 -- Callback function for who-query results
 function SS:WhoCallback(result)
-  if not result then 
-    SS:Msg(3, "Empty WhoCallback: "..tostring(result)) 
-    return 
-  end
+  if not result then return end
   
   SS.character[result.Name] = {}
-  SS.character[result.Name].level = result.Level
-  SS.character[result.Name].guild = result.Guild
-  for i=1, getn(SS.chatQueue), 1 do
+  SS.character[result.Name].level = result.Level or 1
+  SS.character[result.Name].guild = result.Guild or ""
+  for i=1, #SS.chatQueue, 1 do
     if SS.chatQueue[i].name == result.Name then
       SS:ChatQueueProcessMessage(i)
     end
@@ -363,13 +422,10 @@ end
 -- This function hooks into clickable chatlinks. It does some action if special SpamSentry links are found.
 function SS:SetItemRef(link, text, button)
   if strsub(link, 1, 20) == "SpamSentrySpamTicket" then
-    SS:Load("report")
     SS_Report:ShowGUI("spam")
   elseif strsub(link, 1, 19) == "SpamSentryBotTicket"then
-    SS:Load("report")
     SS_Report:ShowGUI("bot")
   elseif strsub(link, 1, 19) == "SpamSentryRPTicket"then
-    SS:Load("report")
     SS_Report:ShowGUI("rp")
   elseif strsub(link, 1, 13) == "SpamSentryMsg" then
     local s,e,entry = string.find(link, "(%d+)")
@@ -385,50 +441,48 @@ end
 
 -- Hook to unit-pop-up menu's
 function SS:UnitPopup_OnClick()
-  local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU)
+  local f = getglobal(UIDROPDOWNMENU_INIT_MENU)
+  local unit, name, id = f.unit, f.name, f.lineID
   local val = this.value
-  local unit = dropdownFrame.unit
-  local name = dropdownFrame.name
-  local id = dropdownFrame.lineID
-
-  -- Report spammer
+    -- Report spammer
   if val == "REPORT_SPAM" then
     if (unit and not name) then name = UnitName(unit) end
-    
-    if name and self.chatHistory[name] then
-      self.spamFeedbackList[name] = self:GetChatHistory(name)
-      self:Msg(0, format(L["%s has been added to the feedback list"], name))
+    if name then
+      local msg = SS:GetChatHistory(name)
+      if msg and (msg ~= "") then
+        SS.spamFeedbackList[name] = msg
+        SS:Msg(0, format(L["%s has been added to the SpamSentry feedback list"], name))
+      end
     end
   elseif val == "SPAMSENTRY_RP" then
     if (unit and not name) then name = UnitName(unit) end
-    if name then
-      SS:Load("rp") 
+    if name then 
       SS_RP:Add(name) 
     end
   end
 end
 
 -- Outgoing chatevents
-function SS:CallChatEvent(event, handler)
+function SS:CallChatEvent(cf, event, handler)
   if handler and type(handler)=="function" then
-    handler(event)
+    handler(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11)
   else
-    self.hooks.ChatFrame_MessageEventHandler(event)
+    self.hooks.ChatFrame_MessageEventHandler(cf, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11)
   end
 end
 
 -- Called when a chat-event needs to be thrown while being in a who-event.
 function SS:CallOldChatEvent(index)
-  local sthis, sevent, sarg1, sarg2, sarg3, sarg4, sarg5, sarg6, sarg7, sarg8, sarg9, sarg10, sarg11, sarg12 = this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12
-  
-  local m = self.chatQueue[index]
-  if not m.done then
-    this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, handler = m.this, m.event, m.arg1, m.arg2, m.arg3, m.arg4, m.arg5, m.arg6, m.arg7, m.arg8, m.arg9, m.arg10, m.arg11, m.arg12, m.handler
-
-    self:CallChatEvent(event, handler)
+  if self.chatQueue[index].done == false then
     self.chatQueue[index].done = true
+    local sthis, sevent, sarg1, sarg2, sarg3, sarg4, sarg5, sarg6, sarg7, sarg8, sarg9, sarg10, sarg11, sarg12 = this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12
+    local m = self.chatQueue[index]
+    local cf
+    this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, handler, cf = m.this, m.event, m.arg1, m.arg2, m.arg3, m.arg4, m.arg5, m.arg6, m.arg7, m.arg8, m.arg9, m.arg10, m.arg11, m.arg12, m.handler, m.chatframe
+    self:CallChatEvent(cf, event, handler)
+    this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = sthis, sevent, sarg1, sarg2, sarg3, sarg4, sarg5, sarg6, sarg7, sarg8, sarg9, sarg10, sarg11, sarg12
   end 
-  this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = sthis, sevent, sarg1, sarg2, sarg3, sarg4, sarg5, sarg6, sarg7, sarg8, sarg9, sarg10, sarg11, sarg12
+  
 end
 
 -----------------------------------
@@ -443,7 +497,7 @@ function SS:SpamCheck1(msg, plr, chn, evt)
   self:ChatQueueCooldown()
   
   -- You self are whitelisted!
-  if strsub(event, 10) == "WHISPER_INFORM" then return -2 end
+  if strsub(evt, 10) == "WHISPER_INFORM" then return -2 end
   if plr==UnitName("player") and not self.db.profile.notifyDebug then return -2 end   -- Extra check allows debugging
 
   -- Player on Character blacklist has spammed before and is ignored now
@@ -468,7 +522,7 @@ function SS:SpamCheck1(msg, plr, chn, evt)
   -- Blacklist items score -0.1 point for the first one, -0.2 for the next, -0.4 for the one after, etc.
   local sc,gr = self:ScoreSpam(plr, msg)
   
-  if sc == 0 and not (self.db.profile.minimumLevel > 1 and chn == L["whisper"]) then 
+  if sc >= 0 and not ((self.db.profile.minimumLevel > 1) and (chn == L["whisper"])) then 
     -- If no negative score has been found, there's no reason to do more checks or do a who-query.
     -- This should prevent Bank / Auction and other windows from closing most of the time.
     if gr == 0 then
@@ -518,23 +572,23 @@ function SS:ScoreSpam(plr, msg)
   local score,grey = 0,0
   
   -- Remove all spacers and non-latin characters
-  local tmsg = string.lower(string.gsub(msg, self.strip, ""))
+  local tmsg = string.gsub(strlower(msg), self.strip, "")
   
   -- Parse websites
-  for i=1, getn(self.websites) do
+  for i=1, #self.websites do
     if strfind(tmsg, strlower(self.websites[i])) then
       score = score==0 and -0.2 or score * 2
     end
   end
   -- Parse blacklist
-  for i=0, getn(self.blackList), 1 do
+  for i=0, #self.blackList, 1 do
     if self.blackList[i] and strfind(tmsg, strlower(self.blackList[i])) then 
       score = score==0 and -0.1 or score * 2
     end
   end
   -- Parse localised blacklist
   if self.localisedBlackList then
-    for i=0, getn(self.localisedBlackList), 1 do
+    for i=0, #self.localisedBlackList, 1 do
       if self.localisedBlackList[i] and strfind(msg, strlower(self.localisedBlackList[i])) then 
         score = score==0 and -0.1 or score * 2
       end
@@ -542,7 +596,7 @@ function SS:ScoreSpam(plr, msg)
   end
   -- Parse greylist. If a greylisted item is found, the message will be queued for delay. 
   -- If blacklisted items were found above, the grey score will be added to the spam score
-  for i=0, getn(self.greyList), 1 do
+  for i=0, #self.greyList, 1 do
     if self.greyList[i] and strfind(tmsg, strlower(self.greyList[i])) then 
       grey = grey==0 and -0.1 or grey * 2
     end
@@ -574,8 +628,8 @@ function SS:ScoreHam(plr, msg)
     if level and level>10 then
       score = score + 0.1  -- Refund if the player is above level 10
     end
-    if level and level>30 then
-      score = score + 0.3  -- Refund more if the player is above level 30
+    if level and level>20 then
+      score = score + 0.3  -- Refund more if the player is above level 20
     end
     if guild and guild~= "" then
       score = score + 0.3  -- Refund if the player is in a guild
@@ -592,11 +646,11 @@ end
 -----------------------------------
 -----------------------------------
 -- Report functions
--- List and edit functions are user-initiated, and will be load-on-demand
 -- Called when a spammer is found
 
 function SS:SpamFound(plr, msg, typ, id)
   if SS:InList(SS.characterBlackList, plr) then return end
+  self.statistics.spam = self.statistics.spam + 1
   local entry = self:AddSpam(plr, msg, typ, id)
   if self.db.profile.notifyMessage then
     local link = "|HSpamSentrySpamTicket|h|cff8888ff["..L["here"].."]|r|h"
@@ -606,6 +660,10 @@ function SS:SpamFound(plr, msg, typ, id)
   end
 end
 
+-- Adds the player to the reportlist.
+-- An event is fired if and only if the respective player has not been marked as spammer before:
+-- Event: SPAMSENTRY_REPORTLIST_UPDATED
+-- Arguments: Player, Message, Channel, Message_ID
 function SS:AddSpam(plr, msg, typ, id)
   self:AddIgnore(plr, typ)
   self.db.profile.totalBlocked = self.db.profile.totalBlocked + 1
@@ -626,8 +684,8 @@ function SS:AddSpam(plr, msg, typ, id)
                                    id = id,
                                    summary = sum,
                                  })
-    self:TriggerEvent("SPAMSENTRY_REPORTLIST_UPDATED")
-    return getn(self.spamReportList)
+    self:TriggerEvent("SPAMSENTRY_REPORTLIST_UPDATED", plr, msg, typ, id)
+    return #self.spamReportList
   end
   return entry
 end
@@ -636,15 +694,15 @@ end
 function SS:CheckReport()
   local m = L["One or more characters are on the reportlist. Click %s to report them to a GM."]
   -- Create a clickable link. This is handled by the SetItemRef hook.
-  if getn(SS.spamReportList)>0 then
+  if #SS.spamReportList>0 then
     local link = "|HSpamSentrySpamTicket|h|cff8888ff["..L["here"].."]|r|h"
     SS:Msg(1, format(m, link))
     PlaySound("QUESTLOGOPEN")
-  elseif getn(SS.dbr.realm.botReportList)>0 then
+  elseif #SS.dbr.realm.botReportList>0 then
     local link = "|HSpamSentryBotTicket|h|cff8888ff["..L["here"].."]|r|h"
     SS:Msg(1, format(m, link))
     PlaySound("QUESTLOGOPEN")
-  elseif getn(SS.dbr.realm.rpReportList)>0 then
+  elseif #SS.dbr.realm.rpReportList>0 then
     local link = "|HSpamSentryRPTicket|h|cff8888ff["..L["here"].."]|r|h"
     SS:Msg(1, format(m, link))
     PlaySound("QUESTLOGOPEN")
@@ -668,7 +726,7 @@ end
 -----------------------------------
 -- Queue functions
 
-function SS:AddChatQueue(plr, msg, e, chn, id, hnd)
+function SS:AddChatQueue(plr, msg, e, chn, id, hnd, cf)
   tinsert(self.chatQueue,{name = plr,
                           message = msg,
                           time = GetTime(),
@@ -692,17 +750,18 @@ function SS:AddChatQueue(plr, msg, e, chn, id, hnd)
                           arg11= arg11,
                           arg12= arg12,
                           handler = hnd,
+                          chatframe = cf,
                         })
-  return getn(self.chatQueue)
+  return #self.chatQueue
 end
 
 function SS:CheckChatQueue()
-  if getn(SS.chatQueue) > 0 then
+  if #SS.chatQueue > 0 then
     local t = GetTime() - 5
     local i = 1
     local stop = false
     repeat
-      if SS.chatQueue[i].queued and SS.chatQueue[i].time < t and not SS.chatQueue[i].done then
+      if SS.chatQueue[i].queued and (SS.chatQueue[i].time < t) and not SS.chatQueue[i].done then
         local plr = SS.chatQueue[i].name
         if not SS:InList(SS.characterBlackList, plr) then  -- Check blacklist.
           SS:CallOldChatEvent(i)
@@ -711,13 +770,13 @@ function SS:CheckChatQueue()
       else
         i = i + 1  
       end
-      stop = i >= getn(SS.chatQueue)
+      stop = i >= #SS.chatQueue
     until stop
   end
 end
 
 function SS:FlushChatQueue()
-  local num = getn(self.chatQueue)
+  local num = #self.chatQueue
   for i=1, num, 1 do
     local plr = self.chatQueue[1].args[4]
     if not self:InList(self.characterBlackList, plr) then  -- Check blacklist.
@@ -740,7 +799,7 @@ local waiting, timesup, queued, done
 -- Removes players from waitlist if they've been on it for more then 10 seconds
 function SS:ChatQueueCooldown()
   local t = GetTime() - 10
-  for i=1, getn(SS.chatQueue), 1 do
+  for i=1, #SS.chatQueue, 1 do
     waiting = SS.chatQueue[i].waiting
     timesup = SS.chatQueue[i].time < t
     queued = SS.chatQueue[i].queued
@@ -776,7 +835,7 @@ end
 -- Garbage collection of chatqueue and message cache
 function SS:CollectGarbage()
   -- Message cache
-  if getn(SS.chatQueue) > 0 then
+  if #SS.chatQueue > 0 then
     local i = 1
     local stop = false
     repeat
@@ -785,12 +844,12 @@ function SS:CollectGarbage()
       else
         i = i + 1 
       end
-      stop = i>= getn(SS.chatQueue)
+      stop = i>= #SS.chatQueue
     until stop
   end
 
   -- Spam / Ham cache
-  if getn(SS.message) > 0 then
+  if #SS.message > 0 then
     local i = 1
     local t = GetTime() - 120
     repeat
@@ -799,19 +858,19 @@ function SS:CollectGarbage()
       else
         i = i + 1
       end
-      stop = i>= getn(SS.message)
+      stop = i>= #SS.message
     until stop
   end
 
   -- ChatHistory: The last message is saved for 1 minute, additional messages for 30 seconds
   local t = GetTime()
-  for i=1, getn(SS.chatHistory), 1 do
+  for i=1, #SS.chatHistory, 1 do
   -- Remove first message if older then 1 minutes
   if SS.chatHistory[i].time[1] < t - 60 then
       tremove(SS.chatHistory,i)
     else
     -- Remove all other messages if older then 30 seconds
-      for j=2, getn(SS.chatHistory[i].time), 1 do
+      for j=2, #SS.chatHistory[i].time, 1 do
         if SS.chatHistory[i].time[j] < t - 30 then
           tremove(SS.chatHistory[i].message,j)
           tremove(SS.chatHistory[i].time,j)
@@ -878,7 +937,7 @@ end
 function SS:GetChatHistory(plr)
   local msg = ""
   if self.chatHistory[plr] then
-    for i=1, getn(self.chatHistory[plr].message), 1 do
+    for i=1, #self.chatHistory[plr].message, 1 do
       msg = self.chatHistory[plr].message[i].." "..msg
     end
   end
@@ -895,7 +954,7 @@ function SS:CheckPartyInvite(plr)
       local f = getglobal("StaticPopup" .. i)
       if f:IsVisible() and f.which=="PARTY_INVITE" then 
         f:Hide()
-        SS:Msg(0, L["Player unknown, party invite cancelled"])
+        SS:Msg(0, L["Player unknown, party invite cancelled"]..": "..SS:PlayerLink(tostring(plr)))
       end
     end
   end
@@ -916,20 +975,20 @@ end
 
 function SS:ClearIgnore(num)
   if num==0 then
-    num = getn(self.dbc.char.ignoreList)
+    num = #self.dbc.char.ignoreList
   end
   for i=1,num,1 do
     local plr = self.dbc.char.ignoreList[1]
     if plr then
       DelIgnore(plr)
     end
-    tremove(self.dbc.char.ignoreList,1)
+    self:ScheduleRepeatingEvent(function() tremove(self.dbc.char.ignoreList,1) end, 2)
   end
 end
 
 function SS:SupressIgnoreMsg(msg)
-  if strfind(msg, ERR_IGNORE_NOT_FOUND) or strfind(msg, ERR_IGNORE_SELF) then return true end
-  for i=1, getn(self.dbc.char.ignoreList), 1 do
+  if strfind(msg, ERR_IGNORE_NOT_FOUND) or strfind(msg, ERR_IGNORE_SELF) or strfind(msg, ERR_IGNORE_DELETED) then return true end
+  for i=1, #self.dbc.char.ignoreList, 1 do
     if strfind(msg, self.dbc.char.ignoreList[i]) then
       return true
     end
@@ -1046,18 +1105,28 @@ end
 
 -- Functionality for versioning
 function SS:CheckVersion()
-  -- No reply-needed dialog
-  if self.db.profile.version < 20070524 and self.db.profile.version > 0 then
-    self:ShowNotification(
-      format("|cffff0000SpamSentry|r|cffff9977 v%s|r|cffffffff\n\nYou are upgrading SpamSentry from an installation pre patch 2.1.\n\n To ensure that you won't experience errors you are advised to remove all SpamSentry folders, and then re-install the latest version.|r", SS.currentBuild),
-      TEXT(OKAY),
-      function() end
-    )
-    SS.dbr.realm.spamReportList = nil
-  end
-
+--  if self.db.profile.version < 20080313 then
+--    self:ShowNotification(
+--      format("|cffff0000SpamSentry|r|cffff9977 v%s|r|cffffffff\n\nSpamSentry is back!\n\nWith the late increase of spam, active development of SpamSentry has been resumed. Make sure to regularly check the various downloadsites for updates.\n\nThanks for your support!\n\nAnea|r", SS.currentBuild),
+--      TEXT(OKAY),
+--      function() end
+--    )
+--  end
   if not self.db.profile.version == self.currentBuild then
     self:Msg(0, format(L["SpamSentry v%s by Anea. Type |cffffffff/sentry|r or right-click the icon for options."], "|cffffffff"..self.db.profile.version.."|r"))
   end
   self.db.profile.version = self.currentBuild
+end
+
+function SS:Test(msg)
+  local s,g = SS:ScoreSpam("test", msg)
+  SS:Msg(1, s..","..g)
+end
+
+function SS:Statistics()
+  SS:Msg(0, "SpamSentry statistics for this session:")
+  SS:Msg(0, "Messages seen: "..SS.statistics.seen)
+  SS:Msg(0, "Messages delayed: "..SS.statistics.delayed)
+  SS:Msg(0, "Who-queries: "..SS.statistics.who)
+  SS:Msg(0, "Spam blocked: "..SS.statistics.spam)
 end

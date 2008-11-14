@@ -2,245 +2,51 @@
 -- English localization (Default)
 -------------------------------------------------------------------------------
 
--- Druid
-SMARTBUFF_DRUID_CAT = "Cat Form";
-SMARTBUFF_DRUID_MOONKIN = "Moonkin Form";
-SMARTBUFF_DRUID_TRACK = "Track Humanoids";
+-- Whats new info
+SMARTBUFF_WHATSNEW = "|cffffffffWhats new:|r\n\n"
+  .."- Fixed group buff support\n\n"
+  .."- Added buffs: Mage (Focus Magic), Warrior (Vigilance)\n\n"
+  .."- Added items: Warlock (Spellstone, Master Firestone)\n\n"
+  .."- Updated druids can cast any buff in tree form, no matter if cast 'Shapeshifted' is not set\n\n"
+  .."- Updated Titan support\n\n"
+  .."- Updated font size\n\n"
+  .."- Updated ruRU translation\n\n"
+  .."- Removed buffs: Druid (Omen of Clarity), Rogue (Crippling Poison II, Mind-numbing Poison II & III)\n\n"
+  .."- Removed option: 'Grp range check'\n\n"
+  ;
 
-SMARTBUFF_MOTW = "Mark of the Wild";
-SMARTBUFF_GOTW = "Gift of the Wild";
-SMARTBUFF_THORNS = "Thorns";
-SMARTBUFF_OMENOFCLARITY = "Omen of Clarity";
-SMARTBUFF_BARKSKIN = "Barkskin";
-SMARTBUFF_NATURESGRASP = "Nature's Grasp";
-SMARTBUFF_TIGERSFURY = "Tiger's Fury";
-SMARTBUFF_REJUVENATION = "Rejuvenation";
-SMARTBUFF_REGROWTH = "Regrowth";
-
-SMARTBUFF_REMOVECURSE = "Remove Curse";
-SMARTBUFF_ABOLISHPOISON = "Abolish Poison";
 
 -- Mage
-SMARTBUFF_AI = "Arcane Intellect";
-SMARTBUFF_AB = "Arcane Brilliance";
-SMARTBUFF_ICEARMOR = "Ice Armor";
-SMARTBUFF_FROSTARMOR = "Frost Armor";
-SMARTBUFF_MAGEARMOR = "Mage Armor";
-SMARTBUFF_MOLTENARMOR = "Molten Armor";
-SMARTBUFF_DAMPENMAGIC = "Dampen Magic";
-SMARTBUFF_AMPLIFYMAGIC = "Amplify Magic";
-SMARTBUFF_MANASHIELD = "Mana Shield";
-SMARTBUFF_FIREWARD = "Fire Ward";
-SMARTBUFF_FROSTWARD = "Frost Ward";
-SMARTBUFF_ICEBARRIER = "Ice Barrier";
-SMARTBUFF_COMBUSTION = "Combustion";
-SMARTBUFF_ARCANEPOWER = "Arcane Power";
-SMARTBUFF_PRESENCEOFMIND = "Presence of Mind";
-
 SMARTBUFF_MAGE_PATTERN = {"%a+ Armor$"};
 
--- Priest
-SMARTBUFF_PWF = "Power Word: Fortitude";
-SMARTBUFF_POF = "Prayer of Fortitude";
-SMARTBUFF_SP = "Shadow Protection";
-SMARTBUFF_POSP = "Prayer of Shadow Protection";
-SMARTBUFF_INNERFIRE = "Inner Fire";
-SMARTBUFF_DS = "Divine Spirit";
-SMARTBUFF_POS = "Prayer of Spirit";
-SMARTBUFF_PWS = "Power Word: Shield";
-SMARTBUFF_FEARWARD = "Fear Ward";
-SMARTBUFF_ELUNESGRACE = "Elune's Grace";
-SMARTBUFF_FEEDBACK = "Feedback";
-SMARTBUFF_SHADOWGUARD = "Shadowguard";
-SMARTBUFF_TOUCHOFWEAKNESS = "Touch of Weakness";
-SMARTBUFF_INNERFOCUS = "Inner Focus";
-SMARTBUFF_RENEW = "Renew";
-
 -- Warlock
-SMARTBUFF_FELARMOR = "Fel Armor";
-SMARTBUFF_DEMONARMOR = "Demon Armor";
-SMARTBUFF_DEMONSKIN = "Demon Skin";
-SMARTBUFF_UNENDINGBREATH = "Unending Breath";
-SMARTBUFF_DGINVISIBILITY = "Detect Greater Invisibility";
-SMARTBUFF_DINVISIBILITY = "Detect Invisibility";
-SMARTBUFF_DLINVISIBILITY = "Detect Lesser Invisibility";
-SMARTBUFF_SOULLINK = "Soul Link";
-SMARTBUFF_SHADOWWARD = "Shadow Ward";
-SMARTBUFF_DARKPACT = "Dark Pact";
-SMARTBUFF_SOULSTONE = "Soulstone Resurrection";
-
 SMARTBUFF_WARLOCK_PATTERN = {"^Demon %a+"};
 
 -- Hunter
-SMARTBUFF_TRUESHOTAURA = "Trueshot Aura";
-SMARTBUFF_RAPIDFIRE = "Rapid Fire";
-SMARTBUFF_AOTH = "Aspect of the Hawk";
-SMARTBUFF_AOTM = "Aspect of the Monkey";
-SMARTBUFF_AOTW = "Aspect of the Wild";
-SMARTBUFF_AOTB = "Aspect of the Beast";
-SMARTBUFF_AOTC = "Aspect of the Cheetah";
-SMARTBUFF_AOTP = "Aspect of the Pack";
-SMARTBUFF_AOTV = "Aspect of the Viper";
-
 SMARTBUFF_HUNTER_PATTERN = {"^Aspect of"};
 
 -- Shaman
-SMARTBUFF_LIGHTNINGSHIELD = "Lightning Shield";
-SMARTBUFF_WATERSHIELD = "Water Shield";
-SMARTBUFF_EARTHSHIELD = "Earth Shield";
-SMARTBUFF_ROCKBITERW = "Rockbiter Weapon";
-SMARTBUFF_FROSTBRANDW = "Frostbrand Weapon";
-SMARTBUFF_FLAMETONGUEW = "Flametongue Weapon";
-SMARTBUFF_WINDFURYW = "Windfury Weapon";
-SMARTBUFF_WATERBREATHING = "Water Breathing";
-
 SMARTBUFF_SHAMAN_PATTERN = {"%a+ Shield$"};
 
--- Warrior
-SMARTBUFF_BATTLESHOUT = "Battle Shout";
-SMARTBUFF_COMMANDINGSHOUT = "Commanding Shout";
-SMARTBUFF_BERSERKERRAGE = "Berserker Rage";
-SMARTBUFF_BLOODRAGE = "Bloodrage";
-
--- Rogue
-SMARTBUFF_BLADEFLURRY = "Blade Flurry";
-SMARTBUFF_SAD = "Slice and Dice";
-SMARTBUFF_EVASION = "Evasion";
-SMARTBUFF_INSTANTPOISON = "Instant Poison";
-SMARTBUFF_WOUNDPOISON = "Wound Poison";
---SMARTBUFF_MINDPOISON = "Mind\194\173numbing Poison";
---SMARTBUFF_MINDPOISON = "Mind\45numbing Poison";
-SMARTBUFF_MINDPOISON = 'Mind-numbing Poison';
-SMARTBUFF_DEADLYPOISON = "Deadly Poison";
-SMARTBUFF_CRIPPLINGPOISON = "Crippling Poison";
-SMARTBUFF_ANESTHETICPOISON = "Anesthetic Poison";
-
-SMARTBUFF_MINDPOISON2 = "Mind\45numbing Poison II";
-SMARTBUFF_MINDPOISON3 = "Mind\194\173numbing Poison III";
-
-
 -- Paladin
-SMARTBUFF_RIGHTEOUSFURY = "Righteous Fury";
-SMARTBUFF_HOLYSHIELD = "Holy Shield";
-SMARTBUFF_BOM = "Blessing of Might";
-SMARTBUFF_GBOM = "Greater Blessing of Might";
-SMARTBUFF_BOW = "Blessing of Wisdom";
-SMARTBUFF_GBOW = "Greater Blessing of Wisdom";
-SMARTBUFF_BOSAL = "Blessing of Salvation";
-SMARTBUFF_GBOSAL = "Greater Blessing of Salvation";
-SMARTBUFF_BOK = "Blessing of Kings";
-SMARTBUFF_GBOK = "Greater Blessing of Kings";
-SMARTBUFF_BOSAN = "Blessing of Sanctuary";
-SMARTBUFF_GBOSAN = "Greater Blessing of Sanctuary";
-SMARTBUFF_BOL = "Blessing of Light";
-SMARTBUFF_GBOL = "Greater Blessing of Light";
-SMARTBUFF_BOF = "Blessing of Freedom";
-SMARTBUFF_BOP = "Blessing of Protection";
-SMARTBUFF_SOCOMMAND = "Seal of Command";
-SMARTBUFF_SOFURY = "Seal of Fury";
-SMARTBUFF_SOJUSTICE = "Seal of Justice";
-SMARTBUFF_SOLIGHT = "Seal of Light";
-SMARTBUFF_SORIGHTEOUSNESS = "Seal of Righteousness";
-SMARTBUFF_SOWISDOM = "Seal of Wisdom";
-SMARTBUFF_SOTCRUSADER = "Seal of the Crusader";
-SMARTBUFF_SOVENGEANCE = "Seal of Vengeance";
-SMARTBUFF_SOBLOOD = "Seal of Blood";
-SMARTBUFF_DEVOTIONAURA = "Devotion Aura";
-SMARTBUFF_RETRIBUTIONAURA = "Retribution Aura";
-SMARTBUFF_CONCENTRATIONAURA = "Concentration Aura";
-SMARTBUFF_SHADOWRESISTANCEAURA = "Shadow Resistance Aura";
-SMARTBUFF_FROSTRESISTANCEAURA = "Frost Resistance Aura";
-SMARTBUFF_FIRERESISTANCEAURA = "Fire Resistance Aura";
-SMARTBUFF_SANCTITYAURA = "Sanctity Aura";
-SMARTBUFF_CRUSADERAURA = "Crusader Aura";
-
 SMARTBUFF_PALADIN_PATTERN = {"^Seal of %a+"};
 
--- Stones and oils
-SMARTBUFF_SSROUGH = "Rough Sharpening Stone";
-SMARTBUFF_SSCOARSE = "Coarse Sharpening Stone";
-SMARTBUFF_SSHEAVY = "Heavy Sharpening Stone";
-SMARTBUFF_SSSOLID = "Solid Sharpening Stone";
-SMARTBUFF_SSDENSE = "Dense Sharpening Stone";
-SMARTBUFF_SSELEMENTAL = "Elemental Sharpening Stone";
-SMARTBUFF_WSROUGH = "Rough Weightstone";
-SMARTBUFF_WSCOARSE = "Coarse Weightstone";
-SMARTBUFF_WSHEAVY = "Heavy Weightstone";
-SMARTBUFF_WSSOLID = "Solid Weightstone";
-SMARTBUFF_WSDENSE = "Dense Weightstone";
-SMARTBUFF_SHADOWOIL = "Shadow Oil";
-SMARTBUFF_FROSTOIL = "Frost Oil";
-SMARTBUFF_MANAOILMINOR = "Minor Mana Oil";
-SMARTBUFF_MANAOILLESSER = "Lesser Mana Oil";
-SMARTBUFF_MANAOILBRILLIANT = "Brilliant Mana Oil";
-SMARTBUFF_MANAOILSUPERIOR = "Superior Mana Oil";
-SMARTBUFF_WIZARDOILMINOR = "Minor Wizard Oil";
-SMARTBUFF_WIZARDOILLESSER = "Lesser Wizard Oil";
-SMARTBUFF_WIZARDOIL = "Wizard Oil";
-SMARTBUFF_WIZARDOILBRILLIANT = "Brilliant Wizard Oil";
-SMARTBUFF_WIZARDOILSUPERIOR = "Superior Wizard Oil";
+-- Death Knight
+SMARTBUFF_DEATHKNIGHT_PATTERN = {"%a+ Presence$"};
 
+-- Druid
+-- Priest
+-- Warrior
+-- Rogue
+
+-- Weapon types
 SMARTBUFF_WEAPON_STANDARD = {"Daggers", "Axes", "Swords", "Maces", "Staves", "Fist Weapons", "Polearms"};
 SMARTBUFF_WEAPON_BLUNT = {"Maces", "Staves", "Fist Weapons"};
 SMARTBUFF_WEAPON_BLUNT_PATTERN = "Weightstone$";
 SMARTBUFF_WEAPON_SHARP = {"Daggers", "Axes", "Swords", "Polearms"};
 SMARTBUFF_WEAPON_SHARP_PATTERN = "Sharpening Stone$";
 
--- Tracking
-SMARTBUFF_FINDMINERALS = "Find Minerals";
-SMARTBUFF_FINDHERBS = "Find Herbs";
-SMARTBUFF_FINDTREASURE = "Find Treasure";
-SMARTBUFF_TRACKHUMANOIDS = "Track Humanoids";
-SMARTBUFF_TRACKBEASTS = "Track Beasts";
-SMARTBUFF_TRACKUNDEAD = "Track Undead";
-SMARTBUFF_TRACKHIDDEN = "Track Hidden";
-SMARTBUFF_TRACKELEMENTALS = "Track Elementals";
-SMARTBUFF_TRACKDEMONS = "Track Demons";
-SMARTBUFF_TRACKGIANTS = "Track Giants";
-SMARTBUFF_TRACKDRAGONKIN = "Track Dragonkin";
-SMARTBUFF_SENSEDEMONS = "Sense Demons";
-SMARTBUFF_SENSEUNDEAD = "Sense Undead";
-
--- Racial
-SMARTBUFF_STONEFORM = "Stoneform";
-SMARTBUFF_PRECEPTION = "Perception";
-SMARTBUFF_BLOODFURY = "Blood Fury";
-SMARTBUFF_BERSERKING = "Berserking";
-SMARTBUFF_WOTFORSAKEN = "Will of the Forsaken";
-
--- Reagents
-SMARTBUFF_WILDBERRIES = "Wild Berries";
-SMARTBUFF_WILDTHORNROOT = "Wild Thornroot";
-SMARTBUFF_WILDQUILLVINE = "Wild Quillvine";
-SMARTBUFF_ARCANEPOWDER = "Arcane Powder";
-SMARTBUFF_HOLYCANDLE = "Holy Candle";
-SMARTBUFF_SACREDCANDLE = "Sacred Candle";
-SMARTBUFF_SYMBOLOFKINGS = "Symbol of Kings";
-
--- Food
---SMARTBUFF_ = "";
-SMARTBUFF_SAGEFISHDELIGHT = "Sagefish Delight";
-SMARTBUFF_BUZZARDBITES = "Buzzard Bites";
-SMARTBUFF_RAVAGERDOG = "Ravager Dog";
-SMARTBUFF_FELTAILDELIGHT = "Feltail Delight";
-SMARTBUFF_CLAMBAR = "Clam Bar";
-SMARTBUFF_SPORELINGSNACK = "Sporeling Snack";
-SMARTBUFF_BLACKENEDSPOREFISH = "Blackened Sporefish";
-SMARTBUFF_BLACKENEDBASILISK = "Blackened Basilisk";
-SMARTBUFF_GRILLEDMUDFISH = "Grilled Mudfish";
-SMARTBUFF_POACHEDBLUEFISH = "Poached Bluefish";
-SMARTBUFF_ROASTEDCLEFTHOOF = "Roasted Clefthoof";
-SMARTBUFF_WARPBURGER = "Warp Burger";
-SMARTBUFF_TALBUKSTEAK = "Talbuk Steak";
-SMARTBUFF_GOLDENFISHSTICKS = "Golden Fish Sticks";
-SMARTBUFF_CRUNCHYSERPENT = "Crunchy Serpent";
-SMARTBUFF_MOKNATHALSHORTRIBS = "Mok'Nathal Shortribs";
-SMARTBUFF_SPICYCRAWDAD = "Spicy Crawdad";
-
-SMARTBUFF_FOOD_AURA = "Well Fed";
-
-
--- Creature type
+-- Creature types
 SMARTBUFF_HUMANOID  = "Humanoid";
 SMARTBUFF_DEMON     = "Demon";
 SMARTBUFF_BEAST     = "Beast";
@@ -248,7 +54,7 @@ SMARTBUFF_ELEMENTAL = "Elemental";
 SMARTBUFF_DEMONTYPE = "Imp";
 
 -- Classes
-SMARTBUFF_CLASSES = {"Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior", "Hunter Pet", "Warlock Pet"};
+SMARTBUFF_CLASSES = {"Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior", "Death Knight", "Hunter Pet", "Warlock Pet"};
 
 -- Templates and Instances
 SMARTBUFF_TEMPLATES = {"Solo", "Party", "Raid", "Battleground", "MC", "Ony", "BWL", "Naxx", "AQ", "ZG", "Custom 1", "Custom 2", "Custom 3", "Custom 4", "Custom 5"};
@@ -312,6 +118,7 @@ SMARTBUFF_OFT_ANTIDAZE       = "Anti daze";
 SMARTBUFF_OFT_HIDESABUTTON   = "Hide action button";
 SMARTBUFF_OFT_INCOMBAT       = "in combat";
 SMARTBUFF_OFT_SMARTDEBUFF    = "SmartDebuff";
+SMARTBUFF_OFT_INSHAPESHIFT   = "Shapeshift";
 
 -- Options Frame Tooltip Text
 SMARTBUFF_OFTT               = "Toggles SmartBuff On/Off";
@@ -351,6 +158,7 @@ SMARTBUFF_OFTT_HIDESABUTTON  = "Hides the SmartBuff action button.";
 SMARTBUFF_OFTT_INCOMBAT      = "At the moment it only works on yourself.\nThe first buff you mark as in combat,\nwill set on the button before combat\nand you can use it in combat.\nWarning! All logic is disabled in combat!";
 SMARTBUFF_OFTT_SMARTDEBUFF   = "Shows the SmartDebuff frame.";
 SMARTBUFF_OFTT_SPLASHDURATION= "How many seconds the splash\nmessage will displayed,\nbefore it fades.";
+SMARTBUFF_OFTT_INSHAPESHIFT  = "Cast buffs also if you\nare shapeshifted.";
 
 -- Buffsetup Frame Text
 SMARTBUFF_BST_SELFONLY       = "Oneself only";

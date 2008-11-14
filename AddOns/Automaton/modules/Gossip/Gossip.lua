@@ -109,7 +109,7 @@ end
 function module:ProcessQuests(...)
 	local arg = {...}
 	local quests = {}
-	for i = 1, table.getn(arg), 2 do
+	for i = 1, table.getn(arg), 3 do
 		local title, level = arg[i], arg[i+1]
 		if QuestData[title] then
 			local good = true
@@ -122,7 +122,7 @@ function module:ProcessQuests(...)
 				end
 			end
 			if good then
-				tinsert(quests, {title, level, (i+1)/2})
+				tinsert(quests, {title, level, (i+2)/3})
 			end
 		end
 	end

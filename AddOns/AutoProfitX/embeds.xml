@@ -3,6 +3,7 @@
 
 <!-- Ace Libs -->
 <!-- core -->
+<script file="libs\LibStub\LibStub.lua"/>
 <script file="libs\AceLibrary\AceLibrary.lua"/>
 <script file="libs\AceOO-2.0\AceOO-2.0.lua"/>
 <script file="libs\AceAddon-2.0\AceAddon-2.0.lua"/>
@@ -15,5 +16,7 @@
 <!-- Other libs -->
 <script file="libs\Waterfall-1.0\Waterfall-1.0.lua"/>
 <script file="libs\Gratuity-2.0\Gratuity-2.0.lua"/>
+<Include file="libs\LibBabble-Class-3.0\lib.xml"/>
+<Include file="libs\LibBabble-Inventory-3.0\lib.xml"/>
 
 </Ui>

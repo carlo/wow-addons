@@ -3,14 +3,19 @@
 		Handles settings management, and bank and inventory viewing
 --]]
 
-Bagnon = DongleStub("Dongle-1.0"):New("Bagnon")
-local L = BAGNON_LOCALS
+Bagnon = LibStub('AceAddon-3.0'):NewAddon('Bagnon', 'AceEvent-3.0', 'AceConsole-3.0')
+local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon')
 local CURRENT_VERSION = GetAddOnMetadata("Bagnon", "Version")
+
+--bindings
+BINDING_HEADER_BAGNON = "Bagnon"
+BINDING_NAME_BAGNON_TOGGLE = L.BagnonToggle
+BINDING_NAME_BANKNON_TOGGLE = L.BanknonToggle
 
 
 --[[ Startup and settings management ]]--
 
-function Bagnon:Initialize()
+function Bagnon:OnInitialize()
 	local defaults = {
 		inventory = {
 			bags = {0, 1, 2, 3, 4},
@@ -23,8 +28,6 @@ function Bagnon:Initialize()
 		},
 
 		replaceBags = 1,
-		replaceBank = 1,
-		reuseFrames = 1,
 
 		showBorders = 1,
 		showBagsAtMail = 1,
@@ -55,6 +58,8 @@ function Bagnon:Initialize()
 		end
 	end
 	self.sets = BagnonSets
+	
+	self:RegisterEvent('PLAYER_LOGOUT')
 end
 
 function Bagnon:UpdateSettings()
@@ -66,7 +71,7 @@ function Bagnon:UpdateVersion()
 	self:Print(format(L.Updated, BagnonSets.version))
 end
 
-function Bagnon:Enable()
+function Bagnon:OnEnable()
 	BankFrame:UnregisterEvent("BANKFRAME_OPENED")
 
 	self:RegisterEvent("BANKFRAME_OPENED")
@@ -84,6 +89,12 @@ function Bagnon:Enable()
 
 	self:RegisterSlashCommands()
 	self:HookBagClicks()
+end
+
+function Bagnon:PLAYER_LOGOUT()
+	if self.updateReplaceBags then
+		self.sets.replaceBags = self.replaceBags
+	end
 end
 
 
@@ -171,8 +182,10 @@ function Bagnon:CreateBank()
 
 	local OnHide = bank:GetScript("OnHide")
 	bank:SetScript("OnHide", function(self)
+		if BagnonUtil:AtBank() and BagnonUtil:ReplacingBank() then
+			CloseBankFrame()
+		end
 		PlaySound("igBagnonMenuClose")
-		CloseBankFrame()
 		OnHide(self)
 	end)
 
@@ -238,42 +251,36 @@ end
 --]]
 
 local function FrameOpened(id, auto)
-	if (Bagnon:InventoryHasBag(id) and BagnonUtil:ReplacingBags()) or
-	(BagnonUtil:ReusingFrames() and BagnonUtil:IsInventoryBag(id)) then
+	if Bagnon:InventoryHasBag(id) then
 		Bagnon:ShowInventory(auto)
 		return true
 	end
 
-	if (Bagnon:BankHasBag(id) and BagnonUtil:ReplacingBank()) or
-	(BagnonUtil:ReusingFrames() and BagnonUtil:IsBankBag(id)) then
+	if Bagnon:BankHasBag(id) then
 		Bagnon:ShowBank(auto)
 		return true
 	end
 end
 
 local function FrameClosed(id, auto)
-	if (Bagnon:InventoryHasBag(id) and BagnonUtil:ReplacingBags()) or
-	(BagnonUtil:ReusingFrames() and BagnonUtil:IsInventoryBag(id)) then
+	if Bagnon:InventoryHasBag(id) then
 		Bagnon:HideInventory(auto)
 		return true
 	end
 
-	if (Bagnon:BankHasBag(id) and BagnonUtil:ReplacingBank()) or
-	(BagnonUtil:ReusingFrames() and BagnonUtil:IsBankBag(id)) then
+	if Bagnon:BankHasBag(id) then
 		Bagnon:HideBank(auto)
 		return true
 	end
 end
 
 local function FrameToggled(id, auto)
-	if (Bagnon:InventoryHasBag(id) and BagnonUtil:ReplacingBags()) or
-	(BagnonUtil:ReusingFrames() and BagnonUtil:IsInventoryBag(id)) then
+	if Bagnon:InventoryHasBag(id) then
 		Bagnon:ToggleInventory(auto)
 		return true
 	end
 
-	if (Bagnon:BankHasBag(id) and BagnonUtil:ReplacingBank()) or
-	(BagnonUtil:ReusingFrames() and BagnonUtil:IsBankBag(id)) then
+	if Bagnon:BankHasBag(id) then
 		Bagnon:ToggleBank(auto)
 		return true
 	end
@@ -303,22 +310,16 @@ function Bagnon:HookBagClicks()
 
 	local oOpenAllBags = OpenAllBags
 	OpenAllBags = function(force)
-		if BagnonUtil:ReplacingBags() or BagnonUtil:ReusingFrames() then
-			if force then
-				Bagnon:ShowInventory()
-			else
-				Bagnon:ToggleInventory()
-			end
+		if force then
+			Bagnon:ShowInventory()
 		else
-			oOpenAllBags(force)
+			Bagnon:ToggleInventory()
 		end
 	end
 
 	--secure'd!
 	hooksecurefunc('CloseAllBags', function() 
-		if BagnonUtil:ReplacingBags() then
-			Bagnon:HideInventory()
-		end
+		Bagnon:HideInventory()
 	end)
 
 	local oToggleBag = ToggleBag
@@ -377,7 +378,7 @@ local function HideAtEvent(event)
 end
 
 function Bagnon:BANKFRAME_OPENED()
-	ShowAtEvent("Bank", not(BagnonUtil:ReplacingBank() or BagnonUtil:ReusingFrames()))
+	ShowAtEvent("Bank", not(BagnonUtil:ReplacingBank()))
 end
 
 function Bagnon:BANKFRAME_CLOSED()
@@ -428,12 +429,40 @@ end
 --[[  Slash Commands ]]--
 
 function Bagnon:RegisterSlashCommands()
-	local slash = self:InitializeSlashCommand(L.Commands, "BAGNON", "bagnon", "bgn")
-	slash:RegisterSlashHandler(format("/bagnon: %s", L.ShowMenuDesc), "^$", "ShowMenu")
-	slash:RegisterSlashHandler(format("menu: %s", L.ShowMenuDesc), "^menu$", "ShowMenu")
-	slash:RegisterSlashHandler(format("bags: %s", L.ShowBagsDesc), "^bags$", "ToggleInventory")
-	slash:RegisterSlashHandler(format("bank: %s", L.ShowBankDesc), "^bank$", "ToggleBank")
-	self.slash = slash
+	self:RegisterChatCommand('bagnon', 'OnCmd')
+	self:RegisterChatCommand('bgn', 'OnCmd')
+end
+
+function Bagnon:OnCmd(cmd)
+	if cmd ~= '' then
+		cmd = cmd:lower()
+		if cmd == 'bank' then
+			self:ToggleBank()
+		elseif cmd == 'bags' then
+			self:ToggleInventory()
+		elseif cmd == 'version' then
+			self:PrintVersion()
+		else
+			self:PrintHelp()
+		end
+	else
+		self:ShowMenu()
+	end
+end
+
+function Bagnon:PrintVersion()
+	self:Print(self.sets.version)
+end
+
+function Bagnon:PrintHelp(cmd)
+	local function PrintCmd(cmd, desc)
+		print(format(' - |cFF33FF99%s|r: %s', cmd, desc))
+	end
+
+	self:Print(L.Commands)
+	PrintCmd('bags', L.ShowBagsDesc)
+	PrintCmd('bank', L.ShowBankDesc)
+	PrintCmd('version', L.ShowVersionDesc)
 end
 
 function Bagnon:ShowMenu()

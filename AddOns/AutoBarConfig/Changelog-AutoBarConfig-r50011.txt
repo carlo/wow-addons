@@ -1,8 +1,0 @@
-------------------------------------------------------------------------
-r50011 | toadkiller | 2007-09-27 02:55:52 -0400 (Thu, 27 Sep 2007) | 2 lines
-Changed paths:
-   M /trunk/AutoBarConfig/AutoBarConfig.toc
-
-AutoBarConfig:
--toc + category
-------------------------------------------------------------------------

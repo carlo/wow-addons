@@ -1,11 +1,10 @@
-You can report bugs you find in #wowace @ irc.freenode.net to rw3/Gagorian or alternatively email me at gagorian@gmail.com
-I'm happy to accept any help anyone wants to provide.
+You can report bugs you find in #wowace @ irc.freenode.net to rw3/Gagorian or alternatively email me at gagorian(at)gmail.com
 
 *** If any damage/healing calculation is incorrect, please report it. Provide as much information as possible. ***
 
 
-Dr. Damage is a lighter version of TheoryCraft. 
-It display calculated average damage/healing of abilities with talents, gear and buffs included on your actionbar buttons. 
+
+DrDamage displays the calculated, average damage or healing of abilities with talents, gear and buffs included on your actionbar buttons. 
 The addon will also add various information to the default tooltips in your spellbook and on the actionbar.
 
 
@@ -16,32 +15,25 @@ The addon will also add various information to the default tooltips in your spel
 
 '''Functionality:'''
 
-* Supports all classes.
-* Actionbar addons supported: Default, Bartender3, Bongos and Bongos2, CT_BarMod, DAB, Nurfed AB, CogsBar, InfiniBar and FlexBar
-* Places damage/healing text of the stat of your choice on the actionbar buttons
-* Can also place the text on macro slots if macros have their tooltips set to the spell/action with #showtooltip spellname
-* Loads of damage and healing statistics from action tooltips on the actionbar and in the spellbook
-* Active scanning of buffs on you / debuffs on target that affect damage/healing.
-
+* Supports all classes
+* Actionbar addons supported: Default, Bartender3&4, Bongos 2&3, CT_BarMod, DAB, Nurfed AB, CogsBar, InfiniBar, FlexBar2, TrinityBar 1&2, idActionBar and IPopBar.
+* Places a text with metric of your choosing on the actionbar buttons
+* Different damage and healing statistics from tooltips on the actionbar and in the spellbook. This includes for example crit %, spell damage and damage coefficients, averages (w/ or w/o crits/DoTs), DPS, DPSC (damage per seconds cast), damage until OOM and more!
+* Includes your buffs and the target debuffs in calculations
 
 
 '''More information about functionality:'''
 
-* Uses WoW API to grab spell damage, crit chance, mana regeneration and bonuses received from gear.
-* Adaptable damage/healing calculation engine used for all calculations
+* Uses mostly default WoW API to retrieve your stats, keeping tooltip scanning to a minimum
+* Uses the same Adaptable damage/healing calculation engine used for all the calculations
 * Easy table design to add/modify talent effects, spells and buffs/debuffs
-* Manual modification of the damage and crit used to calculate (you can test how much that +n spelldamage or healing would increase your spells different calculated values)
-
+* Allows manual modification of the essential base stats used to calculate (you can test how much that +n spelldamage or healing would increase your spells different calculated values)
 
 
 '''FAQ:'''
 
--How can I get the Dr.Damage tooltip info or actionbar text on macro buttons?
-* Modify your macro to show the blizzard tooltip by inserting the line: "#showtooltip Spellname" or "#showtooltip Spellname(Rank x)"
-
--Are you planning to make an UI for configuration?
-* Dr. Damage has a FuBar plugin capability for easy configuration. DeuceCommander works as well.
-
+*Are you planning to make a user interface for configuration?
+** DrDamage has a FuBar plugin capability for easy configuration. DeuceCommander works as well.
 
 
 KNOWN ISSUES:

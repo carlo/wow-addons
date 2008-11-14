@@ -1,11 +1,11 @@
-local	gMCSchedulerLib_Version = 4;
+local gMCSchedulerLib_Version = 6
 
 if not MCSchedulerLib or MCSchedulerLib.Version < gMCSchedulerLib_Version then
 	if not MCSchedulerLib then
-		local	vEventFrame = MCSchedulerLibFrame;
+		local vEventFrame = MCSchedulerLibFrame
 		
 		if not vEventFrame then
-			vEventFrame = CreateFrame("FRAME", "MCSchedulerLibFrame", UIParent);
+			vEventFrame = CreateFrame("FRAME", "MCSchedulerLibFrame", UIParent)
 		end
 		
 		MCSchedulerLib =
@@ -17,106 +17,122 @@ if not MCSchedulerLib or MCSchedulerLib.Version < gMCSchedulerLib_Version then
 			
 			IteratorIndex = nil,
 			IteratorCount = nil,
-		};
+		}
+		
+		MCDebugLib:InstallDebugger("MCSchedulerLib", MCSchedulerLib, {r=0.5, g=0.75, b=1})
 	end
 	
 	function MCSchedulerLib:DebugPerformance()
-		self.PerfMonitor = MCDebugLib:NewPerfMonitor("MCSchedulerLib");
+		self.PerfMonitor = MCDebugLib:NewPerfMonitor("MCSchedulerLib")
 	end
 	
-	function MCSchedulerLib:ScheduleTask(pDelay, pFunction, pParam)
-		local	vTask =
+	function MCSchedulerLib:ScheduleTask(pDelay, pFunction, pParam, pTaskName)
+		if type(pFunction) ~= "function" then
+			self:ErrorMessage("Attempt to schedule an invalid function (passed "..type(pFunction).." instead)")
+			self:DebugStack()
+			MCDebugLib.ShowLastEventDebug = true
+			return
+		end
+		
+		local vTask =
 		{
 			Time = GetTime() + pDelay,
 			Function = pFunction,
 			Param = pParam,
-		};
+			Name = pTaskName,
+		}
 		
-		self:InsertTask(vTask);
+		self:InsertTask(vTask)
 	end
 	
-	function MCSchedulerLib:ScheduleUniqueTask(pDelay, pFunction, pParam)
+	function MCSchedulerLib:RescheduleTask(pDelay, pFunction, pParam, pTaskName)
+		self:UnscheduleTask(pFunction, pParam)
+		self:ScheduleTask(pDelay, pFunction, pParam, pTaskName)
+	end
+	
+	function MCSchedulerLib:ScheduleUniqueTask(pDelay, pFunction, pParam, pTaskName)
 		if self:FindTask(pFunction, pParam) then
-			return;
+			return
 		end
 		
-		self:ScheduleTask(pDelay, pFunction, pParam);
+		self:ScheduleTask(pDelay, pFunction, pParam, pTaskName)
 	end
 	
-	function MCSchedulerLib:ScheduleRepeatingTask(pInterval, pFunction, pParam, pInitialDelay)
-		local	vTask =
+	function MCSchedulerLib:ScheduleRepeatingTask(pInterval, pFunction, pParam, pInitialDelay, pTaskName)
+		local vTask =
 		{
 			Interval = pInterval,
 			Function = pFunction,
 			Param = pParam,
-		};
+			Name = pTaskName,
+		}
 		
 		if pInitialDelay then
-			vTask.Time = GetTime() + pInitialDelay;
+			vTask.Time = GetTime() + pInitialDelay
 		else
-			vTask.Time = GetTime() + pInterval;
+			vTask.Time = GetTime() + pInterval
 		end
 		
-		self:InsertTask(vTask);
+		self:InsertTask(vTask)
 	end
 	
-	function MCSchedulerLib:ScheduleUniqueRepeatingTask(pInterval, pFunction, pParam, pInitialDelay)
+	function MCSchedulerLib:ScheduleUniqueRepeatingTask(pInterval, pFunction, pParam, pInitialDelay, pTaskName)
 		if self:FindTask(pFunction, pParam) then
-			return;
+			return
 		end
 		
-		self:ScheduleRepeatingTask(pInterval, pFunction, pParam, pInitialDelay);
+		self:ScheduleRepeatingTask(pInterval, pFunction, pParam, pInitialDelay, pTaskName)
 	end
 	
 	function MCSchedulerLib:SetTaskInterval(pInterval, pFunction, pParam)
-		local	vTask, vIndex = self:FindTask(pFunction, pParam);
+		local vTask, vIndex = self:FindTask(pFunction, pParam)
 		
 		if not vTask then
-			return;
+			return
 		end
 		
 		if vTask.Interval == pInterval then
-			return;
+			return
 		end
 		
 		if vTask.Interval then
-			vTask.Time = vTask.Time - vTask.Interval;
+			vTask.Time = vTask.Time - vTask.Interval
 		end
 		
-		vTask.Interval = pInterval;
+		vTask.Interval = pInterval
 
 		if vTask.Interval then
-			vTask.Time = vTask.Time + vTask.Interval;
+			vTask.Time = vTask.Time + vTask.Interval
 		end
 		
-		self.NeedSorted = true;
+		self.NeedSorted = true
 	end
 	
 	function MCSchedulerLib:SetTaskDelay(pDelay, pFunction, pParam)
-		local	vTask, vIndex = self:FindTask(pFunction, pParam);
+		local vTask, vIndex = self:FindTask(pFunction, pParam)
 		
 		if not vTask then
-			return;
+			return
 		end
 		
-		vTask.Time = GetTime() + pDelay;
+		vTask.Time = GetTime() + pDelay
 		
-		self.NeedSorted = true;
+		self.NeedSorted = true
 	end
 	
 	function MCSchedulerLib:InsertTask(pTask)
 		if not pTask then
-			MCDebugLib:ErrorMessage("MCSchedulerLib:InsertTask: Inserting a nil task");
-			return;
+			self:ErrorMessage("Inserting a nil task")
+			return
 		end
 		
-		table.insert(self.Tasks, pTask);
+		table.insert(self.Tasks, pTask)
 		
-		self.NeedSorted = true;
+		self.NeedSorted = true
 		
 		if not self.HasTasks then
-			self.EventFrame:Show();
-			self.HasTasks = true;
+			self.EventFrame:Show()
+			self.HasTasks = true
 		end
 	end
 	
@@ -126,141 +142,159 @@ if not MCSchedulerLib or MCSchedulerLib.Version < gMCSchedulerLib_Version then
 	end
 	
 	function MCSchedulerLib:UnscheduleTask(pFunction, pParam)
-		local	vTask, vIndex = self:FindTask(pFunction, pParam);
+		local vTask, vIndex = self:FindTask(pFunction, pParam)
 		
 		if not vTask then
-			return false;
+			return false
 		end
 		
-		table.remove(self.Tasks, vIndex);
+		table.remove(self.Tasks, vIndex)
 		
 		if self.IteratorIndex
 		and vIndex < self.IteratorIndex then
-			self.IteratorIndex = self.IteratorIndex - 1;
+			self.IteratorIndex = self.IteratorIndex - 1
 		end
 		
 		if #self.Tasks == 0 then
-			self.HasTasks = false;
-			self.EventFrame:Hide();
+			self.HasTasks = false
+			self.EventFrame:Hide()
 		end
 		
-		return true;
+		return true
 	end
 	
 	function MCSchedulerLib:FindTask(pFunction, pParam)
 		for vIndex, vTask in ipairs(self.Tasks) do
 			if (pFunction == nil or vTask.Function == pFunction)
 			and (pParam == nil or vTask.Param == pParam) then
-				return vTask, vIndex;
+				return vTask, vIndex
 			end
 		end -- for
 	end
 	
-	MCSchedulerLib.OnUpdateRunning = false;
+	MCSchedulerLib.OnUpdateRunning = false
 	
 	function MCSchedulerLib:OnUpdate(pElapsed)
 		-- Prevent from re-entering
 		
 		if self.OnUpdateRunning then
-			-- MCDebugLib:TestMessage("MCSchedulerLib:OnUpdate already running");
-			return;
+			-- self:TestMessage("OnUpdate already running")
+			return
 		end
 		
-		self.OnUpdateRunning = true;
+		self.OnUpdateRunning = true
 		
-		local	vResult, vMessage = pcall(self.OnUpdate2, self, pElapsed);
+		for vIndex, vTask in ipairs(self.Tasks) do
+			vTask.DidRun = false
+		end
+		
+		local vResult, vMessage = pcall(self.OnUpdate2, self, pElapsed)
 		
 		if not vResult then
-			MCDebugLib:ErrorMessage("MCSchedulerLib Internal Error: "..vMessage);
+			self:ErrorMessage("Internal Error: %s", vMessage)
 		end
 		
-		self.OnUpdateRunning = false;
+		self.OnUpdateRunning = false
 	end
 	
 	function MCSchedulerLib:OnUpdate2(pElapsed)
-		local	vTime = GetTime();
+		local vTime = GetTime()
 		
 		if self.PerfMonitor then
-			self.PerfMonitor:FunctionEnter(vTime);
+			self.PerfMonitor:FunctionEnter(vTime)
 		end
 		
 		--
 		
 		if self.NeedSorted then
-			self.NeedSorted = false;
-			table.sort(self.Tasks, self.CompareTasks);
+			self.NeedSorted = false
+			table.sort(self.Tasks, self.CompareTasks)
 		end
 		
-		self.IteratorIndex = 1;
+		self.IteratorIndex = 1
 		
 		while self.IteratorIndex <= #self.Tasks do
-			local	vTask = self.Tasks[self.IteratorIndex];
+			local vTask = self.Tasks[self.IteratorIndex]
 			
 			if not vTask then
-				MCDebugLib:ErrorMessage("nil task at index "..self.IteratorIndex);
-				table.remove(self.Tasks, self.IteratorIndex);
+				self:ErrorMessage("nil task at index "..self.IteratorIndex)
+				table.remove(self.Tasks, self.IteratorIndex)
+			elseif vTask.DidRun then
+				-- Ignore it
+				
+				self.IteratorIndex = self.IteratorIndex + 1
 			else
 				if vTask.Time > vTime then
-					break;
+					break
 				end
 				
-				-- Re-schedule or remove the task before calling its function
+				-- Re-schedule or remove one-shot tasks before calling their function
 				-- in case the function decides it wants to remove the task too
 				
 				if vTask.Interval == nil then
-					table.remove(self.Tasks, self.IteratorIndex);
+					table.remove(self.Tasks, self.IteratorIndex)
+				
+				-- Repeat tasks just need a new time calculated
+				
 				else
-					vTask.Time = vTime + vTask.Interval;
+					vTask.Time = vTask.Time + vTask.Interval
 					
 					if vTask.Interval > 0 then
-						self.NeedSorted = true;
+						self.NeedSorted = true
 					end
 					
-					self.IteratorIndex = self.IteratorIndex + 1;
+					self.IteratorIndex = self.IteratorIndex + 1
 				end
 				
 				-- Call the function
 				
-				local	vResult, vMessage;
+				-- self:DebugMessage("Calling task %s", vTask.Name or "anonymous")
 				
-				if vTask.Param ~= nil then
-					vResult, vMessage = pcall(vTask.Function, vTask.Param, vTime);
-				else
-					vResult, vMessage = pcall(vTask.Function, vTime);
-				end
-				
-				if not vResult then
-					MCDebugLib:ErrorMessage(vMessage);
+				if not vTask.Disabled then
+					local vResult, vMessage
+					
+					vTask.DidRun = true
+					
+					if vTask.Param ~= nil then
+						vResult, vMessage = pcall(vTask.Function, vTask.Param, vTime)
+					else
+						vResult, vMessage = pcall(vTask.Function, vTime)
+					end
+					
+					if not vResult then
+						self:ErrorMessage("Error calling task %s: %s", vTask.Name or "anonymous", vMessage)
+						vTask.Disabled = true
+					end
 				end
 			end
 		end -- while
 		
-		self.IteratorIndex = nil;
+		self.IteratorIndex = nil
 		
 		if #self.Tasks == 0 then
-			self.HasTasks = false;
-			self.EventFrame:Hide();
+			self.HasTasks = false
+			self.EventFrame:Hide()
 		end
 		
 		if self.PerfMonitor then
-			local	vEndTime = GetTime();
+			local vEndTime = GetTime()
 			
-			self.PerfMonitor:FunctionExit(vEndTime);
+			self.PerfMonitor:FunctionExit(vEndTime)
 			
 			if not self.LastDumpTime
 			or vEndTime - self.LastDumpTime > 2 then
-				self.LastDumpTime = vEndTime;
+				self.LastDumpTime = vEndTime
 				
-				self.PerfMonitor:DumpValue();
+				self.PerfMonitor:DumpValue()
 			end
 		end
 	end
 	
 	function MCSchedulerLib.CompareTasks(pTask1, pTask2)
-		return pTask1.Time < pTask2.Time;
+		return pTask1.Time < pTask2.Time
 	end
 	
-	MCSchedulerLib.EventFrame:SetScript("OnUpdate", function () MCSchedulerLib:OnUpdate(arg1) end);
+	MCSchedulerLib.EventFrame:SetScript("OnUpdate", function (self, elapsed) MCSchedulerLib:OnUpdate(elapsed) end)
 	
-	MCSchedulerLib.Version = gMCSchedulerLib_Version;
+	MCSchedulerLib.Version = gMCSchedulerLib_Version
 end

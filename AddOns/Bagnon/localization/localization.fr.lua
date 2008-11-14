@@ -3,14 +3,12 @@
 		Credit goes to namAtsar
 --]]
 
-if GetLocale() ~= "frFR" then return end
-
-local L = BAGNON_LOCALS
+local L = LibStub('AceLocale-3.0'):NewLocale('Bagnon', 'frFR')
+if not L then return end
 
 --bindings
-BINDING_HEADER_BAGNON = "Bagnon";
-BINDING_NAME_BAGNON_TOGGLE = "Afficher Bagnon";
-BINDING_NAME_BANKNON_TOGGLE = "Afficher Banknon";
+L.BagnonToggle = "Afficher Bagnon";
+L.BanknonToggle = "Afficher Banknon";
 
 --system messages
 L.NewUser = "Charg\195\169"
@@ -38,14 +36,3 @@ L.TipShowSearch = "<Double-Click> to Search"
 L.TipShowBag = "<Clic> pour montrer"
 L.TipHideBag = "<Clic> pour cacher"
 L.TipGoldOnRealm = "Total on %s"
-
---menu text
-L.FrameSettings = "Frame Settings"
-L.Lock = "Verrouiller Position"
-L.Toplevel = "Toplevel"
-L.BackgroundColor = "Fond"
-L.FrameLevel = "Couche"
-L.Opacity = "Opacit\195\169"
-L.Scale = "Echelle"
-L.Spacing = "Espace"
-L.Cols = "Colonne"

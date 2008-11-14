@@ -1,11 +1,12 @@
-﻿SpamSentry by Anea
+SpamSentry by Anea
 
-This addon stops goldspam messages from showing. You can use a one-click report system to create a GM-ticket for the caught spammers. Both spammers and bots can be reported manually as well.  
+This addon puts an end to the goldspam in your chatwindows. To detect spam, SpamSentry uses sophistacted heuristics that have been developed over the course of nearly two years. It also enables you to report spammers using an intuitive one-click report system. Regular updates and an outstanding reputation make SpamSentry your number one spam blocker! Or at least, so I hope ;)
 
 ---
-Version 20070613
-- Fixed potential bug that in rare cases might cause a message not to show
-- Updated filter
+Version 20081027
+- Fixed the missing texts in the report pane
+- Fixed issue with the Social Pane / Guild Pane behaving odd (bug in WhoLib)
+- Fixed issue with Titan Panel
 ---
 
 Installation: 
@@ -15,40 +16,39 @@ Features:
 * Detects multi-message spam
 * Customizable notification
 * FuBar and Titan support
-* Support for WIM, Cellular and other messaging addons.
+* Support for Whisp, Chatter, Wim and other messaging addons.
 * Manual reporting of players you suspect to be a goldseller / bot / violating naming rules
 * Report-button in mailframe to report spam send to you by in-game mail
 * Seperate reportlists are maintained for each realm you play on
 * And many more
 
 Use: 
-* Type /sentry for options, or right-click the minimap/fubar/titan icon
-* right-click a name and select "Report spam" to manually add that player to the spamreportlist. 
+* Left click the minimap/fubar/titan icon to show a listing of to-be-reported characters
+* Type /sentry or right-click the icon for options
 
 How to help: 
 * If a spam-message isn't recognised:
-  - Manually add the spammer
-  - Type /sentry spam feedback <name of the spammer>
-  - Send me a PM with the code sequence
-* If you encounter a false positive: send me a PM containing that message
+  1. Report the spammer by right-clicking the name in the chat window and selecting "Report Spam"
+  2. Type /sentry spam feedback
+  3. Send me a PM with the code sequence
+* If you encounter a false positive: 
+  1. Click the message in SpamSentry main-window
+  2. Send me a PM containing that message
 
 About reporting:
-GM-Tickets have been confirmed to be limited to 500 characters. To conserve precious space, reporting has been reworked to the following rules:
-* A single spammer is reported with full message
-* Multiple spammers will be reported as a short list, containing, name, date/time and website or partial message.
-* Up to four spammers can be reported in one go. The surplus will be queued for the next ticket.
+GM-Tickets have been confirmed to be limited to 500 characters. If you edit the ticket texts it is advised to keep enough characters available to actually report characters.
 
 Performance notes: 
 * All code has been designed to minimize parsing-time, and maximize performance for raiding. 
-* The mod currently uses approximately 500kB memory (PTR 2.1 GetAddOnMemoryUsage() ).
-* To enhance performance and memory usage you can optionally choose to run several modules as load-on-demand. To do so: run the "ss_lod"-script located in this folder. Do NOT delete or disable the module folders! SpamSentry needs them for several functions, but will only load them when necessary.
+* The mod currently uses a little under 300kB memory (Patch 2.3 GetAddOnMemoryUsage()).
+* Type /sentry statistics to show session statistics.
 
 Known issues:
 * Blizzard made an a-typical implementation for who-queries. You may notice slow response on the /who command while using this mod when the chat is crowded. 
 * Textballoons from says and yells are still shown. Blizzard currently provides no way to block textballoons.
 
 Localisation: 
-German - Credits to Scath & Gothico for their translation
+German - Credits to: Scath, Gothico , Gamefaq 
 French - Credits to: Foxbad, Onissifor, Citanul, Beldarane
 Spanish - Credits to Nekromant for his translation
 Chinese - Credits to Norova for her translation
@@ -58,6 +58,25 @@ Special thanks:
 To Aery for unlimited testing-support
 
 Versionhistory:
+20081027
+- Fixed the missing texts in the report pane
+- Fixed issue with the Social Pane / Guild Pane behaving odd (bug in WhoLib)
+- Fixed issue with Titan Panel
+20081016 - Updated for patch 3.0
+20080707 - Updated filters, fixed rare bug.
+20080617 - Updated filters, added statistics command.
+20080609 - Fixed typo in German localisation. Fixed small bug. Updated filters.
+20080525 - Updated French localisation. SpamSentry icon now turns red when spam has been found. Fixed small bug with titanpanel. Updated filters.
+20080520 - Fixed problem with tracking certain channels on German clients. Updated filters.
+20080516 - Updated german translation (Gamefaq). Updated filters. Code cleanup.
+20080508 - Fixed rare bug when handling chatrequests from other addons. Added compatibility for the Chatter Highlights module.
+20080507 - Updated filters.
+20080504 - Fixed typo in feedback-function.
+20080503 - Updated filters; updated TitanBar-plugin to work properly with TitanBar 3.2.
+20080502 - Fixed bug with invalid library reference. Fixed a few minor bugs. Updated filters.
+20080424 - Updated filters. updated compatibility for WIM addon (Thanks Pazza).
+20080411 - Updated filters, added compatibility for Whisp addon.
+20080405 - Updated for patch 2.4. Updated filters. Added emote, lookingforgroup and localdefense channels. Removed LOD functionality; overhead was bigger than the actual gain. Fixed functionality for feedback option.
 20070603 - Various small bugfixes.
 20070526
 - Updated for patch 2.1

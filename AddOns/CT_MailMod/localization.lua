@@ -31,6 +31,8 @@ module:setText("MASS_MAILING_DROP_ITEMS", "Drop items here to add to mail.");
 module:setText("MASS_MAILING_DROP_HERE", "Drop the item here to add it to the mail.");
 module:setText("MASS_MAILING_CLICK_REMOVE", "Click to remove item from mail.");
 module:setText("MASS_MAILING_POSTAGE", "Postage:");
+module:setText("MASS_MAILING_SEND", "Send");
+module:setText("MASS_MAILING_CANCEL", "Cancel");
 
 -- Log messages
 module:setText("MAIL_LOOT_ERROR", "A mail could not be looted because of an error (Inventory full?).");

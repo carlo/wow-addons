@@ -1,4 +1,4 @@
-local L = AceLibrary("AceLocale-2.2"):new("beql")
+﻿local L = AceLibrary("AceLocale-2.2"):new("beql")
 
 L:RegisterTranslations("frFR", function() return{
 
@@ -100,7 +100,7 @@ L:RegisterTranslations("frFR", function() return{
 	["Custom Header Color"] = "Couleur personnalis\195\169e des titres",
 	["Use custom color for headers"] = "Changer la couleur des titres",
 	["Completed Header Color"] = "Couleur qu\195\170te termin\195\169e",
-	["Sets the color for completed headers"] = "Change la couleur des titres des qu\195\170tes termin�es",
+	["Sets the color for completed headers"] = "Change la couleur des titres des qu\195\170tes terminées",
 	["Header Color"] = "Couleur de titre",
 	["Failed Header Color"] = "Couleur de qu\195\170te rat\195\169",
 	["Sets the color for failed quests"] = "Change la couleur des titres des qu\195\170tes rat\195\169es",
@@ -148,6 +148,85 @@ L:RegisterTranslations("frFR", function() return{
 	["Party Member Color"] = "Party Member Color",
 	["Party Member with Quixote Color"] = "Party Member with Quixote Color",
 	["Sets the color for Party member"] = "Sets the color for Party member",	
+
+--[[ new with 3.0
+	["Main Options"] = true, -- translate me!!!
+	["Enable Addon"] = true, -- translate me!!!
+	["Enable this Addon"] = true, -- translate me!!!
+	["General Quest Log Options"] = true, -- translate me!!!
+	["No sound"] = true, -- translate me!!!
+	["Don't play a sound"] = true, -- translate me!!!
+	["Watch Options"] = true, -- translate me!!!
+	["Zones"] = true, -- translate me!!!
+	["NPC color"] = true, -- translate me!!!
+	["Title color"] = true, -- translate me!!!
+
+-- Fubar
+	["Show icon"] = true, -- translate me!!!
+	["Show the plugins icon on the panel."] = true, -- translate me!!!
+	["Show text"] = true, -- translate me!!!
+	["Show the plugins text on the panel."] = true, -- translate me!!!
+	["Show colored text"] = true, -- translate me!!!
+	["Allow the plugin to color its text."] = true, -- translate me!!!
+	["Detach tooltip"] = true, -- translate me!!!
+	["Detach the tooltip from the panel."] = true, -- translate me!!!
+	["Lock tooltip"] = true, -- translate me!!!
+	["Lock the tooltips position. When the tooltip is locked, you must use Alt to access it with your mouse."] = true, -- translate me!!!
+	["Position"] = true, -- translate me!!!
+	["Position the plugin on the panel."] = true, -- translate me!!!
+	["Left"] = true, -- translate me!!!
+	["Right"] = true, -- translate me!!!
+	["Center"] = true, -- translate me!!!
+	["Attach to minimap"] = true, -- translate me!!!
+	["Attach the plugin to the minimap instead of the panel."] = true, -- translate me!!!
+	["Hide plugin"] = true, -- translate me!!!
+	["Hidden"] = true, -- translate me!!!
+	["Hide the plugin from the panel or minimap, leaving the addon running."] = true, -- translate me!!!
+	["Other"] = true, -- translate me!!!
+	["Close"] = true, -- translate me!!!
+	["Close the menu."] = true, -- translate me!!!
+	["Minimap position"] = true, -- translate me!!!
+
+-- Profiles
+	["Profiles"] = true, -- translate me!!!
+ 
+-- Achievement Tracker
+	["Achievement Tracker"] = true, -- translate me!!!
+	["Enable Achievement Tracker"] = true, -- translate me!!!
+	["Enables the Achievement Tracker, which can be moved an collapsed."] = true, -- translate me!!!
+	["Makes the achievement tracker unmovable"] = true, -- translate me!!!
+	["Show Achievement Tracker Header"] = true, -- translate me!!!
+	["Shows the header of the Achievementtracker"] = true, -- translate me!!!
+	["Save tracked Achievement"] = true, -- translate me!!!
+	["Save last tracked Achievement and resore it after login"] = true, -- translate me!!!
+	["Remove Completed Achievement"] = true, -- translate me!!!
+	["Automatical remove the completed Achievement from tracker"] = true, -- translate me!!!
+	["Achievement Tracker Alpha"] = true, -- translate me!!!
+	["Sets the Alpha of the Achievement Tracker"] = true, -- translate me!!!
+	["Achievement Tracker Scale"] = true, -- translate me!!!
+	["Sets the Scale of the Achievement Tracker"] = true, -- translate me!!!
+--]]
+-- Profiles
+
+	["ace2profile_default"] = "D\195\169faut",
+	["ace2profile_intro"] = "Vous pouvez changer le profil actuel afin d'avoir des param\195\168tres diff\195\169rents pour chaque personnage, permettant ainsi d'avoir une configuration tr\195\168s flexible.",
+	["ace2profile_reset_desc"] = "R\195\169initialise le profil actuel au cas o\195\185 votre configuration est corrompue ou si vous voulez tout simplement faire table rase.",
+	["ace2profile_reset"] = "R\195\169initialiser le profil",
+	["ace2profile_reset_sub"] = "R\195\169initialise le profil actuel avec les param\195\168tres par d\195\169faut.",
+	["ace2profile_choose_desc"] = "Vous pouvez cr\195\169er un nouveau profil en entrant un nouveau nom dans la bo\195\174te de saisie, ou en choississant un des profils d\195\169j\195\160 existants.",
+	["ace2profile_new"] = "Nouveau",
+	["ace2profile_new_sub"] = "Cr\195\169\195\169e un nouveau profil vierge.",
+	["ace2profile_choose"] = "Profils existants",
+	["ace2profile_choose_sub"] = "Permet de choisir un des profils d\195\169j\195\160 disponibles.",
+	["ace2profile_copy_desc"] = "Copie les param\195\168tres d'un profil d\195\169j\195\160 existant dans le profil actuellement actif.",
+	["ace2profile_copy"] = "Copier \195\160 partir de",
+	["ace2profile_delete_desc"] = "Supprime les profils existants inutilis\195\169s de la base de donn\195\169es afin de gagner de la place et de nettoyer le fichier SavedVariables.",
+	["ace2profile_delete"] = "Supprimer un profil",
+	["ace2profile_delete_sub"] = "Supprime un profil de la base de donn\195\169es.",
+	["ace2profile_delete_confirm"] = "Etes-vous s\195\187r de vouloir supprimer le profil s\195\169lectionn\195\169 ?",
+	["ace2profile_profiles"] = "Profils",
+	["ace2profile_profiles_sub"] = "Gestion des profils",
+
 } end )
 
 if GetLocale() == "frFR" then

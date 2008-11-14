@@ -18,10 +18,10 @@
   <Frame name="FlightMapFrame" parent="UIParent" hidden="true">
     <Scripts>
       <OnLoad>
-        FlightMap_OnLoad();
+        FlightMap_OnLoad(self);
       </OnLoad>
       <OnEvent>
-        FlightMap_OnEvent(event);
+        FlightMap_OnEvent(self, event, ...);
       </OnEvent>
     </Scripts>
   </Frame>
@@ -32,13 +32,13 @@
                frameStrata="TOOLTIP" inherits="GameTooltipTemplate">
     <Scripts>
       <OnLoad>
-          this:SetBackdropBorderColor(
+          self:SetBackdropBorderColor(
               TOOLTIP_DEFAULT_COLOR.r,
               TOOLTIP_DEFAULT_COLOR.g,
               TOOLTIP_DEFAULT_COLOR.b,
               0
           );
-          this:SetBackdropColor(
+          self:SetBackdropColor(
               TOOLTIP_DEFAULT_BACKGROUND_COLOR.r,
               TOOLTIP_DEFAULT_BACKGROUND_COLOR.g,
               TOOLTIP_DEFAULT_BACKGROUND_COLOR.b,
@@ -77,7 +77,7 @@
     </HighlightTexture>
     <Scripts>
       <OnEnter>
-          FlightMapPOIButton_OnEnter();
+          FlightMapPOIButton_OnEnter(self);
       </OnEnter>
       <OnLeave>
           WorldMapTooltip:Hide();
@@ -139,16 +139,16 @@
                inherits="UICheckButtonTemplate" virtual="true">
     <Scripts>
       <OnClick>
-        if (this:GetChecked()) then
+        if (self:GetChecked()) then
             PlaySound("igMainMenuOptionCheckBoxOff");
         else
             PlaySound("igMainMenuOptionCheckBoxOn");
         end
-        FlightMapOptionsCheckButton_OnClick();
+        FlightMapOptionsCheckButton_OnClick(self, button);
       </OnClick>
       <OnEnter>
-        if (this.tooltipText) then
-            GameTooltip_AddNewbieTip(this.tooltipText, 1, 1, 1);
+        if (self.tooltipText) then
+            GameTooltip_AddNewbieTip(self, self.tooltipText, 1, 1, 1);
         end
       </OnEnter>
       <OnLeave>
@@ -359,10 +359,10 @@
     </Frames>
     <Scripts>
       <OnShow>
-        FlightMapOptionsFrame_OnShow();
+        FlightMapOptionsFrame_OnShow(self);
       </OnShow>
       <OnHide>
-        FlightMapOptionsFrame_OnHide();
+        FlightMapOptionsFrame_OnHide(self);
       </OnHide>
     </Scripts>
   </Frame>

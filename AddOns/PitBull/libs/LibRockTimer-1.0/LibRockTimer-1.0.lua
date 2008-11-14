@@ -1,6 +1,6 @@
 --[[
 Name: LibRockTimer-1.0
-Revision: $Rev: 48281 $
+Revision: $Rev: 232 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for the creation of schedules.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockTimer-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 48281 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 232 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 
@@ -286,11 +286,12 @@ local function OnUpdate(this, elapsed)
 							geterrorhandler()(ret)
 							delay = nil
 						else
-							local success, ret = pcall(object_method, object, unpack(timer, 1, timer.n))
+							object_method(object, unpack(timer, 1, timer.n))
+--[[							local success, ret = pcall(object_method, object, unpack(timer, 1, timer.n))
 							if not success then
 								geterrorhandler()(ret)
 								delay = nil
-							end
+							end]]
 						end
 					else -- function
 						local success, ret = pcall(callback, unpack(timer, 1, timer.n))

@@ -86,7 +86,7 @@ function beql:TrackerClick()
 		if QuestWatchFrame.ismoving then
 			return
 		end
-		if (not beql.db.char.saved.CurrentHoveredQuest and beql.db.char.saved.CurrentHoveredQuest <= 0) then
+		if (not beql.db.char.saved.CurrentHoveredQuest or beql.db.char.saved.CurrentHoveredQuest <= 0) then
 			return
 		end
 		if arg1 == "LeftButton" and beql.db.profile.activetrackerleft then

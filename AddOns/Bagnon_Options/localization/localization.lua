@@ -2,25 +2,28 @@
 	Bagnon Main Options Localization file
 --]]
 
-BAGNON_OPTIONS_LOCALS = {}
-local L = BAGNON_OPTIONS_LOCALS
+local L = LibStub('AceLocale-3.0'):NewLocale('Bagnon-Options', 'enUS', true)
 
-L.Title = "Bagnon Options"
+L.Title = 'Bagnon Options'
+L.Display = 'Display'
+L.Events = 'Events'
 
-L.ShowOwners = "Show Item Owners"
+L.FrameSettings = "Frame Settings"
+L.Lock = "Lock Position"
+L.Toplevel = "Always On Top"
+L.BackgroundColor = "Background"
+L.FrameLevel = "Frame Level"
+L.Opacity = "Opacity"
+L.Scale = "Scale"
+L.Spacing = "Spacing"
+L.Cols = "Columns"
+L.ReverseSort = "Reverse Order"
 L.ShowBorders = "Color By Quality"
 
 L.ReplaceBags = "Replace Bags"
-L.ReplaceBank = "Replace Bank"
-L.ReuseFrames = "Reuse Blizzard Frames"
-
-L.Show = "Show"
-L.Bags = "Bags"
-L.Bank = "Bank"
-
-L.AtBank = "When Checking The Bank"
-L.AtVendor = "When Selling Items"
-L.AtAH = "When At The AH"
-L.AtMail = "When Mailing Items"
-L.AtTrade = "When Trading"
-L.AtCraft = "When Crafting"
+L.AtBank = "Show When Checking The Bank"
+L.AtVendor = "Show When Selling Items"
+L.AtAH = "Show When At The AH"
+L.AtMail = "Show When Mailing Items"
+L.AtTrade = "Show When Trading"
+L.AtCraft = "Show When Crafting"

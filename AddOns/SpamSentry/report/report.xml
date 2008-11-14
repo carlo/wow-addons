@@ -107,9 +107,9 @@
   
   <!--Normal style buttons -->
   <Button name="SpamSentryButton" virtual="true">
-    <NormalFont font="GameFontNormal"/>
-    <HighlightFont font="GameFontHighlight"/>
-    <DisabledFont font="GameFontDisable"/>
+    <NormalFont style="GameFontNormalSmall"/>
+    <HighlightFont style="GameFontHighlightSmall"/>
+    <DisabledFont style="GameFontHighlightSmall"/>
 
     <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
       <BackgroundInsets>
@@ -178,10 +178,15 @@
   </Button>
 
   <!--Message buttons -->
-  <Button name="SpamSentryItem" justifyH="LEFT" virtual="true">
-    <Size x="540" y="55"/>
+  <Button name="SpamSentryItem" virtual="true">
+    <Size>
+      <AbsDimension x="540" y="55"/>
+    </Size>
 
     <ButtonText>
+      <Size>
+        <AbsDimension x="520" y="0"/>
+      </Size>
       <Anchors>
         <Anchor point="TOPLEFT">
           <Offset x="10" y="0"/>
@@ -190,9 +195,12 @@
       </Anchors>
     </ButtonText>
 
-    <NormalFont font="GameFontNormal" justifyH="LEFT"/>
+    <NormalFont style="ChatFontNormal" justifyH="LEFT"/>
+    <HighlightFont style="ChatFontNormal" justifyH="LEFT"/>
+    <DisabledFont style="ChatFontNormal" justifyH="LEFT"/>
+    
     <HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
-
+    
     <Scripts>
       <OnClick>
         if IsControlKeyDown() then
@@ -272,6 +280,7 @@
           <OnClick>
             SS_Report:ClearSpam(0, true)
           </OnClick>
+
         </Scripts>
       </Button>
 
@@ -435,7 +444,6 @@
         </Anchors>
         <Scripts>
           <OnClick>
-            SS:Load("bot")
             SS_Bot:Clear(min(5, getn(SS.dbr.realm.botReportList)), true)
             SpamSentry_TicketEditBox:SetText(SS_Report:MakeBotReport())
           </OnClick>
@@ -452,7 +460,6 @@
         </Anchors>
         <Scripts>
           <OnClick>
-            SS:Load("rp")
             SS_RP:Clear(min(5, getn(SS.dbr.realm.rpReportList)), true)
             SpamSentry_TicketEditBox:SetText(SS_Report:MakeRPReport())
           </OnClick>

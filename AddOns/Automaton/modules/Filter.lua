@@ -22,6 +22,10 @@ L:RegisterTranslations("zhTW", function() return {
 ["Show only available skills at trainers by default."] = "只顯示可學習的技能",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Show only available skills at trainers by default."] = "在跟导师学习技能时默认只显示可学技能",
+} end)
+
 module.description = L["Show only available skills at trainers by default."]
 module.options = {
 }

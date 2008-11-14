@@ -1,6 +1,6 @@
-﻿## Interface: 20300
+﻿## Interface: 30000
 
-## Title: LibRockConsole-1.0
+## Title: Lib: RockConsole-1.0
 ## Notes: Console library
 ## Author: ckknight
 ## X-Website: http://www.wowace.com

@@ -24,8 +24,8 @@ L:RegisterTranslations("koKR", function() return({
 L:RegisterTranslations("deDE", function() return({
 	autozoom = "Autozoom",
 	autozoom_desc = "Die Minimap automatisch nach der eingestellten Zeit herauszoomen",
-	time = "zeit",
-	time_desc = "verzögerung (in Sekunden), bis das automatische Herauszoomen aktiv wird"
+	time = "Zeit",
+	time_desc = "Verzögerung (in Sekunden), bis das automatische Herauszoomen aktiv wird"
 }) end)
 
 L:RegisterTranslations("zhCN", function() return({ 
@@ -40,6 +40,13 @@ L:RegisterTranslations("esES", function() return({
 	autozoom_desc = "Auto aleja la vista del minimapa tras un tiempo espec\195\173fico",
 	time = "Tiempo",
 	time_desc = "Retraso, en segundos, tras el que se aleja la vista"
+}) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	autozoom = "Авто-изменение масштаба",
+	autozoom_desc = "Авто-уменьшение масштаба мини-карты через заданное время",
+	time = "Время",
+	time_desc = "Задержка(в секундах) перед изменением масштаба"
 }) end)
 
 local mod = simpleMinimap:NewModule("autozoom", "AceEvent-2.0", "AceHook-2.1")
@@ -60,7 +67,7 @@ mod.options = {
 	}
 }
 mod.defaults = {
-	enabled = true,
+	enabled = false,
 	time = 20,
 }
 

@@ -16,20 +16,21 @@ TITAN_SMARTBUFF_BUTTONSHOW = "Show UI Button";
 TITAN_SMARTBUFF_BUTTONRESET = "Reset UI Button";
 TITAN_SMARTBUFF_TOOLTIP_CONTENTS = "";
 
-function TitanPanelSmartBuffButton_OnLoad()
-	this.registry = { 
+function TitanPanelSmartBuffButton_OnLoad(self)
+	self.registry = { 
 		id = TITAN_SMARTBUFF_ID,
 		menuText = TITAN_SMARTBUFF_MENU_TEXT,
-		--buttonTextFunction = TitanPanelSmartBuffButton_GetButtonText,
+		version = SMARTBUFF_VERSION,
+		category = "General",
 		tooltipTitle = TITAN_SMARTBUFF_TOOLTIP,
 		tooltipTextFunction = "TitanPanelSmartBuffButton_GetTooltipText",
 		icon = TITAN_SMARTBUFF_ICON_ON,
 		iconWidth = 16,
 		savedVariables = {
-			ShowIcon = 1,
-		--	ShowLabelText = 1,
+			ShowIcon = true,
 		}    
 	};
+	tinsert(TITAN_PANEL_NONMOVABLE_PLUGINS, TITAN_SMARTBUFF_ID);
 	--SMARTBUFF_AddMsgD("SB Titan loaded");
 end
 
@@ -38,20 +39,20 @@ function TitanPanelSmartBuffButton_OnShow()
   --SMARTBUFF_AddMsgD("SB Titan showed");
 end
 
-function TitanPanelSmartBuffButton_OnClick()
+function TitanPanelSmartBuffButton_OnClick(self, button)
   -- LeftButton
   -- RightButton
   -- IsShiftKeyDown()
-  if (arg1 == "LeftButton" and IsAltKeyDown()) then
+  if (button == "LeftButton" and IsAltKeyDown()) then
     if (IsAddOnLoaded("SmartDebuff")) then
       SMARTDEBUFF_ToggleSF();
     end  
-	elseif (arg1 == "RightButton") then
+	elseif (button == "RightButton") then
 	  TitanPanelSmartBuff_Toggle();
-	elseif (arg1 == "LeftButton") then
+	elseif (button == "LeftButton") then
 		SMARTBUFF_OptionsFrame_Toggle();    
 	end
-  --TitanPanelButton_OnClick(arg1);
+  --TitanPanelButton_OnClick(button);
 	--SMARTBUFF_AddMsgD("SB Titan clicked");
 end
 
@@ -66,7 +67,7 @@ function TitanPanelSmartBuffButton_SetIcon()
 	end
 end
 
-function TitanPanelSmartBuffButton_OnEvent()
+function TitanPanelSmartBuffButton_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5)
   if (TitanPanelButton_UpdateButton) then
     TitanPanelButton_UpdateButton(TITAN_SMARTBUFF_ID);	
     TitanPanelButton_UpdateTooltip();

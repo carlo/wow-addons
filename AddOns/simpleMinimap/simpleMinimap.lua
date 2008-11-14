@@ -1,4 +1,4 @@
---[[ simpleMinimap by arJUna ]]--
+﻿--[[ simpleMinimap by arJUna ]]--
 simpleMinimap = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent-2.0", "AceModuleCore-2.0")
 local simpleMinimap = simpleMinimap
 
@@ -15,14 +15,12 @@ local stratas = {
 	"TOOLTIP"
 }
 
-local direction = MinimapNorthTag
-
 local buttons = {
 	bgs = MiniMapBattlefieldFrame,
 	map = MiniMapWorldMapButton,
 	mail = MiniMapMailFrame,
 	meet = MiniMapMeetingStoneFrame,
-	time = GameTimeFrame,
+	calendar = GameTimeFrame,
 	track = MiniMapTracking,
 	voice = MiniMapVoiceChatFrame,
 	zoomin = MinimapZoomIn,
@@ -56,7 +54,7 @@ do
 			},
 			alpha = {
 				type = "range",
-				order = 5,
+				order = 5.3,
 				name = L["alpha"],
 				desc = L["alpha_desc"],
 				min = 0,
@@ -69,7 +67,7 @@ do
 			},
 			radius = {
 				type = "range",
-				order = 5,
+				order = 5.4,
 				name = L["radius"],
 				desc = L["radius_desc"],
 				min = -20,
@@ -81,7 +79,7 @@ do
 			},
 			scale = {
 				type="range",
-				order = 5,
+				order = 5.2,
 				name = L["scale"],
 				desc = L["scale_desc"],
 				min = 0.5,
@@ -100,7 +98,7 @@ do
 			},
 			show = {
 				type = "group",
-				order = 5,
+				order = 5.1,
 				name = L["show"],
 				desc = L["show_desc"],
 				pass = true,
@@ -138,67 +136,66 @@ do
 							}
 						}
 					},
-					bgs = {
-						type = "toggle",
-						order = 5,
-						name = L["bgs"],
-						desc = L["bgs_desc"],
-					},
-					direction = {
-						type = "toggle",
-						order = 5,
-						name = L["direction"],
-						desc = L["direction_desc"],
-						hidden = function() return simpleMinimap.db.namespaces.compass.profile.enabled end,
-						set = set,
-					},
-					map = {
-						type = "toggle",
-						order = 5,
-						name = L["map"],
-						desc = L["map_desc"],
-					},
-					mail = {
-						type = "toggle",
-						order = 5,
-						name = L["mail"],
-						desc = L["mail_desc"],
-					},
-					meet = {
-						type = "toggle",
-						order = 5,
-						name = L["meet"],
-						desc = L["meet_desc"],
-					},
-					time = {
-						type = "toggle",
-						order = 5,
-						name = L["time"],
-						desc = L["time_desc"],
-					},
 					track = {
 						type = "toggle",
-						order = 5,
+						order = 5.1,
 						name = L["track"],
 						desc = L["track_desc"],
 					},
+					mail = {
+						type = "toggle",
+						order = 5.2,
+						name = L["mail"],
+						desc = L["mail_desc"],
+					},
+					calendar = {
+						type = "toggle",
+						order = 5.3,
+						name = L["calendar"],
+						desc = L["calendar_desc"],
+					},
+					bgs = {
+						type = "toggle",
+						order = 5.4,
+						name = L["bgs"],
+						desc = L["bgs_desc"],
+					},
+					meet = {
+						type = "toggle",
+						order = 5.5,
+						name = L["meet"],
+						desc = L["meet_desc"],
+					},
+					map = {
+						type = "toggle",
+						order = 5.6,
+						name = L["map"],
+						desc = L["map_desc"],
+					},
 					voice = {
 						type = "toggle",
-						order = 5,
+						order = 5.7,
 						name = L["voice"],
 						desc = L["voice_desc"],
 					},
 					zoom = {
 						type = "toggle",
-						order = 5,
+						order = 5.8,
 						name = L["zoom"],
 						desc = L["zoom_desc"],
+					},
+					direction = {
+						type = "toggle",
+						order = 5.9,
+						name = L["direction"],
+						desc = L["direction_desc"],
+						set = set,
 					}
 				}
 			},
 			strata = {
 				type="range",
-				order = 5,
+				order = 5.5,
 				name = L["strata"],
 				desc = L["strata_desc"],
 				min = 1,
@@ -278,7 +275,7 @@ function simpleMinimap:OnInitialize()
 			map = true,
 			mail = true,
 			meet = true,
-			time = true,
+			calendar = true,
 			track = true,
 			voice = true,
 			zoom = true
@@ -287,11 +284,15 @@ function simpleMinimap:OnInitialize()
 	self:RegisterChatCommand("/simpleminimap", "/smm", options, "SIMPLEMINIMAP")
 
 	StaticPopupDialogs["smmRESET"] = {
-		text = L["reset_popup"], button1 = TEXT(ACCEPT), button2 = TEXT(CANCEL),
-		timeout = 30, whileDead = 1, hideOnEscape = 1,
+		text = L["reset_popup"],
+		button1 = TEXT(ACCEPT),
+		button2 = TEXT(CANCEL),
+		timeout = 30,
+		whileDead = 1,
+		hideOnEscape = 1,
 		OnAccept = function()
-			self:ResetDB("profile")
-			self:UpdateScreen()
+			simpleMinimap:ResetDB("profile")
+			simpleMinimap:UpdateScreen()
 		end
 	}
 end
@@ -330,30 +331,68 @@ function simpleMinimap:OnEnable()
 			end
 		end)
 	end
-	MinimapCluster:SetMovable(true)
-	Minimap:RegisterForDrag("LeftButton")
-	Minimap:SetScript("OnDragStart", mapDragOn)
-	Minimap:SetScript("OnDragStop", mapDragOff)
-	Minimap:SetClampedToScreen(true)
-	MinimapZoneTextButton:RegisterForDrag("LeftButton")
-	MinimapZoneTextButton:SetScript("OnDragStart", mapDragOn)
-	MinimapZoneTextButton:SetScript("OnDragStop", mapDragOff)
-	for _, f in pairs(buttons) do
-		f:SetMovable(true)
-		f:RegisterForDrag("LeftButton")
-		f:SetScript("OnDragStart", buttonDragOn)
-		f:SetScript("OnDragStop", buttonDragOff)
-	end
+	
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM")
-
-	MinimapCluster:StartMoving()
-	MinimapCluster:StopMovingOrSizing()
 
 	for n, m in self:IterateModules() do
 		self:ToggleModuleActive(m, m.db.profile.enabled)
 	end
 
 	self:UpdateScreen()
+end
+
+function simpleMinimap:FrameDragEnable()
+	MinimapCluster:SetMovable(true)
+
+	Minimap:RegisterForDrag("LeftButton")
+	Minimap:SetScript("OnDragStart", mapDragOn)
+	Minimap:SetScript("OnDragStop", mapDragOff)
+	Minimap:SetClampedToScreen(true)
+
+	MinimapZoneTextButton:RegisterForDrag("LeftButton")
+	MinimapZoneTextButton:SetScript("OnDragStart", mapDragOn)
+	MinimapZoneTextButton:SetScript("OnDragStop", mapDragOff)
+
+	for _, f in pairs(buttons) do
+		f:SetMovable(true)
+		f:RegisterForDrag("LeftButton")
+		f:SetScript("OnDragStart", buttonDragOn)
+		f:SetScript("OnDragStop", buttonDragOff)
+	end
+	MiniMapTrackingButton:SetMovable(true)
+	MiniMapTrackingButton:RegisterForDrag("LeftButton")
+	MiniMapTrackingButton:SetScript("OnDragStart", buttonDragOn)
+	MiniMapTrackingButton:SetScript("OnDragStop", buttonDragOff)
+	
+	MinimapCluster:StartMoving()
+	MinimapCluster:StopMovingOrSizing()
+end
+
+function simpleMinimap:FrameDragDisable()
+	MinimapCluster:SetMovable(true)
+
+	Minimap:RegisterForDrag(nil)
+	Minimap:SetScript("OnDragStart", nil)
+	Minimap:SetScript("OnDragStop", nil)
+	Minimap:SetClampedToScreen(true)
+
+	MinimapZoneTextButton:RegisterForDrag(nil)
+	MinimapZoneTextButton:SetScript("OnDragStart", nil)
+	MinimapZoneTextButton:SetScript("OnDragStop", nil)
+
+	for _, f in pairs(buttons) do
+		f:SetMovable(false)
+		f:RegisterForDrag(nil)
+		f:SetScript("OnDragStart", nil)
+		f:SetScript("OnDragStop", nil)
+	end
+	MiniMapTrackingButton:SetMovable(false)
+	MiniMapTrackingButton:RegisterForDrag(nil)
+	MiniMapTrackingButton:SetScript("OnDragStart", nil)
+	MiniMapTrackingButton:SetScript("OnDragStop", nil)
+
+	MinimapCluster:StartMoving()
+	MinimapCluster:StopMovingOrSizing()
 end
 
 function simpleMinimap:OnDisable()
@@ -368,6 +407,8 @@ function simpleMinimap:OnDisable()
 		f:SetMovable(false)
 		f:RegisterForDrag(nil)
 	end
+	MiniMapTrackingButton:SetMovable(false)
+	MiniMapTrackingButton:RegisterForDrag(nil)
 end
 
 function simpleMinimap:OnProfileEnable()
@@ -475,18 +516,44 @@ local function onUpdateFunc()
 end
 function simpleMinimap:ButtonDrag(kick)
 	if kick and not self.db.profile.lock then
-		this.isMoving = true
-		this:SetScript("OnUpdate", onUpdateFunc)
-		this:StartMoving()
+		if this:GetParent():GetName() == "MiniMapTracking" then
+			this.isMoving = true
+			this.tempScript = this:GetParent():GetScript("OnUpdate")
+			this:GetParent():SetScript("OnUpdate", onUpdateFunc)
+			this:GetParent():StartMoving()
+		else
+			this.isMoving = true
+			this.tempScript = this:GetScript("OnUpdate")
+			this:SetScript("OnUpdate", onUpdateFunc)
+			this:StartMoving()
+		end
 	elseif this.isMoving then
-		this.isMoving = false
-		this:StopMovingOrSizing()
-		this:SetScript("OnUpdate", nil)
-		for n, f in pairs(buttons) do
-			if f == this then
-				self.db.profile.buttonPos[n] = getPos()
-				break
+		if this:GetParent():GetName() == "MiniMapTracking" then
+			this.isMoving = false
+			this:GetParent():StopMovingOrSizing()
+			this:GetParent():SetScript("OnUpdate", nil)
+			if this.tempScript then
+				this:GetParent():SetScript("OnUpdate", this.tempScript)
 			end
+			self.db.profile.buttonPos["track"] = getPos()
+			MiniMapTracking_Update()
+			MiniMapTrackingIcon:SetPoint("TOPLEFT", MiniMapTracking, "TOPLEFT", 6, -6)
+			MiniMapTrackingIconOverlay:Hide()
+			self:UpdateScreen()
+		else
+			this.isMoving = false
+			this:StopMovingOrSizing()
+			this:SetScript("OnUpdate", nil)
+			if this.tempScript then
+				this:SetScript("OnUpdate", this.tempScript)
+			end
+			for n, f in pairs(buttons) do
+				if f == this then
+					self.db.profile.buttonPos[n] = getPos()
+					break
+				end
+			end
+			self:UpdateScreen()
 		end
 	end
 end
@@ -495,7 +562,14 @@ end
 --[[ screen updates ]]--
 function simpleMinimap:UpdateScreen()
 	local p = self.db.profile
--- set minimap
+	
+	if p.lock then
+		self:FrameDragDisable()
+	else
+		self:FrameDragEnable()
+	end
+	
+	-- set minimap
 	self:Lockdown(MinimapCluster, "SetScale", p.scale)
 	self:Lockdown(MinimapCluster, "SetFrameStrata", stratas[p.strata])
 	self:Lockdown(MinimapCluster, "SetAlpha", p.alpha)
@@ -510,7 +584,7 @@ function simpleMinimap:UpdateScreen()
 		MinimapCluster:SetUserPlaced(false)
 		MinimapCluster.smmTouched = nil
 	end
--- set minimap location bar
+	-- set minimap location bar
 	if p.locationShow then
 		self:Lockdown(MinimapToggleButton, "Show")
 		self:Lockdown(MinimapBorderTop, "Show")
@@ -524,7 +598,7 @@ function simpleMinimap:UpdateScreen()
 			self:Lockdown(MinimapZoneTextButton, "Hide")
 		end
 	end
--- set minimap buttons
+	-- set minimap buttons
 	for n, f in pairs(buttons) do
 		if n == "zoomin" or n == "zoomout" then
 			if p.show.zoom then
@@ -566,15 +640,13 @@ function simpleMinimap:UpdateScreen()
 		end
 	end
 
-	if not simpleMinimap.db.namespaces.compass.profile.enabled then
-		if (p.show.direction) then
-			direction:Show()
-		else
-			direction:Hide()
-		end
+	if p.show.direction then
+		MinimapNorthTag:SetTexCoord(0,1,0,1)--MinimapNorthTag:Show()
+	else
+		MinimapNorthTag:SetTexCoord(0,0,0,0)--MinimapNorthTag:Hide()
 	end
 
--- let any modules update the screen also
+	-- let any modules update the screen also
 	for n,m in self:IterateModules() do
 		m:UpdateScreen()
 	end
@@ -653,4 +725,3 @@ function simpleMinimap.modulePrototype:OnInitialize()
 end
 
 function simpleMinimap.modulePrototype:UpdateScreen() end
-

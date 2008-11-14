@@ -1,5 +1,5 @@
 --[[
-	$Id: MobHealth3.lua 53569 2007-10-31 08:48:52Z helium $
+	$Id: MobHealth3.lua 69515 2008-04-13 10:56:57Z ottokang $
 	MobHealth3!
 		"Man, this mofo lasts forever!" "Dude, it only has 700hp and you're a paladin -_-"
 
@@ -7,6 +7,7 @@
 		With tons of contributions by Mikk
 
 	Special thanks to the following:
+		Ammo for making this framework independant
 		Mikk for writing the algorithm used now, helping with the metamethod proxy and for some optimisation info
 		Vika for creating the algorithm used in the frst 4 generations of this mod. Traces of it still remain today
 		Cladhaire, the current WatchDog maintainer for giving me permission to use Vika's algorithm
@@ -21,13 +22,11 @@
 	API Documentation: http://wiki.wowace.com/index.php/MobHealth3_API_Documentation
 --]]
 
-local L = AceLibrary("AceLocale-2.2"):new("MobHealth3")
-
-L:RegisterTranslations("enUS", function() return {
+local L =  {
 	["Save Data"] = true,
 	["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = true,
 	["Estimation Precision"] = true,
-	["Adjust how accurate you want MobHealth3 to be (A number 2-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = true,
+	["Adjust how accurate you want MobHealth3 to be (A number 1-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = true,
 	["Stable Max"] = true,
 	["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = true,
 	["Reset Cache/DB"] = true,
@@ -37,59 +36,63 @@ L:RegisterTranslations("enUS", function() return {
 
 	["Demon"] = true,
 	["Beast"] = true,
-} end)
+	
+	["|cff00ff00On|r"] = true,
+	["|cffff0000Off|r"] = true,
+	
+	["Help"] = true,
+	["Print help information"] = true,
+}
+for k, v in pairs(L) do L[k] = k end
 
-L:RegisterTranslations("koKR", function() return {
-	["Save Data"] = "자료 저장",
-	["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = "데이터를 저장합니다. 이는 부가적인 설정으로 |cff00ff00필수적|r인 사항은 아닙니다. 모든 적에 대한 값을 항상 기록합니다. 적의 생명력에 대한 재산출은 빈번한 사항임을 기억하세요.",
-	["Estimation Precision"] = "추정값 신뢰도",
-	["Adjust how accurate you want MobHealth3 to be (A number 2-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = "MobHealth3에서 적용하기을 원하는 정확도(2~90 사이)를 설정합니다. 몹의 최대 생명력의 추정값을 표시하기 전에 얼마나 많은 양의 몹의 생명력(백분률) 변경 사항이 있어야 하는지를 결정합니다. 이 값을 낮게 설정한다면, 추정값을 일찍 볼 수는 있으나 신뢰도는 떨어집니다. 공격대 플레이어는 이 값을 약간 낫추는 것을 추천합니다. 만약에 정확도에 대해서 별다른 신경을 쓰지 않는다면 1로 설정하세요.",
-	["Stable Max"] = "최대값 고정",
-	["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = "이 설정을 적용할 경우 최대 생명력은 대상이 변경될 때만 업데이트 됩니다. 만약 대상의 자료가 없을 경우 MH3은 전투 중에 미리 설정된 백분률이 도달하기 전에 자료를 업데이트 할 것입니다.",
-	["Reset Cache/DB"] = "DB 초기화",
-	["Reset the session cache and the DB if you have saving turned on"] = "이번 접속 세션의 임시값을 초기화 합니다. 만약 데이터를 저장하는 경우에는 데이터베이스 또한 초기화 됩니다.",
-	["Cache/Database reset"] = "데이터베이스가 초기화 되었습니다",
-	["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"] = "구버전의 MobHealth/MobHealth2/Mobinfo2 데이터베이스가 검색/적용 되었습니다. MH3가 자동으로 유지된 데이터에 대한 저장을 시작합니다",
+local locale = GetLocale()
+if locale == "koKR" then
+	L["Save Data"] = "자료 저장"
+	L["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = "데이터를 저장합니다. 이는 부가적인 설정으로 |cff00ff00필수적|r인 사항은 아닙니다. 모든 적에 대한 값을 항상 기록합니다. 적의 생명력에 대한 재산출은 빈번한 사항임을 기억하세요."
+	L["Estimation Precision"] = "추정값 신뢰도"
+	L["Adjust how accurate you want MobHealth3 to be (A number 1-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = "MobHealth3에서 적용하기을 원하는 정확도(2~90 사이)를 설정합니다. 몹의 최대 생명력의 추정값을 표시하기 전에 얼마나 많은 양의 몹의 생명력(백분률) 변경 사항이 있어야 하는지를 결정합니다. 이 값을 낮게 설정한다면, 추정값을 일찍 볼 수는 있으나 신뢰도는 떨어집니다. 공격대 플레이어는 이 값을 약간 낫추는 것을 추천합니다. 만약에 정확도에 대해서 별다른 신경을 쓰지 않는다면 1로 설정하세요."
+	L["Stable Max"] = "최대값 고정"
+	L["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = "이 설정을 적용할 경우 최대 생명력은 대상이 변경될 때만 업데이트 됩니다. 만약 대상의 자료가 없을 경우 MH3은 전투 중에 미리 설정된 백분률이 도달하기 전에 자료를 업데이트 할 것입니다."
+	L["Reset Cache/DB"] = "DB 초기화"
+	L["Reset the session cache and the DB if you have saving turned on"] = "이번 접속 세션의 임시값을 초기화 합니다. 만약 데이터를 저장하는 경우에는 데이터베이스 또한 초기화 됩니다."
+	L["Cache/Database reset"] = "데이터베이스가 초기화 되었습니다"
+	L["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"] = "구버전의 MobHealth/MobHealth2/Mobinfo2 데이터베이스가 검색/적용 되었습니다. MH3가 자동으로 유지된 데이터에 대한 저장을 시작합니다"
+	L["Demon"]="악마"
+	L["Beast"]="야수"
+elseif locale == "zhCN" then
+	L["Save Data"] = "儲存生命值資料"
+	--L["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = true
+	L["Estimation Precision"] = "估算精確度"
+	--L["Adjust how accurate you want MobHealth3 to be (A number 2-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = true
+	L["Stable Max"] = "穩定的HP最大值"
+	--L["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = true
+	L["Reset Cache/DB"] = "重置生命值資料"
+	--L["Reset the session cache and the DB if you have saving turned on"] = true
+	--L["Cache/Database reset"] = true
+	--L["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"] = true
+	L["Demon"]="恶魔"
+	L["Beast"]="野兽"
+elseif locale == "zhTW" then
+	L["Save Data"] = "儲存資料"
+	L["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = "儲存生命力資料，下次連線時可直接使用。這並|cff00ff00不是|r必須的，每次遊戲期間都會用快取暫存生命力值，而且重算是很|cff00ff00簡單快速|r的。"
+	L["Estimation Precision"] = "估算精確度"
+	L["Adjust how accurate you want MobHealth3 to be (A number 1-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = "調整MobHealth3的估算精確度（1-99）。這個數值設定了當怪物生命值變化多少百分比時，才顯示怪物的生命值。越低的數值，顯示生命值的速度越快，相對的估算的精確度也會越低。如果你不在乎估算的精確度，只想快點看到怪物的生命數值，請設定成1"
+	L["Stable Max"] = "穩定生命值最大值"
+	L["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = "穩定顯示目前敵人的生命力最大值，當目標改變時才更新。"
+	L["Reset Cache/DB"] = "重設快取/儲存資料"
+	L["Reset the session cache and the DB if you have saving turned on"] = "重設生命力資料。"
+	L["Cache/Database reset"] = "資料已重設"
+	L["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"] = "偵測到舊的生命值資料庫，資料庫已轉換，且自動開啟儲存功能。"
 
-	["Demon"]="악마",
-	["Beast"]="야수",
-} end)
+	L["Demon"] = "惡魔"
+	L["Beast"] = "野獸"
 
-L:RegisterTranslations("zhCN", function() return {
-	["Save Data"] = "保存血量数据",
-	--["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = true,
-	["Estimation Precision"] = "估算精度",
-	--["Adjust how accurate you want MobHealth3 to be (A number 2-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = true,
-	["Stable Max"] = "稳定HP最大值",
-	--["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = true,
-	["Reset Cache/DB"] = "重置血量数据",
-	--["Reset the session cache and the DB if you have saving turned on"] = true,
-	--["Cache/Database reset"] = true,
-	--["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"] = true,
-	["Demon"]="恶魔",
-	["Beast"]="野兽",
-} end)
-
-L:RegisterTranslations("zhTW", function() return {
-	["Save Data"] = "儲存資料",
-	["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"] = "儲存生命力資料，下次連線時可直接使用。這並|cff00ff00不是|r必須的，每次遊戲期間都會用快取暫存生命力值，而且重算是很|cff00ff00簡單快速|r的。",
-	["Estimation Precision"] = "估算精度",
-	["Adjust how accurate you want MobHealth3 to be (A number 2-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."] = "設定敵方生命力到達某個百分比 (2-99)，才顯示敵方生命力數字。一般而言，減血10%就能計算的很準，如果要快點顯示，請設成1。",
-	["Stable Max"] = "穩定生命力最大值",
-	["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"] = "穩定顯示目前敵人的生命力最大值，當目標改變時才更新。",
-	["Reset Cache/DB"] = "重設快取/儲存資料",
-	["Reset the session cache and the DB if you have saving turned on"] = "重設生命力資料。",
-	["Cache/Database reset"] = "資料已重設",
-	["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"] = "偵測到舊的生命力資料庫，資料庫已轉換，且自動開啟儲存功能。",
-
-	["Demon"] = "惡魔",
-	["Beast"] = "野獸",
-} end)
-
-L:RegisterTranslations("deDE", function() return {
-	["Demon"]="Dämon",
-	["Beast"]="Tier",
-} end)
+	L["Help"] = "幫助"
+	L["Print help information"] = "顯示幫助訊息"
+elseif locale == "deDE" then
+	L["Demon"] = "Dämon"
+	L["Beast"] = "Tier"
+end
 
 --[[
 	File-scope local vars
@@ -129,10 +132,29 @@ function GetMH3Cache() return MH3Cache end
 	Init/Enable methods
 --]]
 
-MobHealth3 = AceLibrary("AceAddon-2.0"):new("AceEvent-2.0", "AceConsole-2.0")
+MobHealth3 = CreateFrame("Frame", "MobHealth3Frame")
 local MobHealth3 = MobHealth3
 
-function MobHealth3:OnInitialize()
+MobHealth3:RegisterEvent("ADDON_LOADED")
+MobHealth3:RegisterEvent("UNIT_COMBAT")
+MobHealth3:RegisterEvent("PLAYER_TARGET_CHANGED")
+MobHealth3:RegisterEvent("UNIT_HEALTH")
+
+MobHealth3:SetScript("OnEvent", function( self, event, ... )
+	if MobHealth3[event] then MobHealth3[event](MobHealth3, event, ...) end
+end )
+
+function MobHealth3:Print(text, noprefix) 
+	if noprefix then
+		DEFAULT_CHAT_FRAME:AddMessage(tostring(text))
+	else
+		DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99MobHealth3|r: ".. tostring(text))
+	end
+end
+
+
+function MobHealth3:ADDON_LOADED(event, ...)
+	MobHealth3:UnregisterEvent("ADDON_LOADED")
 	-- If config savedvars don't exist, create them
 	MobHealth3Config = MobHealth3Config or defaults
 
@@ -142,60 +164,6 @@ function MobHealth3:OnInitialize()
 	elseif MobHealth3Config.saveData then
 		MobHealth3DB = MH3Cache
 	end
-
-	self:RegisterChatCommand("/mobhealth3", "/mh3", {
-		type = "group",
-		args = {
-			save = {
-				name = L["Save Data"],
-				desc = L["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"],
-				type = "toggle",
-				order = 1,
-				get = function() return not not MobHealth3DB end, -- "Double negatives for the not lose!" -Wobin
-				set = function(val)
-					if val == false then
-						MobHealth3DB = nil
-						MobHealth3Config.saveData = val
-					else
-						MobHealth3DB = MH3Cache
-						MobHealth3Config.saveData = val
-					end
-				end,
-			},
-			precision = {
-				name = L["Estimation Precision"],
-				desc = L["Adjust how accurate you want MobHealth3 to be (A number 2-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."],
-				type = "range",
-				order = 2,
-				step = 1,
-				min = 1,
-				max = 99,
-				get = function() return MobHealth3Config.precision end,
-				set = function(val) MobHealth3Config.precision = tonumber(val) end,
-			},
-			stablemax = {
-				name = L["Stable Max"],
-				desc = L["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"],
-				order = 3,
-				type = "toggle",
-				get = function() return MobHealth3Config.stableMax end,
-				set = function(val) MobHealth3Config.stableMax = val end,
-			},
-			reset = {
-				name = L["Reset Cache/DB"],
-				desc = L["Reset the session cache and the DB if you have saving turned on"],
-				type = "execute",
-				order = 4,
-				func = function()
-					MH3Cache = {}
-					AccumulatorHP = {}
-					AccumulatorPerc = {}
-					MobHealth3DB = MobHealth3Config.saveData and {} or nil
-					self:Print(L["Cache/Database reset"])
-				end,
-			},
-		},
-	})
 
 	-- MH/MH2 database converter. MI2 too if the user follows the instructions
 	if MobHealthDB and not MobHealthDB.thisIsADummyTable then
@@ -210,17 +178,11 @@ function MobHealth3:OnInitialize()
 				MH3Cache[k] = maxHP
 			end
 		end
-		self:Print(L["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"])
+		MobHealth3:Print(L["Old MobHealth/MobHealth2/MobInfo2 database detected and converted. MH3 has also automatically turned on saving for you to preserve the data"])
 	end
 
 	MobHealthDB = { thisIsADummyTable = true }
 	setmetatable(MobHealthDB, compatMT) -- Metamethod proxy ENGAGE!! </cheesiness>
-end
-
-function MobHealth3:OnEnable()
-	self:RegisterEvent("UNIT_COMBAT")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("UNIT_HEALTH")
 end
 
 --[[
@@ -233,10 +195,10 @@ CreateFrame("frame", "MobHealthFrame")
     Event Handlers
 --]]
 
-function MobHealth3:UNIT_COMBAT(unit)
+function MobHealth3:UNIT_COMBAT(event, unit, _, _, num)
 	if unit == "target" and currentAccHP then
-		recentDamage = recentDamage + arg4
-		totalDamage = totalDamage + arg4
+		recentDamage = recentDamage + num
+		totalDamage = totalDamage + num
 	end
 end
 
@@ -315,9 +277,9 @@ function MobHealth3:PLAYER_TARGET_CHANGED()
 	end
 end
 
-function MobHealth3:UNIT_HEALTH(unit)
+function MobHealth3:UNIT_HEALTH(event, unit)
 	if currentAccHP and unit == "target" then
-		self:CalculateMaxHealth(UnitHealth("target"), UnitHealthMax("target"))
+		MobHealth3:CalculateMaxHealth(UnitHealth("target"), UnitHealthMax("target"))
 	end
 end
 
@@ -459,4 +421,117 @@ function MobHealth3:GetHealth(current, max, name, level)
 	-- If not maxHP or we're dealing with an invalid target
 	return current, max, false
 end
+
+
+
+--[[ Slash Command Handling ]]--
+local scommands -- define earlier to make sure it's available within the scommands table
+scommands = {
+	save = {
+		name = L["Save Data"],
+		desc = L["Save data across sessions. This is optional, and |cff00ff00not really needed|r. A cache is always kept that has data for every enemy you fought this session. Remember, recalculating an enemy's health is |cff00ff00TRIVIAL|r"],
+		func = function(cmd, extra)
+			local val = not not MobHealth3DB -- "Double negatives for the not lose!" -Wobin
+			val = not val -- make sure we toggle the value
+			if val == false then
+				MobHealth3DB = nil
+				MobHealth3Config.saveData = val
+			else
+				MobHealth3DB = MH3Cache
+				MobHealth3Config.saveData = val
+			end
+			MobHealth3:Print(L["Save Data"]..": "..scommands[cmd].help())
+		end,
+		help = function()
+			local val = not not MobHealth3DB
+			if val then
+				val = L["|cff00ff00On|r"]
+			else
+				val = L["|cffff0000Off|r"]
+			end
+			return val
+		end,
+	},
+	precision = {
+		name = L["Estimation Precision"],
+		desc = L["Adjust how accurate you want MobHealth3 to be (A number 1-99). This is how many percent a mob's health needs to to change before we will trust the estimated maximum health and display it. The lower this value is, the quicker you'll see a value and the less accurate it will be. Raiding players may want to turn this down a bit. If you don't care about accuracy and want info ASAP, set this to 1."],
+		func = function(cmd, extra)
+			local num = tonumber(extra)
+			if num then
+				num = floor(num)
+				if num < 1 then num = 1 end
+				if num > 99 then num = 99 end
+				MobHealth3Config.precision = num
+			end
+			MobHealth3:Print(L["Estimation Precision"]..": "..scommands[cmd].help())
+		end,
+		help = function()
+			return MobHealth3Config.precision
+		end,
+	},
+	stablemax = {
+		name = L["Stable Max"],
+		desc = L["When turned on, the max HP only updates once your target changes. If data for the target is unknown, MH3 will update once during the battle when the precision percentage is reached"],
+				get = function() return MobHealth3Config.stableMax end,
+				set = function(val) MobHealth3Config.stableMax = val end,
+		func = function(cmd, extra)
+			MobHealth3Config.stableMax = not MobHealth3Config.stableMax
+			MobHealth3:Print(L["Stable Max"] ..": "..scommands[cmd].help())
+		end,
+		help = function()
+			local val = MobHealth3Config.stableMax
+			if val then
+				val = L["|cff00ff00On|r"]
+			else
+				val = L["|cffff0000Off|r"]
+			end
+			return val
+		end,
+	},
+	reset = {
+		name = L["Reset Cache/DB"],
+		desc = L["Reset the session cache and the DB if you have saving turned on"],
+		func = function(cmd, extra)
+			MH3Cache = {}
+			AccumulatorHP = {}
+			AccumulatorPerc = {}
+			MobHealth3DB = MobHealth3Config.saveData and {} or nil
+			MobHealth3:Print(L["Cache/Database reset"])		
+		end,
+	},
+	help = {
+		name = L["Help"],
+		desc = L["Print help information"],
+		func = function(cmd, extra)
+			MobHealth3:Print("/mh3 /mobhealth3")
+			for k, v in pairs(scommands) do
+				local blah = v.name
+				if not extra then -- extra means just /mh3 was called don't show desc then
+					blah = v.desc
+				end
+				if v.help then
+					MobHealth3:Print( "    |cffffff78"..k.."|r [" .. v.help() .."] - " .. blah, true )
+				else
+					MobHealth3:Print( "    |cffffff78"..k.. "|r - " .. blah, true )
+				end
+			end
+		end,
+	},
+}
+
+local function mh3SlashCmd(msg)
+	local command, extra
+	if msg and msg ~= "" then
+		command, extra = string.split(" ", msg)
+	end
+	if not command or command == "" or not scommands[command] then
+		command = "help"
+		extra = true -- pass stuff to the help command to get the short help
+	end
+	scommands[command].func(command, extra)
+end
+
+_G["SlashCmdList"]["MOBHEALTH"] = mh3SlashCmd
+_G["SLASH_MOBHEALTH1"] = "/mh3"
+_G["SLASH_MOBHEALTH2"] = "/mobhealth3"
 

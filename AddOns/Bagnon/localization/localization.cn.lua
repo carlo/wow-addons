@@ -7,15 +7,12 @@
 	Last Update: 4.11.2007
 --]]
 
-
-if GetLocale() ~= "zhCN" then return end
-
-local L = BAGNON_LOCALS
+local L = LibStub('AceLocale-3.0'):NewLocale('Bagnon', 'zhCN')
+if not L then return end
 
 --bindings
-BINDING_HEADER_BAGNON = "Bagnon"
-BINDING_NAME_BAGNON_TOGGLE = "开关 Bagnon"
-BINDING_NAME_BANKNON_TOGGLE = "开关 Banknon"
+L.BagnonToggle = "开关 Bagnon"
+L.BanknonToggle = "开关 Banknon"
 
 --system messages
 L.NewUser = "这是该角色第一次使用 Bagnon，已载入默认设置。"
@@ -43,15 +40,3 @@ L.TipShowSearch = "<双击>进行搜索"
 L.TipShowBag = "<单击>显示"
 L.TipHideBag = "<单击>隐藏"
 L.TipGoldOnRealm = "%s服务器上的总资产"
-
---menu text
-L.FrameSettings = "框架设置"
-L.Lock = "锁定位置"
-L.Toplevel = "总在最前"
-L.BackgroundColor = "背景颜色"
-L.FrameLevel = "层"
-L.Opacity = "透明度"
-L.Scale = "缩放"
-L.Spacing = "间距"
-L.Cols = "列数"
-L.ReverseSort = "反向排列"

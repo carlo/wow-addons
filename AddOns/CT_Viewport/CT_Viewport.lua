@@ -57,7 +57,7 @@ function CT_Viewport_GetQuotient(number)
 			if ( format("%.2f", b/a) == number ) then
 				return format("%.2f |r(|c00FFFFFF%d/%d|r)", number, b, a);
 			elseif ( format("%.2f", a/b) == number ) then
-				return format("%.2f r(|c00FFFFFF%d/%d|r)", number, a, b);
+				return format("%.2f |r(|c00FFFFFF%d/%d|r)", number, a, b);
 			end
 		end 
 	end
@@ -79,10 +79,7 @@ end
 SLASH_VIEWPORT1 = "/viewport";
 
 -- Resizing functions
-function CT_Viewport_Resize(anchorPoint, button)
-	if ( not button ) then
-		button = this;
-	end
+function CT_Viewport_Resize(button, anchorPoint)
 	button:GetParent():StartSizing(anchorPoint);
 	CT_Viewport.isResizing = anchorPoint;
 	
@@ -107,9 +104,6 @@ function CT_Viewport_Resize(anchorPoint, button)
 end
 
 function CT_Viewport_StopResize(button)
-	if ( not button ) then
-		button = this;
-	end
 	button:GetParent():StopMovingOrSizing();
 	CT_Viewport.isResizing = nil;
 	CT_ViewportFrameAspectRatioNewText:SetText("Aspect Ratio (Current): |c00FFFFFF" .. CT_Viewport_GetQuotient((CT_Viewport.screenRes[1]-CT_Viewport.currOffset[1]-CT_Viewport.currOffset[2])/(CT_Viewport.screenRes[2]-CT_Viewport.currOffset[3]-CT_Viewport.currOffset[4])));
@@ -200,13 +194,13 @@ function CT_Viewport_ApplyInnerViewport(left, right, top, bottom, r, g, b)
 end
 
 -- Change a side of the viewport
-function CT_Viewport_ChangeViewportSide()
-	local value = tonumber(this:GetText());
+function CT_Viewport_ChangeViewportSide(editBox)
+	local value = tonumber(editBox:GetText());
 	if ( not value ) then
 		return;
 	end
 	value = abs(value);
-	local id = this:GetID();
+	local id = editBox:GetID();
 	local left, right, top, bottom, width, height = CT_Viewport.currOffset[1], CT_Viewport.currOffset[2], CT_Viewport.currOffset[3], CT_Viewport.currOffset[4];
 	if ( id == 1 ) then
 		-- Left
@@ -225,7 +219,7 @@ end
 
 -- Handlers
 	-- OnLoad
-function CT_ViewportFrame_OnLoad()
+function CT_ViewportFrame_OnLoad(self)
 	local x, y = CT_Viewport_GetCurrentResolution(GetScreenResolutions());
 	if ( x and y ) then
 		local modifier = x/y;
@@ -246,18 +240,18 @@ function CT_ViewportFrame_OnLoad()
 	CT_ViewportOverlay:SetTexture(1, 1, 1, 1);
 	CT_ViewportOverlay:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", -1, 1);
 	CT_ViewportOverlay:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", 1, -1);
-	this:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("VARIABLES_LOADED");
 end
 
 	-- OnUpdate
-function CT_ViewportFrame_OnUpdate(elapsed)
-	if ( not this.hasAppliedViewport ) then
-		this.hasAppliedViewport = 1;
+function CT_ViewportFrame_OnUpdate(self, elapsed)
+	if ( not self.hasAppliedViewport ) then
+		self.hasAppliedViewport = 1;
 		CT_ViewportFrameInnerFrame:ClearAllPoints();
 		CT_ViewportFrameInnerFrame:SetPoint("TOPLEFT", "CT_ViewportFrameBorderFrame", "TOPLEFT", 4, -4);
 		CT_ViewportFrameInnerFrame:SetPoint("BOTTOMRIGHT", "CT_ViewportFrameBorderFrame", "BOTTOMRIGHT", -4, 4);
-	elseif ( this.hasAppliedViewport == 1 ) then
-		this.hasAppliedViewport = 2;
+	elseif ( self.hasAppliedViewport == 1 ) then
+		self.hasAppliedViewport = 2;
 		if ( CT_Viewport.awaitingValues ) then
 			CT_Viewport_GetInitialValues();
 			CT_Viewport.awaitingValues = nil;
@@ -293,18 +287,18 @@ function CT_ViewportFrame_OnUpdate(elapsed)
 		CT_Viewport.currOffset = {
 			floor(left+0.5), floor(right+0.5), floor(top+0.5), floor(bottom+0.5)
 		};
-		if ( not this.update ) then
-			this.update = 0;
+		if ( not self.update ) then
+			self.update = 0;
 		else
-			this.update = this.update - elapsed;
+			self.update = self.update - elapsed;
 		end
-		if ( this.update <= 0 ) then
+		if ( self.update <= 0 ) then
 			CT_ViewportFrameAspectRatioNewText:SetText("Aspect Ratio (Current): |c00FFFFFF" .. CT_Viewport_GetQuotient((CT_Viewport.screenRes[1]-left-right)/(CT_Viewport.screenRes[2]-top-bottom)));
 			CT_ViewportFrameAspectRatioDefaultText:SetText("Aspect Ratio (Default): |c00FFFFFF" .. CT_Viewport_GetQuotient(CT_Viewport.screenRes[1]/CT_Viewport.screenRes[2]));
-			this.update = 0.1;
+			self.update = 0.1;
 		end
 	else
-		this.update = nil;
+		self.update = nil;
 	end
 end
 

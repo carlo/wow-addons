@@ -1,4 +1,4 @@
-﻿local L = AceLibrary("AceLocale-2.2"):new("Quartz")
+local L = AceLibrary("AceLocale-2.2"):new("Quartz")
 L:RegisterTranslations("koKR", function()
 	return {
 		["Quartz"] = "Quartz",
@@ -7,6 +7,7 @@ L:RegisterTranslations("koKR", function()
 		["Global Cooldown"] = "글로벌 쿨다운",
 		["Buff"] = "버프",
 		["Target"] = "대상",
+		["Pet"] = "소환수",
 		["Focus"] = "주시 대상",
 		["Player"] = "플레이어",
 		["Mirror"] = "미러",
@@ -74,6 +75,8 @@ L:RegisterTranslations("koKR", function()
 		["Spell Rank Style"] = "주문 레벨 형식",
 		["Hide Name Text"] = "이름 숨김",
 		["Hide Time Text"] = "시간 숨김",
+		["Hide Cast Time"] = "시전 시간 숨김",
+		["Cast Time Precision"] = "시전 시간 퍼센트",
 		["Time Font Size"] = "시간 글꼴 크기",
 		["Time Text Position"] = "시간 위치",
 		["Spell Text"] = "주문명",
@@ -100,6 +103,7 @@ L:RegisterTranslations("koKR", function()
 		["Hide Samwise Icon"] = "Samwise 아이콘 숨김",
 		["Show for Friends"] = "우호적 대상 표시",
 		["Show for Enemies"] = "적대적 대상 표시",
+		["Show if Target"] = "대상이 있을 경우 표시",
 		["Target Name"] = "대상 이름",
 		["Display target name of spellcasts after spell name"] = "주문 이름 뒤에 주문을 시전하는 대상의 이름을 표시합니다.",
 		
@@ -180,6 +184,8 @@ L:RegisterTranslations("koKR", function()
 		["Set the alignment of the spell name text"] = "주문명의 정렬을 설정합니다.",
 		["Set the size of the spell name text"] = "주문명의 글씨 크기를 설정합니다.",
 		["Disable the text that displays the time remaining on your cast"] = "시전 시 남은 시간 표시를 사용하지 않습니다.",
+		["Disable the text that displays the total cast time"] = "전체 시전시간 표시를 사용하지 않습니다.",
+		["Set the precision (i.e. number of decimal places) for the cast time text"] = "시전 시간을 퍼센트(소수 자리)로 표시합니다.",
 		["Disable the text that displays the spell name/rank"] = "주문명/레벨 표시를 사용하지 않습니다.",
 		["Display the rank of spellcasts alongside their name"] = "주문의 이름 옆에 레벨을 표시합니다.",
 		["Set the display style of the spell rank"] = "주문 레벨의 표시 형식을 설정합니다.",
@@ -203,6 +209,7 @@ L:RegisterTranslations("koKR", function()
 		["Hide the icon for spells with no icon"] = "아이콘이 없는 주문에 대해 아이콘을 숨깁니다.",
 		["Show this castbar for friendly units"] = "우호적 대상에 대한 시전바를 표시합니다.",
 		["Show this castbar for hostile units"] = "적대적 대상에 대한 시전바를 표시합니다.",
+		["Show this castbar if focus is also target"] = "주시 대상이 있는 경우 시전바를 표시합니다.",
 		["Set an exact X value for this bar's position."] = "해당 바의 위치에 대해 정확한 X 좌표를 설정합니다.",
 		["Set an exact Y value for this bar's position."] = "해당 바의 위치에 대해 정확한 Y 좌표를 설정합니다.",
 		
@@ -340,5 +347,7 @@ L:RegisterTranslations("koKR", function()
 			["INTERRUPTED (%s)"] = "차단됨 (%s)",
 			--Range
 			--Flight
+			--FeatureFrame
+			["Modular casting bar"] = "시전바 모듈",
 	}
 end)

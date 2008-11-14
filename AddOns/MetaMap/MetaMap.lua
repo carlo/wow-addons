@@ -1,9 +1,10 @@
 --- MetaMap
 --- Written by MetaHawk - aka Urshurak
+--- Fan Update (hopefully temporary) by Charroux/Tallspirit
 
 METAMAP_TITLE = "MetaMap";
-METAMAP_TOC = 20100;
-METAMAP_VERSION = METAMAP_TOC.."-"..2;
+METAMAP_TOC = 30200;
+METAMAP_VERSION = METAMAP_TOC.."-b6";
 
 METAMAP_NAME = METAMAP_TITLE.."  v"..METAMAP_VERSION;
 METAMAPPOI_NAME = "MetaMapPOI";
@@ -24,6 +25,7 @@ METAMAP_SORTBY_DESC = "desc";
 METAMAP_SORTBY_LEVEL = "level";
 METAMAP_SORTBY_LOCATION = "location";
 METAMAP_TT_NAME = nil;
+METAMAP_POS_UPDATED = nil;
 
 MetaMap_Details = {
 	name = METAMAP_TITLE,
@@ -174,30 +176,39 @@ function MetaMap_SetWorldMap()
 	SetMapToCurrentZone();
 end
 
-function MetaMap_OnLoad()
-	this:RegisterEvent("ADDON_LOADED");
-	this:RegisterEvent("VARIABLES_LOADED");
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
-	this:RegisterEvent("WORLD_MAP_UPDATE");
-	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	this:RegisterEvent("PLAYER_AURAS_CHANGED");
-	this:RegisterEvent("CHAT_MSG_ADDON");
-	if(IsAddOnLoaded("FuBar")) then
-		MetaMap_FuBar_OnLoad();
-	end
+function MetaMap_OnLoad(self)
+	self:RegisterEvent("ADDON_LOADED");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("PLAYER_AURAS_CHANGED");
+	self:RegisterEvent("CHAT_MSG_ADDON");
+	if(IsAddOnLoaded("FuBar")) then	MetaMap_FuBar_OnLoad() end
 end
 
-function MetaMapContainerFrame_OnLoad()
-	this:SetWidth(WorldMapButton:GetWidth() - MetaMap_MapListFrame:GetWidth()-1);
-	this:SetHeight(WorldMapButton:GetHeight()-41);
-	this:SetFrameLevel(this:GetParent():GetFrameLevel()+3);
-	MetaMapContainer_Header:SetFrameLevel(this:GetFrameLevel()+2);
-	MetaMapContainer_Footer:SetFrameLevel(this:GetFrameLevel()+2);
+function MetaMapContainerFrame_OnLoad(self)
+	self:SetWidth(WorldMapButton:GetWidth() - MetaMap_MapListFrame:GetWidth()-1);
+	self:SetHeight(WorldMapButton:GetHeight()-41);
+	self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+	MetaMapContainer_Header:SetFrameLevel(self:GetFrameLevel()+2);
+	MetaMapContainer_Footer:SetFrameLevel(self:GetFrameLevel()+2);
 	MetaMapContainer_CloseButton:SetFrameLevel(MetaMapContainer_Footer:GetFrameLevel()+2);
 end
 
+local MetaMap_Reshow_BattlefiedMap
 function MetaMapTopFrame_OnShow()
 	if(not MetaMap_VarsLoaded) then return; end
+	-- if BattlefieldMinimap and BattlefieldMinimap:IsVisible() then
+		-- if not MetaMap_CombatLockdown_BattlefiedMap then
+			-- MetaMap_Reshow_BattlefiedMap = time()
+		-- else
+			-- MetaMap_CombatLockdown_BattlefiedMap = nil
+			-- MetaMap_Reshow_BattlefiedMap = nil
+		-- end
+		-- BattlefieldMinimap:Hide()
+	-- end
 	StaticPopup1:SetFrameStrata("FULLSCREEN");
 	if(MetaMap_FullScreenMode) then
 		MetaMapNotesEditFrame:SetParent("WorldMapFrame");
@@ -208,11 +219,12 @@ function MetaMapTopFrame_OnShow()
 		MetaMapOptions.MetaMapZone = GetRealZoneText();
 		MetaMap_ShowInstance(true)
 	end
+	
 	WorldMapFrame:EnableMouse(false);
 end
 
 function MetaMapTopFrame_OnHide()
-	MetaMap_HideAll()
+	MetaMap_HideAll();
 	MetaMap_ToggleDR(0);
 	StaticPopup1:SetFrameStrata("DIALOG");
 	MetaMapNotesEditFrame:SetParent("UIParent");
@@ -220,9 +232,16 @@ function MetaMapTopFrame_OnHide()
 	MetaMap_SendFrame:SetParent("UIParent");
 	MetaMap_SendFrame:SetFrameStrata("FULLSCREEN");
 	SetMapToCurrentZone();
+	MetaMapOptions.SaveSet = 1
+	--MetaMapOptions_Init()
+	if BattlefieldMinimap and MetaMap_Reshow_BattlefiedMap then
+		MetaMap_Reshow_BattlefiedMap = nil
+		BattlefieldMinimap:Show()
+	end
 end
 
-function MetaMap_OnEvent(event)
+function MetaMap_OnEvent(self, event, ...)
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...
 	if(event == "ADDON_LOADED" and arg1 == "MetaMap") then
 		MetaMap_SetWorldMap();
 		for option, value in pairs(MetaMap_Default) do
@@ -232,7 +251,8 @@ function MetaMap_OnEvent(event)
 		MetaMap_LoadZones();
 		UIDropDownMenu_Initialize(MetaMap_MainMenu, MetaMap_MainMenu_Initialize, "MENU");
 		UIDropDownMenu_Initialize(MetaMap_InstanceMenu, MetaMap_InstanceMenu_Initialize);
-		UIDropDownMenu_SetWidth(175, MetaMap_InstanceMenu);
+		--- Set the instance menu size
+		UIDropDownMenu_SetWidth(MetaMap_InstanceMenu, 65);
 	end
 	if(event == "VARIABLES_LOADED") then
 		MetaMap_CurrentSaveSet = MetaMapOptions.SaveSet;
@@ -308,7 +328,7 @@ function MetaMap_OnEvent(event)
 			MetaMapPing_OnUpdate(1);
 		end
 	end
-	if(event == "ZONE_CHANGED_NEW_AREA") then
+	if(event == "ZONE_CHANGED_NEW_AREA") or (event == "ZONE_CHANGED") then
 		if(not MetaMap_VarsLoaded) then return; end
 		SetMapToCurrentZone();
 		MetaMap_MiniNote_OnUpdate(0);
@@ -338,24 +358,25 @@ function MetaMap_OnEvent(event)
 	if(event == "PLAYER_AURAS_CHANGED") then
 		MetaMap_SetTrackIcon();
 	end
-	if(event == "CHAT_MSG_ADDON" and arg1 == "MetaMap:MN") then
+	if (event == "CHAT_MSG_ADDON" and arg1 == "MetaMap:MN") then
 		MetaMap_GetNoteFromChat(arg2, arg4);
 	end
 end
 
-function MetaMap_ChatFrame_OnEvent(event)
+function MetaMap_ChatFrame_OnEvent(self, event, ...)
+	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...
 	if(event == "CHAT_MSG_WHISPER" and string.find(arg1, "<MetaMap:MN>")) then
-		if(arg2 ~= UnitName("player")) then
+		if (arg2 ~= UnitName("player")) then
 			MetaMap_GetNoteFromChat(arg1, arg2);
 		end
-	elseif(event == "CHAT_MSG_WHISPER_INFORM" and string.find(arg1, "<MetaMap:MN>")) then
+	elseif (event == "CHAT_MSG_WHISPER_INFORM" and string.find(arg1, "<MetaMap:MN>")) then
 		--- Discard the return info
 	else
-		MetaMap_OrigChatFrame_OnEvent(event);
+		MetaMap_OrigChatFrame_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
 	end
 end
 
-function MetaMap_OnUpdate()
+function MetaMap_OnUpdate(self, arg1)
 	if(not MetaMap_VarsLoaded) then return; end
 	if(MetaMap_TimerDelay and MetaMap_TimerDelay > 0) then
 		MetaMap_TimerDelay = MetaMap_TimerDelay - arg1;
@@ -423,7 +444,7 @@ function MetaMap_ZoneTableUpdate(zoneName)
 		end
 	end
 	if(not found) then
-		local index = #(MetaMap_ZoneTable) +50;
+		local index = #(MetaMap_ZoneTable) + 50; --fixme!
 		MetaMap_ZoneTable[index] = {ztype = "SZ", en = zoneName, de = zoneName, fr = zoneName, es = zoneName, llvl = 0, hlvl = 0, faction = "Unknown", scale = 0, xoffset = 0, yoffset = 0};
 	end
 end
@@ -507,9 +528,9 @@ function MetaMap_CheckRelatedZone(zoneName, mapName)
 		if(MetaMap_ZoneTable[zIndex].Location == mapName) then related = true; end
 	end
 	if(zoneName == mapName) then related = true;
-	elseif(MetaMap_Continents[-1] == mapName) then related = true;
-	elseif(MetaMap_Continents[continent] == mapName) then related = true;
-	elseif(MetaMap_Continents[0] == mapName and (continent == 1 or continent == 2)) then related = true; end
+	elseif(MetaMap_Continents[-1] == mapName) then related = true; --"The Cosmos"
+	elseif(MetaMap_Continents[continent or ""] == mapName) then related = true;
+	elseif(MetaMap_Continents[0] == mapName and continent and (continent == 1 or continent == 2 or continent == 3)) then related = true; end
 	return related;
 end
 
@@ -680,16 +701,45 @@ function MetaMap_ShiftZones()
 	MetaMap_Orphans = MetaMap_Orphans -1;
 	if(MetaMap_Orphans == 0) then MetaMap_ZoneErrata = nil; end
 	MetaMap_OptionsInfo:SetText(format(METAMAP_ZONE_SHIFTED, oldZone, newZone));
-	UIDropDownMenu_SetText("", MetaMap_ZoneCheckMenu);
+	UIDropDownMenu_SetText(MetaMap_ZoneCheckMenu, "");
 end
 
+-- function MetaMap_ToggleFrame(frame)
+	-- if frame:IsVisible() then
+		-- HideUIPanel(frame);
+	-- else
+		-- ShowUIPanel(frame);
+	-- end
+-- end
+
+local UseBattlefieldMiniMapInCombat = true --use Battlefield minimap during combat lockdown
+local MetaMap_CombatLockdown_BattlefiedMap = nil
+
 function MetaMap_ToggleFrame(frame)
+	--MyPrint("MetaMap: MetaMap_ToggleFrame("..tostring(frame)..")")
+	if UseBattlefieldMiniMapInCombat and InCombatLockdown() and frame == WorldMapFrame then --combat lockdown
+		if not BattlefieldMinimap then BattlefieldMinimap_LoadUI() end
+		if BattlefieldMinimap and BattlefieldMinimap:IsVisible() then
+			if MetaMap_CombatLockdown_BattlefiedMap then --wasn't on before combat
+				BattlefieldMinimap:Hide()
+				-- MetaMap_Reshow_BattlefiedMap = true
+			end
+			MetaMap_CombatLockdown_BattlefiedMap = nil
+		elseif BattlefieldMinimap then
+			MetaMap_CombatLockdown_BattlefiedMap = true
+			BattlefieldMinimap:Show()
+		end
+	elseif MetaMap_CombatLockdown_BattlefiedMap and frame == WorldMapFrame then
+		MetaMap_CombatLockdown_BattlefiedMap = nil
+		BattlefieldMinimap:Hide()
+	end
 	if frame:IsVisible() then
 		HideUIPanel(frame);
 	else
 		ShowUIPanel(frame);
 	end
 end
+
 
 function MetaMapContainer_ShowFrame(frame, header, footer, info)
 	if(frame == nil) then
@@ -784,7 +834,7 @@ function MetaMap_LoadBKP()
 	if(IsAddOnLoaded("MetaMapBKP")) then
 		BKP_BackUpFrame:Show();
 	else
-		MetaMap_LoadBKP:Disable();
+		if MetaMap_LoadBKP then MetaMap_LoadBKP:Disable() end;
 		if(MetaMap_GeneralDialog:IsVisible()) then
 			MetaMap_OptionsInfo:SetText("MetaMapBKP "..METAMAP_NOMODULE);
 		else
@@ -896,16 +946,17 @@ function MetaMap_LoadFWM(mode)
 	end
 end
 
+---  #### Init the tracker activation
 function MetaMap_SetTracker()
 	if(not MetaMapOptions.MetaMapTracker) then
 		MetaMap_LoadTRK(2);
 		if(MetaMap_GetSpell("Find Herbs")) then
----			CastSpellByName("Find Herbs");
+			CastSpellByName("Find Herbs");
 		elseif(MetaMap_GetSpell("Find Minerals")) then
----			CastSpellByName("Find Minerals");
+			CastSpellByName("Find Minerals");
 		end
 	else
-		CancelTrackingBuff();
+		---CancelTrackingBuff();
 	end
 end
 
@@ -919,8 +970,8 @@ function MetaMap_SetTrackIcon()
 		end
 		if(IsAddOnLoaded("Titan")) then
 			TitanPanelMetaMapButton.registry.icon = iconTexture;
+			MiniMapTracking:Hide();
 		end
-		MiniMapTrackingFrame:Hide();
 		MetaMapOptions.MetaMapTracker = true;
 	else
 		getglobal("MetaMapButtonIcon"):SetTexture(METAMAP_ICON);
@@ -987,7 +1038,7 @@ function MetaMap_FullScreenToggle()
 	else
 		WorldMapFrame:SetScale(1.0);
 		WorldMapFrame:SetScript("OnKeyDown", WMF_OldScript);
-		WorldMapFrame:SetScript("OnKeyUp", function() if(arg1	== GetBindingKey("METAMAP_FSTOGGLE") or	arg1 ==	GetBindingKey("METAMAP_SAVESET"))	then MetaMap_FullScreenToggle(); end end);
+		WorldMapFrame:SetScript("OnKeyUp", function(self, arg1) if(arg1	== GetBindingKey("METAMAP_FSTOGGLE") or	arg1 ==	GetBindingKey("METAMAP_SAVESET"))	then MetaMap_FullScreenToggle(); end end);
 		UIPanelWindows["WorldMapFrame"] =	{ area = "full",	pushable = 0 };
 		BlackoutWorld:Show();
 		MetaMap_FullScreenMode = true;
@@ -1012,11 +1063,11 @@ function MetaMap_ShowInstance(show)
 		ShowUIPanel(WorldMapButton);
 		ShowWorldMapArrowFrame(1);
 	end
-	MetaMap_OnEvent("INSTANCE_MAP_UPDATE");
+	MetaMap_OnEvent(this, "INSTANCE_MAP_UPDATE");
 end
 
 function MetaMap_MiniCoordsUpdate()
-	if(WorldMapFrame:IsVisible()) then return; end
+	if(WorldMapFrame:IsVisible()) then MetaMap_MainCoordsUpdate(); return; end
 	local px, py = GetPlayerMapPosition("player");
 	if(px == 0 and py == 0) then
 		local _, _, zType = MetaMap_GetZoneTableEntry(GetRealZoneText());
@@ -1028,6 +1079,7 @@ function MetaMap_MiniCoordsUpdate()
 	else
 		MetaMapMiniCoords:SetText(format("%d, %d", px * 100, py * 100));
 	end
+
 end
 
 function MetaMap_MainCoordsUpdate()
@@ -1040,6 +1092,15 @@ function MetaMap_MainCoordsUpdate()
 	local height = WorldMapButton:GetHeight();
 	x = x / WorldMapFrame:GetEffectiveScale();
 	y = y / WorldMapFrame:GetEffectiveScale();
+	
+	if(centerX == nil) then
+		centerX = 0;
+	end
+	
+	if(centerY == nil) then
+		centerY = 0;
+	end
+	
 	local adjustedX = (x - (centerX - (width/2))) / width;
 	local adjustedY = (centerY + (height/2) - y ) / height;
 	x = 100 * (adjustedX + OFFSET_X);
@@ -1064,6 +1125,8 @@ function MetaMap_MainCoordsUpdate()
 	else
 		MetaMapCoordsPlayer:SetText("|cff00ff00"..format("%d, %d", px * 100, py * 100));
 	end
+	MetaMapCoordsPlayer:Show()
+	MetaMapCoordsCursor:Show()
 end
 
 function MetaMap_UpdateBackDrop()
@@ -1128,7 +1191,7 @@ function MetaMap_InstanceMenu_Initialize()
 		local menuList = {};
 		for index, value in pairs(MetaMap_ZoneTable) do
 			if(value.ztype == "DN" and value.Continent == menuVal) then
-		    table.insert(menuList, {location = value[MetaMap_Locale]});
+				table.insert(menuList, {location = value[MetaMap_Locale]});
 			end
 		end
 		local sort = MetaMap_sortType;
@@ -1145,6 +1208,26 @@ function MetaMap_InstanceMenu_Initialize()
 			info.func = MetaMap_InstanceMenu_OnClick;
 			UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 		end
+		-- menuList = {};
+		-- for index, value in pairs(MetaMap_ZoneTable) do
+			-- if(value.ztype == "BG" and menuVal == 999) then
+				-- table.insert(menuList, {location = value[MetaMap_Locale]});
+			-- end
+		-- end
+		-- local sort = MetaMap_sortType;
+		-- MetaMap_sortType = METAMAP_SORTBY_LOCATION;
+		-- table.sort(menuList, MetaMap_SortCriteria);
+		-- MetaMap_sortType = sort;
+		-- for zKey, zName in pairs(menuList) do
+			-- local info = {};
+			-- info.checked = nil;
+			-- info.notCheckable = 1;
+			-- info.text = zName.location;
+			-- info.textHeight = MetaMapOptions.MenuFont;
+			-- info.value = zName.location;
+			-- info.func = MetaMap_Print("No Battleground Map file.", true)
+			-- UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+		-- end
 		menuList = nil;
 	else
 		for index, cName in pairs(MetaMap_Continents) do
@@ -1158,11 +1241,21 @@ function MetaMap_InstanceMenu_Initialize()
 				UIDropDownMenu_AddButton(info);
 			end
 		end
+		local info = {
+			text = "BattleGrounds",
+			textHeight = MetaMapOptions.MenuFont,
+			value = "BG",
+			hasArrow = 1,
+			checked = nil,
+			notCheckable = 1,
+			value = 999
+		}
+		UIDropDownMenu_AddButton(info);
 	end
 end
 
-function MetaMap_InstanceMenu_OnClick()
-	UIDropDownMenu_SetText(this.value, MetaMap_InstanceMenu);
+function MetaMap_InstanceMenu_OnClick(self)
+	UIDropDownMenu_SetText(MetaMap_InstanceMenu, this.value);
 	MetaMapOptions.MetaMapZone = this.value;
 	MetaMap_ShowInstance(true);
 end
@@ -1178,7 +1271,7 @@ function MetaMap_MainMenuSelect(parent, level)
 	ToggleDropDownMenu(nil, nil, MetaMap_MainMenu, MetaMap_MenuParent, x, y);
 end
 
-function MetaMap_MainMenu_Initialize()
+function MetaMap_MainMenu_Initialize(self)
 	if(UIDROPDOWNMENU_MENU_LEVEL == 2) then
 		local _, menuText = MetaMap_SubMenuFix();
 		if(menuText == METAMAP_MENU_FILTER) then
@@ -1374,19 +1467,19 @@ function MetaMap_FilterNotes(args)
 	MetaMap_MainMapUpdate();
 end
 
-function MetaMap_ZoneCheckMenu_Initialize()
+function MetaMap_ZoneCheckMenu_Initialize(self)
 	if(UIDROPDOWNMENU_MENU_LEVEL == 1) then
 		for index, cName in pairs(MetaMap_Continents) do
 			if(index > 0) then
-			local info = {
-				text = cName,
-				textHeight = MetaMapOptions.MenuFont,
-				value = index,
-				hasArrow = 1,
-				checked = nil,
-				notCheckable = 1,
-			}
-			UIDropDownMenu_AddButton(info);
+				local info = {
+					text = cName,
+					textHeight = MetaMapOptions.MenuFont,
+					value = index,
+					hasArrow = 1,
+					checked = nil,
+					notCheckable = 1,
+				}
+				UIDropDownMenu_AddButton(info);
 			end
 		end
 		local info = {
@@ -1408,9 +1501,9 @@ function MetaMap_ZoneCheckMenu_Initialize()
 		}
 		UIDropDownMenu_AddButton(info);
 	end
-	if(UIDROPDOWNMENU_MENU_LEVEL == 2) then
-		local menuVal = MetaMap_SubMenuFix();
-		if(menuVal == "BG") then
+	if (UIDROPDOWNMENU_MENU_LEVEL == 2) then
+		local menuVal, _ = MetaMap_SubMenuFix();
+		if (menuVal == "BG") then
 			for index, value in pairs(MetaMap_ZoneTable) do
 				if(value.ztype == "BG") then
 					local info = {
@@ -1480,7 +1573,7 @@ function MetaMap_ZoneCheckMenu_Initialize()
 end
 
 function MetaMap_ZoneCheckMenu_OnClick()
-	UIDropDownMenu_SetText(this.value, MetaMap_ZoneCheckMenu);
+	UIDropDownMenu_SetText(MetaMap_ZoneCheckMenu, this.value);
 	MetaMap_ZoneCheckButton:Enable();
 end
 
@@ -1507,7 +1600,7 @@ function MetaMap_ToggleDialog(tab)
 	end
 end
 
-function MetaMap_OptionsTab_OnClick()
+function MetaMap_OptionsTab_OnClick(self)
 	if(this:GetName() == "MetaMap_DialogFrameTab1") then
 		MetaMap_ToggleDialog("MetaMap_GeneralDialog");
 	elseif(this:GetName() == "MetaMap_DialogFrameTab2") then
@@ -1605,6 +1698,7 @@ function MetaMapOptions_Init()
 		MetaMapButton:Show();
 	else
 		MetaMapButton:Hide();
+		--WorldMapButton:Show()
 	end
 	if(MetaMapOptions.MetaMapCoords) then
 		MetaMap_MainCoords:Show();
@@ -1635,10 +1729,42 @@ function MetaMapOptions_Init()
 end
 
 function MetaMapButton_UpdatePosition()
-	MetaMapButton:SetPoint("TOPLEFT", "Minimap", "TOPLEFT",
-		52 - (80 * cos(MetaMapOptions.MetaMapButtonPosition)),
-		(80 * sin(MetaMapOptions.MetaMapButtonPosition)) - 52
-	);
+	if MetaMapOptions.MetaMapButtonPosition_Old ~= MetaMapOptions.MetaMapButtonPosition or not MetaMapOptions.MetaMapButtonPositionXY then
+		MetaMapButton:ClearAllPoints()
+		MetaMapButton:SetPoint("TOPLEFT", "Minimap", "TOPLEFT",
+			52 - (80 * cos(MetaMapOptions.MetaMapButtonPosition)),
+			(80 * sin(MetaMapOptions.MetaMapButtonPosition)) - 52
+		);
+		MetaMapOptions.MetaMapButtonPositionXY = nil
+		MetaMapOptions.MetaMapButtonPosition_Old = MetaMapOptions.MetaMapButtonPosition
+		-- MetaMapButton:SetPoint("BOTTOMRIGHT", "Minimap", "TOPLEFT",
+			-- (52 - (80 * cos(MetaMapOptions.MetaMapButtonPosition))) - 33,
+			-- ((80 * sin(MetaMapOptions.MetaMapButtonPosition)) - 52) - 33
+		-- );
+		-- MyPrint("Update MetaMapButton angular set")
+	-- else
+		-- local oldX = MetaMapOptions.MetaMapButtonPositionX or 0.01
+		-- local oldY = MetaMapOptions.MetaMapButtonPositionY or 0.01
+		-- if oldX ~= MetaMapOptions.MetaMapButtonPositionX or oldY ~= MetaMapOptions.MetaMapButtonPositionY then
+			-- MetaMapButton:SetPoint("TOPLEFT", "UIParent", "BOTTOMLEFT",
+				-- MetaMapOptions.MetaMapButtonPositionX - 0,
+				-- MetaMapOptions.MetaMapButtonPositionY + 0
+			-- );
+			-- MetaMapButton:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMLEFT",
+				-- MetaMapOptions.MetaMapButtonPositionX + 33,
+				-- MetaMapOptions.MetaMapButtonPositionY - 33
+			-- );
+			-- MyPrint("Update MetaMapButton free set")
+		-- end
+	end
+end
+
+function MMTest()
+	local cx, cy = GetCursorPosition()
+	local cz = UIParent:GetEffectiveScale()
+	MetaMapOptions.MetaMapButtonPositionX = cx
+	MetaMapOptions.MetaMapButtonPositionY = cy
+	MetaMapButton_UpdatePosition();
 end
 
 function MetaMap_ButtonTooltip()
@@ -1731,7 +1857,7 @@ function MetaMapList_Init()
 	MetaMapList_UpdateScroll();
 end
 
-function MetaMapList_OnClick(button, id)
+function MetaMapList_OnClick(self, button, id)
 	local mapName, dataZone = MetaMap_GetCurrentMapInfo();
 	if(button	== "LeftButton") then
 		if(IsControlKeyDown()) then
@@ -1751,13 +1877,13 @@ function MetaMapList_OnClick(button, id)
 		else
 			MetaMapPing_SetPing(dataZone, MetaMap_NoteList[this:GetID() + MetaMap_ListOffset].id);
 		end
-	elseif(button	== "RightButton")	then
+	elseif(button == "RightButton")	then
 		if(IsControlKeyDown()) then
 			MetaMap_LoadBWP(id, 2);
 		elseif(IsShiftKeyDown() and MetaMap_LoadNBK(1)) then
 			NBK_SetTargetNote(dataZone[id].name);
 		else
-			MetaMap_MapNote_OnClick("LeftButton",	id);
+			MetaMap_MapNote_OnClick(self,"LeftButton", id);
 		end
 	end
 end
@@ -1819,8 +1945,7 @@ function MetaMapList_UpdateScroll()
 			scrollFrameButton:Hide();
 		end
 	end
-	FauxScrollFrame_Update(MetaMapList_ScrollFrame, MetaMap_NoteList.lastEntry,
-		METAMAP_LISTBUTTON_SHOWN, METAMAP_LISTBUTTON_HEIGHT);
+	FauxScrollFrame_Update(MetaMapList_ScrollFrame, MetaMap_NoteList.lastEntry, METAMAP_LISTBUTTON_SHOWN, METAMAP_LISTBUTTON_HEIGHT);
 end
 
 function MetaMapPing_SetPing(dataZone, id)
@@ -2284,7 +2409,7 @@ function MetaMap_GetNoteBySlashCommand(msg)
 	end
 end
 
-function MetaMap_Misc_OnClick(button)
+function MetaMap_Misc_OnClick(self, button)
 	if(not MetaMap_FramesHidden()) then return; end
 	if button == "LeftButton" then
 		if(this:GetID() == 0) then
@@ -2399,7 +2524,7 @@ function MetaMap_MiniNote_OnUpdate(elapsed)
 	MetaMap_MiniNote:Show();
 end
 
-function MetaMap_MiniNote_OnClick(arg1)
+function MetaMap_MiniNote_OnClick(self, arg1)
 	if(arg1 == "LeftButton" and IsShiftKeyDown()) then
 		if(not ChatFrameEditBox:IsVisible()) then ChatFrameEditBox:Show(); end
 		local coords = format("%d, %d", MetaMap_MiniNote_Data.xPos *100, MetaMap_MiniNote_Data.yPos *100);
@@ -2654,7 +2779,7 @@ function MetaMap_MainMapUpdate()
 		MetaMap_WorldMapButton_OnUpdate();
 	end
 	if(Minimap:IsVisible()) then
-		Minimap_OnUpdate(0);
+		Minimap_OnUpdate(Minimap, 0); --3.0.2
 	end
 end
 
@@ -2742,7 +2867,7 @@ function MetaMap_MiniNote_OnEnter()
 	GameTooltip:Show();
 end
 
-function MetaMap_MapNote_OnClick(button, id)
+function MetaMap_MapNote_OnClick(self, button, id)
 	if(not MetaMap_FramesHidden()) then return; end
 	local mapName, dataZone = MetaMap_GetCurrentMapInfo();
 	if(not dataZone) then return; end
@@ -2754,7 +2879,7 @@ function MetaMap_MapNote_OnClick(button, id)
 		if (MetaMap_LastLineClick.x ~= ax or MetaMap_LastLineClick.y ~= ay) and MetaMap_LastLineClick.mapName == mapName then
 			MetaMap_ToggleLine(mapName, ax, ay, MetaMap_LastLineClick.x, MetaMap_LastLineClick.y)
 		end
-			MetaMap_ClearGUI()
+		MetaMap_ClearGUI()
 	elseif(button == "LeftButton") then
 		if(IsShiftKeyDown()) then
 			if(not ChatFrameEditBox:IsVisible()) then ChatFrameEditBox:Show(); end
@@ -2965,8 +3090,15 @@ function MetaMap_SetPartyNote(xPos, yPos)
 	MetaMap_MainMapUpdate()
 end
 
-function MetaMap_WorldMapButton_OnClick(button)
-	if(not MetaMap_FramesHidden()) then return; end
+function MetaMap_WorldMapButton_OnClick(frame, button)
+	if (not MetaMap_FramesHidden()) then return; end
+	if BattlefieldMinimap and BattlefieldMinimap:IsVisible() and not MetaMapFrame:IsVisible() then
+		if not MetaMap_CombatLockdown_BattlefiedMap then
+			MetaMap_Reshow_BattlefiedMap = time()
+		end
+		MetaMap_CombatLockdown_BattlefiedMap = nil
+		BattlefieldMinimap:Hide() --BattlefieldMinimap screws up the map selection
+	end
 	local mapName = MetaMap_GetCurrentMapInfo();
 	if(mapName and MetaMap_Relocate.id) then
 		if(button == "LeftButton" and not IsControlKeyDown() and not IsShiftKeyDown()) then
@@ -2988,7 +3120,8 @@ function MetaMap_WorldMapButton_OnClick(button)
 			if(IsShiftKeyDown()) then
 				MetaMap_SetPartyNote(adjustedX, adjustedY);
 			elseif(IsControlKeyDown()) then
-				MetaMap_EditNewNote(adjustedX, adjustedY);
+				local _, dataZone = MetaMap_GetCurrentMapInfo();
+				if dataZone then MetaMap_EditNewNote(adjustedX, adjustedY) end
 			elseif(IsAltKeyDown() and MetaMap_GetCurrentMapInfo() == GetRealZoneText()) then
 				MetaMap_LoadBWP(0, 3);
 				if(IsAddOnLoaded("MetaMapBWP")) then
@@ -2997,15 +3130,16 @@ function MetaMap_WorldMapButton_OnClick(button)
 			end
 		end
 	elseif(button == "LeftButton" and MetaMapFrame:IsVisible()) then
+		-- MetaMap_OrigWorldMapButton_OnClick(WorldMapFrame, button);
 		return;
 	elseif(button == "RightButton" and MetaMapFrame:IsVisible()) then
 		MetaMap_ShowInstance(false);
 	else
-		MetaMap_OrigWorldMapButton_OnClick(button);
+		MetaMap_OrigWorldMapButton_OnClick(frame, button);
 	end
 end
 
-function MetaMap_WorldMapButton_OnUpdate()
+function MetaMap_WorldMapButton_OnUpdate(self, elapsed)
 	if(not MetaMap_VarsLoaded or MetaMap_Drawing) then return; end
 	local lastNote = 0;
 	local lastLine = 0;
@@ -3279,11 +3413,11 @@ function MetaMapPOI_OnEvent(mode)
 	local mapName, dataZone = MetaMap_GetCurrentMapInfo();
 	local noteAdded1, noteAdded2;
 	local name, unknown, textureIndex, x, y;
-	local icon = 9;
+	local icon = 7; --was 8
 	for landmarkIndex = 1, GetNumMapLandmarks(), 1 do
 		name, unknown, textureIndex, x, y = GetMapLandmarkInfo(landmarkIndex);
 		if (textureIndex == 15) then
-			icon = 5;
+			icon = 7; --was 5
 		elseif (textureIndex == 6) then
 			icon = 6;
 		end
@@ -3462,9 +3596,10 @@ end
 
 function MetaMap_SubMenuFix()
 	local value, text;
+	--MyPrint("this="..tostring(this:GetName()))
 	if(not this.value) then
 		 value = this:GetParent().value;
-		 text = this:GetParent():GetText();
+		 text = this:GetParent():GetName();
 	else
 		value = this.value;
 		text = this:GetText();
@@ -3502,7 +3637,7 @@ function MetaMap_ContextHelp(title)
 	if(MetaMap_LoadHLP()) then
 		MetaMap_ToggleDialog("MetaMap_HelpDialog");
 		HLP_DisplayOption(HLP_HelpData.Modules[title], 2, title);
-	  UIDropDownMenu_SetText(title, HLP_MenuSelect);
+	  UIDropDownMenu_SetText(HLP_MenuSelect, title);
   end
 end
 
@@ -3517,7 +3652,7 @@ function MetaMap_CaptureZones()
 			MetaMap_ZoneCapture[continentKey][zoneKey] = zoneName;
 		end
 	end
-	MetaMap_Print("Zones captured to SavedVariables\\MetaMap.lua", true);
+	MetaMap_Print("New Zones captured to SavedVariables\\MetaMap.lua", true);
 end
 
 function MetaMap_DevTools()
@@ -3664,6 +3799,55 @@ function MetaMapNotes_SRBSelect(id)
 	-- Usage: MetaMapNotes_SRBSelect = MyFunction
 end
 
+-- manual fix for re-positioning of Stormwind City notes
+-- ONLY EXECUTE THE FOLLOWING SLASH COMMAND IF YOU NEED -ALL- OF YOUR STORMWIND CITY NOTES ADJUSTING
+-- Your Stormwind City note positions will be scaled and shifted to account for the new city map
+-- This function for Stormwind map adjustments was borrowed from MapNotes
+function MetaMapStormwindFix(again)
+	if again and again ~= "again" then again = nil end
+	if not again and MetaMap_Notes and MetaMap_Notes.StormwindFixed then
+		MetaMap_Print(" The Stormwind City map notes were previously adjusted.", 1)
+		MetaMap_Print(" If you are absolutely sure of what you are doing, you can force the adjustment again by typing"..
+			" \'/script MetaMapStormwindFix(\"again\")\'", 1);	
+		return
+	end
+	local x, y;	local moved = 0;
+	if (MetaMap_Notes == nil) then MetaMap_Notes = {}; end
+	for i, n in pairs(MetaMap_Notes["Stormwind City"]) do
+		x = n.xPos * 0.76 + 0.203;
+		if ( x > 0.9999 ) then x = 0.9999; end
+		y = n.yPos * 0.76 + 0.253;
+		if ( y > 0.9999 ) then y = 0.9999; end
+		n.xPos = x;	n.yPos = y;
+		moved = moved + 1;
+	end
+	MetaMap_Print(moved.." Stormwind City map notes were adjusted.", 1); -- msg, display, r, g, b
+	MetaMap_Notes.StormwindFixed = nil --removed due to it causeing MetaMapEXP errors
+end
+
+function MetaMapStormwindUnfix(again)
+	if again and again ~= "again" then again = nil end
+	if not again and MetaMap_Notes and MetaMap_Notes.StormwindFixed then
+		MetaMap_Print(" The Stormwind City map notes were previously un-adjusted.", 1)
+		MetaMap_Print(" If you are absolutely sure of what you are doing, you can force the un-adjustment again by typing"..
+			" \'/script MetaMapStormwindunfix(\"again\")\'", 1);	
+		return
+	end
+	local x, y;	local moved = 0;
+	if (MetaMap_Notes == nil) then MetaMap_Notes = {}; end
+	for i, n in pairs(MetaMap_Notes["Stormwind City"]) do
+		x = (n.xPos - 0.203 ) / 0.76;
+		if ( x > 0.9999 ) then x = 0.9999; end
+		y = (n.yPos - 0.253) / 0.76;
+		if ( y > 0.9999 ) then y = 0.9999; end
+		n.xPos = x;	n.yPos = y;
+		moved = moved + 1;
+	end
+	MetaMap_Print(moved.." Stormwind City map notes were un-adjusted.", 1); -- msg, display, r, g, b
+	MetaMap_Notes.StormwindFixed = nil --removed due to it causeing MetaMapEXP errors
+end
+
+
 --[[
 continent, zone = MetaMap_NameToZoneID(zoneText)
 Returns continent and zone IDs.
@@ -3676,3 +3860,4 @@ There is also a 'Container' frame available for displaying data etc, within the 
 in the same format as the MetaMapWKB, MetaMapBLT, and MetaMapQST displays.
 Referenced and parented as 'MetaMapContainerFrame'.
 ]]
+

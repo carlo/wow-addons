@@ -27,6 +27,11 @@ L:RegisterTranslations("zhTW", function() return {
 	["Canceling guild invite..."] = "拒絕了公會邀請...",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Decline all incoming guild requests and petitions."] = "自动拒绝所有的公会邀请",
+	["Canceling guild invite..."] = "公会邀请已拒绝……",
+} end)
+
 module.description = L["Decline all incoming guild requests and petitions."]
 module.options = {}
 

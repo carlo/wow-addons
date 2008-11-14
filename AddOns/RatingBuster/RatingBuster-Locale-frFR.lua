@@ -1,6 +1,6 @@
 ﻿--[[
 Name: RatingBuster frFR locale (incomplete)
-Revision: $Revision: 8 $
+Revision: $Revision: 147 $
 Translated by:
 - Tixu@Curse
 - Silaor
@@ -53,7 +53,7 @@ L:RegisterTranslations("frFR", function() return {
 	["Convert Weapon Skill into Crit, Hit, Dodge Neglect, Parry Neglect and Block Neglect"] = "Convertit la compétence d'arme en Critique, Toucher, Ignorer Esquive, Ignorer Parade, Ignorer Bloquage",
 	
 	-- /rb stat
-	["Stat"] = "Carac",
+	--["Stat Breakdown"] = "Carac",
 	["Changes the display of base stats"] = "Change l'affichage des caractéristiques de base",
 	-- /rb stat show
 	["Show base stat conversions"] = "Montrer les conversions pour les caracs",
@@ -67,9 +67,12 @@ L:RegisterTranslations("frFR", function() return {
 	-- /rb stat str block
 	["Show Block Value"] = "Montrer le Bloquage",
 	["Show Block Value from Strength"] = "Montre le Bloquage apporté par la Force",
+	-- /rb stat str dmg
+	["Show Spell Damage"] = "Montrer les Dégats des Sorts",
+	["Show Spell Damage from Strength"] = "Montre le Bonus de Dégats des Sorts apporté par la Force",
 	-- /rb stat str heal
 	["Show Healing"] = "Montrer les Soins",
-	["Show Healing from Strength"] = "Montre le bonus aux Soins apporté par la Force",
+	["Show Healing from Strength"] = "Montre le Bonus aux Soins apportés par la Force",
 	
 	-- /rb stat agi
 	["Agility"] = "Agilité",
@@ -89,6 +92,9 @@ L:RegisterTranslations("frFR", function() return {
 	-- /rb stat agi armor
 	["Show Armor"] = "Montrer l'Armure",
 	["Show Armor from Agility"] = "Montre l'Armure apportée par l'Agilité",
+	-- /rb stat agi heal
+	["Show Healing"] = "Montrer les Soins",
+	["Show Healing from Agility"] = "Montre le bonus aux Soins apporté par l'Agilité",
 	
 	-- /rb stat sta
 	["Stamina"] = "Endurance",
@@ -118,6 +124,9 @@ L:RegisterTranslations("frFR", function() return {
 	-- /rb stat int mp5
 	["Show Mana Regen"] = "Montrer la Regen Mana",
 	["Show Mana Regen while casting from Intellect"] = "Montre la Régénération de Mana pendant incantation apportée par l'Intelligence",
+	-- /rb stat int mp5nc
+	--["Show Mana Regen while NOT casting"] = true,
+	--["Show Mana Regen while NOT casting from Intellect"] = true,
 	-- /rb stat int rap
 	["Show Ranged Attack Power"] = "Montre la PA à Distance",
 	["Show Ranged Attack Power from Intellect"] = "Montre la Puissance d'Attaque à Distance apportée par l'Intelligence",
@@ -195,8 +204,8 @@ L:RegisterTranslations("frFR", function() return {
 	["Calculate stat diff"] = "Calculer les différences",
 	["Calculate the stat difference for the item and equipped items"] = "Fait le calcul des différences avec l'objet équipé",
 	-- /rb sum stat
-	["Stat - Base"] = "Stat Base",
-	["Choose base stats for summary"] = "Choisir les Stats de base pour le Résumé",
+	--["Stat - Base"] = "Stat Base",
+	--["Choose base stats for summary"] = "Choisir les Stats de base pour le Résumé",
 	-- /rb sum stat hp
 	["Sum Health"] = "Cumul Vie",
 	["Health <- Health, Stamina"] = "Vie <- Vie, Endu",
@@ -235,7 +244,7 @@ L:RegisterTranslations("frFR", function() return {
 	["Shadow Spell Damage <- Shadow Spell Damage, Spell Damage, Intellect, Spirit, Stamina"] = "DS Ombre <- DS Ombre, DS, Intel, Esprit, Endu",
 	-- /rb sum stat heal
 	["Sum Healing"] = "Cumul Soins",
-	["Healing <- Healing, Intellect, Spirit, Strength"] = "Soins <- Soins, Intel, Esprit, Force",
+	["Healing <- Healing, Intellect, Spirit, Agility, Strength"] = "Soins <- Soins, Intel, Esprit, Agi, Force",
 	-- /rb sum stat hit
 	["Sum Hit Chance"] = "Cumul Toucher",
 	["Hit Chance <- Hit Rating, Weapon Skill Rating"] = "Toucher <- Toucher, Score Arme",
@@ -283,10 +292,10 @@ L:RegisterTranslations("frFR", function() return {
 	["Crit Avoidance <- Defense Rating, Resilience"] = "Def Crit <- Score Def, Resilience",
 	-- /rb sum stat neglectdodge
 	["Sum Dodge Neglect"] = "Cumul Ignore Esquive",
-	["Dodge Neglect <- Weapon Skill Rating"] = "Ignore Esquive <- Score Arme",
+	--["Dodge Neglect <- Weapon Skill Rating"] = "Ignore Esquive <- Score Arme",
 	-- /rb sum stat neglectparry
 	["Sum Parry Neglect"] = "Cumul Ignore Parade",
-	["Parry Neglect <- Weapon Skill Rating"] = "Ignore Parade <- Score Arme",
+	--["Parry Neglect <- Weapon Skill Rating"] = "Ignore Parade <- Score Arme",
 	-- /rb sum stat neglectblock
 	["Sum Block Neglect"] = "Cumul Ignore Bloquage",
 	["Block Neglect <- Weapon Skill Rating"] = "Ignore Bloquage <- Score Arme",
@@ -312,8 +321,8 @@ L:RegisterTranslations("frFR", function() return {
 	--["Sum Weapon DPS"] = true,
 	--["Weapon DPS Summary"] = true,
 	-- /rb sum statcomp
-	["Stat - Composite"] = "Stats - Composées",
-	["Choose composite stats for summary"] = "Choisir les Stats composées du résumé",
+	--["Stat - Composite"] = "Stats - Composées",
+	--["Choose composite stats for summary"] = "Choisir les Stats composées du résumé",
 	-- /rb sum statcomp str
 	["Sum Strength"] = "Cumul Force",
 	["Strength Summary"] = "Résumé de la Force",
@@ -335,6 +344,22 @@ L:RegisterTranslations("frFR", function() return {
 	-- /rb sum statcomp wpn
 	["Sum Weapon Skill"] = "Cumul Comp Arme",
 	["Weapon Skill <- Weapon Skill Rating"] = "Comp Arme <- Score Arme",
+	
+	-- /rb sum gem
+	--["Gems"] = true,
+	--["Auto fill empty gem slots"] = true,
+	-- /rb sum gem red
+	["Red Socket"] = EMPTY_SOCKET_RED,
+	--["ItemID or Link of the gem you would like to auto fill"] = true,
+	--["<ItemID|Link>"] = true,
+	--["%s is now set to %s"] = true,
+	--["Queried server for Gem: %s. Try again in 5 secs."] = true,
+	-- /rb sum gem yellow
+	["Yellow Socket"] = EMPTY_SOCKET_YELLOW,
+	-- /rb sum gem blue
+	["Blue Socket"] = EMPTY_SOCKET_BLUE,
+	-- /rb sum gem meta
+	["Meta Socket"] = EMPTY_SOCKET_META,
 
 	----------------------
 	-- Item Level and ID --
@@ -347,7 +372,7 @@ L:RegisterTranslations("frFR", function() return {
 	["numberPatterns"] = {
 		{pattern = " de (%d+)", addInfo = "AfterNumber",},
 		{pattern = "(%d+) \195\160 votre ", addInfo = "AfterNumber",},
-		{pattern = "%+(%d+)", addInfo = "AfterStat",},
+		{pattern = "([%+%-]%d+)", addInfo = "AfterStat",},
 		{pattern = "ajoute (%d+) (à|au)", addInfo = "AfterNumber",}, -- for "add xx stat" type pattern, ex: Adamantite Sharpening Stone
 	},
 	["separators"] = {
@@ -381,7 +406,7 @@ L:RegisterTranslations("frFR", function() return {
 		{pattern = "score de hâte", id = CR_HASTE_MELEE},
 		{pattern = "scores de vitesse", id = CR_HASTE_MELEE}, -- [Tambours de Bataille]
 		
-		
+		{pattern = "score d'expertise", id = CR_EXPERTISE},
 		{pattern = "score de la compétence dagues", id = CR_WEAPON_SKILL},
 		{pattern = "score de la compétence epées", id = CR_WEAPON_SKILL},
 		{pattern = "score de la compétence epées à deux mains", id = CR_WEAPON_SKILL},

@@ -27,6 +27,7 @@ return {
 	["gossip"] = {
 		L["<Touch the unstable rift crystal.>"],
 		L["<Place my hand on the orb.>"],
+		L["Transport me to the Molten Core, Lothos."],
 		L["Thank you, Stable Master. Please take the animal."],
 		L["With pleasure. These things stink!"],
 		L["Trick or Treat!"],
@@ -36,13 +37,19 @@ return {
 		L["I need a pack of incendiary bombs."],
 		L["I'm ready to go to Durholde Keep."],
 		L["I require a chrono-beacon, Sa'at."],
-		L["Naturalist, please grant me your boon."]
+		L["Naturalist, please grant me your boon."],
+		L["I would be grateful for any aid you can provide, Priestess."],
 	},
 }
 end
 
 function Automaton_Gossip:GetQuestData()
 return {
+-- Fishing
+	[L["Apprentice Angler"]] = {
+		items = { [L["Speckled Tastyfish"]] = 5 }
+	},
+
 -- Alterac Valley quests
 	[L["Empty Stables"]] = {},
 	[L["Ram Hide Harnesses"]] = {
@@ -265,9 +272,9 @@ return {
 	},
 
 -- Wildhammer faction
-	[L["Troll Necklace Bounty"]] = {
-		items = { [L["Troll Tribal Necklace"]] = 5 }
-	},
+--	[L["Troll Necklace Bounty"]] = {
+--		items = { [L["Troll Tribal Necklace"]] = 5 }
+--	},
 
 -- E'ko quests
 	[L["Chillwind E'ko Quest"]] = {
@@ -463,6 +470,9 @@ return {
 	
 
 	--Aldor
+	[L["Strained Supplies"]] = {
+		items = { [L["Dreadfang Venom Sac"]] = 8 },
+	},
 	[L["More Marks of Kil'jaeden"]] = {
 		items = { [L["Mark of Kil'jaeden"]] = 10 },
 		priority = 4
@@ -561,5 +571,32 @@ return {
 	[L["Accepting All Eggs"]] = {
 		items = { [L["Netherwing Egg"]] = 1 }
 	},
+	
+	
+--[[		I deactiveted those because WotLK is coming and I guess(!) most players will hoard MoH's and
+		it would be very unfortunate if they get turned in accidently.
+
+-- 2.4 Battleground mark turn-in
+
+	-- Alliance
+  [L["Concerted Efforts"] ] = {
+  	items = {
+  	 	[L["Alterac Valley Mark of Honor"] ] = 1,
+			[L["Arathi Basin Mark of Honor"] ] = 1,
+			[L["Warsong Gulch Mark of Honor"] ] = 1,
+			[L["Eye of the Storm Mark of Honor"] ]  = 1,
+  	}
+  },
+  
+  -- Horde
+  [L["For Great Honor"] ] = {
+  	items = {
+  	 	[L["Alterac Valley Mark of Honor"] ] = 1,
+			[L["Arathi Basin Mark of Honor"] ] = 1,
+			[L["Warsong Gulch Mark of Honor"] ] = 1,
+			[L["Eye of the Storm Mark of Honor"] ] = 1,
+  	}
+  },
+	--]]  
 }
 end

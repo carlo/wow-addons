@@ -9,12 +9,15 @@ L:RegisterTranslations("enUS", function() return {
   ["general"] = true,
   ["trade"] = true,
   ["guildrecruitment"] = true,
-  
+  ["emote"] = true,
+  ["lookingforgroup"] = true,
+  ["localdefense"] = true,
+
   -- Welcome message 
   ["SpamSentry v%s by Anea. Type |cffffffff/sentry|r or right-click the icon for options."] = true,
   
   -- Alerts
-  ["%s has been added to the feedback list"] = true,
+  ["%s has been added to the SpamSentry feedback list"] = true,
   ["* Alert: %s tried to send you %s (%s). Click %s to report."] = true,
   ["this message"] = true,
   ["One or more characters are on the reportlist. Click %s to report them to a GM."] = true,

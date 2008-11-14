@@ -21,7 +21,6 @@ CHAT COMMANDS:
 	/linkerator (or /link) <command>
 where <command> can be any of the following:
 	help - Print this list.
-	list - List all links known. (Currently kinda useless, as you'll quickly accumulate more links than the chat window can display at once.)
 	<number> - Print a link in the chat window for an item given its ID number.
 	<link code> - Print a link in the chat window for an item given a complete link code (e.g. "item:789:241:0:0:0:0:2029:0" for a [Stout Battlehammer of Healing] with a +2 damage enchant).
 	<name> - Print a link in the chat window for an item given its name or part of its name. (Will show more than one match if available.)
@@ -31,6 +30,18 @@ CAVEATS, ETC.:
 	
 ------------------------------------------------------
 VERSION HISTORY
+
+v. 3.0.1 - 2008/10/22
+- Fixes an error when attempting to type links in chat.
+
+v. 3.0 - 2008/10/14
+- Updated for compatibility with WoW Patch 3.0 and Wrath of the Lich King.
+- It's now possible to retrieve item links given a known item ID (using `/link <number>`) even if the item is not in your client's local cache. Items unknown by the server will return no results.
+- Includes preliminary support for spell links -- they're now returned in `/link` search results but not for as-you-type linking. More spell, talent, quest, and achievement link features will follow in future releases.
+
+v. 2.4 - 2007/03/25
+- Updated TOC to indicate compatibility with WoW Patch 2.4.
+- Processing of links seen at the Auction House is now done asynchronously; this avoids locking up the client for long periods of time if another addon requests all the AH listings at once.
 
 v. 2.3 - 2007/11/13
 - Updated TOC to indicate compatibility with WoW Patch 2.3.

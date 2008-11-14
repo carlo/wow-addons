@@ -1,6 +1,6 @@
-﻿## Interface: 20300
+﻿## Interface: 30000
 
-## Title: LibRock-1.0
+## Title: Lib: Rock-1.0
 ## Notes: AddOn development framework
 ## Author: ckknight
 ## X-Website: http://www.wowace.com

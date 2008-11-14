@@ -1,6 +1,6 @@
 --[[
 Name: LibRockConsole-1.0
-Revision: $Rev: 48954 $
+Revision: $Rev: 238 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for input/output capabilities from the command line.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockConsole-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 48954 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 238 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 
@@ -141,6 +141,12 @@ local function specialSort(alpha, bravo)
 		return false
 	end
 	local type_alpha, type_bravo = type(alpha), type(bravo)
+	if type_alpha == "table" and type(rawget(alpha, 0)) == "userdata" then
+		type_alpha = "frame"
+	end
+	if type_bravo == "table" and type(rawget(bravo, 0)) == "userdata" then
+		type_bravo = "frame"
+	end
 	if type_alpha ~= type_bravo then
 		return type_alpha < type_bravo
 	end
@@ -149,7 +155,70 @@ local function specialSort(alpha, bravo)
 	elseif type_alpha == "number" then
 		return alpha < bravo
 	elseif type_alpha == "table" then
-		return #alpha < #bravo
+		if #alpha ~= #bravo then
+			return #alpha < #bravo
+		end
+		local num = 0
+		for k in pairs(alpha) do
+			num = num + 1
+		end
+		for k in pairs(bravo) do
+			num = num - 1
+		end
+		if num ~= 0 then
+			return num < 0
+		end
+		
+		local alpha_keys = newList()
+		local bravo_keys = newList()
+		for k in pairs(alpha) do
+			alpha_keys[#alpha_keys+1] = k
+		end
+		for k in pairs(bravo) do
+			bravo_keys[#bravo_keys+1] = k
+		end
+		table_sort(alpha_keys, specialSort)
+		table_sort(bravo_keys, specialSort)
+		
+		for i, alpha_k in ipairs(alpha) do
+			local bravo_k = bravo[i]
+			if specialSort(alpha_k, bravo_k) then
+				alpha_keys = del(alpha_keys)
+				bravo_keys = del(bravo_keys)
+				return true
+			elseif specialSort(bravo_k, alpha_k) then
+				alpha_keys = del(alpha_keys)
+				bravo_keys = del(bravo_keys)
+				return false
+			end
+		end
+		
+		for k, alpha_v in pairs(alpha) do
+			local bravo_v = bravo[k]
+			if specialSort(alpha_v, bravo_v) then
+				alpha_keys = del(alpha_keys)
+				bravo_keys = del(bravo_keys)
+				return true
+			elseif specialSort(bravo_v, alpha_v) then
+				alpha_keys = del(alpha_keys)
+				bravo_keys = del(bravo_keys)
+				return false
+			end
+		end
+		
+		alpha_keys = del(alpha_keys)
+		bravo_keys = del(bravo_keys)
+		
+		return false
+	elseif type_alpha == "frame" then
+		local alpha_name = alpha:GetName()
+		local bravo_name = bravo:GetName()
+		if not alpha_name then
+			return true
+		elseif not bravo_name then
+			return false
+		end
+		return alpha_name:lower() < bravo_name:lower()
 	elseif type_alpha == "boolean" then
 		return not alpha
 	else
@@ -191,7 +260,7 @@ local function literal_tostring_nonframe(tmp, object, depth)
 	local type_object = type(object)
 	if type_object == "string" then
 		tmp[#tmp+1] = "|cff00ff00"
-		tmp[#tmp+1] = ("%q"):format((object:gsub("|", "||"))):gsub("[\001-\012\014-\031\128-\255]", escapeChar)
+		tmp[#tmp+1] = ("%q"):format((object:gsub("|", "||"))):gsub("[%z\001-\009\011-\031\127-\255]", escapeChar)
 		tmp[#tmp+1] = "|r"
 	elseif type_object == "number" then
 		tmp[#tmp+1] = "|cffff7fff"
@@ -321,9 +390,33 @@ local function literal_tostring_nonframe(tmp, object, depth)
 	end
 end
 
+local reserved = {
+	["and"] = true,
+	["break"] = true,
+	["do"] = true,
+	["else"] = true,
+	["elseif"] = true,
+	["end"] = true,
+	["false"] = true,
+	["for"] = true,
+	["function"] = true,
+	["if"] = true,
+	["in"] = true,
+	["local"] = true,
+	["nil"] = true,
+	["not"] = true,
+	["or"] = true,
+	["repeat"] = true,
+	["return"] = true,
+	["then"] = true,
+	["true"] = true,
+	["until"] = true,
+	["while"] = true,
+}
+
 function getkeystring(tmp, object, depth)
 	if type(object) == "string" then
-		if object:find("^[%a_][%a%d_]*$") then
+		if object:find("^[%a_][%a%d_]*$") and not reserved[object] then
 			tmp[#tmp+1] = "|cff7fd5ff"
 			tmp[#tmp+1] = object
 			tmp[#tmp+1] = "|r"
@@ -411,7 +504,7 @@ local function literal_tostring_frame(tmp, frame)
 				tmp[#tmp+1] = ") => "
 				get_stringed_args(tmp, v, frame, j)
 			end
-		elseif type(v) == "function" and type(k) == "string" and (k:find("^Is") or k:find("^Get") or k:find("^Can")) then
+		elseif type(v) == "function" and type(k) == "string" and (k:find("^Is") or k:find("^Get") or k:find("^Can")) and k ~= "IsEventRegistered" and k ~= "IsFrameType" and k ~= "IsObjectType" and k ~= "GetAttribute" then
 			local tmp2 = newList()
 			local q = get_stringed_args(tmp2, v, frame)
 			if q then
@@ -541,7 +634,12 @@ Example:
 	Rock("LibRockConsole-1.0"):Print("Hello", "friend") -- print "Hello, friend"
 -----------------------------------------------------------------------------]]
 function RockConsole:Print(...)
-	return RockConsole.CustomPrint(self, nil, nil, nil, nil, nil, ", ", ...)
+	local chatFrame = nil
+	if type(self) == "table" and type(rawget(self, 0)) == "userdata" and self.GetFrameType and self:GetFrameType() == "ScrollingMessageFrame" then
+		chatFrame = self
+		self = RockConsole
+	end
+	return RockConsole.CustomPrint(self, nil, nil, nil, chatFrame, nil, ", ", ...)
 end
 
 --[[---------------------------------------------------------------------------
@@ -554,7 +652,12 @@ Example:
 	Rock("LibRockConsole-1.0"):Print("Hello", "friend") -- print '"Hello", "friend"'
 -----------------------------------------------------------------------------]]
 function RockConsole:PrintLiteral(...)
-	return RockConsole.CustomPrint(self, nil, nil, nil, nil, nil, true, ...)
+	local chatFrame = nil
+	if type(self) == "table" and type(rawget(self, 0)) == "userdata" and self.GetFrameType and self:GetFrameType() == "ScrollingMessageFrame" then
+		chatFrame = self
+		self = RockConsole
+	end
+	return RockConsole.CustomPrint(self, nil, nil, nil, chatFrame, nil, true, ...)
 end
 
 --[[---------------------------------------------------------------------------
@@ -585,7 +688,7 @@ function RockConsole:AddSlashCommand(name, callback, ...)
 	end
 	
 	if type((...)) == "table" then
-		return RockConsole.RegisterSlashCommand(self, name, callback, unpack((...)))
+		return RockConsole.AddSlashCommand(self, name, callback, unpack((...)))
 	end
 	local n = select('#', ...)
 	
@@ -670,14 +773,14 @@ precondition(RockConsole, "AddSlashCommand", function(self, name, callback, ...)
 	if n == 0 then
 		argCheck((...), 4, "string", "table")
 	elseif n == 1 and type((...)) == "table" then
-		return RockConsole.RegisterSlashCommand(self, name, callback, unpack((...)))
+		return RockConsole.AddSlashCommand(self, name, callback, unpack((...)))
 	else
 		for i = 1, n do
 			local v = select(i, ...)
 			if v or i == 1 then
 				argCheck(v, i+3, "string")
 				if not v:match("^/[A-Za-z][A-Za-z0-9_]*$") then
-					error(("Bad argument #%d to `RegisterSlashCommand'. Must be in the form of %q, got %q."):format(i+3, "/word", v), 3)
+					error(("Bad argument #%d to `AddSlashCommand'. Must be in the form of %q, got %q."):format(i+3, "/word", v), 3)
 				end
 			end
 		end

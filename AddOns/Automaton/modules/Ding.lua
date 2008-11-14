@@ -99,6 +99,29 @@ $N - Name]],
 
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+    ["Notification on level up"] = "升级时进行通知",
+    ["Enable"] = "启用",
+    ["Enable module"] = "启用该模块",
+    ["Message"] = "信息",
+    ["Notification message"] = "提醒信息",
+    ["Notification usage"] = [[
+
+$L - 新的级别
+$l - 旧的级别
+$C - 职业
+$R - 种族
+$N - 名称]],
+    ["Woot, ding $L!"] = "哇哈哈，$L级了！",
+    ["Channels"] = "频道",
+    ["Channels to notify"] = "要通知到的频道",
+    ["Notify %s channel"] = "通知%s频道",
+    ["Minimum Level"] = "最低级别",
+    ["Notify only when player level is greater than or equal to this minimum"] = "只有当玩家级别大于或等于这个值时才通知",
+    ["Multiple"] = "倍数",
+    ["Notify only when player level is a positive multiple of this number"] = "只有当玩家级别为这个值的倍数时才通知",
+} end)
+
 local types = {"say", "emote", "yell", "party", "guild", "officer", "raid", "battleground"}
 local gsubtbl = {}
 

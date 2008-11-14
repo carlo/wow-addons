@@ -5,7 +5,7 @@ if(not rpgo.colorGreen) then rpgo.colorGreen="00cc00"; end
 if(not rpgo.colorRed)   then rpgo.colorRed  ="ff0000"; end
 --if(not rpgo.func) then rpgo.func={}; end
 
-local VERSION = 2000302
+local VERSION = 03000001
 if(rpgo.ver and rpgo.ver >= VERSION) then return end
 --[[########################################################
 --## addon object functions
@@ -28,7 +28,9 @@ end
 --[PrefInit]
 rpgo.PrefInit=function(self)
 	if( self.prefs and self.PREFS ) then
-		return rpgo.PrefInitSub(self.prefs,self.PREFS);
+		rpgo.PrefInitSub(self.prefs,self.PREFS);
+		self.prefs.ver = self.PREFS.ver;
+		return 
 	end
 end
 --[PrefTidy]
@@ -37,7 +39,6 @@ rpgo.PrefTidy=function(self)
 		return rpgo.PrefTidySub(self.prefs,self.PREFS);
 	end
 end
-
 --[PrefInit] structPref,structDefault
 rpgo.PrefInitSub = function(structPref,structDefault)
 	for pref,val in pairs(structDefault) do
@@ -56,11 +57,9 @@ rpgo.PrefTidySub=function(structPref,structDefault)
 	for pref,val in pairs(structPref) do
 		if(type(structDefault[pref])=="table") then rpgo.PrefTidySub(structPref[pref],structDefault[pref]);
 		elseif(structDefault[pref] == nil) then structPref[pref]=nil; end end end
---[TogglePref] togglePref
-rpgo.TogglePrefOO=function(self,pref,val)
+--[PrefToggle] togglePref
+rpgo.PrefToggle=function(self,pref,val)
 	if(not self or not pref) then return end
-	--if(not self or not pref or not val) then return end
-	--if(not self.PREFS or not self.prefs) then return end
 	if( type(pref)=="string" ) then
 		pref = string.lower(pref);
 	end
@@ -72,12 +71,6 @@ rpgo.TogglePrefOO=function(self,pref,val)
 			val = tonumber(val);
 		end
 	end
-	--if( self.PREFS[pref] ) then
-	--	prefkey = self.PREFS[pref];
-	--elseif( self.PREFS[pref] ) then
-	--	prefkey = self.PREFS[pref];
-	--end
-	--self:PrintDebug( prefkey );
 
 	if( type(self.PREFS[pref])=="boolean" ) then
 		if( type(val)=="string" ) then
@@ -105,9 +98,6 @@ rpgo.TogglePrefOO=function(self,pref,val)
 			prefval=tostring(val);
 		end
 	end
---self:PrintDebug( pref, self.prefs[pref], type(self.PREFS[pref]) )
---self:PrintDebug( 'val', val, type(val) );
---self:PrintDebug( 'new', prefval, type(prefval) );
 	if(prefval~=nil) then
 		if( self.prefs[pref]~=prefval ) then
 			self.prefs[pref]=prefval;
@@ -125,19 +115,6 @@ rpgo.TogglePrefOO=function(self,pref,val)
 	msg=msg.." "..rpgo.PrefColorize(self.prefs[pref]);
 	self:PrintTitle(msg);
 end
---[TogglePref] togglePref
---toRemove TOC>20003
-rpgo.TogglePref=function(struct,pref,val)
-	local retval=nil;
-	if(val and type(var)=="string") then val=string.lower(val); end;
-	if(val=="on") then val=true;
-	elseif(val=="off") then val=false; end
-	if(type(val)=="boolean" and struct[pref]~=val) then
-		struct[pref]=val; retval=true;
-	else retval=false; end
-	return retval
-end
-
 --[PrefColorize] pref
 rpgo.PrefColorize = function(pref)
 	if(type(pref)=="boolean") then
@@ -152,7 +129,6 @@ rpgo.PrefColorize = function(pref)
 			return rpgo.StringColorize(rpgo.colorTitle,"["..tostring(pref).."]|r")
 	end
 end
-
 --[State] pref
 rpgo.State = function(self,...)
 	if(not self.state) then return end
@@ -161,9 +137,14 @@ rpgo.State = function(self,...)
 	local key=select(1,...);
 	if(n==2) then
 		local val=select(2,...);
+		if(not state[key]) then
+			if(val=='++' or val=='--') then
+				state[key]=0;
+			end
+		end
 		if(val=='++') then
 			state[key]=state[key]+1;
-		elseif(val=='++') then
+		elseif(val=='--') then
 			state[key]=state[key]-1;
 		else
 			state[key]=val;
@@ -171,6 +152,39 @@ rpgo.State = function(self,...)
 		return true;
 	elseif( state and state[key] ) then
 		return state[key];
+	end
+	return nil;
+end
+
+--[[########################################################
+--## queue functions
+--######################################################--]]
+function rpgo.qInsert(queue,tbl,pri)
+	local q = true;
+	for idx,que in pairs( queue ) do
+		if(tbl[1]==que[1] and tbl[2]==que[2] and tbl[3]==que[3] and tbl[4]==que[4] and tbl[5]==que[5] and tbl[6]==que[6]) then
+			q=nil; break;
+		end
+	end
+	if(q) then 
+		if(not pri or pri > table.getn(queue)) then
+			pri = table.getn(queue)+1;
+		end
+		table.insert(queue,pri,tbl);
+	end
+end
+function rpgo.qProcess(queue,e)
+	if(not queue or table.getn(queue) == 0) then return end;
+	if(not e) then return end;
+	for idx,tab in pairs( queue ) do
+		if(e==tab[1]) then
+			tab = table.remove(queue,idx);
+			local f,a1,a2
+			f = tab[2];
+			f(tab[3],tab[4],tab[5],tab[6]);
+			--break;
+			return true;
+		end
 	end
 	return nil;
 end
@@ -235,7 +249,6 @@ end
 --[PrintDebug] self,msg
 rpgo.PrintDebug = function(self,...)
 	if(self and self.prefs and self.prefs.debug) then
-		local i;
 		local msg={};
 		local tmsg="";
 		if(self["PROVIDER"]) then

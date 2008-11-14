@@ -22,6 +22,10 @@ L:RegisterTranslations("zhTW", function() return {
 ["Automatically release to ghost after dying in a battleground"] = "戰場中自動釋放靈魂",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Automatically release to ghost after dying in a battleground"] = "战场中死后自动释放灵魂",
+} end)
+
 module.description = L["Automatically release to ghost after dying in a battleground"]
 module.options = {
 }

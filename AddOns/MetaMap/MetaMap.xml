@@ -140,14 +140,14 @@
 		<Scripts>
 			<OnMouseDown>
 				if(arg1	== "LeftButton")	then
-					this:StartMoving();
-					this.isMoving	=	true;
+					self:StartMoving();
+					self.isMoving	=	true;
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if(this.isMoving) then
-					this:StopMovingOrSizing();
-					this.isMoving	=	false;
+				if(self.isMoving) then
+					self:StopMovingOrSizing();
+					self.isMoving	=	false;
 				end
 			</OnMouseUp>
 		</Scripts>
@@ -175,10 +175,10 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				getglobal(this:GetName().."Highlight"):Show();
+				getglobal(self:GetName().."Highlight"):Show();
 			</OnEnter>
 			<OnLeave>
-				getglobal(this:GetName().."Highlight"):Hide();
+				getglobal(self:GetName().."Highlight"):Hide();
 			</OnLeave>
 		</Scripts>
 		<NormalFont	name="$parentNormalText" justifyH="LEFT" inherits="GameFontNormal"/>
@@ -250,7 +250,7 @@
 	</Button>
 
 	<Button	name="MetaMap_FrameTabButtonTemplate"	virtual="true">
-		<Size><AbsDimension	x="1"	y="22"/></Size>
+		<Size><AbsDimension	x="10"	y="22"/></Size>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeftDisabled"	file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
@@ -324,28 +324,31 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel()+4);
-				getglobal(this:GetName().."Text"):SetText(getglobal("METAMAP_TABTEXT"..this:GetID()));
-				getglobal(this:GetName().."HighlightText"):SetText(getglobal("METAMAP_TABTEXT"..this:GetID()));
-				getglobal(this:GetName().."DisabledText"):SetText(getglobal("METAMAP_TABTEXT"..this:GetID()));
-				PanelTemplates_TabResize(0);
+				self:SetFrameLevel(self:GetFrameLevel()+4);
+				getglobal(self:GetName().."Text"):SetText(getglobal("METAMAP_TABTEXT"..self:GetID()));
+				getglobal(self:GetName().."HighlightText"):SetText(getglobal("METAMAP_TABTEXT"..self:GetID()));
+				getglobal(self:GetName().."DisabledText"):SetText(getglobal("METAMAP_TABTEXT"..self:GetID()));
+				PanelTemplates_TabResize(self, 0);
 			</OnLoad>
+			<OnShow>
+				PanelTemplates_TabResize(self, 0);
+			</OnShow>
 			<OnEnter>
-				getglobal(this:GetName().."Text"):Hide();
-				getglobal(this:GetName().."HighlightText"):Show();
+				getglobal(self:GetName().."Text"):Hide();
+				getglobal(self:GetName().."HighlightText"):Show();
 			</OnEnter>
 			<OnLeave>
-				getglobal(this:GetName().."Text"):Show();
-				getglobal(this:GetName().."HighlightText"):Hide();
+				getglobal(self:GetName().."Text"):Show();
+				getglobal(self:GetName().."HighlightText"):Hide();
 			</OnLeave>
 			<OnClick>
-				PanelTemplates_Tab_OnClick(MetaMap_DialogFrame);
-				MetaMap_OptionsTab_OnClick();
+				PanelTemplates_Tab_OnClick(self, MetaMap_DialogFrame);
+				MetaMap_OptionsTab_OnClick(self);
 				for i = 1, 6 do
-					if i == this:GetID() then
-						getglobal(this:GetName().."Text"):Hide();
-						getglobal(this:GetName().."HighlightText"):Hide();
-						getglobal(this:GetName().."DisabledText"):Show();
+					if i == self:GetID() then
+						getglobal(self:GetName().."Text"):Hide();
+						getglobal(self:GetName().."HighlightText"):Hide();
+						getglobal(self:GetName().."DisabledText"):Show();
 					else
 						getglobal("MetaMap_DialogFrameTab"..i.."Text"):Show();
 						getglobal("MetaMap_DialogFrameTab"..i.."HighlightText"):Hide();
@@ -381,16 +384,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 			</OnLoad>
 			<OnEnter>
-				MetaMap_MapNoteOnEnter(this:GetID());
+				MetaMap_MapNoteOnEnter(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				WorldMapTooltip:Hide()
 			</OnLeave>
 			<OnClick>
-				MetaMap_MapNote_OnClick(arg1, this:GetID());
+				MetaMap_MapNote_OnClick(self, button, self:GetID());
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -422,16 +425,16 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel()	+	3)
-				this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
-				if this:GetID()	== 1 then
+				self:SetFrameLevel(self:GetFrameLevel()	+	3)
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+				if self:GetID()	== 1 then
 					MetaMapNotesPOIpartyTexture:SetTexture("Interface\\AddOns\\MetaMap\\POIIcons\\Iconparty")
 				end
 			</OnLoad>
 			<OnEnter>
-				if(this:GetID()	== 0) then
+				if(self:GetID()	== 0) then
 					MetaMap_MapNoteOnEnter(0);
-				elseif(this:GetID()	== 1) then
+				elseif(self:GetID()	== 1) then
 					MetaMap_MapNoteOnEnter(-1);
 				end
 			</OnEnter>
@@ -468,18 +471,18 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:SetFrameLevel(this:GetParent():GetFrameLevel()+4);
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+					self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 				</OnLoad>
 				<OnClick>
-					MetaMapList_OnClick(arg1, tonumber(getglobal(this:GetName().."NoteID"):GetText()));
+					MetaMapList_OnClick(self, button, tonumber(getglobal(self:GetName().."NoteID"):GetText()));
 				</OnClick>
 				<OnEnter>
-					getglobal(this:GetName().."Highlight"):Show();
-					MetaMap_MapNoteOnEnter(tonumber(getglobal(this:GetName().."NoteID"):GetText()));
+					getglobal(self:GetName().."Highlight"):Show();
+					MetaMap_MapNoteOnEnter(tonumber(getglobal(self:GetName().."NoteID"):GetText()));
 				</OnEnter>
 				<OnLeave>
-					getglobal(this:GetName().."Highlight"):Hide();
+					getglobal(self:GetName().."Highlight"):Hide();
 					WorldMapTooltip:Hide();
 				</OnLeave>
 			</Scripts>
@@ -533,14 +536,14 @@
 		</Layers>
 		<Scripts>
 			<OnShow>
-				this:SetText("");
-				this:ClearFocus();
+				self:SetText("");
+				self:ClearFocus();
 			</OnShow>
 			<OnEnterPressed>
-				this:ClearFocus();
+				self:ClearFocus();
 			</OnEnterPressed>
 			<OnEscapePressed>
-				this:ClearFocus();
+				self:ClearFocus();
 			</OnEscapePressed>
 		</Scripts>
 		<FontString font="Fonts\FRIZQT__.TTF"	bytes="256">
@@ -550,7 +553,7 @@
 	</EditBox>
 
 	<Frame name="MetaMap_DropdownTemplate" virtual="true">
-		<Size><AbsDimension	x="200"	y="24" /></Size>
+		<Size><AbsDimension	x="200"	y="32" /></Size> --y was 24, make it longer for new continent
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\AddOns\MetaMap\Images\goldedge">
@@ -620,11 +623,11 @@
 				</HighlightTexture>
 				<Scripts>
 					<OnShow>
-						this:SetWidth(this:GetHeight());
+						self:SetWidth(self:GetHeight());
 					</OnShow>
 					<OnClick>
-						local menu = getglobal(this:GetParent():GetName().."Menu")
-						ToggleDropDownMenu(nil, nil, menu, this:GetParent():GetName(), 0, 0);
+						local menu = getglobal(self:GetParent():GetName().."Menu")
+						ToggleDropDownMenu(nil, nil, menu, self:GetParent():GetName(), 0, 0);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -633,14 +636,15 @@
 
 	<Frame name="MetaMap_MainMenu" inherits="UIDropDownMenuTemplate" parent="UIParent" id="11"></Frame>
 	<Frame name="MetaMap_NotesList" inherits="UIDropDownMenuTemplate" parent="UIParent" id="22"></Frame>
+	<!-- The instance dropdown -->
 	<Frame name="MetaMap_InstanceMenu" inherits="UIDropDownMenuTemplate" toplevel="true" parent="WorldMapFrame" id="33">
 		<Anchors>
-			<Anchor	point="RIGHT"	relativeTo="WorldMapContinentDropDown" relativePoint="LEFT">
+			<Anchor	point="RIGHT" relativeTo="WorldMapContinentDropDown" relativePoint="LEFT">
 				<Offset><AbsDimension	x="33" y="0"/></Offset>
 			</Anchor>
 		</Anchors>
 	</Frame>
-
+	
 	<Frame name="MetaMap_DialogFrame"	inherits="MetaMap_OptionsFrameTemplate">
 		<Size>
 			<AbsDimension	x="585"	y="350"/>
@@ -713,14 +717,15 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PanelTemplates_SetNumTabs(this,	6);
-				getglobal(this:GetName().."Text"):SetText("MetaMap");
-				getglobal(this:GetName().."Text"):SetTextHeight(14);
-				getglobal(this:GetName().."Info"):SetWidth(this:GetWidth()-150);
-				MetaMap_OptionsInfo = getglobal(this:GetName().."Info");
+				PanelTemplates_SetNumTabs(self,	6);
+				getglobal(self:GetName().."Text"):SetText("MetaMap");
+				getglobal(self:GetName().."Text"):SetTextHeight(14);
+				getglobal(self:GetName().."Info"):SetWidth(self:GetWidth()-150);
+				MetaMap_OptionsInfo = getglobal(self:GetName().."Info");
 			</OnLoad>
 			<OnShow>
-				PanelTemplates_SetTab(this,	1);
+				PanelTemplates_SetTab(self,	1);
+				MetaMap_DialogFrameTab1:Show()
 				MetaMap_ToggleDialog("MetaMap_GeneralDialog");
 			</OnShow>
 		</Scripts>		
@@ -751,14 +756,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_MENU_MODE);
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_MENU_MODE);
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option)
+						MetaMap_ToggleOptions(self.option)
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -770,14 +775,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText(" "..METAMAP_OPTIONS_AUTOSEL)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText(" "..METAMAP_OPTIONS_AUTOSEL)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option)
+						MetaMap_ToggleOptions(self.option)
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -789,14 +794,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_LISTCOLORS)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_LISTCOLORS)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option)
+						MetaMap_ToggleOptions(self.option)
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -808,14 +813,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_SHOWBUT)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_SHOWBUT)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option)
+						MetaMap_ToggleOptions(self.option)
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -827,14 +832,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_TRACKICON)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_TRACKICON)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 						getglobal("MetaMapButtonIcon"):SetTexture(METAMAP_ICON);
 						if(IsAddOnLoaded("FuBar")) then
 							MetaMapFu:SetIcon(METAMAP_ICON);
@@ -852,11 +857,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_SCALE);
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(0.0,1.0);
-						this:SetValueStep(0.01);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_SCALE);
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(0.0,1.0);
+						self:SetValueStep(0.01);
 					</OnLoad>
 					<OnValueChanged>
 						MetaMap_UpdateScale();
@@ -872,11 +877,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_TRANS);
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(0.0,1.0);
-						this:SetValueStep(0.01);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_TRANS);
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(0.0,1.0);
+						self:SetValueStep(0.01);
 					</OnLoad>
 					<OnValueChanged>
 						MetaMap_UpdateAlpha();
@@ -892,17 +897,17 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_TTSCALE);
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(0.5,2.0);
-						this:SetValueStep(0.01);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_TTSCALE);
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(0.5,2.0);
+						self:SetValueStep(0.01);
 					</OnLoad>
 					<OnValueChanged>
 						MetaMap_UpdateTTScale();
 					</OnValueChanged>
 					<OnEnter>
-						WorldMapTooltip:SetOwner(this, "ANCHOR_CENTER");
+						WorldMapTooltip:SetOwner(self, "ANCHOR_CENTER");
 						WorldMapTooltip:SetText("Tooltip Scaling Sample",	0, 1,	0);
 						WorldMapTooltip:AddLine("Move	the	Tooltip	slider to	change the scale of	the	tooltips shown on	the	WorldMap", 1,	1, 1,	true);
 						WorldMapTooltip:Show();
@@ -921,11 +926,11 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_SHADER);
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(0.0,1.0);
-						this:SetValueStep(0.01);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_SHADER);
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(0.0,1.0);
+						self:SetValueStep(0.01);
 					</OnLoad>
 					<OnValueChanged>
 						MetaMap_UpdateBackDrop();
@@ -953,13 +958,13 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText("	 "..METAMAP_OPTIONS_SHADESET)
+						getglobal(self:GetName().."Text"):SetText("	 "..METAMAP_OPTIONS_SHADESET)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(0);
+						self:SetChecked(0);
 					</OnShow>
 					<OnClick>
-						this:SetChecked(0);
+						self:SetChecked(0);
 						MetaMapShadeSet_Toggle();
 					</OnClick>
 				</Scripts>
@@ -986,16 +991,16 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_MENU_FONT.." |cff00ff00"..this:GetValue());
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(5,18);
-						this:SetValueStep(1);
-						this:SetValue(MetaMapOptions.MenuFont);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_MENU_FONT.." |cff00ff00"..self:GetValue());
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(5,18);
+						self:SetValueStep(1);
+						self:SetValue(MetaMapOptions.MenuFont);
 					</OnShow>
 					<OnValueChanged>
-						MetaMapOptions.MenuFont = this:GetValue();
-						getglobal(this:GetName().."Text"):SetText(METAMAP_MENU_FONT.." |cff00ff00"..this:GetValue());
+						MetaMapOptions.MenuFont = self:GetValue();
+						getglobal(self:GetName().."Text"):SetText(METAMAP_MENU_FONT.." |cff00ff00"..self:GetValue());
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -1008,16 +1013,18 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_BUTPOS.." |cff00ff00"..this:GetValue());
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(0,360);
-						this:SetValueStep(1);
-						this:SetValue(MetaMapOptions.MetaMapButtonPosition);
+						MetaMapOptions.MetaMapButtonPosition_Old = MetaMapOptions.MetaMapButtonPosition
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_BUTPOS.." |cff00ff00"..self:GetValue());
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(0,360);
+						self:SetValueStep(1);
+						self:SetValue(MetaMapOptions.MetaMapButtonPosition);
 					</OnShow>
 					<OnValueChanged>
+						MetaMapOptions.MetaMapButtonPosition_Old = MetaMapOptions.MetaMapButtonPosition
 						MetaMapOptions.MetaMapButtonPosition = MetaMapButtonSlider:GetValue();
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_BUTPOS.." |cff00ff00"..this:GetValue());
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_BUTPOS.." |cff00ff00"..self:GetValue());
 						MetaMapButton_UpdatePosition();
 					</OnValueChanged>
 				</Scripts>
@@ -1057,14 +1064,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_HIGHLIGHT_LASTCREATED)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_HIGHLIGHT_LASTCREATED)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 						MetaMap_MainMapUpdate();
 					</OnClick>
 				</Scripts>
@@ -1077,14 +1084,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_HIGHLIGHT_MININOTE)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_HIGHLIGHT_MININOTE)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 						MetaMap_MainMapUpdate();
 					</OnClick>
 				</Scripts>
@@ -1097,14 +1104,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_ACCEPTINCOMING)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_ACCEPTINCOMING)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1116,14 +1123,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_AUTOPARTYASMININOTE)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_AUTOPARTYASMININOTE)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1135,14 +1142,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_SHOWAUTHOR)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_SHOWAUTHOR)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1154,14 +1161,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Check_", "");
-						getglobal(this:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_POI)
+						self.option = string.gsub(self:GetName(), "MetaMap_Check_", "");
+						getglobal(self:GetName().."Text"):SetText("	"..METAMAP_OPTIONS_POI)
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1179,12 +1186,12 @@
 						UIDropDownMenu_Initialize(MetaMap_NotesList, MetaMap_NotesListInit, "MENU");
 					</OnLoad>
 					<OnShow>
-						this:SetText(METAMAP_OPTIONS_CCREATOR);
+						self:SetText(METAMAP_OPTIONS_CCREATOR);
 						MetaMap_ZoneSearch();
 					</OnShow>
 					<OnClick>
 						if(not StaticPopup1:IsVisible()) then
-							ToggleDropDownMenu(nil, this, MetaMap_NotesList, this, 0, 0);
+							ToggleDropDownMenu(nil, nil, MetaMap_NotesList, self:GetName(), 0, 0);
 						end
 					</OnClick>
 				</Scripts>
@@ -1198,20 +1205,20 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Slider_", "");
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_NOTESIZE);
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(8,32);
-						this:SetValueStep(1);
+						self.option = string.gsub(self:GetName(), "MetaMap_Slider_", "");
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_NOTESIZE);
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(8,32);
+						self:SetValueStep(1);
 					</OnLoad>
 					<OnShow>
-						this:SetValue(MetaMapOptions[this.option]);
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_NOTESIZE.." |cff00ff00"..this:GetValue());
+						self:SetValue(MetaMapOptions[self.option]);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_NOTESIZE.." |cff00ff00"..self:GetValue());
 					</OnShow>
 					<OnValueChanged>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_NOTESIZE.." |cff00ff00"..this:GetValue());
-						MetaMap_ToggleOptions(this.option, this:GetValue());
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_NOTESIZE.." |cff00ff00"..self:GetValue());
+						MetaMap_ToggleOptions(self.option, self:GetValue());
 						MetaMap_MainMapUpdate();
 					</OnValueChanged>
 				</Scripts>
@@ -1233,14 +1240,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Module_", "");
-						getglobal(this:GetName().."Text"):SetText("MetaMapWKB");
+						self.option = string.gsub(self:GetName(), "MetaMap_Module_", "");
+						getglobal(self:GetName().."Text"):SetText("MetaMapWKB");
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1252,14 +1259,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Module_", "");
-						getglobal(this:GetName().."Text"):SetText("MetaMapQST");
+						self.option = string.gsub(self:GetName(), "MetaMap_Module_", "");
+						getglobal(self:GetName().."Text"):SetText("MetaMapQST");
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1271,14 +1278,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Module_", "");
-						getglobal(this:GetName().."Text"):SetText("MetaMapFWM");
+						self.option = string.gsub(self:GetName(), "MetaMap_Module_", "");
+						getglobal(self:GetName().."Text"):SetText("MetaMapFWM");
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1290,14 +1297,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Module_", "");
-						getglobal(this:GetName().."Text"):SetText("MetaMapBWP");
+						self.option = string.gsub(self:GetName(), "MetaMap_Module_", "");
+						getglobal(self:GetName().."Text"):SetText("MetaMapBWP");
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1309,14 +1316,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Module_", "");
-						getglobal(this:GetName().."Text"):SetText("MetaMapNKB");
+						self.option = string.gsub(self:GetName(), "MetaMap_Module_", "");
+						getglobal(self:GetName().."Text"):SetText("MetaMapNKB");
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1328,14 +1335,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Module_", "");
-						getglobal(this:GetName().."Text"):SetText("MetaMapTRK");
+						self.option = string.gsub(self:GetName(), "MetaMap_Module_", "");
+						getglobal(self:GetName().."Text"):SetText("MetaMapTRK");
 					</OnLoad>
 					<OnShow>
-						this:SetChecked(MetaMapOptions[this.option]);
+						self:SetChecked(MetaMapOptions[self.option]);
 					</OnShow>
 					<OnClick>
-						MetaMap_ToggleOptions(this.option);
+						MetaMap_ToggleOptions(self.option);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
@@ -1361,20 +1368,20 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.option = string.gsub(this:GetName(), "MetaMap_Slider_", "");
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_CONTAINER);
-						getglobal(this:GetName().."High"):SetText();
-						getglobal(this:GetName().."Low"):SetText();
-						this:SetMinMaxValues(0.0,1.0);
-						this:SetValueStep(0.01);
+						self.option = string.gsub(self:GetName(), "MetaMap_Slider_", "");
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_CONTAINER);
+						getglobal(self:GetName().."High"):SetText();
+						getglobal(self:GetName().."Low"):SetText();
+						self:SetMinMaxValues(0.0,1.0);
+						self:SetValueStep(0.01);
 					</OnLoad>
 					<OnShow>
-						this:SetValue(MetaMapOptions[this.option]);
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_CONTAINER.." |cff00ff00"..MetaMap_round(this:GetValue(),2));
+						self:SetValue(MetaMapOptions[self.option]);
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_CONTAINER.." |cff00ff00"..MetaMap_round(self:GetValue(),2));
 					</OnShow>
 					<OnValueChanged>
-						getglobal(this:GetName().."Text"):SetText(METAMAP_OPTIONS_CONTAINER.." |cff00ff00"..MetaMap_round(this:GetValue(),2));
-						MetaMap_ToggleOptions(this.option, this:GetValue());
+						getglobal(self:GetName().."Text"):SetText(METAMAP_OPTIONS_CONTAINER.." |cff00ff00"..MetaMap_round(self:GetValue(),2));
+						MetaMap_ToggleOptions(self.option, self:GetValue());
 						MetaMapOptions_Init();
 					</OnValueChanged>
 				</Scripts>
@@ -1495,7 +1502,7 @@
 				 </Anchors>
 				 <Scripts>
 					<OnLoad>
-						this:Disable();
+						self:Disable();
 					</OnLoad>
 					<OnClick>
 						MetaMap_ImportOptions(1);
@@ -1511,7 +1518,7 @@
 				 </Anchors>
 				 <Scripts>
 					<OnLoad>
-						this:Disable();
+						self:Disable();
 					</OnLoad>
 					<OnClick>
 						MetaMap_ImportOptions(2);
@@ -1673,16 +1680,16 @@
 				MetaMapTopFrame_OnShow();
 			</OnShow>
 			<OnMouseDown>
-				if ( arg1	== "LeftButton"	)	then
-					this:GetParent():StartMoving();
-					this.isMoving	=	true;
+				if ( button	== "LeftButton"	)	then
+					self:GetParent():StartMoving();
+					self.isMoving	=	true;
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if ( this.isMoving ) then
-					this:GetParent():StopMovingOrSizing();
-					this.isMoving	=	false;
-					WorldMapFrame:SetUserPlaced(false);
+				if ( self.isMoving ) then
+					self:GetParent():StopMovingOrSizing();
+					self.isMoving	=	false;
+					WorldMapFrame:SetUserPlaced(true);
 				end
 			</OnMouseUp>
 			<OnHide>
@@ -1691,13 +1698,15 @@
 		</Scripts>
 	</Frame>
 
+	<!-- Option button position in the map frame -->
 	<Button	name="MetaMap_OptionsButton" hidden="false"	parent="WorldMapFrame" inherits="OptionsButtonTemplate"	text="METAMAP_OPTIONS_BUTTON">
 		<Size>
 			<AbsDimension	x="100"	y="26"/>
 		</Size>
 		<Anchors>
-			<Anchor	point="CENTER" relativeTo="WorldMapZoomOutButton"	relativePoint="CENTER">
+			<Anchor	point="CENTER" relativeTo="WorldMapZoomOutButton" relativePoint="CENTER">
 				<Offset>
+					<!-- Absolute position -->
 					<AbsDimension	x="0"	y="0"/>
 				</Offset>
 			</Anchor>
@@ -1716,10 +1725,11 @@
 		</Scripts>
 	</Button>
 
+	<!-- Coords printing at the bottom of the map -->
 	<Frame name="MetaMap_MainCoords" hidden="true" parent="WorldMapFrame" >
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString	name="MetaMapCoordsCursorDesc" hidden="false"	inherits="MetaMap_FontTemplate"	text="Cursor(x,y): ">
+				<FontString	name="MetaMapCoordsCursorDesc" hidden="true"	inherits="MetaMap_FontTemplate"	text="Cursor(x,y): ">
 					<Anchors>
 						<Anchor	point="BOTTOM" relativeTo="WorldMapDetailFrame"	relativePoint="BOTTOM">
 							<Offset>
@@ -1729,7 +1739,7 @@
 					</Anchors>
 					<Color r="1.0" g="0.9" b="0"/>
 				</FontString>
-				<FontString	name="MetaMapCoordsCursor" hidden="false"	inherits="MetaMap_FontTemplate" text="">
+				<FontString	name="MetaMapCoordsCursor" hidden="true"	inherits="MetaMap_FontTemplate" text="">
 					<Anchors>
 						<Anchor	point="LEFT" relativeTo="MetaMapCoordsCursorDesc"	relativePoint="RIGHT">
 							<Offset>
@@ -1738,7 +1748,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString	name="MetaMapCoordsPlayerDesc" hidden="false"	inherits="MetaMap_FontTemplate"	text="Player(x,y): ">
+				<FontString	name="MetaMapCoordsPlayerDesc" hidden="true"	inherits="MetaMap_FontTemplate"	text="Player(x,y): ">
 					<Anchors>
 						<Anchor	point="BOTTOM" relativeTo="WorldMapDetailFrame"	relativePoint="BOTTOM">
 							<Offset>
@@ -1748,7 +1758,7 @@
 					</Anchors>
 					<Color r="1.0" g="0.9" b="0"/>
 				</FontString>
-				<FontString	name="MetaMapCoordsPlayer" hidden="false"	inherits="MetaMap_FontTemplate" text="">
+				<FontString	name="MetaMapCoordsPlayer" hidden="true"	inherits="MetaMap_FontTemplate" text="">
 					<Anchors>
 						<Anchor	point="LEFT" relativeTo="MetaMapCoordsPlayerDesc"	relativePoint="RIGHT">
 							<Offset>
@@ -1790,34 +1800,36 @@
 		</Layers>
 	</Frame>
 
-	<Button	name="MetaMapButton" parent="Minimap"	frameStrata="MEDIUM">
+	<Button	name="MetaMapButton" parent="Minimap" frameStrata="MEDIUM" enableMouse="true" movable="true">
 		<Size><AbsDimension	x="33" y="33"/></Size>
 		<Anchors>
 			<Anchor	point="TOPLEFT">
-				<Offset><AbsDimension	x="0"	y="-3"/></Offset>
+				<Offset><AbsDimension	x="0"	y="0"/></Offset>
 			</Anchor>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size><AbsDimension x="52" y="52"/></Size>
+				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder.tga">
+					<Size><AbsDimension x="50" y="50"/></Size> --was 50x50
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeTo="MetaMapButton">
+							<Offset><AbsDimension x="0" y="0"/></Offset>
+						</Anchor>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" file="Interface\WorldMap\UI-World-Icon">
-					<Size><AbsDimension x="20" y="20"/></Size>
+					<Size><AbsDimension x="29" y="29"/></Size> --was 29x29
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset><AbsDimension x="7" y="-6"/></Offset>
+						<Anchor point="TOPLEFT" relativeTo="MetaMapButton">
+							<Offset><AbsDimension x="0" y="0"/></Offset> --was 8,-9
 						</Anchor>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<HighlightTexture	alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/> --Interface\Minimap\UI-Minimap-ZoomButton-Highlight
 		<Scripts>
 			<OnClick>
 				if(IsControlKeyDown()) then
@@ -1833,13 +1845,53 @@
 				end
 			</OnEnter>
 			<OnMouseUp>
-				if(arg1	== "RightButton" and MetaMapOptions.MenuMode)	then
+				if self.isMoving then
+					self:StopMovingOrSizing();
+					self.isMoving = false;
+					MetaMapOptions.MetaMapButtonPositionXY = true
+					--local cx, cy = GetCursorPosition()
+					--local cz = UIParent:GetEffectiveScale()
+					--local mmbY = MetaMapButton:GetTop()
+					--local mmbX = MetaMapButton:GetLeft()
+					--local dx = (cx/cz) - mmbX
+					--local dy = mmbY - (cy/cz)
+					--MetaMapOptions.MetaMapButtonPositionX = (cx / cz) - dx
+					--MetaMapOptions.MetaMapButtonPositionY = (cy / cz) + dy
+					--MetaMapButton_UpdatePosition();
+				end
+				if(button == "RightButton" and MetaMapOptions.MenuMode) then
 					MetaMap_MainMenuSelect("MetaMapButton")
 				end
 			</OnMouseUp>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton", "RightButton");
+				MetaMapOptions.MetaMapButtonPosition_Old = MetaMapOptions.MetaMapButtonPosition
+			</OnLoad>
+			<OnDragStart>
+				if IsModifierKeyDown() then
+					self:StartMoving();
+					self.isMoving = true;
+				end
+			</OnDragStart>
+			<OnDragStop>
+				if self.isMoving then
+					self:StopMovingOrSizing();
+					self.isMoving = false;
+					MetaMapOptions.MetaMapButtonPositionXY = true
+					--local cx, cy = GetCursorPosition()
+					--local cz = UIParent:GetEffectiveScale()
+					--local mmbY = MetaMapButton:GetTop()
+					--local mmbX = MetaMapButton:GetLeft()
+					--local dx = (cx/cz) - mmbX
+					--local dy = mmbY - (cy/cz)
+					--MetaMapOptions.MetaMapButtonPositionX = (cx / cz) - dx
+					--MetaMapOptions.MetaMapButtonPositionY = (cy / cz) + dy
+					--MetaMapButton_UpdatePosition();
+				end
+			</OnDragStop>
 		</Scripts>
 	</Button>
 
@@ -1872,14 +1924,14 @@
 				if(IsShiftKeyDown() or IsControlKeyDown()) then
 					MiniMapCoords_OnClick(arg1);
 				else
-					this:StartMoving();
-					this.isMoving	=	true;
+					self:StartMoving();
+					self.isMoving	=	true;
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if(this.isMoving) then
-					this:StopMovingOrSizing();
-					this.isMoving	=	false;
+				if(self.isMoving) then
+					self:StopMovingOrSizing();
+					self.isMoving	=	false;
 				end
 			</OnMouseUp>
 			<OnEnter>
@@ -1941,14 +1993,14 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
-				this:SetWidth(WorldMapButton:GetWidth());
-				this:SetHeight(WorldMapButton:GetHeight());
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+				self:SetWidth(WorldMapButton:GetWidth());
+				self:SetHeight(WorldMapButton:GetHeight());
 				MetaMap_MapImage:SetHeight(MetaMapFrame:GetHeight()-60);
 				MetaMap_MapImage:SetWidth(MetaMap_MapImage:GetHeight());
 			</OnLoad>
 			<OnClick>
-				MetaMap_WorldMapButton_OnClick(arg1,	WorldMapButton)
+				MetaMap_WorldMapButton_OnClick(WorldMapButton, button) --leave without self
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -1956,7 +2008,7 @@
 	<Frame name="MetaMapNotesLinesFrame" parent="WorldMapFrame"	hidden="false">
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() +1);
+				self:SetFrameLevel(self:GetFrameLevel() +1);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -2125,7 +2177,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOption");
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2152,7 +2204,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(0)
@@ -2182,7 +2234,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(1)
@@ -2212,7 +2264,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(2)
@@ -2242,7 +2294,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(3)
@@ -2272,7 +2324,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(4)
@@ -2302,7 +2354,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(5)
@@ -2332,7 +2384,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(6)
@@ -2362,7 +2414,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(7)
@@ -2392,7 +2444,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(8)
@@ -2422,7 +2474,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetIcon(9)
@@ -2500,7 +2552,7 @@
 						MetaMap_NoteEditorSave();
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnEscapePressed>
 				</Scripts>
 				<FontString	inherits="ChatFontNormal"/>
@@ -2544,7 +2596,7 @@
 						MetaMap_NoteEditorSave()
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnEscapePressed>
 				</Scripts>
 				<FontString	inherits="ChatFontNormal"/>
@@ -2588,7 +2640,7 @@
 						MetaMap_NoteEditorSave()
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnEscapePressed>
 				</Scripts>
 				<FontString	inherits="ChatFontNormal"/>
@@ -2632,7 +2684,7 @@
 						MetaMap_NoteEditorSave()
 					</OnEnterPressed>
 					<OnEscapePressed>
-						this:GetParent():Hide();
+						self:GetParent():Hide();
 					</OnEscapePressed>
 				</Scripts>
 				<FontString	inherits="ChatFontNormal"/>
@@ -2660,7 +2712,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetTextColor(0)
@@ -2690,7 +2742,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetTextColor(1)
@@ -2720,7 +2772,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetTextColor(2)
@@ -2750,7 +2802,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+						self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 					</OnLoad>
 					<OnClick>
 						MetaMap_Edit_SetTextColor(3)
@@ -2780,7 +2832,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetTextColor(4)
@@ -2810,7 +2862,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetTextColor(5)
@@ -2840,7 +2892,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetTextColor(6)
@@ -2870,7 +2922,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetTextColor(7)
@@ -2900,7 +2952,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetTextColor(8)
@@ -2930,7 +2982,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetTextColor(9)
@@ -2982,7 +3034,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(0)
@@ -3012,7 +3064,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(1)
@@ -3040,7 +3092,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(2)
@@ -3070,7 +3122,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(3)
@@ -3100,7 +3152,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(4)
@@ -3130,7 +3182,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(5)
@@ -3160,7 +3212,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(6)
@@ -3190,7 +3242,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(7)
@@ -3220,7 +3272,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(8)
@@ -3250,7 +3302,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo1Color(9)
@@ -3302,7 +3354,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo2Color(0)
@@ -3332,7 +3384,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo2Color(1)
@@ -3362,7 +3414,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo2Color(2)
@@ -3392,7 +3444,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo2Color(3)
@@ -3422,7 +3474,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo2Color(4)
@@ -3452,7 +3504,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 				</OnLoad>
 				<OnClick>
 					MetaMap_Edit_SetInfo2Color(5)
@@ -3482,7 +3534,7 @@
 								</Layers>
 								<Scripts>
 										<OnLoad>
-												this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+												self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 										</OnLoad>
 										<OnClick>
 												MetaMap_Edit_SetInfo2Color(6)
@@ -3512,7 +3564,7 @@
 								</Layers>
 								<Scripts>
 										<OnLoad>
-												this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+												self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 										</OnLoad>
 										<OnClick>
 												MetaMap_Edit_SetInfo2Color(7)
@@ -3542,7 +3594,7 @@
 								</Layers>
 								<Scripts>
 										<OnLoad>
-												this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+												self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 										</OnLoad>
 										<OnClick>
 												MetaMap_Edit_SetInfo2Color(8)
@@ -3572,7 +3624,7 @@
 								</Layers>
 								<Scripts>
 										<OnLoad>
-												this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+												self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 										</OnLoad>
 										<OnClick>
 												MetaMap_Edit_SetInfo2Color(9)
@@ -3648,10 +3700,10 @@
 				</Layers>
 				<Scripts>
 						<OnLoad>
-							this:SetBackdropColor(0,0,0,1);
+							self:SetBackdropColor(0,0,0,1);
 						</OnLoad>
 						<OnShow>
-							this:SetAlpha(255);
+							self:SetAlpha(255);
 						</OnShow>
 				</Scripts>
 		</Frame>
@@ -3662,16 +3714,16 @@
 		<Anchors><Anchor	point="CENTER"/></Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 			</OnLoad>
 			<OnEnter>
-				WorldMapPlayer:GetScript("OnEnter")()
+				WorldMapPlayer:GetScript("OnEnter")(WorldMapPlayer) --trying WorldMapPlayer insead of self (a child of WorldMapPlayer) for bug fix
 			</OnEnter>
 			<OnLeave>
-				WorldMapPlayer:GetScript("OnLeave")()
+				WorldMapPlayer:GetScript("OnLeave")(WorldMapPlayer) --just a hide tooltip call
 			</OnLeave>
 			<OnClick>
-				MetaMap_WorldMapButton_OnClick(arg1,	WorldMapButton)
+				MetaMap_WorldMapButton_OnClick(WorldMapButton, button) --leave without self
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -3685,10 +3737,10 @@
 		<Size><AbsDimension	x="16" y="16"/></Size>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(5)
+				self:SetFrameLevel(5)
 			</OnLoad>
 			<OnClick>
-				MetaMap_MiniNote_OnClick(arg1);
+				MetaMap_MiniNote_OnClick(self, button);
 			</OnClick>
 			<OnEnter>
 				MetaMap_MiniNote_OnEnter();
@@ -3822,7 +3874,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound("igMainMenuOption");
-								this:GetParent():Hide();
+								self:GetParent():Hide();
 								MetaMap_DeletePartyNote:Hide();
 							</OnClick>
 						</Scripts>
@@ -3879,14 +3931,14 @@
 									SendWideEditBox:SetText("")
 								</OnLoad>
 								<OnTextChanged>
-									if(strlen(this:GetText()) > 0 and MetaMap_ToggleSendValue ~= 1) then
+									if(strlen(self:GetText()) > 0 and MetaMap_ToggleSendValue ~= 1) then
 										MetaMap_SendPlayer:Enable();
 									else
 										MetaMap_SendPlayer:Disable();
 									end
 								</OnTextChanged>
 								<OnEscapePressed>
-									this:GetParent():Hide();
+									self:GetParent():Hide();
 								</OnEscapePressed>
 							</Scripts>
 							<FontString	inherits="ChatFontNormal"/>
@@ -3929,10 +3981,10 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						this:SetBackdropColor(0,0,0,1);
+						self:SetBackdropColor(0,0,0,1);
 					</OnLoad>
 					<OnShow>
-						this:SetAlpha(255);
+						self:SetAlpha(255);
 					</OnShow>
 					<OnHide>
 						MetaMap_PartyNoteSet = false;
@@ -4102,7 +4154,7 @@
 							<OnClick>
 								PlaySound("igMainMenuOption");
 								MetaMap_SetQuickNote(1);
-								this:GetParent():Hide();
+								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -4120,7 +4172,7 @@
 								PlaySound("igMainMenuOption")
 								MetaMap_NextMiniNoteOnly("on")
 								MetaMap_SetQuickNote(1);
-								this:GetParent():Hide();
+								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -4137,7 +4189,7 @@
 							<OnClick>
 								PlaySound("igMainMenuOption")
 								MetaMap_SetQuickNote(2);
-								this:GetParent():Hide();
+								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
 						</Button>
@@ -4153,7 +4205,7 @@
 							<Scripts>
 								<OnClick>
 									PlaySound("igMainMenuOption")
-									this:GetParent():Hide()
+									self:GetParent():Hide()
 								</OnClick>
 							</Scripts>
 						</Button>
@@ -4209,16 +4261,16 @@
 								<FontString	inherits="ChatFontNormal"/>
 								<Scripts>
 									<OnShow>
-										this:SetBackdropColor(0,0,0,1);
-										this:SetAlpha(255);
-										this:SetText("");
+										self:SetBackdropColor(0,0,0,1);
+										self:SetAlpha(255);
+										self:SetText("");
 								</OnShow>
 								<OnEscapePressed>
-									this:GetParent():Hide();
+									self:GetParent():Hide();
 								</OnEscapePressed>
 								<OnEnterPressed>
 									MetaMap_SetQuickNote(1);
-									this:GetParent():Hide();
+									self:GetParent():Hide();
 								</OnEnterPressed>
 							</Scripts>
 						</EditBox>
@@ -4276,8 +4328,8 @@
 			</Frames>
 			<Scripts>
 				<OnLoad>
-					this:SetBackdropColor(0,0,0,1);
-					this:SetAlpha(255);
+					self:SetBackdropColor(0,0,0,1);
+					self:SetAlpha(255);
 				</OnLoad>
 				<OnShow>
 					MetaMap_QuickNoteShow();
@@ -4332,7 +4384,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:SetFrameLevel(this:GetFrameLevel()+3);
+					self:SetFrameLevel(self:GetFrameLevel()+3);
 				</OnLoad>
 				<OnClick>
 					PlaySound("igMainMenuOptionCheckBoxOn");
@@ -4371,16 +4423,16 @@
 					</Anchors>
 					<Scripts>
 						<OnLoad>
-							this:SetFrameLevel(this:GetFrameLevel()+3);
+							self:SetFrameLevel(self:GetFrameLevel()+3);
 						</OnLoad>
 						<OnClick>
-							MetaMapList_OnClick(arg1, this:GetID());
+							MetaMapList_OnClick(self, button, self:GetID());
 						</OnClick>
 					<OnEnter>
-						getglobal(this:GetName().."Highlight"):Show();
+						getglobal(self:GetName().."Highlight"):Show();
 					</OnEnter>
 					<OnLeave>
-						getglobal(this:GetName().."Highlight"):Hide();
+						getglobal(self:GetName().."Highlight"):Hide();
 					</OnLeave>
 					</Scripts>
 				</Button>
@@ -4394,7 +4446,7 @@
 			</Layers>
 			<Scripts>
 				<OnLoad>
-					this:SetFrameLevel(this:GetFrameLevel()+3);
+					self:SetFrameLevel(self:GetFrameLevel()+3);
 				</OnLoad>
 			</Scripts>
 		</Button>
@@ -4409,10 +4461,10 @@
 			</Anchors>
 			<Scripts>
 				<OnShow>
-					this:SetHeight(this:GetParent():GetHeight()-90);
+					self:SetHeight(self:GetParent():GetHeight()-90);
 				</OnShow>
 				<OnVerticalScroll>
-					FauxScrollFrame_OnVerticalScroll(METAMAP_LISTBUTTON_HEIGHT,	MetaMapList_UpdateScroll)
+					FauxScrollFrame_OnVerticalScroll(self, offset, METAMAP_LISTBUTTON_HEIGHT,	MetaMapList_UpdateScroll)
 				</OnVerticalScroll>
 			</Scripts>
 			<FontString	inherits="MetaMap_FontTemplate"	justifyH="LEFT"/>
@@ -4630,8 +4682,8 @@
 				</Frames>
 			<Scripts>
 				<OnLoad>
-					this:SetHeight(WorldMapButton:GetHeight());
-					this:SetFrameLevel(this:GetParent():GetFrameLevel()+4);
+					self:SetHeight(WorldMapButton:GetHeight());
+					self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
 				</OnLoad>
 			</Scripts>
 		</Frame>
@@ -4694,8 +4746,8 @@
 				</Layers>
 				<Scripts>
 					<OnShow>
-						this:SetWidth(this:GetParent():GetWidth());
-						this:SetHeight(40);
+						self:SetWidth(self:GetParent():GetWidth());
+						self:SetHeight(40);
 					</OnShow>
 				</Scripts>
 			</Button>
@@ -4740,15 +4792,15 @@
 				</Frames>
 				<Scripts>
 					<OnShow>
-						this:SetWidth(this:GetParent():GetWidth());
-						this:SetHeight(60);
+						self:SetWidth(self:GetParent():GetWidth());
+						self:SetHeight(60);
 					</OnShow>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				MetaMapContainerFrame_OnLoad();
+				MetaMapContainerFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>
 				PlaySoundFile("Sound\\interface\\iQuestLogOpenA.wav");
@@ -4781,8 +4833,8 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonDown", "RightButtonDown");
-				this:SetFrameLevel(MetaMapList_Header:GetFrameLevel()+2);
+				self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+				self:SetFrameLevel(MetaMapList_Header:GetFrameLevel()+2);
 			</OnLoad>
 			<OnClick>
 				MetaMap_InfoLine(arg1);
@@ -4829,9 +4881,9 @@
 		</Layers>
 		<Scripts>
 			<OnShow>
-				this:SetWidth(this:GetParent():GetWidth());
-				this:SetHeight(this:GetParent():GetHeight());
-				MetaMap_InfoLineFrameText:SetWidth(this:GetWidth() -200);
+				self:SetWidth(self:GetParent():GetWidth());
+				self:SetHeight(self:GetParent():GetHeight());
+				MetaMap_InfoLineFrameText:SetWidth(self:GetWidth() - 200);
 			</OnShow>
 		</Scripts>
 	</Frame>
@@ -4840,16 +4892,16 @@
 		<Scripts>
 			<OnLoad>
 				if(IsAddOnLoaded("Titan")) then
-					TitanPanelMetaMapButton_OnLoad();
-					TitanPanelButton_OnLoad();
-					this:SetFrameLevel(this:GetFrameLevel()+5);
+					TitanPanelMetaMapButton_OnLoad(self);
+					TitanPanelButton_OnLoad(self);
+					self:SetFrameLevel(self:GetFrameLevel()+5);
 				else
-					this:Hide();
+					self:Hide();
 				end
 			</OnLoad>
 			<OnClick>
-				TitanPanelMetaMapButton_OnClick(arg1);
-				TitanPanelButton_OnClick(arg1, 1);
+				TitanPanelMetaMapButton_OnClick(self, button);
+				TitanPanelButton_OnClick(self, button, 1);
 			</OnClick>
 			<OnEnter>
 				if(not MetaMapOptions.MenuMode)	then
@@ -4867,13 +4919,13 @@
 	<Frame name="MetaMap_EventFrame" parent="UIParent">
 		<Scripts>
 			<OnLoad>
-				MetaMap_OnLoad();
+				MetaMap_OnLoad(self);
 			</OnLoad>
 			<OnEvent>
-				MetaMap_OnEvent(event);
+				MetaMap_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnUpdate>
-				MetaMap_OnUpdate(arg1);
+				MetaMap_OnUpdate(self, elapsed);
 			</OnUpdate>
 		</Scripts>
 	</Frame>

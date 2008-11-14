@@ -1,6 +1,6 @@
 ﻿--[[
 Name: RatingBuster zhCN locale
-Revision: $Revision: 51888 $
+Revision: $Revision: 135 $
 Translated by: 
 - iceburn
 ]]
@@ -55,15 +55,21 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb rating show
 	["Show Rating conversions"] = "显示属性等级转换",
 	["Show Rating conversions in tooltips"] = "在提示框架中显示属性等级转换结果",
+	-- /rb rating detail
+	["Show detailed conversions text"] = "显示详细转换文本",
+	["Show detailed text for Resiliance and Expertise conversions"] = "显示详细的抗性和精准等级转换",
 	-- /rb rating def
 	["Defense breakdown"] = "分析防御",
 	["Convert Defense into Crit Avoidance, Hit Avoidance, Dodge, Parry and Block"] = "将防御分为避免爆击、避免击中、躲闪、招架和格挡",
 	-- /rb rating wpn
 	["Weapon Skill breakdown"] = "分析武器技能",
 	["Convert Weapon Skill into Crit, Hit, Dodge Neglect, Parry Neglect and Block Neglect"] = "加武器技能分为爆击、击中、防止被躲闪、防止被招架和防止被格挡",
+	-- /rb rating exp -- 2.3.0
+	["Expertise breakdown"] = "精准效能",
+	["Convert Expertise into Dodge Neglect and Parry Neglect"] = "转换精准等级为忽略躲闪和忽略招架",
 	
 	-- /rb stat
-	["Stat"] = "基本属性解析",
+	["Stat Breakdown"] = "基本属性解析",
 	["Changes the display of base stats"] = "设定基本属性的解析显示",
 	-- /rb stat show
 	["Show base stat conversions"] = "显示基本属性解析",
@@ -77,6 +83,9 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb stat str block
 	["Show Block Value"] = "显示格档值",
 	["Show Block Value from Strength"] = "显示力量给的格档值",
+	-- /rb stat str dmg
+	["Show Spell Damage"] = "显示法伤",
+	["Show Spell Damage from Strength"] = "显示力量给的法术伤害加成",
 	-- /rb stat str heal
 	["Show Healing"] = "显示治疗",
 	["Show Healing from Strength"] = "显示力量给的治疗加成",
@@ -99,6 +108,9 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb stat agi armor
 	["Show Armor"] = "显示护甲值",
 	["Show Armor from Agility"] = "显示敏捷给的护甲值",
+	-- /rb stat agi heal
+	["Show Healing"] = "显示治疗",
+	["Show Healing from Agility"] = "显示敏捷给的治疗加成",
 	
 	-- /rb stat sta
 	["Stamina"] = "耐力",
@@ -128,6 +140,9 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb stat int mp5
 	["Show Mana Regen"] = "显示施法回魔",
 	["Show Mana Regen while casting from Intellect"] = "显示智力给的施法中法力恢复量",
+	-- /rb stat int mp5nc
+	["Show Mana Regen while NOT casting"] = "显示5秒外回魔",
+	["Show Mana Regen while NOT casting from Intellect"] = "显示在非施法状态下的法力恢复量",
 	-- /rb stat int rap
 	["Show Ranged Attack Power"] = "显示远程攻击强度",
 	["Show Ranged Attack Power from Intellect"] = "显示智力给的远程攻击强度",
@@ -202,9 +217,24 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb sum calcdiff
 	["Calculate stat diff"] = "计算差异统计",
 	["Calculate the stat difference for the item and equipped items"] = "计算物品和已装备物品的统计差异",
-	-- /rb sum stat
-	["Stat - Base"] = "统计低阶属性",
-	["Choose base stats for summary"] = "自订低阶属性统计项目",
+	-- /rb sum sort
+	["Sort StatSummary alphabetically"] = "按照字母排序",
+	["Enable to sort StatSummary alphabetically, disable to sort according to stat type(basic, physical, spell, tank)"] = "启用以按照字母顺序排列，禁用按照属性类型排列(基础、物理、法术、抵抗……)",
+	-- /rb sum avoidhasblock
+	["Include block chance in Avoidance summary"] = "在躲避统计中显示格挡几率",
+	["Enable to include block chance in Avoidance summary, Disable for only dodge, parry, miss"] = "启用该选项后将在躲避统计中加入格挡几率，禁用将仅显示躲闪，招架，未击中",
+	-- /rb sum basic
+	["Stat - Basic"] = "属性 - 基本",
+	["Choose basic stats for summary"] = "选择想要统计的基本属性",
+	-- /rb sum physical
+	["Stat - Physical"] = "属性 - 物理",
+	["Choose physical damage stats for summary"] = "选择想要统计的物理攻击属性",
+	-- /rb sum spell
+	["Stat - Spell"] = "属性 - 法术",
+	["Choose spell damage and healing stats for summary"] = "选择想要统计的法术攻击和治疗的属性",
+	-- /rb sum tank
+	["Stat - Tank"] = "属性 - 抗打击",
+	["Choose tank stats for summary"] = "选择你想要统计的抗打击能力的属性",
 	-- /rb sum stat hp
 	["Sum Health"] = "统计生命值",
 	["Health <- Health, Stamina"] = "生命值 ← 生命值、耐力",
@@ -243,19 +273,25 @@ L:RegisterTranslations("zhCN", function() return {
 	["Shadow Spell Damage <- Shadow Spell Damage, Spell Damage, Intellect, Spirit, Stamina"] = "暗影法术伤害 ← 暗影法术伤害、法术伤害、智力、精神、耐力",
 	-- /rb sum stat heal
 	["Sum Healing"] = "统计治疗",
-	["Healing <- Healing, Intellect, Spirit, Strength"] = "治疗 ← 治疗、智力、精神、力量",
+	["Healing <- Healing, Intellect, Spirit, Agility, Strength"] = "治疗 ← 治疗、智力、精神、敏捷、力量",
 	-- /rb sum stat hit
 	["Sum Hit Chance"] = "统计物理命中几率",
 	["Hit Chance <- Hit Rating, Weapon Skill Rating"] = "物理命中几率 ← 命中等级、武器技能等级",
-	-- /rb sum stat hitspell
-	["Sum Spell Hit Chance"] = "统计法术命中几率",
-	["Spell Hit Chance <- Spell Hit Rating"] = "法术命中几率 ← 法术命中几率",
 	-- /rb sum stat crit
 	["Sum Crit Chance"] = "统计物理爆击几率",
 	["Crit Chance <- Crit Rating, Agility, Weapon Skill Rating"] = "物理爆击几率 ← 爆击等级、敏捷、武器技能等级",
+	-- /rb sum stat haste
+	["Sum Haste"] = "统计急速",
+	["Haste <- Haste Rating"] = "急速 ← 急速等级",
 	-- /rb sum stat critspell
 	["Sum Spell Crit Chance"] = "统计法术爆击几率",
 	["Spell Crit Chance <- Spell Crit Rating, Intellect"] = "法术爆击几率 ← 法术爆击等级、智力",
+	-- /rb sum stat hitspell
+	["Sum Spell Hit Chance"] = "统计法术命中几率",
+	["Spell Hit Chance <- Spell Hit Rating"] = "法术命中几率 ← 法术命中等级",
+	-- /rb sum stat hastespell
+	["Sum Spell Haste"] = "统计法术急速",
+	["Spell Haste <- Spell Haste Rating"] = "法术急速 ← 法术急速等级",
 	-- /rb sum stat mp5
 	["Sum Mana Regen"] = "统计法力恢复",
 	["Mana Regen <- Mana Regen, Spirit"] = "法力恢复 ← 法力恢复、精神",
@@ -291,10 +327,10 @@ L:RegisterTranslations("zhCN", function() return {
 	["Crit Avoidance <- Defense Rating, Resilience"] = "物理爆击躲闪 ← 防御等级、韧性",
 	-- /rb sum stat neglectdodge
 	["Sum Dodge Neglect"] = "统计防止被躲闪",
-	["Dodge Neglect <- Weapon Skill Rating"] = "防止被躲闪 ← 武器技能等级",
+	["Dodge Neglect <- Expertise, Weapon Skill Rating"] = "防止被躲闪 ← 精准等级、武器技能等级", -- 2.3.0
 	-- /rb sum stat neglectparry
 	["Sum Parry Neglect"] = "统计防止被招架",
-	["Parry Neglect <- Weapon Skill Rating"] = "防止被招架 ← 武器技能等级",
+	["Parry Neglect <- Expertise, Weapon Skill Rating"] = "防止被招架 ← 精准等级、武器技能等级", -- 2.3.0
 	-- /rb sum stat neglectblock
 	["Sum Block Neglect"] = "统计防止被格挡",
 	["Block Neglect <- Weapon Skill Rating"] = "防止被格挡 ← 武器技能等级",
@@ -316,12 +352,15 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb sum stat maxdamage
 	["Sum Weapon Max Damage"] = "统计武器最大伤害",
 	["Weapon Max Damage Summary"] = "统计武器最大伤害",
+	-- /rb sum stat pen
+	["Sum Penetration"] = "统计穿透",
+	["Spell Penetration Summary"] = "统计法术穿透",
+	-- /rb sum stat ignorearmor
+	["Sum Ignore Armor"] = "统计忽略护甲",
+	["Ignore Armor Summary"] = "统计忽略护甲效果",
 	-- /rb sum stat weapondps
 	--["Sum Weapon DPS"] = true,
 	--["Weapon DPS Summary"] = true,
-	-- /rb sum statcomp
-	["Stat - Composite"] = "统计高阶属性",
-	["Choose composite stats for summary"] = "自订高阶属性统计项目",
 	-- /rb sum statcomp str
 	["Sum Strength"] = "统计力量",
 	["Strength Summary"] = "统计力量",
@@ -337,13 +376,70 @@ L:RegisterTranslations("zhCN", function() return {
 	-- /rb sum statcomp spi
 	["Sum Spirit"] = "统计精神",
 	["Spirit Summary"] = "统计精神",
+	-- /rb sum statcomp hitrating
+	["Sum Hit Rating"] = "统计命中等级",
+	["Hit Rating Summary"] = "统计命中等级",
+	-- /rb sum statcomp critrating
+	["Sum Crit Rating"] = "统计爆击等级",
+	["Crit Rating Summary"] = "统计爆击等级",
+	-- /rb sum statcomp hasterating
+	["Sum Haste Rating"] = "统计急速等级",
+	["Haste Rating Summary"] = "统计急速等级",
+	-- /rb sum statcomp hitspellrating
+	["Sum Spell Hit Rating"] = "统计法术命中等级",
+	["Spell Hit Rating Summary"] = "统计法术命中等级",
+	-- /rb sum statcomp critspellrating
+	["Sum Spell Crit Rating"] = "统计法术爆击等级",
+	["Spell Crit Rating Summary"] = "统计法术爆击等级",
+	-- /rb sum statcomp hastespellrating
+	["Sum Spell Haste Rating"] = "统计法术急速等级",
+	["Spell Haste Rating Summary"] = "统计法术急速等级",
+	-- /rb sum statcomp dodgerating
+	["Sum Dodge Rating"] = "统计躲闪等级",
+	["Dodge Rating Summary"] = "统计躲闪等级",
+	-- /rb sum statcomp parryrating
+	["Sum Parry Rating"] = "统计招架等级",
+	["Parry Rating Summary"] = "统计招架等级",
+	-- /rb sum statcomp blockrating
+	["Sum Block Rating"] = "统计格挡等级",
+	["Block Rating Summary"] = "统计格挡等级",
+	-- /rb sum statcomp res
+	["Sum Resilience"] = "统计韧性",
+	["Resilience Summary"] = "统计韧性等级",
 	-- /rb sum statcomp def
 	["Sum Defense"] = "统计防御",
 	["Defense <- Defense Rating"] = "防御 ← 防御等级",
 	-- /rb sum statcomp wpn
 	["Sum Weapon Skill"] = "统计武器技能",
 	["Weapon Skill <- Weapon Skill Rating"] = "武器技能 ← 武器技能等级",
-	
+	-- /rb sum statcomp exp -- 2.3.0
+	["Sum Expertise"] = "统计精准",
+	["Expertise <- Expertise Rating"] = "精准 ← 精准等级",
+	-- /rb sum statcomp tp
+	["Sum TankPoints"] = "统计抗打击能力",
+	["TankPoints <- Health, Total Reduction"] = "抗打击能力 ← 生命值, 所有伤害减免",
+	-- /rb sum statcomp tr
+	["Sum Total Reduction"] = "统计伤害减免",
+	["Total Reduction <- Armor, Dodge, Parry, Block, Block Value, Defense, Resilience, MobMiss, MobCrit, MobCrush, DamageTakenMods"] = "所有伤害减免 <- 护甲值, 躲闪, 招架, 格挡, 格挡值, 防御技能, 韧性, 怪物未击中几率, 怪物重击几率, 怪物碾压打击几率, 伤害减免",
+	-- /rb sum statcomp avoid
+	["Sum Avoidance"] = "统计躲避",
+	["Avoidance <- Dodge, Parry, MobMiss, Block(Optional)"] = "躲避 ← 躲闪, 招架, 怪物未命中, 格挡(可选)",
+	-- /rb sum gem
+	["Gems"] = "宝石",
+	["Auto fill empty gem slots"] = "自动填充空宝石位",
+	-- /rb sum gem red
+	["Red Socket"] = EMPTY_SOCKET_RED,
+	["ItemID or Link of the gem you would like to auto fill"] = "你想要填充该空格位的物品ID或者链接",
+	["<ItemID|Link>"] = "<物品ID|链接>",
+	["%s is now set to %s"] = "%s现在被放置于%s",
+	["Queried server for Gem: %s. Try again in 5 secs."] = "对服务器查询宝石: %s。将会在5秒后重试。",
+	-- /rb sum gem yellow
+	["Yellow Socket"] = EMPTY_SOCKET_YELLOW,
+	-- /rb sum gem blue
+	["Blue Socket"] = EMPTY_SOCKET_BLUE,
+	-- /rb sum gem meta
+	["Meta Socket"] = EMPTY_SOCKET_META,
+
 	-----------------------
 	-- Item Level and ID --
 	-----------------------
@@ -398,11 +494,11 @@ L:RegisterTranslations("zhCN", function() return {
 	--
 	-- Tip2: The strings are passed into string.find, so you should escape the magic characters ^$()%.[]*+-? with a %
 	["numberPatterns"] = {
-		{pattern = "提高.-(%d+)", addInfo = "AfterNumber",},
 		{pattern = "(%d+)。", addInfo = "AfterNumber",},
-		{pattern = "%+(%d+)", addInfo = "AfterStat",},
+		{pattern = "([%+%-]%d+)", addInfo = "AfterStat",},
 		{pattern = "佩戴者.-(%d+)", addInfo = "AfterNumber",}, -- for "grant you xx stat" type pattern, ex: Quel'Serrar, Assassination Armor set
-		{pattern = "(%d+)([^%d]+)", addInfo = "AfterStat",}, -- [发光的暗影卓奈石] +6法术伤害及5耐力
+		{pattern = "提高.-(%d+)", addInfo = "AfterNumber",},
+		{pattern = "(%d+)([^%d%%|]+)", addInfo = "AfterStat",}, -- [发光的暗影卓奈石] +6法术伤害及5耐力
 	},
 	["separators"] = {
 		"/", "和", ",", "。", " 持续 ", "&", "及", "并", "，","、",
@@ -431,6 +527,7 @@ L:RegisterTranslations("zhCN", function() return {
 	CR_WEAPON_SKILL_MAINHAND = 21;
 	CR_WEAPON_SKILL_OFFHAND = 22;
 	CR_WEAPON_SKILL_RANGED = 23;
+	CR_EXPERTISE = 24;
 	--
 	SPELL_STAT1_NAME = "Strength"
 	SPELL_STAT2_NAME = "Agility"
@@ -452,28 +549,25 @@ L:RegisterTranslations("zhCN", function() return {
 		{pattern = "法术爆击等级", id = CR_CRIT_SPELL},
 		{pattern = "法术爆击命中等级", id = CR_CRIT_SPELL},
 		{pattern = "法术爆击等级", id = CR_CRIT_SPELL},
-		{pattern = "法术爆击等级", id = CR_CRIT_SPELL},
 		{pattern = "远程爆击等级", id = CR_CRIT_RANGED},
 		{pattern = "远程爆击命中等级", id = CR_CRIT_RANGED},
 		{pattern = "远程爆击等级", id = CR_CRIT_RANGED},
-		{pattern = "远程爆击等级", id = CR_CRIT_RANGED},
 		{pattern = "近战爆击等级", id = CR_CRIT_MELEE},
-		{pattern = "爆击等级", id = CR_CRIT_MELEE},
 		{pattern = "爆击等级", id = CR_CRIT_MELEE},
 
 		{pattern = "法术命中等级", id = CR_HIT_SPELL},
 		{pattern = "远程命中等级", id = CR_HIT_RANGED},
 		{pattern = "命中等级", id = CR_HIT_MELEE},
 
-		{pattern = "爆击躲闪等级", id = CR_CRIT_TAKEN_MELEE}, -- resilience is implicitly a rating
+		{pattern = "韧性等级", id = CR_CRIT_TAKEN_MELEE}, -- resilience is implicitly a rating
 
 		{pattern = "法术急速等级", id = CR_HASTE_SPELL},
 		{pattern = "远程急速等级", id = CR_HASTE_RANGED},
-		{pattern = "近战急速等级", id = CR_HASTE_MELEE},
-		{pattern = "急速等级", id = CR_HASTE_MELEE}, -- [Drums of Battle]
+		{pattern = "急速等级", id = CR_HASTE_MELEE},
+		{pattern = "加速等级", id = CR_HASTE_MELEE}, -- [Drums of Battle]
 		
 		{pattern = "武器技能等级", id = CR_WEAPON_SKILL},
-		{pattern = "技能等级", id = CR_WEAPON_SKILL},
+		{pattern = "精准等级", id = CR_EXPERTISE},
 		
 		{pattern = "命中躲闪等级", id = CR_HIT_TAKEN_MELEE},
 		--[[
@@ -513,6 +607,10 @@ L:RegisterTranslations("zhCN", function() return {
 	["$value MP5"] = "$value 施法回魔",
 	["$value MP5(NC)"] = "$value 精神回魔",
 	["$value HP5"] = "$value 回血",
+	["$value to be Dodged/Parried"] = "$value 被躲闪/被招架",
+	["$value to be Crit"] = "$value 被致命一击",
+	["$value Crit Dmg Taken"] = "$value 致命一击伤害减免",
+	["$value DOT Dmg Taken"] = "$value 持续伤害减免",
 	
 	------------------
 	-- Stat Summary --

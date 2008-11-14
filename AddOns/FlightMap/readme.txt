@@ -1,4 +1,4 @@
-                            FlightMap v2.2-1
+                            FlightMap v2.4-1
             By Dhask of Uther, guild leader of The Wanderers
 
 FlightMap is all about the flights you take in the World of Warcraft.

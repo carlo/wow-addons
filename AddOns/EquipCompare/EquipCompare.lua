@@ -1,6 +1,6 @@
 --
 -- EquipCompare by Legorol
--- Version: 2.10
+-- Version: 2.13
 -- Email: legorol@cosmosui.org
 --
 -- Equipment comparison tooltips, not just at the merchant. If you hover over
@@ -16,6 +16,8 @@
 -- Last changed by: $LastChangedBy: legorol $
 --
 -- Development Change Notes:
+-- 2.10.1
+--  * Changed Khaos difficulty level of control key option
 -- 2.10
 --  * Changes for patch 2.1:
 --    no longer hook merchant/AH compare methods
@@ -497,7 +499,7 @@ function EquipCompare_Register_Khaos()
 				},{
 					id = "EquipCompareOptionControlMode";
 					type = K_TEXT;
-					difficulty = 3;
+					difficulty = 1;
 					text = EQUIPCOMPARE_COSMOS_CONTROLMODE;
 					helptext = EQUIPCOMPARE_COSMOS_CONTROLMODE_INFO;
 					callback = function(state) EquipCompare_ToggleControl(state.checked); end;

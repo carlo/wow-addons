@@ -2,28 +2,13 @@
 -- English localization (Default)
 -------------------------------------------------------------------------------
 
-SMARTDEBUFF_REJUVENATION      = "Rejuvenation";
-SMARTDEBUFF_RENEW             = "Renew";
-SMARTDEBUFF_FLASHOFLIGHT      = "Flash of Light";
-SMARTDEBUFF_LESSERHEALINGWAVE = "Lesser Healing Wave";
-
--- Debuff spells
-SMARTDEBUFF_CUREDISEASE       = "Cure Disease";
-SMARTDEBUFF_ABOLISHDISEASE    = "Abolish Disease";
-SMARTDEBUFF_PURIFY            = "Purify";
-SMARTDEBUFF_CLEANSE           = "Cleanse";
-SMARTDEBUFF_DISPELLMAGIC      = "Dispel Magic";
-SMARTDEBUFF_CUREPOISON        = "Cure Poison";
-SMARTDEBUFF_ABOLISHPOISON     = "Abolish Poison";
-SMARTDEBUFF_REMOVELESSERCURSE = "Remove Lesser Curse";
-SMARTDEBUFF_REMOVECURSE       = "Remove Curse";
-SMARTDEBUFF_PURGE             = "Purge";
-SMARTDEBUFF_POLYMORPH         = "Polymorph";
-
-SMARTDEBUFF_UNENDINGBREATH    = "Unending Breath";
-SMARTDEBUFF_PET_FELHUNTER     = "Devour Magic";
-SMARTDEBUFF_PET_DOOMGUARD     = "Dispel Magic";
-
+-- Whats new info
+SMARTDEBUFF_WHATSNEW = "|cffffffffWhats new:|r\n\n"
+  .."- Updated to patch 3.0\n\n"
+  .."- Updated debuff detection\n\n"
+  .."- Fixed auto hide feature\n\n"
+  ;  
+  
 
 -- Debuff types
 SMARTDEBUFF_DISEASE = "Disease";
@@ -32,78 +17,6 @@ SMARTDEBUFF_POISON  = "Poison";
 SMARTDEBUFF_CURSE   = "Curse";
 SMARTDEBUFF_CHARMED = "Mind Control";
 SMARTDEBUFF_HEAL    = "Heal";
-
--- Ignore this effects
-SMARTDEBUFF_DEBUFFSKIPLIST = {
-  ["Dreamless Sleep"] = true,
-	["Greater Dreamless Sleep"]	= true,
-	["Mind Vision"] = true,
-	["Mutating Injection"] = true,
-  ["Banish"] = true,
-  ["Phase Shift"] = true,
-  ["Arcane Blast"] = true,
-  ["Unstable Affliction"] = true,
-};
-
--- Ignore this class based effects
-SMARTDEBUFF_DEBUFFCLASSSKIPLIST = {
-	["WARRIOR"] = {
-	    ["Ancient Hysteria"] = true,
-	    ["Ignite Mana"]	= true,
-	    ["Tainted Mind"] = true,
-	    ["Widow's Embrace"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};
-	["ROGUE"] = {
-	    ["Silence"] = true;
-	    ["Ancient Hysteria"] = true,
-	    ["Ignite Mana"]	= true,
-	    ["Tainted Mind"] = true,
-	    ["Curse of Tongues"] = true,
-	    ["Widow's Embrace"] = true,
-	    ["Sonic Burst"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};
-	["HUNTER"] = {
-	    ["Magma Shackles"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};
-	["MAGE"] = {
-	    ["Magma Shackles"] = true,
-	    ["Cripple"] = true,
-	    ["Dust Cloud"] = true,
-	    ["Thunderclap"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};
-	["WARLOCK"] = {
-	    ["Cripple"] = true,
-	    ["Dust Cloud"] = true,
-	    ["Thunderclap"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};	
-	["DRUID"] = {
-	    ["Cripple"] = true,
-	    ["Dust Cloud"] = true,
-	    ["Thunderclap"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};
-	["PRIEST"] = {
-	    ["Cripple"] = true,
-	    ["Dust Cloud"] = true,
-	    ["Thunderclap"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};	
-	["PALADIN"] = {
-	    ["Cripple"] = true,
-	    ["Dust Cloud"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};
-	["SHAMAN"] = {
-	    ["Cripple"] = true,
-	    ["Dust Cloud"] = true,
-	    ["Delusions of Jin'do"] = true,
-	};	
-};
 
 
 -- Creatures
@@ -117,7 +30,7 @@ SMARTDEBUFF_DOOMGUARD = "Doomguard";
 
 -- Classes
 SMARTDEBUFF_CLASSES = { ["DRUID"] = "Druid", ["HUNTER"] = "Hunter", ["MAGE"] = "Mage", ["PALADIN"] = "Paladin", ["PRIEST"] = "Priest", ["ROGUE"] = "Rogue"
-                      , ["SHAMAN"] = "Shaman", ["WARLOCK"] = "Warlock", ["WARRIOR"] = "Warrior", ["HPET"] = "Hunter Pet", ["WPET"] = "Warlock Pet"};
+                      , ["SHAMAN"] = "Shaman", ["WARLOCK"] = "Warlock", ["WARRIOR"] = "Warrior", ["DEATHKNIGHT"] = "Death Knight", ["HPET"] = "Hunter Pet", ["WPET"] = "Warlock Pet"};
 
 -- Bindings
 BINDING_NAME_SMARTDEBUFF_BIND_OPTIONS = "Options frame";
@@ -141,25 +54,36 @@ SMARTDEBUFF_KEYS = {["L"]  = "Left",
 SMARTDEBUFF_MSG_LOADED         = "loaded";
 SMARTDEBUFF_MSG_SDB            = "SmartDebuff options frame";
 
+-- Frame text
+SMARTDEBUFF_FT_MODES           = "Keys/Modes";
+SMARTDEBUFF_FT_MODENORMAL      = "Norm";
+SMARTDEBUFF_FT_MODETARGET      = "Trgt";
+
+
 -- Options frame text
 SMARTDEBUFF_OFT                = "Show/Hide SmartDebuff options frame";
 SMARTDEBUFF_OFT_HUNTERPETS     = "Hunter pets";
 SMARTDEBUFF_OFT_WARLOCKPETS    = "Warlock pets";
+SMARTDEBUFF_OFT_HP             = "HP";
+SMARTDEBUFF_OFT_MANA           = "Mana";
 SMARTDEBUFF_OFT_INVERT         = "Invert";
 SMARTDEBUFF_OFT_CLASSVIEW      = "Class view";
 SMARTDEBUFF_OFT_CLASSCOLOR     = "Class colors";
-SMARTDEBUFF_OFT_SHOWLR         = "Show L/R";
+SMARTDEBUFF_OFT_SHOWLR         = "L / R / M";
 SMARTDEBUFF_OFT_HEADERS        = "Headers";
 SMARTDEBUFF_OFT_GROUPNR        = "Group Nr.";
 SMARTDEBUFF_OFT_SOUND          = "Sound";
 SMARTDEBUFF_OFT_TOOLTIP        = "Tooltip";
 SMARTDEBUFF_OFT_TARGETMODE     = "Target mode";
 SMARTDEBUFF_OFT_HEALRANGE      = "Heal range";
+SMARTDEBUFF_OFT_SHOWAGGRO      = "Aggro";
 SMARTDEBUFF_OFT_VERTICAL       = "Vertical arranged";
 SMARTDEBUFF_OFT_VERTICALUP     = "Vertical up";
-SMARTDEBUFF_OFT_HEADERROW      = "Header row, incl. buttons";
-SMARTDEBUFF_OFT_BACKDROP       = "Show background";
-SMARTDEBUFF_OFT_INFOFRAME      = "Show summary frame";
+SMARTDEBUFF_OFT_HEADERROW      = "Title bar";
+SMARTDEBUFF_OFT_BACKDROP       = "Background";
+SMARTDEBUFF_OFT_SHOWGRADIENT   = "Gradient";
+SMARTDEBUFF_OFT_INFOFRAME      = "Summary frame";
+SMARTDEBUFF_OFT_AUTOHIDE       = "Auto hide";
 SMARTDEBUFF_OFT_COLUMNS        = "Columns";
 SMARTDEBUFF_OFT_INTERVAL       = "Interval";
 SMARTDEBUFF_OFT_FONTSIZE       = "Font size";
@@ -169,10 +93,57 @@ SMARTDEBUFF_OFT_BARHEIGHT      = "Bar height";
 SMARTDEBUFF_OFT_OPACITYNORMAL  = "Opacity in range";
 SMARTDEBUFF_OFT_OPACITYOOR     = "Opacity out of range";
 SMARTDEBUFF_OFT_OPACITYDEBUFF  = "Opacity debuff";
+SMARTDEBUFF_OFT_NOTREMOVABLE   = "Debuff Guard";
 
 SMARTDEBUFF_AOFT_SORTBYCLASS   = "Sort by class order";
+SMARTDEBUFF_NRDT_TITLE         = "Unremovable Debuffs";
 
 
 -- Tooltip text
 SMARTDEBUFF_TT                 = "Shift-Left drag: Move frame\n|cff20d2ff- S button -|r\nLeft click: Show by classes\nShift-Left click: Class colors\nAlt-Left click: Highlight L/R\nRight click: Background";
-SMARTDEBUFF_TT_TARGETMODE      = "In target mode |cff20d2ffLeft click|r selects the unit and |cff20d2ffRight click|r casts the fastest heal spell.\nUse |cff20d2ffAlt-Left/Right click|r to debuff.";
+SMARTDEBUFF_TT_TARGETMODE      = "In target mode |cff20d2ffLeft click|r selects the unit and |cff20d2ffRight click|r casts the fastest heal spell. Use |cff20d2ffAlt-Left/Right click|r to debuff.";
+SMARTDEBUFF_TT_NOTREMOVABLE    = "Displays critical debuffs\nwhich are not removable.";
+SMARTDEBUFF_TT_HP              = "Displays actual health\npoints of the unit.";
+SMARTDEBUFF_TT_MANA            = "Displays actual mana\npool of the unit.";
+SMARTDEBUFF_TT_INVERT          = "Displays health points\nand mana pool inverted.";
+SMARTDEBUFF_TT_CLASSVIEW       = "Displays the unit buttons\norder by class.";
+SMARTDEBUFF_TT_CLASSCOLOR      = "Displays the unit buttons in\ntheir corresponding class colors.";
+SMARTDEBUFF_TT_SHOWLR          = "Displays the corresponding\nmouse button (L/R/M), if\na unit has a debuff.";
+SMARTDEBUFF_TT_HEADERS         = "Displays the class name\nas header row.";
+SMARTDEBUFF_TT_GROUPNR         = "Displays the group number\nin front of the unit name.";
+SMARTDEBUFF_TT_SOUND           = "Plays a sound, if a\nunit gets a debuff.";
+SMARTDEBUFF_TT_TOOLTIP         = "Displays the tooltip,\nonly out of combat.";
+SMARTDEBUFF_TT_HEALRANGE       = "Displays a red boarder,\nif your spell is out of range.";
+SMARTDEBUFF_TT_SHOWAGGRO       = "Displays which\nunit has aggro.";
+SMARTDEBUFF_TT_VERTICAL        = "Displays the units\nvertical arranged.";
+SMARTDEBUFF_TT_VERTICALUP      = "Displays the units\nfrom bottom to top.";
+SMARTDEBUFF_TT_HEADERROW       = "Displays header row,\nincluding menu buttons.";
+SMARTDEBUFF_TT_BACKDROP        = "Displays a black\nbackground frame.";
+SMARTDEBUFF_TT_SHOWGRADIENT    = "Displays the unit buttons\nwith color gradient.";
+SMARTDEBUFF_TT_INFOFRAME       = "Displays the summary frame,\nonly in group or raid setup.";
+SMARTDEBUFF_TT_AUTOHIDE        = "Hides the unit buttons automatically,\nif you are out of combat and\nno one has a debuff.";
+
+--SMARTDEBUFF_TT_COLUMNS         = "Columns";
+--SMARTDEBUFF_TT_INTERVAL        = "Interval";
+--SMARTDEBUFF_TT_FONTSIZE        = "Font size";
+--SMARTDEBUFF_TT_WIDTH           = "Width";
+--SMARTDEBUFF_TT_HEIGHT          = "Height";
+--SMARTDEBUFF_TT_BARHEIGHT       = "Bar height";
+--SMARTDEBUFF_TT_OPACITYNORMAL   = "Opacity in range";
+--SMARTDEBUFF_TT_OPACITYOOR      = "Opacity out of range";
+--SMARTDEBUFF_TT_OPACITYDEBUFF   = "Opacity debuff";
+
+-- Tooltip text key bindings
+SMARTDEBUFF_TT_DROP            = "Drop";
+SMARTDEBUFF_TT_DROPINFO        = "Drop a spell/item/macro\nof your book/inventory.\n|cff00ff00Left click set target function.";
+SMARTDEBUFF_TT_DROPSPELL       = "Spell click:\nLeft to pickup\nShift-Left to clone\nRight to remove";
+SMARTDEBUFF_TT_DROPITEM        = "Item click:\nLeft to pickup\nShift-Left to clone\nRight to remove";
+SMARTDEBUFF_TT_DROPMACRO       = "Macro click:\nLeft to pickup\nShift-Left to clone\nRight to remove";
+SMARTDEBUFF_TT_TARGET          = "Target";
+SMARTDEBUFF_TT_TARGETINFO      = "Selects the specified unit\nas the current target.";
+SMARTDEBUFF_TT_DROPTARGET      = "Unit click:\nRemove";
+SMARTDEBUFF_TT_DROPACTION      = "Pet action:\nRemove not possible!";
+
+-- Tooltip support
+SMARTDEBUFF_FUBAR_TT           = "\nLeft Click: Open options\nShift-Left Click: On/Off";
+

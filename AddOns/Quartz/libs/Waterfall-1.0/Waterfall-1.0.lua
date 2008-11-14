@@ -1,6 +1,6 @@
 ﻿--[[
 Name: Waterfall-1.0
-Revision: $Revision: 54094 $
+Revision: $Revision: 125 $
 Author(s): Nargiddley (nargiddley@gmail.com)
 Inspired By: Dewdrop by ckknight
 Website: http://www.wowace.com/wiki/Waterfall-1.0
@@ -12,9 +12,10 @@ Dependencies: AceOO-2.0
 ]]
 
 local MAJOR_VERSION = "Waterfall-1.0"
-local MINOR_VERSION = "$Revision: 54094 $"
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 125 $"):match("(%d+)"))
 
 local CONTROL_LIMIT = 250
+local _
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -22,8 +23,6 @@ if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
 if not AceLibrary:HasInstance("AceOO-2.0") then error(MAJOR_VERSION .. " requires AceOO-2.0.") end
 
 local AceOO = AceLibrary("AceOO-2.0")
-
-local LBS = LibStub:GetLibrary("LibBabble-Spell-3.0", true)
 
 local Waterfall = {}
 
@@ -44,6 +43,9 @@ elseif GetLocale() == "zhTW" then
 elseif GetLocale() == "koKR" then
 	OPTIONS = "설정"
 	ARE_YOU_SURE = "정말 당신은 `%s'|1을;를; 하시겠습니까?"
+elseif GetLocale() == "ruRU" then
+	OPTIONS = "Опции"
+	ARE_YOU_SURE = "Вы уверены что вы хотите %s?"
 end
 
 local DEFAULT_CONTROL_WIDTH = 180
@@ -540,6 +542,7 @@ function Waterfall:AddControl(...)
 	if not currentframe then
 		error("AddControl must be called from within a children function")
 	end
+	local control
 	local info = self.registry[currentframe.id]
 	local limit = info.controlLimit or CONTROL_LIMIT
 	if currentframe.controlcount > limit then
@@ -556,7 +559,6 @@ function Waterfall:AddControl(...)
 	end
 	local info = tmp2(...)
 
-	local control
 	if info.type == "label" then
 		control = getObj(WaterfallLabel)
 		setCommonAttributes(control,info)
@@ -2657,15 +2659,61 @@ end
 local function DragLinkOnEnter(this)
 	local self = this.obj
 	local linkInfo = self.linkInfo
-	if (tonumber(linkInfo.itemId)) then		-- or linkInfo.itemInfo
-		GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
-		if (linkInfo.itemId) then
-			GameTooltip:SetHyperlink("item:" .. linkInfo.itemId .. ":0:0:0:0:0:0:0")
-		else
-			GameTooltip:SetHyperlink(tostring(linkInfo.itemInfo))
+	if (linkInfo) then
+		if (linkInfo.itemType == "item") then
+			GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
+			if (linkInfo.itemId) then
+				GameTooltip:SetHyperlink("item:" .. linkInfo.itemId .. ":0:0:0:0:0:0:0")
+			else
+				GameTooltip:SetHyperlink(tostring(linkInfo.itemInfo))
+			end
+		elseif (linkInfo.itemType == "spell") then
+			if (linkInfo.spellName) then
+-- Cannot set this without preserving spell book & spell id.  Even then may be from different class.  So lame.  Awaiting a Blizzard API that doesnt suck.
+--				GameTooltip:SetSpell(linkInfo.spellId, linkInfo.spellTab)
+				GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
+				GameTooltip:AddLine(linkInfo.spellName, 1, 1, 1)
+				local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(linkInfo.spellName)
+				if (name) then
+					if (powerType == 0) then
+						cost = tostring(cost) .. " " .. MANA
+					elseif (powerType == 1) then
+						cost = tostring(cost) .. " " .. RAGE
+					elseif (powerType == 2) then
+						cost = tostring(cost) .. " " .. FOCUS
+					elseif (powerType == 3) then
+						cost = tostring(cost) .. " " .. ENERGY
+					elseif (powerType == 4) then
+						cost = tostring(cost) .. " " .. HAPPINESS
+					end
+					local range = ""
+					if (maxRange) then
+						range = SPELL_RANGE:format(maxRange)
+					end
+					GameTooltip:AddDoubleLine(cost, range, 1, 1, 1, 1, 1, 1)
+					if (castTime and castTime > 0) then
+						GameTooltip:AddLine(SPELL_CAST_TIME_SEC:format(castTime), 1, 1, 1)
+					else
+						GameTooltip:AddLine(SPELL_CAST_TIME_INSTANT, 1, 1, 1)
+					end
+					if (rank) then
+						GameTooltip:AddLine(tostring(rank))
+					end
+					GameTooltip:Show()
+				end
+			end
+		elseif (linkInfo.itemType == "macro") then
+			if (linkInfo.itemId) then
+				local name, icon, body = GetMacroInfo(linkInfo.itemId)
+				if (name) then
+					GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
+					GameTooltip:AddLine(tostring(name), 0.2, 0.8, 0.8, 1)
+					GameTooltip:AddTexture(icon)
+					GameTooltip:AddLine(tostring(body), 1, 1, 1, 1)
+					GameTooltip:Show()
+				end
+			end
 		end
-	else
-		showGameTooltip(self)
 	end
 end
 
@@ -2675,30 +2723,36 @@ end
 
 local function DragLinkGetTexture(self)
 	local linkInfo = self.linkInfo
+	local texture
 	if (linkInfo) then
 		if (linkInfo.itemType == "item") then
 			if (linkInfo.itemId and tonumber(linkInfo.itemId)) then
-				local _,_,_,_,_,_,_,_,_,texture = GetItemInfo(tonumber(linkInfo.itemId))
+				_,_,_,_,_,_,_,_,_,texture = GetItemInfo(tonumber(linkInfo.itemId))
 				if (texture) then
 					return texture
 				end
 			end
 		elseif (linkInfo.itemType == "spell") then
-			if (linkInfo.spellName and LBS) then
-	-- Sweet!  GetSpellTexture does not support spellName, only spell book index.  So check using BabbleSpell instead.
-				local texture = LBS:GetSpellIcon(linkInfo.spellName)
+			if (linkInfo.spellName) then
+				_, _, texture = GetSpellInfo(linkInfo.spellName)
 				if (texture) then
 					return texture
 				end
 			end
 		elseif (linkInfo.itemType == "macro") then
+			if (linkInfo.itemId) then
+				_, texture = GetMacroInfo(linkInfo.itemId)
+				if (texture) then
+					return texture
+				end
+			end
 		end
 	end
 	return "Interface\\Icons\\INV_Misc_Gift_01"
 end
 
 WaterfallDragLink.defaultIconSize = 36
-WaterfallDragLink.CLASS = UnitClass("player")
+_, WaterfallDragLink.CLASS = UnitClass("player") -- Use the capitalized english class name
 
 function WaterfallDragLink.prototype:init()
 	WaterfallDragLink.super.prototype.init(self, "Button")
@@ -2934,6 +2988,12 @@ local function Keybinding_OnKeyDown(this, key)
 					return;
 				end
 				if ( keyPressed == "SHIFT" or keyPressed == "CTRL" or keyPressed == "ALT") then
+					return;
+				end
+				if ( keyPressed == "LSHIFT" or keyPressed == "LCTRL" or keyPressed == "LALT") then
+					return;
+				end
+				if ( keyPressed == "RSHIFT" or keyPressed == "RCTRL" or keyPressed == "RALT") then
 					return;
 				end
 				if ( IsShiftKeyDown() ) then
@@ -3602,7 +3662,7 @@ function WaterfallDropdown.prototype:BuildPullout()
 		local columnCount = 0
 		self.pullout:ClearAllPoints()
 		if (columns) then
-			columnHeight = math.floor((# ddsort) / columns) + 1
+			columnHeight = math.floor((# ddsort) / columns) + 2
 			columnWidth = self.pullout:GetWidth()
 			self.pullout:SetPoint("TOPLEFT",self.frame,"BOTTOMRIGHT", -1 * DEFAULT_CONTROL_WIDTH * columns - 24,0)
 			self.pullout:SetPoint("TOPRIGHT",self.frame,"BOTTOMRIGHT",-24,0)
@@ -3932,7 +3992,7 @@ end
 
 function WaterfallTreeView.prototype:AddSection(index,line)
 	local sections = self.sections
-
+	local id = line.id
 	if not sections[index] then
 		sections[index] = getObj(WaterfallTreeSection,self)
 		local section = sections[index]
@@ -4020,7 +4080,7 @@ function WaterfallTreeView.prototype:AddLine(index,line,level,disabled)
 	local text, hasChildren, isSelected, isOpen
 	text = line.text or ""
 	hasChildren = #line > 0
-	id = line.id
+	local id = line.id
 	if self.status[id] == nil then
 		self.status[id] = not not line.isOpen
 	end

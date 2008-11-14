@@ -7,6 +7,7 @@ L:RegisterTranslations("enUS", function()
 		["Global Cooldown"] = true,
 		["Buff"] = true,
 		["Target"] = true,
+		["Pet"] = true,
 		["Focus"] = true,
 		["Player"] = true,
 		["Mirror"] = true,
@@ -74,6 +75,8 @@ L:RegisterTranslations("enUS", function()
 		["Spell Rank Style"] = true,
 		["Hide Name Text"] = true,
 		["Hide Time Text"] = true,
+		["Hide Cast Time"] = true,
+		["Cast Time Precision"] = true,
 		["Time Font Size"] = true,
 		["Time Text Position"] = true,
 		["Spell Text"] = true,
@@ -100,6 +103,7 @@ L:RegisterTranslations("enUS", function()
 		["Hide Samwise Icon"] = true,
 		["Show for Friends"] = true,
 		["Show for Enemies"] = true,
+		["Show if Target"] = true,
 		["Target Name"] = true,
 		["Display target name of spellcasts after spell name"] = true,
 		
@@ -180,6 +184,8 @@ L:RegisterTranslations("enUS", function()
 		["Set the alignment of the spell name text"] = true,
 		["Set the size of the spell name text"] = true,
 		["Disable the text that displays the time remaining on your cast"] = true,
+		["Disable the text that displays the total cast time"] = true,
+		["Set the precision (i.e. number of decimal places) for the cast time text"] = true,
 		["Disable the text that displays the spell name/rank"] = true,
 		["Display the rank of spellcasts alongside their name"] = true,
 		["Set the display style of the spell rank"] = true,
@@ -203,6 +209,7 @@ L:RegisterTranslations("enUS", function()
 		["Hide the icon for spells with no icon"] = true,
 		["Show this castbar for friendly units"] = true,
 		["Show this castbar for hostile units"] = true,
+		["Show this castbar if focus is also target"] = true,
 		["Set an exact X value for this bar's position."] = true,
 		["Set an exact Y value for this bar's position."] = true,
 		
@@ -340,5 +347,7 @@ L:RegisterTranslations("enUS", function()
 			["INTERRUPTED (%s)"] = true,
 			--Range
 			--Flight
+			--FeatureFrame
+			["Modular casting bar"] = true,
 	}
 end)

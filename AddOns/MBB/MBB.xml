@@ -12,7 +12,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="MBB_MinimapButtonFrame" toplevel="true" frameStrata="LOW" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+	<Button name="MBB_MinimapButtonFrame" toplevel="true" frameStrata="HIGH" parent="Minimap" enableMouse="true" movable="true" hidden="false">
 		<Size>
 			<AbsDimension x="33" y="33"/>
 		</Size>

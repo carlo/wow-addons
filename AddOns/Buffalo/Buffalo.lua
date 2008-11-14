@@ -86,7 +86,8 @@ local loaded = 0
 
 local L = AceLibrary("AceLocale-2.2"):new("Buffalo")
 local dewdrop = AceLibrary("Dewdrop-2.0")
-local abacus = AceLibrary("Abacus-2.0")
+local abacus = AceLibrary("LibAbacus-3.0")
+local LibButtonFacade = LibStub("LibButtonFacade", true)
 
 -------------------------------------------------------------------------------
 -- Initialization
@@ -100,18 +101,504 @@ function Buffalo:OnInitialize()
 	local slashOptions = {
 		type = 'group',
 		args={
-			reset = {
-				type='execute',
-				name=L["reset"],
-				desc=L["Reset"],
-				func = function() self:Reset() end
-
+			lock = {
+				type='toggle',
+				name=L["Lock"],
+				desc=L["When activated, the buff frames are locked and the reference frames are hidden"],
+				get= function() return Buffalo.db.profile.locked end,
+				set = function(v) Buffalo.ToggleLock(Buffalo, v) end,
+				order=1
 			},
-			config = {
-				type='execute',
-				name=L["config"],
-				desc=L["Config"],
-				func = function() dewdrop:Open(UIParent, 'children', Buffalo_OptionsTable, 'cursorX', true, 'cursorY', true) end
+
+			buffs = {
+				type='group',
+				name=L["Buffs"],
+				desc=L["Manipulate Buffs Display"],
+				order=2,
+				args={
+
+					title={
+						type='header',
+						name=L["Buffs"],
+	--					icon="Interface\\Icons\\Ability_DualWield.blp",
+						order=5
+					},
+					scale={
+						type='range',
+						name=L["Scale"],
+						desc=L["Scale Buff Icons"],
+						min=0,
+						max=10,
+						step=0.1,
+						get = function() return Buffalo.db.profile.scale["buff"] end,
+						set = function(v) Buffalo.SetScale(Buffalo, v, "buff") end,
+						order=10
+					},
+
+					padding={
+						type='group',
+						name=L["Padding"],
+						desc=L["Control the distance between rows/columns"],
+						args={
+							x={
+								type='range',
+								name=L["X-Padding"],
+								desc=L["Distance between columns"],
+								min=-10,
+								max=100,
+								step=1,
+								get = function() return Buffalo.db.profile.padding["buff"].x end,
+								set = function(v) Buffalo.SetPadding(Buffalo, v, "buff", "x") end
+							},
+
+							y={
+								type='range',
+								name=L["Y-Padding"],
+								desc=L["Distance between rows"],
+								min=-10,
+								max=100,
+								step=1,
+								get = function() return Buffalo.db.profile.padding["buff"].y end,
+								set = function(v) Buffalo.SetPadding(Buffalo, v, "buff", "y") end
+							}
+						},
+						order=20
+					},
+
+
+					hGrowth={
+						type='text',
+						name=L["Horizontal Direction"],
+						desc=L["In which horizontal direction should the display grow?"],
+						get=function()
+								if Buffalo.db.profile.growRight.buff then
+									return "right"
+								else
+									return "left"
+								end
+							end,
+						set=function(v) Buffalo.SetGrowthDirection(Buffalo, v, "buff") end,
+						validate = {["left"] = L["To the left"], ["right"]=L["To the right"]},
+						order=30
+					},
+
+					vGrowth={
+						type='text',
+						name=L["Vertical Direction"],
+						desc=L["In which vertical direction should the display grow?"],
+						get=function()
+								if Buffalo.db.profile.growUpwards.buff then
+									return "up"
+								else
+									return "down"
+								end
+							end,
+						set=function(v) Buffalo.SetGrowthDirection(Buffalo, v, "buff") end,
+						validate = {["up"] = L["Upwards"], ["down"]=L["Downwards"]},
+						order=40
+					},
+
+					firstGrowth={
+						type='text',
+						name=L["Growth Precedence"],
+						desc=L["In which direction should the display grow first (horizontally or vertically)?"],
+						get=function() return Buffalo.db.profile.growHorizontalFirst.buff end,
+						set=function(v) Buffalo.SetGrowHorizontalFirst(Buffalo, v, "buff")end,
+						validate = {[true] = L["Horizontally"], [false]=L["Vertically"]},
+						order=50
+					},
+
+					rows={
+						type='range',
+						name=L["Rows"],
+						desc=L["Number of Rows. Only applies when Growth Precedence is Vertical"],
+						min=1,
+						max=16,
+						step=1,
+						get = function() return Buffalo.db.profile.rows["buff"] end,
+						set = function(v) Buffalo.SetRows(Buffalo, v, "buff") end,
+						order=60
+					},
+
+					cols={
+						type='range',
+						name=L["Columns"],
+						desc=L["Number of Columns. Only applies when Growth Precedence is Horizontal"],
+						min=1,
+						max=16,
+						step=1,
+						get = function() return Buffalo.db.profile.cols["buff"] end,
+						set = function(v) Buffalo.SetCols(Buffalo, v, "buff") end,
+						order=70
+					},
+					hide = {
+						type='toggle',
+						name=L["Hide"],
+						desc=L["Hides these buff frames"],
+						get= function() return Buffalo.db.profile.hide["buff"] end,
+						set = function(v) Buffalo.ToggleHide(Buffalo, v, "buff") end,
+						order=90
+					},
+					flashing = {
+						type='toggle',
+						name=L["Flashing"],
+						desc=L["Toggle flashing on fading buffs"],
+						get= function() return Buffalo.db.profile.flashes["buff"] end,
+						set = function(v) Buffalo.db.profile.flashes["buff"] = v end,
+						order=95
+					},
+					timers = {
+						type='group',
+						name=L["Timers"],
+						desc=L["Customize buff timers"],
+						order=100,
+						args = {
+							verboseTimer = {
+								type='toggle',
+								name=L["Verbose Timers"],
+								desc=L["Replaces the default time format for timers with HH:MM or MM:SS"],
+								get= function() return Buffalo.db.profile.verboseTimers["buff"] end,
+								set = function(v) Buffalo.db.profile.verboseTimers["buff"] = v end,
+								order=100
+							},
+							whiteTimer = {
+								type='toggle',
+								name=L["White Timers"],
+								desc=L["Use white timers instead of yellow ones"],
+								get= function() return Buffalo.db.profile.whiteTimers["buff"] end,
+								set = function(v) Buffalo.db.profile.whiteTimers["buff"] = v end,
+								disabled = function() return not Buffalo.db.profile.verboseTimers["buff"] end,
+								order=110
+							},
+						},
+					},
+				}
+			},
+
+			debuffs = {
+				type='group',
+				name=L["Debuffs"],
+				desc=L["Manipulate Debuffs Display"],
+				order=3,
+				args={
+					title={
+						type='header',
+						name=L["Debuffs"],
+	--					icon="Interface\\Icons\\Ability_DualWield.blp",
+						order=10
+					},
+					scale={
+						type='range',
+						name=L["Scale"],
+						desc=L["Scale Debuff Icons"],
+						min=0,
+						max=10,
+						get = function() return Buffalo.db.profile.scale["debuff"] end,
+						set = function(v) Buffalo.SetScale(Buffalo, v, "debuff") end,
+						order=20
+					},
+
+					padding={
+						type='group',
+						name=L["Padding"],
+						desc=L["Control the distance between rows/columns"],
+						args={
+							x={
+								type='range',
+								name=L["X-Padding"],
+								desc=L["Distance between columns"],
+								min=-10,
+								max=100,
+								step=1,
+								get = function() return Buffalo.db.profile.padding["debuff"].x end,
+								set = function(v) Buffalo.SetPadding(Buffalo, v, "debuff", "x") end
+							},
+
+							y={
+								type='range',
+								name=L["Y-Padding"],
+								desc=L["Distance between rows"],
+								min=-10,
+								max=100,
+								step=1,
+								get = function() return Buffalo.db.profile.padding["debuff"].y end,
+								set = function(v) Buffalo.SetPadding(Buffalo, v, "debuff", "y") end
+							}
+						},
+						order=30
+					},
+
+
+					hGrowth={
+						type='text',
+						name=L["Horizontal Direction"],
+						desc=L["In which horizontal direction should the display grow?"],
+						get=function()
+								if Buffalo.db.profile.growRight.debuff then
+									return "right"
+								else
+									return "left"
+								end
+							end,
+						set=function(v) Buffalo.SetGrowthDirection(Buffalo, v, "debuff") end,
+						validate = {["left"] = L["To the left"], ["right"]=L["To the right"]},
+						order=40
+					},
+
+					vGrowth={
+						type='text',
+						name=L["Vertical Direction"],
+						desc=L["In which vertical direction should the display grow?"],
+						get=function()
+								if Buffalo.db.profile.growUpwards.debuff then
+									return "up"
+								else
+									return "down"
+								end
+							end,
+						set=function(v) Buffalo.SetGrowthDirection(Buffalo, v, "debuff") end,
+						validate = {["up"] = L["Upwards"], ["down"]=L["Downwards"]},
+						order=50
+					},
+
+					firstGrowth={
+						type='text',
+						name=L["Growth Precedence"],
+						desc=L["In which direction should the display grow first (horizontally or vertically)?"],
+						get=function() return Buffalo.db.profile.growHorizontalFirst.debuff end,
+						set=function(v) Buffalo.SetGrowHorizontalFirst(Buffalo, v, "debuff") end,
+						validate = {[true] = L["Horizontally"], [false]=L["Vertically"]},
+						order=60
+					},
+
+					rows={
+						type='range',
+						name=L["Rows"],
+						desc=L["Number of Rows. Only applies when Growth Precedence is Vertical"],
+						min=1,
+						max=16,
+						step=1,
+						get = function() return Buffalo.db.profile.rows["debuff"] end,
+						set = function(v) Buffalo.SetRows(Buffalo, v, "debuff") end,
+						order=70
+					},
+
+					cols={
+						type='range',
+						name=L["Columns"],
+						desc=L["Number of Columns. Only applies when Growth Precedence is Horizontal"],
+						min=1,
+						max=16,
+						step=1,
+						get = function() return Buffalo.db.profile.cols["debuff"] end,
+						set = function(v) Buffalo.SetCols(Buffalo, v, "debuff") end,
+						order=80
+					},
+					hide = {
+						type='toggle',
+						name=L["Hide"],
+						desc=L["Hides these buff frames"],
+						get= function() return Buffalo.db.profile.hide["debuff"] end,
+						set = function(v) Buffalo.ToggleHide(Buffalo, v, "debuff") end,
+						order=90
+					},
+					flashing = {
+						type='toggle',
+						name=L["Flashing"],
+						desc=L["Toggle flashing on fading buffs"],
+						get= function() return Buffalo.db.profile.flashes["debuff"] end,
+						set = function(v) Buffalo.db.profile.flashes["debuff"] = v end,
+						order=95
+					},
+					timers = {
+						type='group',
+						name=L["Timers"],
+						desc=L["Customize buff timers"],
+						order=100,
+						args = {
+							verboseTimer = {
+								type='toggle',
+								name=L["Verbose Timers"],
+								desc=L["Replaces the default time format for timers with HH:MM or MM:SS"],
+								get= function() return Buffalo.db.profile.verboseTimers["debuff"] end,
+								set = function(v) Buffalo.db.profile.verboseTimers["debuff"] = v end,
+								order=100
+							},
+							whiteTimer = {
+								type='toggle',
+								name=L["White Timers"],
+								desc=L["Use white timers instead of yellow ones"],
+								get= function() return Buffalo.db.profile.whiteTimers["debuff"] end,
+								set = function(v) Buffalo.db.profile.whiteTimers["debuff"] = v end,
+								disabled = function() return not Buffalo.db.profile.verboseTimers["debuff"] end,
+								order=110
+							},
+						},
+					},
+				}
+			},
+
+			weapon = {
+				type='group',
+				name=L["Weapon Buffs"],
+				desc=L["Manipulate Weapon Buffs Display"],
+				order=4,
+				args={
+					title={
+						type='header',
+						name=L["Weapon Buffs"],
+						icon="Interface\\Icons\\Ability_DualWield.blp",
+						order=1
+					},
+					scale={
+						type='range',
+						name=L["Scale"],
+						desc=L["Scale Buff Icons"],
+						min=0,
+						max=10,
+						get = function() return Buffalo.db.profile.scale["weapon"] end,
+						set = function(v) Buffalo.SetScale(Buffalo, v, "weapon") end,
+						order=2
+					},
+
+					padding={
+						type='group',
+						name=L["Padding"],
+						desc=L["Control the distance between rows/columns"],
+						args={
+							x={
+								type='range',
+								name=L["X-Padding"],
+								desc=L["Distance between columns"],
+								min=-10,
+								max=100,
+								step=1,
+								get = function() return Buffalo.db.profile.padding["weapon"].x end,
+								set = function(v) Buffalo.SetPadding(Buffalo, v, "weapon", "x") end
+							},
+
+							y={
+								type='range',
+								name=L["Y-Padding"],
+								desc=L["Distance between rows"],
+								min=-10,
+								max=100,
+								step=1,
+								get = function() return Buffalo.db.profile.padding["weapon"].y end,
+								set = function(v) Buffalo.SetPadding(Buffalo, v, "weapon", "y") end
+							}
+						},
+						order=3
+					},
+
+
+					hGrowth={
+						type='text',
+						name=L["Horizontal Direction"],
+						desc=L["In which horizontal direction should the display grow?"],
+						get=function() 
+								if Buffalo.db.profile.growRight.weapon then
+									return "right"
+								else
+									return "left"
+								end
+							end,
+						set=function(v) Buffalo.SetGrowthDirection(Buffalo, v, "weapon") end,
+						validate = {["left"] = L["To the left"], ["right"]=L["To the right"]},
+						order=4
+					}, 
+
+					vGrowth={
+						type='text',
+						name=L["Vertical Direction"],
+						desc=L["In which vertical direction should the display grow?"],
+						get=function() 
+								if Buffalo.db.profile.growUpwards.weapon then
+									return "up"
+								else
+									return "down"
+								end
+							end,
+						set=function(v) Buffalo.SetGrowthDirection(Buffalo, v, "weapon") end,
+						validate = {["up"] = L["Upwards"], ["down"]=L["Downwards"]},
+						order=5
+					},
+
+					firstGrowth={
+						type='text',
+						name=L["Growth Precedence"],
+						desc=L["In which direction should the display grow first (horizontally or vertically)?"],
+						get=function() return Buffalo.db.profile.growHorizontalFirst.weapon end,
+						set=function(v) Buffalo.SetGrowHorizontalFirst(Buffalo, v, "weapon")end,
+						validate = {[true] = L["Horizontally"], [false]=L["Vertically"]},
+						order=6
+					},
+
+					rows={
+						type='range',
+						name=L["Rows"],
+						desc=L["Number of Rows. Only applies when Growth Precedence is Vertical"],
+						min=1,
+						max=2,
+						step=1,
+						get = function() return Buffalo.db.profile.rows["weapon"] end,
+						set = function(v) Buffalo.SetRows(Buffalo, v, "weapon") end,
+						order=7
+					},
+
+					cols={
+						type='range',
+						name=L["Columns"],
+						desc=L["Number of Columns. Only applies when Growth Precedence is Horizontal"],
+						min=1,
+						max=2,
+						step=1,
+						get = function() return Buffalo.db.profile.cols["weapon"] end,
+						set = function(v) Buffalo.SetCols(Buffalo, v, "weapon") end,
+						order=8
+					},
+					hide = {
+						type='toggle',
+						name=L["Hide"],
+						desc=L["Hides these buff frames"],
+						get= function() return Buffalo.db.profile.hide["weapon"] end,
+						set = function(v) Buffalo.ToggleHide(Buffalo, v, "weapon") end,
+						order=90
+					},
+					flashing = {
+						type='toggle',
+						name=L["Flashing"],
+						desc=L["Toggle flashing on fading buffs"],
+						get= function() return Buffalo.db.profile.flashes["weapon"] end,
+						set = function(v) Buffalo.db.profile.flashes["weapon"] = v end,
+						order=95
+					},
+					timers = {
+						type='group',
+						name=L["Timers"],
+						desc=L["Customize buff timers"],
+						order=100,
+						args = {
+							verboseTimer = {
+								type='toggle',
+								name=L["Verbose Timers"],
+								desc=L["Replaces the default time format for timers with HH:MM or MM:SS"],
+								get= function() return Buffalo.db.profile.verboseTimers["weapon"] end,
+								set = function(v) Buffalo.db.profile.verboseTimers["weapon"] = v end,
+								order=100
+							},
+							whiteTimer = {
+								type='toggle',
+								name=L["White Timers"],
+								desc=L["Use white timers instead of yellow ones"],
+								get= function() return Buffalo.db.profile.whiteTimers["weapon"] end,
+								set = function(v) Buffalo.db.profile.whiteTimers["weapon"] = v end,
+								disabled = function() return not Buffalo.db.profile.verboseTimers["weapon"] end,
+								order=110
+							},
+						},
+					},
+				}
 			},
 		}
 	}
@@ -133,7 +620,9 @@ function Buffalo:OnEnable()
 -- 	for i, buttonName in self.ButtonIterator, "buff", nil do
 -- 		self:Debug("ButtonID: ", getglobal(buttonName):GetID())
 -- 	end
-	self:CreateDLayout()
+	if not LibButtonFacade then
+		self:CreateDLayout()
+	end
 	loaded = 1
 end
 
@@ -191,25 +680,37 @@ function Buffalo:RestoreSettings()
 end
 
 function Buffalo:DisableBlizzardBuffs()
+	BuffFrame:UnregisterEvent("UNIT_AURA")
+	BuffFrame:Hide()
+	TemporaryEnchantFrame:Hide()
 	BuffaloFrame:Show()
 	DebuffaloFrame:Show()
 	WeaponBuffaloFrame:Show()
-	BuffFrame:Hide()
-	TemporaryEnchantFrame:Hide()
 end
 
 function Buffalo:EnableBlizzardBuffs()
 	BuffaloFrame:Hide()
 	DebuffaloFrame:Hide()
 	WeaponBuffaloFrame:Hide()
+	BuffFrame:RegisterEvent("UNIT_AURA")
 	BuffFrame:Show()
 	TemporaryEnchantFrame:Show()
 end
 
 function Buffalo:CreateBuffButtons()
+	if LibButtonFacade then
+		LibButtonFacade:RegisterSkinCallback(self.name, self.LibButtonFacade_Update, self)
+	end
+--      cat,templateName are something like buff,"BuffaloButton" or weapon, "WeaponBuffaloButton"
 	for cat, templateName in pairs(BUTTON_TEMPLATE_NAME) do
+		if LibButtonFacade then
+			local db = self.db.profile.skins[cat]
+			LibButtonFacade:Group(self.name, cat):Skin(db.skin, db.gloss, db.backdrop)
+		end
 		for i, buttonName, ghostButtonLabel in self.ButtonIterator, cat, nil do
+--			print(i, buttonName, ghostButtonLabel, cat)
 			local button = CreateFrame("Button", buttonName, getglobal(FRAME_NAME[cat]), templateName)
+--			print(cat, templateName, buttonName, BUFF_FILTER[cat])
 			button.cat=cat
 			if(cat ~= "weapon") then
 				button:SetID(i)
@@ -218,28 +719,56 @@ function Buffalo:CreateBuffButtons()
 			end
 			button.buffFilter=BUFF_FILTER[cat]
 			button:RegisterForClicks("RightButtonUp")
+			
+			if LibButtonFacade then
+				LibButtonFacade:Group(self.name, cat):AddButton(button)
+			end
 			getglobal(button:GetName().."_Ghost_Label"):SetText(ghostButtonLabel)
-			getglobal(button:GetName().."_Ghost_Texture"):SetTexture(GHOST_COLOR[cat].r, GHOST_COLOR[cat].g, GHOST_COLOR[cat].b, GHOST_COLOR.alpha)
 			self:BuffaloButton_Update(button)
 		end
 	end
 	self:FillAnchors()
 end
 
+function Buffalo:LibButtonFacade_Update(skin, gloss, backdrop, cat)
+	if not cat or cat == "nil" then return end
+	local db = self.db.profile.skins[cat]
+	db.skin = skin
+	db.gloss = gloss
+	db.backdrop = backdrop
+end
+
 function Buffalo:BuffaloButton_Update(button)
- 	local buffIndex, untilCancelled = GetPlayerBuff(button:GetID() + 1, button.buffFilter)
+	local buffID = button:GetID() + 1
+	local name, rank, texture, count, debuffType, duration, endTime, isMine, isStealable = UnitAura("player", buffID, button.buffFilter)
+
+	local buffIndex = button:GetID()
  	button.buffIndex = buffIndex
- 	button.untilCancelled = untilCancelled
- 	local timeLeft = GetPlayerBuffTimeLeft(buffIndex)
+	button.untilCancelled = duration == 0 and endTime == 0
+	button.buffName = name
+	button.buffRank = rank
+	button.endTime = endTime
+	local time = GetTime()
+	local timeLeft
+	if ( endTime ) then
+		timeLeft = endTime - time
+        else
+                timeLeft = 0
+	end
+
+--	if ( name ) then
+--		print(name, rank, count, timeLeft)
+--	end
+
  	local buffDuration = getglobal(button:GetName().."Duration")
- 	buffDuration:SetFormattedText(self:GetDurationString(timeLeft, button.cat))
 
 	UIFrameFlashRemoveFrame(button) -- STOP WITH THIS SILLY FLASHING!
 	
- 	if ( buffIndex < 1 and self.db.profile.locked ) then
+ 	if ( not name and self.db.profile.locked ) then
  		button:Hide()
  		buffDuration:Hide()
  	else
+	 	buffDuration:SetFormattedText(self:GetDurationString(timeLeft, button.cat))
  		button:SetAlpha(1.0)
  		button:Show()
  		if ( SHOW_BUFF_DURATIONS == "1" and timeLeft > 0) then
@@ -250,15 +779,14 @@ function Buffalo:BuffaloButton_Update(button)
  	end
 
  	local icon = getglobal(button:GetName().."Icon")
- 	icon:SetTexture(GetPlayerBuffTexture(buffIndex))
+ 	icon:SetTexture(texture)
 
  	-- Set color of debuff border based on dispel class.
  	local color
- 	local debuffType = GetPlayerBuffDispelType(GetPlayerBuff(button:GetID() + 1, "HARMFUL"))
  	local debuffSlot = getglobal(button:GetName().."Border")
 --  	self:Debug("debuffType:",debuffType)
 --  	self:Debug("debuffSlot:",debuffSlot)
- 	if ( debuffType ) then
+ 	if ( debuffType and not debuffType == "" ) then
  		color = DebuffTypeColor[debuffType]
  		color.a=1
  	elseif(buffIndex >= 1) then
@@ -270,14 +798,20 @@ function Buffalo:BuffaloButton_Update(button)
 	if ( debuffSlot ) then
 		debuffSlot:SetVertexColor(color.r, color.g, color.b, color.a)
 		if (loaded == 1) then
-			getglobal("DFLayout"..button:GetID()):SetBackdropColor(color.r, color.g, color.b, color.a)
+			local dflayout = getglobal("DFLayout"..button:GetID())
+			if dflayout then
+				dflayout:SetBackdropColor(color.r, color.g, color.b, color.a)
+			end
 			debuffSlot:Hide()
 		end
  	end
 
 	-- Set the number of applications of an aura if its a debuff
 	local buffCount = getglobal(button:GetName().."Count")
-	local count = GetPlayerBuffApplications(buffIndex)
+	if ( not count ) then
+		count = 0
+	end
+
 	if ( count > 1 ) then
 		buffCount:SetText(count)
 		buffCount:Show()
@@ -286,7 +820,7 @@ function Buffalo:BuffaloButton_Update(button)
 	end
 
 	if ( GameTooltip:IsOwned(button) ) then
-		GameTooltip:SetPlayerBuff(buffIndex)
+		GameTooltip:SetUnitAura("player", button:GetID() + 1, button.buffFilter)
 	end
 	self.printnext=DebuffaloButton1 and (button:GetName() == "DebuffaloButton1")
 	self:Test("Nach _Update")
@@ -340,6 +874,7 @@ function Buffalo:WeaponBuffaloFrame_OnUpdate(elapsed)
 end
 
 function Buffalo:BuffButton_OnUpdate(elapsed, button)
+--	print(elapsed, button.timeSinceLastUpdate)
 	button.timeSinceLastUpdate = button.timeSinceLastUpdate + elapsed
 	if(button.timeSinceLastUpdate > UPDATETIME) then
 		local buffDuration = getglobal(button:GetName().."Duration")
@@ -349,11 +884,18 @@ function Buffalo:BuffButton_OnUpdate(elapsed, button)
 		end
 	
 		local buffIndex = button.buffIndex
-		local timeLeft = GetPlayerBuffTimeLeft(buffIndex)
+		local now = GetTime()
+		local ending = button.endTime
+		local timeLeft 
+		if ( ending ) then
+			timeLeft = ending - now
+		else
+			timeLeft = 0
+		end
 		if ( timeLeft < BUFF_WARNING_TIME and self.db.profile.locked and self.db.profile.flashes[button.cat]) then
 --			local ghost = getglobal(button:GetName().."_Ghost_Texture")
 --			ghost:SetTexture(GHOST_COLOR.warning.r, GHOST_COLOR.warning.g, GHOST_COLOR.warning.b)
-			UIFrameFlash(button, 0.7, 0.7, timeLeft, true, 0, 0.6)
+			UIFrameFlash(button, 0.4, 0.4, timeLeft, true, 0, 0.7)
 		else
 			UIFrameFlashRemoveFrame(button)
 			button:SetAlpha(1.0)
@@ -370,9 +912,31 @@ function Buffalo:BuffButton_OnUpdate(elapsed, button)
 			return
 		end
 		if ( GameTooltip:IsOwned(button) ) then
-			GameTooltip:SetPlayerBuff(buffIndex)
+			GameTooltip:SetUnitAura("player", button:GetID() + 1, button.buffFilter)
 		end
 		button.timeSinceLastUpdate = 0
+	end
+end
+
+function Buffalo:BuffButton_OnEnter(button)
+--	if ( button.buffFilter == "HELPFUL" or button.buffFilter == "HARMFUL" ) then
+--	print(button:GetName())
+	GameTooltip:SetOwner(button, "ANCHOR_CURSOR")
+	GameTooltip:SetUnitAura("player", button:GetID() + 1, button.buffFilter)
+--	else
+--		local mhSlot = getglobal("CharacterMainHandSlot")		
+--		GameTooltip:SetInventoryItem("player", 16)
+--	end
+end
+
+function Buffalo:WeaponButton_OnEnter(button)
+	local hasMHEnchant, mHandExpiration, mHandCharges, hasOHEnchant, offHExpiration, offHCharges = GetWeaponEnchantInfo()
+	if ( button:GetName() == "WeaponBuffaloButton0" and hasMHEnchant ) then
+		GameTooltip:SetOwner(button, "ANCHOR_CURSOR")
+		GameTooltip:SetInventoryItem("player", 16)
+	elseif ( hasOHEnchant ) then
+		GameTooltip:SetOwner(button, "ANCHOR_CURSOR")
+		GameTooltip:SetInventoryItem("player", 17)
 	end
 end
 
@@ -653,8 +1217,8 @@ function Buffalo:BuffButton_OnClick(button)
 		elseif(button.buffFilter == "HARMFUL") then
 			dewdrop:Open(button, 'children', Buffalo_OptionsTable.args.debuffs)
 		end
-	else
-		CancelPlayerBuff(button.buffIndex)
+	elseif( button.buffName ) then
+		CancelUnitBuff("player", button.buffName, button.buffRank)
 	end
 end
 

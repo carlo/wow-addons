@@ -312,7 +312,9 @@ do
 			"font#tl:25:-80#s:310:0#v:GameFontNormal#MASS_MAILING_INFO#0.18:0.12:0.06:l",
 			"font#tl:25:-150#v:GameFontNormalLarge#MASS_MAILING_ITEMS",
 			"texture#br:-35:120#l:25:0#s:0:2#0.18:0.12:0.06",
-			"font#bl:35:100#i:postage#v:GameFontNormal#MASS_MAILING_POSTAGE",
+			"font#br:-110:105#i:postage#v:GameFontNormal#MASS_MAILING_POSTAGE",
+			"button#br:-125:83#s:80:20#i:send#v:GameMenuButtonTemplate#MASS_MAILING_SEND",
+			"button#br:-45:83#s:80:20#i:cancel#v:GameMenuButtonTemplate#MASS_MAILING_CANCEL",
 
 			["onload"] = function(self)
 				-- Editboxes
@@ -386,8 +388,8 @@ do
 					self, "FauxScrollFrameTemplate");
 				scrollFrame:SetPoint("TOPLEFT", self, 0, -192);
 				scrollFrame:SetPoint("BOTTOMRIGHT", self, -65, 125);
-				scrollFrame:SetScript("OnVerticalScroll", function()
-					FauxScrollFrame_OnVerticalScroll(22, updateMassMailingScroll);
+				scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
+					FauxScrollFrame_OnVerticalScroll(self, offset, 22, updateMassMailingScroll);
 				end);
 
 				-- Money frame
@@ -424,14 +426,14 @@ end
 -- Hook the tab onclick function
 do
 	local old = MailFrameTab_OnClick;
-	function MailFrameTab_OnClick(tab)
+	function MailFrameTab_OnClick(self, tab)
 		if ( tab == 3 ) then
-			old(1);
+			old(self, 1);
 			PanelTemplates_SetTab(MailFrame, 3);
 			InboxFrame:Hide();
 			showMassMailingFrame();
 		else
-			old(tab);
+			old(self, tab);
 			hideMassMailingFrame();
 		end
 	end
@@ -450,10 +452,10 @@ end
 -- Quick Attachment Binding
 
 do
-	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", function()
+	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", function(self, button)
 		if ( IsModifiedClick("CT_MAILMOD_ATTACH_MASSMAIL") ) then
 			if ( massMailingFrame and massMailingFrame:IsVisible() ) then
-				attachContainerItem(this:GetParent():GetID(), this:GetID());
+				attachContainerItem(self:GetParent():GetID(), self:GetID());
 			end
 		end
 	end);

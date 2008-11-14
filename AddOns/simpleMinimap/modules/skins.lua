@@ -113,6 +113,25 @@ L:RegisterTranslations("esES", function() return({
 		"esquina inferior derecha"
 	}
 }) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	border = "Текстура рамки",
+	border_desc = "Текстура рамки мини-карты",
+	skin = "Шкурка",
+	skin_desc = "Шкурка и вид мини-карты",
+	skins = "Шкурка",
+	skins_desc = "Модуль шкурки и вида мини-карты",
+	skinNames = {
+		"Круг (По умолчанию)",
+		"Квадрат",
+		"Тонкий квадрат (темный)",
+		"Тонкий квадрат (светлый)",
+		"Верхний правый угол",
+		"Верхний левый угол",
+		"Нижний левый угол",
+		"Нижний правый угол"
+	}
+}) end)
 
 local skins = {
 	{
@@ -198,10 +217,10 @@ function mod:OnEnable()
 		if simpleMinimap:IsModuleActive('skins') then
 			local s = self:GetShape()
 			if(s and ((s=="SQUARE") or
-					(s=="CORNER-TOPRIGHT" and (x<0 or y<0)) or
-					(s=="CORNER-TOPLEFT" and (x>0 or y<0)) or
+					(s=="CORNER-BOTTOMLEFT" and (x>0 or y>0)) or
 					(s=="CORNER-BOTTOMRIGHT" and (x<0 or y>0)) or
-					(s=="CORNER-BOTTOMLEFT" and (x>0 or y>0)))) then
+					(s=="CORNER-TOPLEFT" and (x>0 or y<0)) or
+					(s=="CORNER-TOPRIGHT" and (x<0 or y<0)))) then
 				r = false
 			end
 		end

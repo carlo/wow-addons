@@ -4,7 +4,7 @@ local name = UnitName("player")
 local realm = GetRealmName()
 local totalProfit = 0
 --make proficiency table local (defined in proficiencies.lua)
-local prof = AutoProfitX_Proficiencies
+local prof = AutoProfitX_Proficiencies[UnitClass("player")] or {}
 AutoProfitX_Proficiencies = nil
 --default button position
 local buttonY = -37
@@ -15,6 +15,10 @@ AutoProfitX = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0","AceEvent-2.0","Ac
 
 local waterfall = AceLibrary("Waterfall-1.0")
 local tooltip = AceLibrary("Gratuity-2.0")
+
+--some strings commonly used in addon
+local linkMatch = "|c%x+|Hitem:[%-%d:]*|h%[.-%]|h|r"
+local classMatch = string.format(ITEM_CLASSES_ALLOWED,"([%w, ]*)")
 
 --[[
 
@@ -45,16 +49,16 @@ local function coppertogold(copper,showGold)
 	val = math.floor(copper/COPPER_PER_GOLD)
 	copper = mod(copper,COPPER_PER_GOLD)
 	if val > 0 or showGold then
-		strValue = val .. "g "
+		strValue = val .. L["g "]
 	end
 	
 	val = math.floor(copper/COPPER_PER_SILVER)
 	copper = mod(copper,COPPER_PER_SILVER)
 	if val > 0 or strValue ~= "" then
-		strValue = strValue .. val .. "s "
+		strValue = strValue .. val .. L["s "]
 	end
 	
-	return strValue .. copper .. "c"
+	return strValue .. copper .. L["c"]
 end
 
 --[[
@@ -64,9 +68,6 @@ Main APX functions
 --]]
 
 function AutoProfitX:OnInitialize()
-	--trim down proficiencies
-	prof = prof[UnitClass("player")]
-	
 	--register database
 	self:RegisterDB("AutoProfitXDB","AutoProfitXDBPerChar")
 	
@@ -97,10 +98,10 @@ function AutoProfitX:OnInitialize()
 	eList = self.db.account[realm][name].exceptionList
 			
 	--register chat commands
-    self:RegisterChatCommand({"/autoprofitx", "/apx"}, {
+    self:RegisterChatCommand({"/autoprofitx", L["/apx"]}, {
 		type = "group",
 		args = {
-			options = {
+			[L["options"]] = {
 				name = L["options"],
 				type = "execute",
 				desc = L["Show options panel."],
@@ -108,7 +109,7 @@ function AutoProfitX:OnInitialize()
 				handler = waterfall,
 				passValue = "AutoProfitX"
 			},
-			add = {
+			[L["add"]] = {
 				name = L["add"],
 				type = "text",
 				desc = L["Add items to global ignore list."],
@@ -116,7 +117,7 @@ function AutoProfitX:OnInitialize()
 				get = false,
 				set = "AddGlobal"
 			},
-			rem = {
+			[L["rem"]] = {
 				name = L["rem"],
 				type = "text",
 				desc = L["Remove items from global ignore list."],
@@ -124,7 +125,7 @@ function AutoProfitX:OnInitialize()
 				get = false,
 				set = "RemGlobal"
 			},
-			me = {
+			[L["me"]] = {
 				name = L["me"],
 				type = "text",
 				desc = L["Add or remove an item from your exception list."],
@@ -132,7 +133,7 @@ function AutoProfitX:OnInitialize()
 				get = false,
 				set = "AddRemLocal"
 			},
-			list = {
+			[L["list"]] = {
 				name = L["list"],
 				type = "execute",
 				desc = L["List your exceptions."],
@@ -249,6 +250,20 @@ function AutoProfitX:OnInitialize()
 						},
 						"title", "AutoProfitX",
 						"treeLevels",2)
+	if ( EarthFeature_AddButton ) then   --add by Isler
+		EarthFeature_AddButton(
+			{
+				id= "AutoProfitX";
+				name= L["OneKey Sell"];
+				subtext= "AutoProfitX";
+				tooltip = L["OneKey sell junk items when opening vendor window"];
+				icon= "Interface\\Icons\\Spell_Nature_NatureBlessing";
+				callback= function()
+					AceLibrary("Waterfall-1.0"):Open('AutoProfitX')
+					end;
+			}
+		);
+	end
 end
 
 function AutoProfitX:OnEnable()
@@ -273,7 +288,7 @@ end
 --add global exceptions
 function AutoProfitX:AddGlobal(exceptions)
 	local itemID
-	for link in string.gmatch(exceptions,"|c%x+|Hitem:[%-?%d:]*|h%[.-%]|h|r") do	
+	for link in string.gmatch(exceptions,linkMatch) do	
 		itemID = self:GetID(link)
 		if itemID then
 			--add it to all exception lists
@@ -298,7 +313,7 @@ end
 function AutoProfitX:RemGlobal(exceptions)
 	local itemID
 	
-	for link in string.gmatch(exceptions,"|c%x+|Hitem:[%-?%d:]*|h%[.-%]|h|r") do
+	for link in string.gmatch(exceptions,linkMatch) do
 		itemID = self:GetID(link)
 		if itemID then
 			for realm,charList in pairs(self.db.account) do
@@ -322,7 +337,7 @@ end
 function AutoProfitX:AddRemLocal(exceptions)
 	local itemID
 	
-	for link in string.gmatch(exceptions,"|c%x+|Hitem:[%-?%d:]*|h%[.-%]|h|r") do
+	for link in string.gmatch(exceptions,linkMatch) do
 		itemID = self:GetID(link)
 		if itemID then
 			if eList[itemID] then
@@ -440,23 +455,19 @@ end
 
 --sells junk items
 function AutoProfitX:SellJunk()
-	local bagSlots, link
+	local link
 	
-	if ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
+	if ( MerchantFrame:IsVisible() and MerchantFrame.selectedTab == 1 ) then
 		for bag = 0, 4 do
-			bagSlots = GetContainerNumSlots(bag)
-			--if bag equipped
-			if bagSlots > 0 then
-				for slot = 1, bagSlots do
-					--if slot not empty and item is junk
-					link = GetContainerItemLink(bag, slot)
-					if link and self:IsJunk(link,bag,slot) then
-						--sell item
-						UseContainerItem(bag, slot)
-						--if sale reporting is turned on (not silent), display sale message
-						if not charSettings.silent then
-							self:Print(L["Sold %s."],link)
-						end
+			for slot = 1, GetContainerNumSlots(bag) do
+				--if slot not empty and item is junk
+				link = GetContainerItemLink(bag, slot)
+				if link and self:IsJunk(link,bag,slot) then
+					--sell item
+					UseContainerItem(bag, slot)
+					--if sale reporting is turned on (not silent), display sale message
+					if not charSettings.silent then
+						self:Print(L["Sold %s."],link)
 					end
 				end
 			end
@@ -480,7 +491,7 @@ function AutoProfitX:IsJunk(link,bag,slot)
 	end
 	
 	--Not poor quality, check if it's usable
-	if charSettings.checkSoulbound and bag and slot and not self:IsUsable(bag,slot) then
+	if charSettings.checkSoulbound and bag and slot and not self:IsUsable(bag,slot,link) then
 		return true
 	end
 	
@@ -488,62 +499,45 @@ function AutoProfitX:IsJunk(link,bag,slot)
 end
 
 --returns false if a soulbound item cannot be used by player class
-function AutoProfitX:IsUsable(bag,slot)
-	if self:IsSoulbound(bag,slot) and not self:UsedByClass(GetContainerItemLink(bag,slot)) then
-		return false
-	end
-	--usable
-	return true
-end
-
---returns true if item is soulbound
-function AutoProfitX:IsSoulbound(bag,slot)
+function AutoProfitX:IsUsable(bag,slot,link)
+	--if it's not soulbound then you can always use it
 	tooltip:SetBagItem(bag,slot)
-	if tooltip:Find("Soulbound") then
+	if not tooltip:Find(ITEM_SOULBOUND) then
 		return true
 	end
-	return false
-end
-
---checks if item can be used by player class
-function AutoProfitX:UsedByClass(link)
-	local _, _, _, _, _, iType, iSubType, _, iEquipLoc = GetItemInfo(link)
 	
-	local tbl = prof[iType]
-	if tbl then
-		if tbl[iSubType] then
-			if iType == "Weapon" and not tbl.equipLoc[iEquipLoc] then
-				return false
+	--check if item has class requirement
+	local class = UnitClass("player")
+	local _, _, classes = tooltip:Find(classMatch)
+	if classes then
+		local found = false
+		classes = {strsplit(L["LIST_SEPARATOR"], classes)}
+		for _, c in ipairs(classes) do
+			if class == c then
+				found = true
 			end
-		else
+		end
+		if not found then
+			--class not in the list so you can't use it
 			return false
 		end
 	end
-	
-	--player has proficiency to use item
-	--check if item has class requirement
-	tooltip:SetHyperlink(link)
-	local class = UnitClass("player")
-	local _, _, classes = tooltip:Find("Classes: ([%w, ]*)")
-	if classes then
-		classes = {strsplit(", ", classes)}
-		for _, c in ipairs(classes) do
-			if class == c then
-				return true
-			end
-		end
-		--class not in list
+
+	--check if class can ever use this item
+	local _, _, _, _, _, iType, iSubType, _, iEquipLoc = GetItemInfo(link)
+	local tbl = prof[iType]
+	if tbl and (tbl[iSubType] or (tbl.noOffhand and iEquipLoc == "INVTYPE_WEAPONOFFHAND")) then
 		return false
 	end
-	
-	--no class requirements
+
+	--seems usable
 	return true
 end
 
 --returns the sum of all junk item sell prices
 function AutoProfitX:GetProfit()
 	totalProfit = 0
-	if MerchantFrame:IsShown() then
+	if MerchantFrame:IsVisible() then
 		local bagSlots, link
 		for bag = 0,4 do
 			bagSlots = GetContainerNumSlots(bag)

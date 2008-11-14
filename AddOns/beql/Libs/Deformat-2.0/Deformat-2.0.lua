@@ -1,6 +1,6 @@
 --[[
 Name: Deformat-2.0
-Revision: $Rev: 25921 $
+Revision: $Rev: 49 $
 Author(s): ckknight (ckknight@gmail.com)
 Website: http://ckknight.wowinterface.com/
 Documentation: http://wiki.wowace.com/index.php/Deformat-2.0
@@ -11,7 +11,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "Deformat-2.0"
-local MINOR_VERSION = "$Revision: 25921 $"
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 49 $"):match("(%d+)"))
 
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end

@@ -67,9 +67,8 @@ L:RegisterTranslations("koKR", function() return({
 }) end)
 
 L:RegisterTranslations("deDE", function() return({
-	pings = "Pings",
 	show = "Zeige im Chat",
-	show_desc = "Zeige Pings im Chat anstelle des Fensters in der Minimap",
+	show_desc = "Zeigt Pings im Chat anstelle des Fensters in der Minimap",
 	alpha = "Helligkeit",
 	alpha_desc = "Stellt die Helligkeit des Pingfensters ein",
 	pings = "Pings",
@@ -131,6 +130,28 @@ L:RegisterTranslations("esES", function() return({
 	position4 ="Arriba fuera",
 	position4_desc = "Arriba en el minimapa, fuera del marco",
 	ping_by = "ping por"
+}) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	show = "Показывать в чате",
+	show_desc = "Показывать пинг в чате вместо фреймов на мини-карте",
+	alpha = "Прозрачность",
+	alpha_desc = "Установить прозрачность фрейма имени пинга",
+	pings = "Пинг",
+	pings_desc = "Имя пингера во всплывающем окне",
+	position = "Позиция",
+	position_desc = "Позиция всплывающего оккна имени пингера на мини-карте",
+	scale = "Масштаб",
+	scale_desc = "Установить масштаб фреймов имени пингера",
+	position1 = "В нижней части-внутри",
+	position1_desc = "В нижней части мини-карты, внутри фрейма мини-карты",
+	position2 ="В нижней части-снаружы",
+	position2_desc = "В нижней части мини-карты, снаружы фрейма мини-карты",
+	position3 = "В верхней части-внутри",
+	position3_desc = "В верхней части мини-карты, внутри фрейма мини-карты",
+	position4 = "В верхней части-снаружы",
+	position4_desc = "В верхней части мини-карты, снаружы фрейма мини-карты",
+	ping_by = "Пинг"
 }) end)
 
 local positions = {
@@ -230,7 +251,7 @@ mod.options = {
 }
 
 mod.defaults = {
-	enabled = true,
+	enabled = false,
 	position = 3,
 	alpha = 0.9,
 	scale = 0.85,

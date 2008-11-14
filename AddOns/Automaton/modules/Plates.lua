@@ -22,6 +22,10 @@ L:RegisterTranslations("zhTW", function() return {
 ["Shows name plates in combat."] = "戰鬥時顯示敵對名稱面板",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Shows name plates in combat."] = "战斗中显示敌方姓名板",
+} end)
+
 module.description = L["Shows name plates in combat."]
 module.options = {
 }
@@ -40,12 +44,29 @@ function module:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 end
 
-function module:PLAYER_REGEN_ENABLED()
-	HideNameplates()
-	NAMEPLATES_ON = false
-end
+if select(4, GetBuildInfo()) < 30000 then
+	-- Live
 
-function module:PLAYER_REGEN_DISABLED()
-	ShowNameplates()
-	NAMEPLATES_ON = true
+	function module:PLAYER_REGEN_ENABLED()
+		HideNameplates()
+		NAMEPLATES_ON = false
+	end
+
+	function module:PLAYER_REGEN_DISABLED()
+		ShowNameplates()
+		NAMEPLATES_ON = true
+	end
+	
+else
+	-- WotLK beta
+	function module:PLAYER_REGEN_ENABLED()
+		SetCVar("nameplateShowEnemies", 0)
+		NAMEPLATES_ON = false
+	end
+
+	function module:PLAYER_REGEN_DISABLED()
+		SetCVar("nameplateShowEnemies", 1)
+		NAMEPLATES_ON = true
+	end
+
 end

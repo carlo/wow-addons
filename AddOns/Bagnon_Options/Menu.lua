@@ -1,177 +1,506 @@
 --[[
 	Menu.lua
-		Scripts for creating the main options menu for Bagnon
---]]
-local BUTTON_SIZE = 32
-local L = BAGNON_OPTIONS_LOCALS
-
---[[
-	A toggle is simply a checkbox that sets a saved variable,
-	it may perform an action after being checked
 --]]
 
-local function Toggle_OnShow(self)
-	self:SetChecked(Bagnon.sets[self.var])
-end
+BagnonMenu = CreateFrame('Frame', 'BagnonRightClickMenu', UIParent)
+local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon-Options')
 
-local function Toggle_OnClick(self)
-	if self:GetChecked() then
-		Bagnon.sets[self.var] = 1
-	else
-		Bagnon.sets[self.var] = nil
-	end
+local Menu = BagnonMenu
+Menu.extraWidth = 20
+Menu.extraHeight = 40
+Menu:Hide()
 
-	if self.PostClick then
-		self:PostClick()
-	end
-end
+function Menu:Load()
+	self.panels = {}
 
-local function Toggle_Create(parent, title, var, PostClick, tip)
-	local button = CreateFrame('CheckButton', nil, parent, 'GooeyCheckButton')
-	button:SetScript('OnShow', Toggle_OnShow)
-	button:SetScript('OnClick', Toggle_OnClick)
-	if PostClick then
-		button:SetScript('PostClick', PostClick)
-	end
+	self:SetBackdrop{
+		bgFile = 'Interface\\ChatFrame\\ChatFrameBackground',
+		edgeFile = 'Interface\\DialogFrame\\UI-DialogBox-Border',
+		insets = {left = 11, right = 11, top = 12, bottom = 11},
+		tile = true,
+		tileSize = 32,
+		edgeSize = 32,
+	}
+	self:SetBackdropColor(0, 0, 0, 0.8)
 
-	button.var = var
-	button:SetText(title)
-	button:SetChecked(Bagnon.sets[var])
+	self:EnableMouse(true)
+	self:SetToplevel(true)
+	self:SetMovable(true)
+	self:SetClampedToScreen(true)
+	self:SetFrameStrata('DIALOG')
+	self:SetScript('OnMouseDown', self.StartMoving)
+	self:SetScript('OnMouseUp', self.StopMovingOrSizing)
 
-	return button
-end
-
-
---[[
-	An event button has an event, and then a checkbox for the bag and bank frame attached to it
-	Its used to determine under what events the bags/bank should automatically show
---]]
-
-local function EventButton_Create(parent, type, isBank)
-	local button = CreateFrame('CheckButton', nil, parent, 'GooeyCheckButton')
-	button:SetScript('OnShow', Toggle_OnShow)
-	button:SetScript('OnClick', Toggle_OnClick)
-
-	if isBank then
-		button.var = format('showBankAt%s', type)
-	else
-		button.var = format('showBagsAt%s', type)
-	end
-	button:SetChecked(Bagnon.sets[button.var])
-
-	return button
-end
-
-local function EventFrame_Create(parent, text, type)
-	local frame = CreateFrame('Frame', nil, parent)
-	frame.type = type
-
-	local bags = EventButton_Create(frame, type)
-	local bank = EventButton_Create(frame, type, true)
-	bank:SetPoint('RIGHT')
-	bags:SetPoint('RIGHT', bank, 'LEFT', -6, 0)
-
-	local title = frame:CreateFontString('ARTWORK')
-	title:SetJustifyH('LEFT')
-	title:SetPoint('LEFT')
-	title:SetFontObject('GameFontNormalSmall')
-	title:SetText(text)
-
-	return frame
-end
-
-
---[[ Frame Constructor ]]--
-
-local function CreateToggleFrames(parent)
-	local frames = {}
-
-	table.insert(frames, Toggle_Create(parent, L.ShowBorders, 'showBorders', function()
-		local bags = Bagnon:GetInventory()
-		if bags and bags:IsShown() then
-			bags:Regenerate()
-		end
-
-		local bank = Bagnon:GetBank()
-		if bank and bank:IsShown() then
-			bank:Regenerate()
-		end
-	end))
-
-	table.insert(frames, Toggle_Create(parent, L.ReplaceBags, 'replaceBags'))
-	table.insert(frames, Toggle_Create(parent, L.ReplaceBank, 'replaceBank'))
-	table.insert(frames, Toggle_Create(parent, L.ReuseFrames, 'reuseFrames', ReloadUI))
-
-	return frames
-end
-
-local function CreateEventFrames(parent)
-	local frames = {}
-	table.insert(frames, EventFrame_Create(parent, L.AtBank, 'Bank'))
-	table.insert(frames, EventFrame_Create(parent, L.AtVendor, 'Vendor'))
-	table.insert(frames, EventFrame_Create(parent, L.AtAH, 'AH'))
-	table.insert(frames, EventFrame_Create(parent, L.AtMail, 'Mail'))
-	table.insert(frames, EventFrame_Create(parent, L.AtTrade, 'Trade'))
-	table.insert(frames, EventFrame_Create(parent, L.AtCraft, 'Craft'))
-	return frames
-end
-
-local function CreateOptionsMenu(name)
-	local frame = CreateFrame('Frame', name, UIParent, 'GooeyFrame')
-	frame:EnableMouse(true)
-
-	frame:SetFrameStrata('DIALOG')
-	frame:SetMovable(true)
-	frame:SetToplevel(true)
-	frame:SetClampedToScreen(true)
-
-	frame:SetWidth(254)
-	frame:SetHeight(416 - 34)
-	frame:SetPoint('LEFT')
-	local titleRegion = frame:CreateTitleRegion()
-	titleRegion:SetAllPoints(frame)
-
-	--title
-	local title = frame:CreateFontString('ARTWORK')
-	title:SetFontObject('GameFontHighlightLarge')
-	title:SetText(L.Title)
-	title:SetPoint('TOP', 0, -10)
+	--title text
+	self.text = self:CreateFontString(nil, 'OVERLAY')
+	self.text:SetPoint('TOP', 0, -15)
+	self.text:SetFontObject('GameFontHighlightLeft')
+	self.text:SetText(L.Title)
 
 	--close button
-	local close = CreateFrame('Button', name .. 'Close', frame, 'UIPanelCloseButton')
-	close:SetPoint('TOPRIGHT', -2, -2)
+	self.close = CreateFrame('Button', nil, self, 'UIPanelCloseButton')
+	self.close:SetPoint('TOPRIGHT', -5, -5)
 
-	--create and layout all the toggle checkbuttons
-	local toggles = CreateToggleFrames(frame)
-	toggles[1]:SetPoint('TOPLEFT', 6, -32)
-	for i = 2, #toggles do
-		toggles[i]:SetPoint('TOPLEFT', toggles[i-1], 'BOTTOMLEFT')
+	self:AddDisplayPanel()
+	self:AddEventsPanel()
+end
+
+--place the frame at the player's cursor
+function Menu:Display(parent)
+	local x, y = GetCursorPosition()
+	local s = UIParent:GetScale()
+
+	self:Hide()
+	self:ClearAllPoints()
+	self:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', x/s - 32, y/s + 80)
+	self.parent = parent
+	self:ShowPanel(L.Display)
+end
+
+--shows a given panel
+function Menu:ShowPanel(name)
+	for i, panel in pairs(self.panels) do
+		if panel.name == name then
+			if self.dropdown then
+				UIDropDownMenu_SetSelectedValue(self.dropdown, i)
+			end
+			panel:Show()
+			self:SetWidth(max(240, panel.width + self.extraWidth))
+			self:SetHeight(max(40, panel.height + self.extraHeight))
+		else
+			panel:Hide()
+		end
+	end
+	self:Show()
+end
+
+function Menu:GetSelectedPanel()
+	for i, panel in pairs(self.panels) do
+		if panel:IsShown() then
+			return i
+		end
+	end
+	return 1
+end
+
+function Menu:AddPanel(name)
+	local panel = self.Panel:Create(name, self)
+	panel.name = name
+	table.insert(self.panels, panel)
+
+	if not self.dropdown and #self.panels > 1 then
+		self.dropdown = self:CreatePanelSelector()
 	end
 
-	--Create the Show Bags Bank divider
-	local show = frame:CreateFontString('ARTWORK')
-	show:SetFontObject('GameFontHighlight')
-	show:SetText(L.Show)
-	show:SetPoint('TOPLEFT', toggles[#toggles], 'BOTTOMLEFT', 6, -8)
+	return panel
+end
 
-	local bank = frame:CreateFontString('ARTWORK')
-	bank:SetFontObject('GameFontHighlight')
-	bank:SetText(L.Bank)
-	bank:SetPoint('RIGHT', show, 'LEFT', frame:GetWidth() - 24, 0)
+do
+	local info = {}
+	local function AddItem(text, value, func, checked)
+		info.text = text
+		info.func = func
+		info.value = value
+		info.checked = checked
+		info.arg1 = text
+		UIDropDownMenu_AddButton(info)
+	end
 
-	local bags = frame:CreateFontString('ARTWORK')
-	bags:SetFontObject('GameFontHighlight')
-	bags:SetText(L.Bags)
-	bags:SetPoint('RIGHT', bank, 'LEFT', -12, 0)
+	local function Dropdown_OnShow(self)
+		UIDropDownMenu_SetWidth(self, 110)
+		UIDropDownMenu_Initialize(self, self.Initialize)
+		UIDropDownMenu_SetSelectedValue(self, self:GetParent():GetSelectedPanel())
+	end
 
-	--create and layout  all the event checkboxes
-	local eFrames = CreateEventFrames(frame)
-	eFrames[1]:SetPoint('TOPLEFT', show, 'BOTTOMLEFT', 0, -4)
-	eFrames[1]:SetPoint('BOTTOMRIGHT', bank, 'BOTTOMRIGHT', 2, -(32 + 4))
+	function Menu:CreatePanelSelector()
+		local f = CreateFrame('Frame', self:GetName() .. 'PanelSelector', self, 'UIDropDownMenuTemplate')
+		f:SetScript('OnShow', Dropdown_OnShow)
 
-	for i = 2, #eFrames do
-		eFrames[i]:SetPoint('TOPLEFT', eFrames[i-1], 'BOTTOMLEFT')
-		eFrames[i]:SetPoint('BOTTOMRIGHT', eFrames[i-1], 'BOTTOMRIGHT', 0, -32)
+		local function Item_OnClick(item, name)
+			self:ShowPanel(name)
+			UIDropDownMenu_SetSelectedValue(f, item.value)
+		end
+
+		function f:Initialize()
+			local parent = self:GetParent()
+			local selected = parent:GetSelectedPanel()
+			for i,panel in ipairs(parent.panels) do
+				AddItem(panel.name, i, Item_OnClick, i == selected)
+			end
+		end
+
+		f:SetPoint('TOPLEFT', 0, -36)
+		for _,panel in pairs(self.panels) do
+			panel:SetPoint('TOPLEFT', 10, -(32 + f:GetHeight() + 6))
+		end
+
+		self.extraHeight = (self.extraHeight or 0) + f:GetHeight() + 6
+
+		return f
 	end
 end
-CreateOptionsMenu('BagnonOptions')
+
+--[[
+	Panel Components
+--]]
+
+--a panel is a subframe of a menu, basically
+local Panel = BagnonUtil:CreateWidgetClass('Frame')
+Menu.Panel = Panel
+
+Panel.width = 0
+Panel.height = 0
+
+function Panel:Create(name, parent)
+	local f = self:New(CreateFrame('Frame', parent:GetName() .. name, parent))
+	f.name = name
+
+	if parent.dropdown then
+		f:SetPoint('TOPLEFT', 10, -(32 + parent.dropdown:GetHeight() + 4))
+	else
+		f:SetPoint('TOPLEFT', 10, -32)
+	end
+	f:SetPoint('BOTTOMRIGHT', -10, 10)
+	f:Hide()
+
+	return f
+end
+
+
+--[[ Checkbuttons ]]--
+
+--checkbutton
+function Panel:CreateCheckButton(name)
+	local button = CreateFrame('CheckButton', self:GetName() .. name, self, 'InterfaceOptionsCheckButtonTemplate')
+	getglobal(button:GetName() .. 'Text'):SetText(name)
+
+	local prev = self.checkbutton
+	if prev then
+		button:SetPoint('TOP', prev, 'BOTTOM', 0, -2)
+	else
+		button:SetPoint('TOPLEFT', 2, 0)
+	end
+	self.height = self.height + 28
+	self.checkbutton = button
+
+	return button
+end
+
+
+--[[ Sliders ]]--
+
+--basic slider
+do
+	local function Slider_OnMouseWheel(self, arg1)
+		local step = self:GetValueStep() * arg1
+		local value = self:GetValue()
+		local minVal, maxVal = self:GetMinMaxValues()
+
+		if step > 0 then
+			self:SetValue(min(value+step, maxVal))
+		else
+			self:SetValue(max(value+step, minVal))
+		end
+	end
+
+	local function Slider_OnShow(self)
+		self.showing = true
+		if self.OnShow then
+			self:OnShow()
+		end
+		self.showing = nil
+	end
+
+	local function Slider_OnValueChanged(self, value)
+		if not self.showing then
+			self:UpdateValue(value)
+		end
+
+		if self.UpdateText then
+			self:UpdateText(value)
+		else
+			self.valText:SetText(value)
+		end
+	end
+
+	function Panel:CreateSlider(text, low, high, step, OnShow, UpdateValue, UpdateText)
+		local name = self:GetName() .. text
+
+		local slider = CreateFrame('Slider', name, self, 'OptionsSliderTemplate')
+		slider:SetMinMaxValues(low, high)
+		slider:SetValueStep(step)
+		slider:EnableMouseWheel(true)
+		slider:SetWidth(slider:GetWidth() + 30)
+		BlizzardOptionsPanel_Slider_Enable(slider) --colors the slider properly
+
+		getglobal(name .. 'Text'):SetText(text)
+		getglobal(name .. 'Low'):SetText('')
+		getglobal(name .. 'High'):SetText('')
+
+		local text = slider:CreateFontString(nil, 'BACKGROUND')
+		text:SetFontObject('GameFontHighlightSmall')
+		text:SetPoint('LEFT', slider, 'RIGHT', 7, 0)
+		slider.valText = text
+
+		slider.OnShow = OnShow
+		slider.UpdateValue = UpdateValue
+		slider.UpdateText = UpdateText
+
+		slider:SetScript('OnShow', Slider_OnShow)
+		slider:SetScript('OnValueChanged', Slider_OnValueChanged)
+		slider:SetScript('OnMouseWheel', Slider_OnMouseWheel)
+
+		local prev = self.slider
+		if prev then
+			slider:SetPoint('BOTTOM', prev, 'TOP', 0, 16)
+			self.height = self.height + 34
+		else
+			slider:SetPoint('BOTTOMLEFT', 4, 4)
+			self.height = self.height + 38
+		end
+		self.slider = slider
+
+		return slider
+	end
+end
+
+--color selector
+do
+	local ColorSelect = BagnonUtil:CreateWidgetClass('Button')
+
+	function ColorSelect:Create(name, parent, hasOpacity, SaveColor, LoadColor)
+		local f = self:New(CreateFrame('Button', parent:GetName() .. name, parent))
+		f:SetWidth(18); f:SetHeight(18)
+		f:SetNormalTexture('Interface\\ChatFrame\\ChatFrameColorSwatch')
+
+		f.SaveColor = SaveColor
+		f.LoadColor = LoadColor
+		f.hasOpacity = hasOpacity
+
+		if hasOpacity then
+			f.swatchFunc = function()
+				local r, g, b = ColorPickerFrame:GetColorRGB()
+				local a = 1 - OpacitySliderFrame:GetValue()
+				f:SetColor(r, g, b, a)
+			end
+
+			f.opacityFunc = f.swatchFunc
+
+			f.cancelFunc = function()
+				local prev = ColorPickerFrame.previousValues
+				f:SetColor(prev.r, prev.g, prev.b, 1 - prev.opacity)
+			end
+		else
+			f.swatchFunc = function()
+				f:SetColor(ColorPickerFrame:GetColorRGB())
+			end
+			f.cancelFunc = function()
+				f:SetColor(ColorPicker_GetPreviousValues())
+			end
+		end
+
+		local bg = f:CreateTexture(nil, 'BACKGROUND')
+		bg:SetWidth(16); bg:SetHeight(16)
+		bg:SetTexture(1, 1, 1)
+		bg:SetPoint('CENTER')
+		self.bg = bg
+
+		local text = f:CreateFontString(nil, 'ARTWORK')
+		text:SetFontObject('GameFontHighlight')
+		text:SetPoint('LEFT', f, 'RIGHT', 4, 0)
+		text:SetText(name)
+		self.text = text
+
+		f:RegisterForDrag('LeftButton')
+		f:SetScript('OnClick', self.OnClick)
+		f:SetScript('OnEnter', self.OnEnter)
+		f:SetScript('OnLeave', self.OnLeave)
+		f:SetScript('OnShow', self.OnShow)
+
+		return f
+	end
+
+	function ColorSelect:SetColor(...)
+		self:GetNormalTexture():SetVertexColor(...)
+		self:SaveColor(...)
+	end
+
+	function ColorSelect:OnClick()
+		if ColorPickerFrame:IsShown() then
+			ColorPickerFrame:Hide()
+		else
+			self.r, self.g, self.b, self.opacity = self:LoadColor()
+			self.opacity = 1 - (self.opacity or 1) --correction, since the color menu is crazy
+
+			OpenColorPicker(self)
+			ColorPickerFrame:SetFrameStrata('TOOLTIP')
+			ColorPickerFrame:Raise()
+		end
+	end
+
+	function ColorSelect:OnShow()
+		self:GetNormalTexture():SetVertexColor(self:LoadColor())
+	end
+
+	function ColorSelect:OnEnter()
+		local color = NORMAL_FONT_COLOR
+		self.bg:SetVertexColor(color.r, color.g, color.b)
+	end
+
+	function ColorSelect:OnLeave()
+		local color = HIGHLIGHT_FONT_COLOR
+		self.bg:SetVertexColor(color.r, color.g, color.b)
+	end
+
+	function Panel:CreateColorSelector(name, ...)
+		return ColorSelect:Create(name, self, ...)
+	end
+end
+
+
+--[[ Layout Panel ]]--
+
+do
+	local function GetRelativeCoords(frame, scale)
+		local ratio = frame:GetScale() / scale
+		return frame:GetLeft() * ratio, frame:GetTop() * ratio
+	end
+
+	function Menu:AddDisplayPanel()
+		local layout = self:AddPanel(L.Display)
+
+		local lock = layout:CreateCheckButton(L.Lock)
+		lock:SetScript('OnClick', function(b) self.parent:Lock(b:GetChecked())  end)
+		lock:SetScript('OnShow', function(b) b:SetChecked(self.parent:IsLocked()) end)
+
+		local rev = layout:CreateCheckButton(L.ReverseSort)
+		rev:SetScript('OnClick', function(b)
+			self.parent.sets.reverseSort = b:GetChecked() or nil
+			self.parent:SortBags()
+			self.parent:Layout()
+		end)
+		rev:SetScript('OnShow', function(b) b:SetChecked(self.parent.sets.reverseSort) end)
+
+		local top = layout:CreateCheckButton(L.Toplevel)
+		top:SetScript('OnClick', function(b)
+			self.parent.sets.topLevel = b:GetChecked() or nil
+			self.parent:SetToplevel(b:GetChecked())
+		end)
+		top:SetScript('OnShow', function(b) b:SetChecked(self.parent.sets.topLevel) end)
+		
+		local showBorders = layout:CreateCheckButton(L.ShowBorders)
+		showBorders:SetScript('OnShow', function(self) self:SetChecked(BagnonUtil:ShowingBorders()) end)
+		showBorders:SetScript('OnClick', function(self) BagnonUtil:SetShowBorders(self:GetChecked()) end)
+
+		--color picker
+		local color = layout:CreateColorSelector(L.BackgroundColor, true)
+		color.SaveColor = function(c, ...)
+			self.parent:SetBackgroundColor(...)
+		end
+		color.LoadColor = function(c)
+			return self.parent:GetBackgroundColor()
+		end
+		color:SetPoint('TOPLEFT', showBorders, 'BOTTOMLEFT', 4, -4)
+		layout.height = layout.height + 30
+
+		--sliders
+		local STRATAS = {'LOW', 'MEDIUM', 'HIGH'}
+		local strata = layout:CreateSlider(L.FrameLevel, 1, #STRATAS, 1)
+		strata.OnShow = function(s)
+			for i,v in pairs(STRATAS) do
+				if v == self.parent:GetFrameStrata() then
+					s:SetValue(i)
+				end
+			end
+		end
+		strata.UpdateValue = function(s, value)
+			self.parent.sets.strata = STRATAS[value]
+			self.parent:SetFrameStrata(STRATAS[value])
+		end
+		strata.UpdateText = function(s, value)
+			s.valText:SetText(STRATAS[value])
+		end
+
+		local alpha = layout:CreateSlider(L.Opacity, 0, 100, 1)
+		alpha.OnShow = function(s)
+			s:SetValue((self.parent.sets.alpha or 1) * 100)
+		end
+		alpha.UpdateValue = function(s, value)
+			self.parent.sets.alpha = value/100
+			self.parent:SetAlpha(value/100)
+		end
+
+		local scale = layout:CreateSlider(L.Scale, 50, 150, 1)
+		scale.OnShow = function(s)
+			s:SetValue((self.parent.sets.scale or 1) * 100)
+		end
+		scale.UpdateValue = function(s, value)
+			local f = self.parent
+			f.sets.scale = value / 100
+
+			local x, y = GetRelativeCoords(f, value/100)
+			f:SetScale(value/100)
+			f:ClearAllPoints()
+			f:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', x, y)
+			f:SavePosition()
+		end
+
+		local spacing = layout:CreateSlider(L.Spacing, 0, 32, 1)
+		spacing.OnShow = function(s)
+			s:SetValue(select(2, self.parent:GetLayout()))
+		end
+		spacing.UpdateValue = function(s, value)
+			self.parent:Layout(nil, value)
+		end
+
+		local cols = layout:CreateSlider(L.Cols, 4, 40, 1)
+		cols.OnShow = function(s)
+			s:SetValue(self.parent:GetLayout())
+		end
+		cols.UpdateValue = function(s, value)
+			self.parent:Layout(value)
+		end
+	end
+end
+
+
+--[[  Display Panel ]]--
+
+do
+	local function EventButton_OnShow(self)
+		local isBank = self:GetParent():GetParent().parent.isBank
+		if isBank then
+			self:SetChecked(Bagnon.sets[format('showBankAt%s', self.index)])
+		else
+			self:SetChecked(Bagnon.sets[format('showBagsAt%s', self.index)])
+		end
+	end
+
+	local function EventButton_OnClick(self)
+		local isBank = self:GetParent():GetParent().parent.isBank
+		local valIndex = isBank and format('showBankAt%s', self.index) or format('showBagsAt%s', self.index)
+		Bagnon.sets[valIndex] = self:GetChecked() or nil
+	end
+
+	local function EventButton_Create(panel, name, index)
+		local b = panel:CreateCheckButton(name)
+		b:SetScript('OnShow', EventButton_OnShow)
+		b:SetScript('OnClick', EventButton_OnClick)
+		b.index = index
+
+		return b
+	end
+
+	function Menu:AddEventsPanel()
+		local panel = self:AddPanel(L.Events)
+
+		EventButton_Create(panel, L.AtBank, 'Bank')
+		EventButton_Create(panel, L.AtVendor, 'Vendor')
+		EventButton_Create(panel, L.AtAH, 'AH')
+		EventButton_Create(panel, L.AtMail, 'Mail')
+		EventButton_Create(panel, L.AtTrade, 'Trade')
+		EventButton_Create(panel, L.AtCraft, 'Craft')
+	end
+end
+
+Menu:Load()

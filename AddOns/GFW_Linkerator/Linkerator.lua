@@ -6,12 +6,11 @@
 FLT_RandomItemIDs = { };
 FLT_RandomPropIDs = { };
 FLT_RandomItemCombos = { };
-FLT_EnchantLinks = { };
 
 FLT_Locale = GetLocale();
 FLT_RandomPropIDs[FLT_Locale] = { };
 FLT_RandomItemCombos[FLT_Locale] = { };
-FLT_EnchantLinks[FLT_Locale] = { };
+FLT_AuctionLinks = {};
 
 local ChatMessageTypes = {
 	"CHAT_MSG_SYSTEM",
@@ -51,7 +50,8 @@ local INVENTORY_SLOT_LIST = {
 
 -- number greater than the highest known item ID, used to import link names from client cache.
 -- may need updating as future patches/expansions add items to the game.
-FLT_MAX_ITEM_ID = 40000;
+FLT_MAX_ITEM_ID = 60000;
+FLT_MAX_SPELL_ID = 80000;
 
 FLT_COMPLETE_DELAY_DEFAULT = 0.25;
 
@@ -63,24 +63,10 @@ FLT_TradeSkillLock.Locked = false;
 FLT_TradeSkillLock.EventTimer = 0;
 FLT_TradeSkillLock.EventCooldown = 0;
 FLT_TradeSkillLock.EventCooldownTime = 1;
-FLT_CraftLock = { };
-FLT_CraftLock.NeedScan = false;
-FLT_CraftLock.Locked = false;
-FLT_CraftLock.EventTimer = 0;
-FLT_CraftLock.EventCooldown = 0;
-FLT_CraftLock.EventCooldownTime = 1;
 
-StaticPopupDialogs["FLT_UPGRADE_DB"] = {
-	text = "Your database from earlier versions of Linkerator should be upgraded to a new format for better performance. Do so now? (This may lock up the WoW UI for up to a minute.) To perform the upgrade later, type '/link import' at any time.",
-	button1 = "Upgrade",
-	button2 = TEXT(CANCEL),
-	OnAccept = function(data)
-		FLT_ImportLinks();
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-};
+------------------------------------------------------
+-- Autocompletion in chat edit box 
+------------------------------------------------------
 
 function FLT_ChatEdit_OnChar()
 	if (not FLT_ChatEdit_ShouldComplete(this)) then
@@ -177,10 +163,10 @@ function FLT_ChatEdit_Complete(editBox)
 	
 end
 
-function FLT_ChatEdit_OnTextChanged()
+function FLT_ChatEdit_OnTextChanged(self)
 
 	if (not FLT_ChatEdit_ShouldComplete(this)) then
-		if (FLT_Orig_ChatEdit_OnTextChanged) then return FLT_Orig_ChatEdit_OnTextChanged(); end
+		if (FLT_Orig_ChatEdit_OnTextChanged) then return FLT_Orig_ChatEdit_OnTextChanged(self); end
 	end
 	
 	local text = this:GetText();
@@ -262,32 +248,16 @@ function FLT_ChatEdit_OnEnterPressed()
 end
 
 function FLT_ResetCompletion()
-	if (FLT_CacheFull and not ChatFrameEditBox:IsVisible()) then
+	if (FLT_ItemCacheFull and not ChatFrameEditBox:IsVisible()) then
 		FLT_ItemNamesCache = nil;
 		collectgarbage();
-		FLT_CacheFull = nil;
+		FLT_ItemCacheFull = nil;
 	end
 	FLT_PartialText = nil;
 	FLT_Matches = nil;
 	FLT_LastCompletion = nil;
 	FLT_HighlightStart = nil;
 	FLT_MatchCount = 0;	-- will get incremented before use
-end
-
-function FLT_QuestLog_UpdateQuestDetails()
-	for i = 1, GetNumQuestLogChoices() do
-		link = GetQuestLogItemLink("choice", i);
-		if (link) then
-			FLT_ProcessLinks(link);
-		end
-	end
-	for i = 1, GetNumQuestLogRewards() do
-		link = GetQuestLogItemLink("reward", i);
-		if (link) then
-			FLT_ProcessLinks(link);
-		end
-	end
-	FLT_Orig_QuestLog_UpdateQuestDetails();
 end
 
 function FLT_SendChatMessage(message, type, language, channel)
@@ -323,8 +293,6 @@ function FLT_OnLoad()
 	this:RegisterEvent("MERCHANT_UPDATE");
 	this:RegisterEvent("TRADE_SKILL_SHOW");
 	this:RegisterEvent("TRADE_SKILL_UPDATE");
-	this:RegisterEvent("CRAFT_SHOW");
-	this:RegisterEvent("CRAFT_UPDATE");
 	this:RegisterEvent("QUEST_COMPLETE");
 	this:RegisterEvent("QUEST_DETAIL");
 	this:RegisterEvent("QUEST_FINISHED");
@@ -351,6 +319,10 @@ function FLT_OnLoad()
 	-- hooks for harvesting links
 	FLT_Orig_QuestLog_UpdateQuestDetails = QuestLog_UpdateQuestDetails;
 	QuestLog_UpdateQuestDetails = FLT_QuestLog_UpdateQuestDetails;
+
+	-- hooks for keeping track of AH state during link scanning
+	hooksecurefunc("SortAuctionClearSort", FLT_SortAuctionClearSort);
+	hooksecurefunc("SortAuctionSetSort", FLT_SortAuctionSetSort);
 	
 end
 
@@ -378,23 +350,17 @@ function FLT_OnUpdate(elapsed)
 			FLT_TradeSkillLock.Locked = false;
 		end
 	end
-	FLT_CraftLock.EventTimer = FLT_CraftLock.EventTimer + elapsed;
-	if (FLT_CraftLock.Locked) then
-		FLT_CraftLock.EventCooldown = FLT_CraftLock.EventCooldown + elapsed;
-		if (FLT_CraftLock.EventCooldown > FLT_CraftLock.EventCooldownTime) then
-
-			FLT_CraftLock.EventCooldown = 0;
-			FLT_CraftLock.Locked = false;
-		end
-	end
 	
 	if (FLT_TradeSkillLock.NeedScan) then
 		FLT_TradeSkillLock.NeedScan = false;
 		FLT_ScanTradeSkill();
 	end
-	if (FLT_CraftLock.NeedScan) then
-		FLT_CraftLock.NeedScan = false;
-		FLT_ScanCraft();
+	
+	if (table.getn(FLT_AuctionLinks) > 0) then
+		for i = 1, NUM_AUCTION_ITEMS_PER_PAGE do
+			FLT_ProcessLinks(FLT_AuctionLinks[1]);
+			table.remove(FLT_AuctionLinks, 1);
+		end
 	end
 end
 
@@ -408,18 +374,6 @@ function FLT_OnEvent(event)
 	elseif( event == "PLAYER_ENTERING_WORLD" or (event == "ADDON_LOADED" and arg1 == "GFW_Linkerator")) then
 		FLT_ScanInventory();
 		FLT_Inspect("player");
-		if (FLT_RandomItemIDs[FLT_Locale]) then
-			local hasContent;
-			for key, value in pairs(FLT_RandomItemIDs[FLT_Locale]) do
-				hasContent = true;
-				break;
-			end
-			if (hasContent) then
-				StaticPopup_Show("FLT_UPGRADE_DB");
-			else
-				FLT_RandomItemIDs[FLT_Locale] = nil;
-			end
-		end
 		this:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	elseif( event == "PLAYER_LEAVING_WORLD" ) then
 		this:UnregisterEvent("UNIT_INVENTORY_CHANGED");
@@ -443,8 +397,6 @@ function FLT_OnEvent(event)
 		FLT_ScanQuestgiver();
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_UPDATE" ) then
 		FLT_ScanTradeSkill();
-	elseif ( event == "CRAFT_SHOW" or event == "CRAFT_UPDATE" ) then
-		FLT_ScanCraft();
 	elseif (event == "CHAT_MSG_CHANNEL") then
 		--DevTools_Dump({event=event, args={arg1=arg1,arg2=arg2,arg3=arg3,arg4=arg4,arg5=arg5,arg6=arg6,arg7=arg7,arg8=arg8,arg9=arg9,}});
 		if (FLT_Debug) then
@@ -479,51 +431,6 @@ function FLT_ChatCommandHandler(msg)
 		return;
 	end
 
-	if (msg == "version") then
-		local version = GetAddOnMetadata("GFW_Linkerator", "Version");
-		GFWUtils.Print("Fizzwidget Linkerator "..version..":");
-		return;
-	end
-		
-	if (msg == "count") then
-		local totalCount, knownCount = 0, 0;
-		
-		local baseCount, propCount = 0, 0;
-		for baseName, baseID in pairs(FLT_RandomItemIDs[FLT_Locale]) do
-			baseCount = baseCount + 1;
-		end
-		for propID, propName in pairs(FLT_RandomPropIDs[FLT_Locale]) do
-			propCount = propCount + 1;
-		end
-		GFWUtils.Print(GFWUtils.Hilite(baseCount).." base items and "..GFWUtils.Hilite(propCount).." property IDs in history.");
-
-		totalCount, knownCount = 0, 0;
-		for baseID, propTable in pairs(FLT_RandomItemCombos[FLT_Locale]) do
-			for propID, uniqueID in ipairs(propTable) do
-				totalCount = totalCount + 1;
-				local cleanLink = GFWUtils.BuildItemLink(baseID, nil, nil, nil, nil, nil, propID, uniqueID);				
-				if (GetItemInfo(cleanLink)) then
-					knownCount = knownCount + 1;
-				end
-			end
-		end
-		GFWUtils.Print(GFWUtils.Hilite(totalCount).." observed random-property variations, "..GFWUtils.Hilite(knownCount).." known to client.");
-		
-		totalCount = 0;
-		for name, linkInfo in pairs(FLT_EnchantLinks[FLT_Locale]) do
-			totalCount = totalCount + 1;
-			-- enchant links are always known to the WoW client
-		end
-		GFWUtils.Print(GFWUtils.Hilite(totalCount).." enchants in history.");
-		return;
-	end
-	
-	if (FLT_Debug and msg == "time") then
-		GFWUtils.Print(string.format("Max parse time "..GFWUtils.Hilite("%.2f").." ms (no links found)", FLT_MaxNotFoundTime * 1000));
-		GFWUtils.Print(string.format("Max parse time "..GFWUtils.Hilite("%.2f").." ms (links found)", FLT_MaxFoundTime * 1000));
-		return;
-	end
-	
 	if (msg == "debug") then
 		if (FLT_Debug) then
 			FLT_Debug = nil;
@@ -532,11 +439,6 @@ function FLT_ChatCommandHandler(msg)
 			FLT_Debug = 1;
 			GFWUtils.Print("Linkerator debugging messages on.");
 		end
-		return;
-	end
-	
-	if (msg == "import" or msg == "audit") then
-		FLT_ImportLinks();
 		return;
 	end
 
@@ -560,36 +462,6 @@ function FLT_ChatCommandHandler(msg)
 	FDP_ChatCommandHandler("help");
 end
 
-function FLT_ImportLinks()
-	
-	-- import from LootLink
-	-- broken by WoW 2.0 changes
-	--[[
-	local lootLinkCount = 0;
-	if (ItemLinks and type(ItemLinks) == "table") then
-		for itemName, lootLinkInfo in pairs(ItemLinks) do
-			if (lootLinkInfo.i and type(lootLinkInfo.i) == "string") then
-				local itemLink = "item:"..lootLinkInfo.i;
-				local addedLink = FLT_AddLink(itemName, itemLink);
-				if (addedLink) then
-					lootLinkCount = lootLinkCount + 1;
-				end
-			end
-		end
-	end
-	GFWUtils.Print("Imported "..GFWUtils.Hilite(lootLinkCount).. " items from LootLink.");
-	]]
-	
-	-- go thru our own DB and move entries to the new format
-	local movedCount = 0;
-	for _, itemID in pairs(FLT_RandomItemIDs[FLT_Locale]) do
-		FLT_RandomItemIDs[itemID] = 1;
-		movedCount = movedCount + 1;
-	end
-	FLT_RandomItemIDs[FLT_Locale] = nil;
-	GFWUtils.Print("Migrated "..GFWUtils.Hilite(movedCount).. " random-property items to new Linkerator DB format.");
-end
-
 function FLT_GetItemLink(linkInfo, shouldAdd)
 	if (linkInfo == nil) then
 		FLT_DebugLog(debugstack(1, 3, 0));
@@ -602,20 +474,31 @@ function FLT_GetItemLink(linkInfo, shouldAdd)
 	return sLink;
 end
 
+------------------------------------------------------
+-- Searching for links
+------------------------------------------------------
+
 function FLT_PrintLinkSearch(msg)
+	
+	-- if it's just a number, try it as an itemID
 	if (tonumber(msg)) then
 		--DevTools_Dump({msg=msg});
 		local link = FLT_GetItemLink(msg, 1);
 		if (link) then
 			GFWUtils.Print("Item ID "..msg..": "..link);
 		else
-			GFWUtils.Print("Item ID "..msg.." is unknown to this WoW client.");
+			LinkeratorTip.printHyperlinkID = 1;
+			LinkeratorTip:SetHyperlink("item:"..msg);
 		end
 		return true;
 	end
 	
+	-- dump code when a full link is provided
 	local _, _, itemLink = string.find(msg, "(item:[-%d:]+)");
-	local _, _, enchantLink = string.find(msg, "(enchant:%d+)");
+	local _, _, enchantLink = string.find(msg, "(enchant:[-%d:]+)");
+	local _, _, spellLink = string.find(msg, "(spell:[-%d:]+)");
+	local _, _, talentLink = string.find(msg, "(talent:[-%d:]+)");
+	local _, _, questLink = string.find(msg, "(quest:[-%d:]+)");
 	if (itemLink) then
 		--DevTools_Dump({msg=msg, itemLink=itemLink});
 		local link = FLT_GetItemLink(itemLink);
@@ -628,43 +511,27 @@ function FLT_PrintLinkSearch(msg)
 	elseif (enchantLink) then
 		--DevTools_Dump({msg=msg, itemLink=itemLink});
 		local _, _, enchantID = string.find(msg, "enchant:(%d+)");
-		local link = FLT_EnchantLink(enchantID, 1);
+		local link = FLT_EnchantLink(enchantID);
 		if (link) then
 			GFWUtils.Print(enchantLink..": "..link);
 		else
-			GFWUtils.Print(enchantLink.." is unknown.");
+			GFWUtils.Print(enchantLink.." is unknown, or not a tradeskill link.");
 		end
+		return true;
+	elseif (spellLink or talentLink or questLink) then
+		local _, _, link = string.find(msg, "(|c%x+.-|h|r)");
+		GFWUtils.Print((spellLink or talentLink or questLink)..": "..link);
 		return true;
 	end
 	
 	FLT_ResetItemNamesCache();
 	
-	-- start with basic item links (no random property)
+	-- search for basic item links (no random property)
 	local foundCount = 0;
 	msg = string.lower(msg);
-	local itemsFound = {};
-	for itemID = 1, FLT_MAX_ITEM_ID do
-		if (not FLT_RandomItemIDs[itemID]) then
-			local itemName = FLT_ItemNamesCache[itemID];
-			if (itemName) then
-				itemName = string.lower(itemName);
-				if (itemName ~= msg and string.find(itemName, msg, 1, true)) then
-					table.insert(itemsFound, itemID);
-				end
-			end
-		end
-	end
-	if (#itemsFound > 0) then
-		foundCount = foundCount + #itemsFound;
-		for _, itemID in pairs(itemsFound) do
-			local _, link = GetItemInfo(itemID);
-			if (FLT_Debug) then
-				GFWUtils.Print(link.." ("..itemID..")");
-			else
-				GFWUtils.Print(link);
-			end
-		end
-	end
+	
+	local itemsFound = FLT_SearchItems(msg, true);
+	foundCount = foundCount + #itemsFound;
 	
 	-- search random-property items
 	for itemID in pairs(FLT_RandomItemIDs) do
@@ -718,27 +585,10 @@ function FLT_PrintLinkSearch(msg)
 		end
 	end
 	
-	-- search enchants too
-	local enchantsFound = {};
-	for name, id in pairs(FLT_EnchantLinks[FLT_Locale]) do
-		if (string.find(name, msg, 1, true)) then
-			enchantsFound[id] = 1;
-		end
-	end
-	local count = GFWTable.Count(enchantsFound);
-	if (count > 0) then
-		foundCount = foundCount + count;
-		for id in pairs(enchantsFound) do
-			local link = FLT_EnchantLink(id);
-			if (link) then
-				if (FLT_Debug) then
-					GFWUtils.Print(link.." (enchant:"..id..")");
-				else
-					GFWUtils.Print(link);
-				end
-			end
-		end
-	end
+	FLT_ResetSpellNamesCache();
+	-- search spells
+	local spellsFound = FLT_SearchSpells(msg, true);
+	foundCount = foundCount + #spellsFound;
 	
 	-- also search for exact matches and query strings with parenthesized descriptors
 	local foundLinks = FLT_GetLinkByName(msg, true);
@@ -782,6 +632,67 @@ function FLT_PrintLinkSearch(msg)
 		GFWUtils.Print("Type '"..GFWUtils.Hilite("/link help").."' for options.");
 	end
 	return true;
+end
+
+function FLT_SearchItems(text, printResults)
+	text = string.lower(text);
+	local itemsFound = {};
+	for itemID = 1, FLT_MAX_ITEM_ID do
+		if (not FLT_RandomItemIDs[itemID]) then
+			local itemName = FLT_ItemNamesCache[itemID];
+			if (itemName) then
+				itemName = string.lower(itemName);
+				if (itemName ~= text and string.find(itemName, text, 1, true)) then
+					table.insert(itemsFound, itemID);
+				end
+			end
+		end
+	end
+	if (printResults and #itemsFound > 0) then
+		for _, itemID in pairs(itemsFound) do
+			local _, link = GetItemInfo(itemID);
+			if (FLT_Debug) then
+				GFWUtils.Print(link.." ("..itemID..")");
+			else
+				GFWUtils.Print(link);
+			end
+		end
+	end
+	return itemsFound;
+end
+
+function FLT_SearchSpells(text, printResults)
+	text = string.lower(text);
+	local spellsFound = {};
+	for spellID = 1, FLT_MAX_SPELL_ID do
+		local spellName = FLT_SpellNamesCache[spellID];
+		if (spellName) then
+			spellName = string.lower(spellName);
+			if (string.find(spellName, text, 1, true)) then
+				table.insert(spellsFound, spellID);
+			end
+		end
+	end
+	if (printResults and #spellsFound > 0) then
+		for _, spellID in pairs(spellsFound) do
+			local spellName = GetSpellInfo(spellID);
+			local cachedName = FLT_SpellNamesCache[spellID];
+			local link;
+			if (cachedName == spellName) then
+				-- it's a regular spell
+				link = GetSpellLink(spellID);
+			else
+				-- it's a tradeskill
+				link = FLT_EnchantLink(spellID);
+			end
+			if (FLT_Debug) then
+				GFWUtils.Print(link.." ("..spellID..")");
+			else
+				GFWUtils.Print(link);
+			end
+		end
+	end
+	return spellsFound;
 end
 
 function FLT_GetLinkByName(text, returnAll)
@@ -850,19 +761,6 @@ function FLT_GetLinkByName(text, returnAll)
 						end
 					end
 				end
-			end
-		end
-	end
-	
-	-- try to find exact matches in enchants
-	local enchantResult = FLT_EnchantLinks[FLT_Locale][lowerText];
-	if (enchantResult) then
-		local link = FLT_EnchantLink(enchantResult);
-		if (link) then 
-			if (returnAll) then
-				table.insert(allResults, link);
-			else
-				return link;
 			end
 		end
 	end
@@ -975,6 +873,10 @@ function FLT_ItemLinkMatchesDescriptor(itemLink, description)
 	end
 end
 
+------------------------------------------------------
+-- Caching seen links
+------------------------------------------------------
+
 function FLT_ProcessLinks(text)
 	local lastLink;
 	if ( text ) then
@@ -989,7 +891,7 @@ function FLT_ProcessLinks(text)
 		end
 		for link, name in string.gmatch(text, "|c%x+|H(enchant:%d+)|h%[(.-)%]|h|r") do
 			if (link and name and name ~= "") then
-				lastLink = FLT_AddLink(name, link);
+			--	lastLink = FLT_AddLink(name, link);
 			end
 		end
 	end
@@ -1008,14 +910,12 @@ function FLT_AddLink(name, link)
 		end
 	end
 	--DevTools_Dump({name=name, link=link, itemID=itemID, randomProp=randomProp})
-	if (itemID and (randomProp == 0 or randomProp == nil)) then
-		return;	-- we don't need our own database for basic links; we can just rely on the WoW client
-	elseif (itemID) then
-		return FLT_AddRandomPropertyItemLink(name, link);
-	else
-		local _, _, enchantLink = string.find(link, "(enchant:%d+)");
-		if (enchantLink) then
-			return FLT_AddEnchantLink(name, enchantLink);
+	if (itemID) then
+		LinkeratorTip:SetHyperlink("item:"..itemID);	-- make sure client caches the (base) item
+		if (randomProp == 0 or randomProp == nil) then
+			return;	-- we don't need our own database for basic links; we can just rely on the WoW client
+		else
+			return FLT_AddRandomPropertyItemLink(name, link);
 		end
 	end
 
@@ -1067,30 +967,9 @@ function FLT_AddRandomPropertyItemLink(name, link)
 	end
 end
 
-function FLT_AddEnchantLink(name, link)
-	local _, _, id = string.find(link, "enchant:(%d+)");
-	id = tonumber(id);
-	if (id == nil) then return; end
-	
-	local enchantLinkText = FLT_EnchantLink(id);
-	if (enchantLinkText == nil) then return; end
-	local _, _, actualName = string.find(enchantLinkText, "|c%x+|Henchant:%d+|h%[(.-)%]|h|r");
-	if (actualName) then
-		actualName = string.lower(actualName); -- so we can do case-insensitive lookups
-		local existingLink = FLT_EnchantLinks[FLT_Locale][actualName];
-		if ( existingLink == id ) then
-			return;
-		elseif (existingLink == nil) then
-			FLT_DebugLog("Adding enchant "..enchantLinkText.."("..id..")");
-			FLT_EnchantLinks[FLT_Locale][actualName] = id;
-			return link;
-		else
-			FLT_DebugLog("Replacing existing link ("..existingLink..") with "..enchantLinkText.."("..id..")");
-			FLT_EnchantLinks[FLT_Locale][actualName] = id;
-			return link;
-		end
-	end
-end
+------------------------------------------------------
+-- Finding links to cache
+------------------------------------------------------
 
 function FLT_InspectSlot(unit, id)
 	local link = GetInventoryItemLink(unit, id);
@@ -1148,47 +1027,6 @@ function FLT_ScanTradeSkill()
 
 end
 
-function FLT_ScanCraft()
-	if (not CraftFrame or not CraftFrame:IsVisible() or FLT_CraftLock.Locked) then return; end
-	-- This prevents further update events from being handled if we're already processing one.
-	-- This is done to prevent the game from freezing under certain conditions.
-	FLT_CraftLock.Locked = true;
-
-	-- This is used only for Enchanting
-	local skillLineName, rank, maxRank = GetCraftDisplaySkillLine();
-	if not (skillLineName) then
-		return; -- Hunters' Beast Training also uses the CraftFrame, but doesn't have a SkillLine.
-	end
-
-	for id = 1, GetNumCrafts() do
-		if ( craftType ~= "header" ) then
-			local recipeLink = GetCraftRecipeLink(id);
-			if (recipeLink == nil) then
-				FLT_TradeSkillLock.NeedScan = true;
-				return;
-			else
-				FLT_ProcessLinks(recipeLink);
-			end
-			local itemLink = GetCraftItemLink(id);
-			if (itemLink == nil) then
-				FLT_TradeSkillLock.NeedScan = true;
-			else
-				FLT_ProcessLinks(itemLink);
-				
-				for i=1, GetCraftNumReagents(id), 1 do
-					local link = GetCraftReagentItemLink(id, i);
-					if (link == nil) then
-						FLT_CraftLock.NeedScan = true;
-						break;
-					else
-						FLT_ProcessLinks(link);
-					end
-				end
-			end
-		end
-	end
-end
-
 function FLT_ScanQuestgiver()
 	local link;
 	for i = 1, GetNumQuestItems() do
@@ -1230,15 +1068,24 @@ end
 function FLT_ScanAuction()
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
 	local auctionid, link;
-
-	if( numBatchAuctions > 0 ) then
+	
+	if( numBatchAuctions > 0 and AuctionFrameBrowse.page ~= FLT_AuctionLastPage) then
+		FLT_AuctionLastPage = AuctionFrameBrowse.page;
 		for auctionid = 1, numBatchAuctions do
 			link = GetAuctionItemLink("list", auctionid);
 			if( link ) then
-				FLT_ProcessLinks(link);
+				table.insert(FLT_AuctionLinks, link);
 			end
 		end
 	end
+end
+
+function FLT_SortAuctionClearSort(...)
+	FLT_AuctionLastPage = nil;
+end
+
+function FLT_SortAuctionSetSort(...)
+	FLT_AuctionLastPage = nil;
 end
 
 function FLT_ScanBank()
@@ -1260,6 +1107,26 @@ function FLT_ScanBank()
 		end
 	end
 end
+
+function FLT_QuestLog_UpdateQuestDetails()
+	for i = 1, GetNumQuestLogChoices() do
+		link = GetQuestLogItemLink("choice", i);
+		if (link) then
+			FLT_ProcessLinks(link);
+		end
+	end
+	for i = 1, GetNumQuestLogRewards() do
+		link = GetQuestLogItemLink("reward", i);
+		if (link) then
+			FLT_ProcessLinks(link);
+		end
+	end
+	FLT_Orig_QuestLog_UpdateQuestDetails();
+end
+
+------------------------------------------------------
+-- utilities
+------------------------------------------------------
 
 function FLT_LinkifyName(head, text, tail)
 	if (head ~= "|h" and tail ~= "|h") then -- only linkify things text that isn't linked already
@@ -1331,11 +1198,6 @@ function FLT_LinkPrefixMatches(text)
 			end
 		end
 	end
-	for name in pairs(FLT_EnchantLinks[FLT_Locale]) do
-		if (string.sub(name, 1, string.len(text)) == text) then
-			table.insert(matches, name);
-		end
-	end
 	table.sort(matches);
 	return matches;
 	
@@ -1381,28 +1243,24 @@ function FLT_CommonPrefix(strA, strB)
 end
 
 -- substitute for GetItemInfo() for "enchant:0000" style links
--- only way to check validity for those is to actually set a tooltip
 function FLT_GetEnchantInfo(id)
-    LinkeratorTip:ClearLines();
-    LinkeratorTip:SetOwner(UIParent, "ANCHOR_NONE");
-    local setHyperlink = LinkeratorTip.SetHyperlink;
-    if (pcall(setHyperlink, LinkeratorTip,"enchant:"..id)) then
-        return LinkeratorTipTextLeft1:GetText();
-    else
-        return nil;
-    end
+	local name = GetSpellInfo(id);
+	if (name) then
+		LinkeratorTip:SetHyperlink("spell:"..id);
+		local tooltipName = LinkeratorTipTextLeft1:GetText();
+		if (name ~= tooltipName) then
+			return tooltipName;
+		end
+	end
 end
 
-function FLT_EnchantLink(id, shouldAdd)
+function FLT_EnchantLink(id)
 	if (tonumber(id) == nil) then
-		error("argument #1 to FLT_EnchantLink is not a number", 2);
+		error("bad argument #1 to 'FLT_EnchantLink' (number expected, got "..type(id)..")", 2);
 	end
-    local linkFormat = "|cffffd000|Henchant:%s|h[%s]|h|r";
     local name = FLT_GetEnchantInfo(id);
     if (name) then
-		if (shouldAdd) then
-			FLT_AddEnchantLink(name, "enchant:"..id);
-		end
+	    local linkFormat = "|cffffd000|Henchant:%s|h[%s]|h|r";
         return string.format(linkFormat, id, name);
     else
         return nil;
@@ -1418,5 +1276,19 @@ end
 function FLT_ResetItemNamesCache()
 	FLT_ItemNamesCache = {};
 	setmetatable(FLT_ItemNamesCache, {__index = function(tbl,key) return (GetItemInfo(key)); end});
-	FLT_CacheFull = true;	
+	FLT_ItemCacheFull = true;	
 end
+
+function FLT_ResetSpellNamesCache()
+	FLT_SpellNamesCache = {};
+	setmetatable(FLT_SpellNamesCache, {__index = function(tbl,key)
+		local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(key);
+		local link = GetSpellLink(key);
+		if (name and link) then
+			return name;
+		end
+	end});
+	FLT_SpellCacheFull = true;	
+end
+
+			

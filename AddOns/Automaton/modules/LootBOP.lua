@@ -19,7 +19,11 @@ L:RegisterTranslations("esES", function() return {
 
 L:RegisterTranslations("zhTW", function() return {
 ["LootBOP"] = "拾取綁定",
-["Ignore BOP confirm message when not in a party or raid"] = "當在隊伍時自動忽略拾取綁定信息確認",
+["Ignore BOP confirm message when not in a party or raid"] = "當不在隊伍時自動忽略拾取綁定信息確認",
+} end)
+
+L:RegisterTranslations("zhCN", function() return {
+	["Ignore BOP confirm message when not in a party or raid"] = "当你不在队伍或者团队中时忽略“拾取绑定”提示信息",
 } end)
 
 module.description = L["Ignore BOP confirm message when not in a party or raid"]

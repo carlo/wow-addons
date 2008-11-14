@@ -1,6 +1,6 @@
 ﻿--[[
 Name: LibBabble-Zone-3.0
-Revision: $Rev: 54069 $
+Revision: $Rev: 107 $
 Author(s): ckknight (ckknight@gmail.com)
 Website: http://ckknight.wowinterface.com/
 Description: A library to provide localizations for zones.
@@ -9,7 +9,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibBabble-Zone-3.0"
-local MINOR_VERSION = "$Revision: 54069 $"
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 107 $"):match("%d+"))
 
 -- #AUTODOC_NAMESPACE prototype
 
@@ -17,8 +17,8 @@ local GAME_LOCALE = GetLocale()
 do
 	-- LibBabble-Core-3.0 is hereby placed in the Public Domain
 	-- Credits: ckknight
-	local LIBBABBLE_MAJOR, LIBBABBLE_MINOR = "LibBabble-3.0", 1
-	
+	local LIBBABBLE_MAJOR, LIBBABBLE_MINOR = "LibBabble-3.0", 2
+
 	local LibBabble = LibStub:NewLibrary(LIBBABBLE_MAJOR, LIBBABBLE_MINOR)
 	if LibBabble then
 		local data = LibBabble.data or {}
@@ -26,14 +26,19 @@ do
 			LibBabble[k] = nil
 		end
 		LibBabble.data = data
-		
+
 		local tablesToDB = {}
-		
+		for namespace, db in pairs(data) do
+			for k,v in pairs(db) do
+				tablesToDB[v] = db
+			end
+		end
+
 		local function warn(message)
 			local _, ret = pcall(error, message, 3)
 			geterrorhandler()(ret)
 		end
-		
+
 		local lookup_mt = { __index = function(self, key)
 			local db = tablesToDB[self]
 			local current_key = db.current[key]
@@ -42,16 +47,26 @@ do
 				return current_key
 			end
 			local base_key = db.base[key]
+			local real_MAJOR_VERSION
+			for k,v in pairs(data) do
+				if v == db then
+					real_MAJOR_VERSION = k
+					break
+				end
+			end
+			if not real_MAJOR_VERSION then
+				real_MAJOR_VERSION = LIBBABBLE_MAJOR
+			end
 			if base_key then
-				warn(("%s: Translation %q not found for locale %q"):format(MAJOR_VERSION, key, GAME_LOCALE))
+				warn(("%s: Translation %q not found for locale %q"):format(real_MAJOR_VERSION, key, GAME_LOCALE))
 				rawset(self, key, base_key)
 				return base_key
 			end
-			warn(("%s: Translation %q not found."):format(MAJOR_VERSION, key))
+			warn(("%s: Translation %q not found."):format(real_MAJOR_VERSION, key))
 			rawset(self, key, key)
 			return key
 		end }
-		
+
 		local function initLookup(module, lookup)
 			local db = tablesToDB[module]
 			for k in pairs(lookup) do
@@ -62,7 +77,7 @@ do
 			db.lookup = lookup
 			return lookup
 		end
-		
+
 		local function initReverse(module, reverse)
 			local db = tablesToDB[module]
 			for k in pairs(reverse) do
@@ -76,10 +91,10 @@ do
 			db.reverseIterators = nil
 			return reverse
 		end
-		
+
 		local prototype = {}
 		local prototype_mt = {__index = prototype}
-		
+
 		--[[---------------------------------------------------------------------------
 		Notes:
 			* If you try to access a nonexistent key, it will warn but allow the code to pass through.
@@ -93,7 +108,7 @@ do
 		-----------------------------------------------------------------------------]]
 		function prototype:GetLookupTable()
 			local db = tablesToDB[self]
-			
+
 			local lookup = db.lookup
 			if lookup then
 				return lookup
@@ -113,13 +128,13 @@ do
 		-----------------------------------------------------------------------------]]
 		function prototype:GetUnstrictLookupTable()
 			local db = tablesToDB[self]
-			
+
 			return db.current
 		end
 		--[[---------------------------------------------------------------------------
 		Notes:
 			* If you try to access a nonexistent key, it will return nil.
-			* This is useful for checking if the base (English) table has a key, even if the localized one doesn't have it registered.
+			* This is useful for checking if the base (English) table has a key, even if the localized one does not have it registered.
 		Returns:
 			A lookup table for english to localized words.
 		Example:
@@ -130,7 +145,7 @@ do
 		-----------------------------------------------------------------------------]]
 		function prototype:GetBaseLookupTable()
 			local db = tablesToDB[self]
-			
+
 			return db.base
 		end
 		--[[---------------------------------------------------------------------------
@@ -147,7 +162,7 @@ do
 		-----------------------------------------------------------------------------]]
 		function prototype:GetReverseLookupTable()
 			local db = tablesToDB[self]
-			
+
 			local reverse = db.reverse
 			if reverse then
 				return reverse
@@ -199,10 +214,10 @@ do
 		-----------------------------------------------------------------------------]]
 		function prototype:Iterate()
 			local db = tablesToDB[self]
-			
+
 			return pairs(db.current)
 		end
-		
+
 		-- #NODOC
 		-- modules need to call this to set the base table
 		function prototype:SetBaseTranslations(base)
@@ -236,7 +251,7 @@ do
 			end
 			db.reverseIterators = nil
 		end
-		
+
 		-- #NODOC
 		-- modules need to call this to set the current table. if current is true, use the base table.
 		function prototype:SetCurrentTranslations(current)
@@ -259,12 +274,12 @@ do
 			end
 			init(self)
 		end
-		
+
 		for namespace, db in pairs(data) do
 			setmetatable(db.module, prototype_mt)
 			init(db.module)
 		end
-		
+
 		-- #NODOC
 		-- modules need to call this to create a new namespace.
 		function LibBabble:New(namespace, minor)
@@ -272,7 +287,7 @@ do
 			if not module then
 				return
 			end
-			
+
 			if not oldminor then
 				local db = {
 					module = module,
@@ -284,9 +299,9 @@ do
 					module[k] = nil
 				end
 			end
-			
+
 			setmetatable(module, prototype_mt)
-			
+
 			return module
 		end
 	end
@@ -301,6 +316,7 @@ lib:SetBaseTranslations {
 	["Azeroth"] = true,
 	["Eastern Kingdoms"] = true,
 	["Kalimdor"] = true,
+	["Northrend"] = true,
 	["Outland"] = true,
 	["Cosmic map"] = true,
 
@@ -376,8 +392,10 @@ lib:SetBaseTranslations {
 	["Silithus"] = true,
 	["Silverpine Forest"] = true,
 	["The Stockade"] = true,
+	["Stonard"] = true,
 	["Stonetalon Mountains"] = true,
 	["Stormwind City"] = true,
+	["Stormwind"] = true,
 	["Stranglethorn Vale"] = true,
 	["Stratholme"] = true,
 	["Swamp of Sorrows"] = true,
@@ -403,6 +421,7 @@ lib:SetBaseTranslations {
 	["Zul'Gurub"] = true,
 
 	["Champions' Hall"] = true,
+	["Hall of Champions"] = true,
 	["Blade's Edge Arena"] = true,
 	["Nagrand Arena"] = true,
 	["Ruins of Lordaeron"] = true,
@@ -423,6 +442,7 @@ lib:SetBaseTranslations {
 	["The Bone Wastes"] = true, -- Substitute for Auchindoun, since this is what shows on the minimap.
 	["Ring of Observance"] = true,
 	["Coilfang Reservoir"] = true,
+	["Amani Pass"] = true,
 
 	["Azuremyst Isle"] = true,
 	["Bloodmyst Isle"] = true,
@@ -459,6 +479,7 @@ lib:SetBaseTranslations {
 	["The Eye"] = true,
 	["Eye of the Storm"] = true,
 	["Shattrath City"] = true,
+	["Shattrath"] = true,
 	["Karazhan"] = true,
 	["Caverns of Time"] = true,
 	["Old Hillsbrad Foothills"] = true,
@@ -467,6 +488,65 @@ lib:SetBaseTranslations {
 	["Horde Encampment"] = true,
 	["Alliance Base"] = true,
 	["Zul'Aman"] = true,
+	["Quel'thalas"] = true,
+	["Isle of Quel'Danas"] = true,
+	["Sunwell Plateau"] = true,
+	["Magisters' Terrace"] = true,
+
+	-- Blade's Edge Plateau
+	["Forge Camp: Terror"] = true,
+	["Vortex Pinnacle"] = true,
+	["Rivendark's Perch"] = true,
+	["Ogri'la"] = true,
+	["Obsidia's Perch"] = true,
+	["Skyguard Outpost"] = true,
+	["Shartuul's Transporter"] = true,
+	["Forge Camp: Wrath"] = true,
+	["Bash'ir Landing"] = true,
+	["Crystal Spine"] = true,
+	["Insidion's Perch"] = true,
+	["Furywing's Perch"] = true,
+
+	["Tirisfal"] = true,
+	["Sunken Temple"] = true,
+
+	-- WRATH OF THE LICH KING
+	-- Zones
+	["Borean Tundra"] = true,
+	["Crystalsong Forest"] = true,
+	["Dalaran"] = true,
+	["Dragonblight"] = true,
+	["Grizzly Hills"] = true,
+	["Howling Fjord"] = true,
+	["Icecrown"] = true,
+	["Sholazar Basin"] = true,
+	["The Storm Peaks"] = true,
+	["Wintergrasp"] = true,
+	["Zul'Drak"] = true,
+
+	-- Instances (and subzones used for displaying these instances)
+	["Ahn'kahet: The Old Kingdom"] = true,
+	["Azjol-Nerub"] = true,
+	["Coldarra"] = true,
+	["The Culling of Stratholme"] = true,
+	["Drak'Tharon Keep"] = true,
+	["The Eye of Eternity"] = true,
+	["Gundrak"] = true,
+	["Halls of Lightning"] = true,
+	["Halls of Stone"] = true,
+	["The Nexus"] = true,
+	["The Obsidian Sanctum"] = true,
+	["The Oculus"] = true,
+	["Ulduar"] = true,
+	["Utgarde Keep"] = true,
+	["Utgarde Pinnacle"] = true,
+	["The Violet Hold"] = true,
+	["Wyrmrest Temple"] = true,
+
+	-- PvP Instances
+	["Dalaran Sewers"] = true,
+	["The Ring of Valor"] = true,
+	["Strand of the Ancients"] = true,
 }
 
 if GAME_LOCALE == "enUS" then
@@ -474,8 +554,9 @@ if GAME_LOCALE == "enUS" then
 elseif GAME_LOCALE == "deDE" then
 	lib:SetCurrentTranslations {
 		["Azeroth"] = "Azeroth",
-		["Eastern Kingdoms"] = "\195\150stliche K\195\182nigreiche",
+		["Eastern Kingdoms"] = "Östliche Königreiche",
 		["Kalimdor"] = "Kalimdor",
+		--["Northrend"] = true,
 		["Outland"] = "Scherbenwelt",
 		["Cosmic map"] = "Kosmische Karte",
 
@@ -487,31 +568,31 @@ elseif GAME_LOCALE == "deDE" then
 		["Ashenvale"] = "Eschental",
 		["Auberdine"] = "Auberdine",
 		["Azshara"] = "Azshara",
-		["Badlands"] = "\195\150dland",
+		["Badlands"] = "Ödland",
 		["The Barrens"] = "Brachland",
 		["Blackfathom Deeps"] = "Tiefschwarze Grotte",
 		["Blackrock Depths"] = "Schwarzfelstiefen",
 		["Blackrock Mountain"] = "Der Schwarzfels",
 		["Blackrock Spire"] = "Schwarzfelsspitze",
 		["Blackwing Lair"] = "Pechschwingenhort",
-		["Blasted Lands"] = "Verw\195\188stete Lande",
+		["Blasted Lands"] = "Verwüstete Lande",
 		["Booty Bay"] = "Beutebucht",
 		["Burning Steppes"] = "Brennende Steppe",
-		["Darkshore"] = "Dunkelk\195\188ste",
+		["Darkshore"] = "Dunkelküste",
 		["Darnassus"] = "Darnassus",
 		["The Deadmines"] = "Die Todesminen",
 		["Deadwind Pass"] = "Gebirgspass der Totenwinde",
 		["Deeprun Tram"] = "Die Tiefenbahn",
 		["Desolace"] = "Desolace",
-		["Dire Maul"] = "D\195\188sterbruch",
-		["Dire Maul (North)"] = "D\195\188sterbruch (Nord)",
-		["Dire Maul (East)"] = "D\195\188sterbruch (Ost)",
-		["Dire Maul (West)"] = "D\195\188sterbruch (West)",
+		["Dire Maul"] = "Düsterbruch",
+		["Dire Maul (North)"] = "Düsterbruch (Nord)",
+		["Dire Maul (East)"] = "Düsterbruch (Ost)",
+		["Dire Maul (West)"] = "Düsterbruch (West)",
 		["Dun Morogh"] = "Dun Morogh",
 		["Durotar"] = "Durotar",
-		["Duskwood"] = "D\195\164mmerwald",
-		["Dustwallow Marsh"] = "D\195\188stermarschen",
-		["Eastern Plaguelands"] = "\195\150stliche Pestl\195\164nder",
+		["Duskwood"] = "Dämmerwald",
+		["Dustwallow Marsh"] = "Düstermarschen",
+		["Eastern Plaguelands"] = "Östliche Pestländer",
 		["Elwynn Forest"] = "Wald von Elwynn",
 		["Everlook"] = "Ewige Warte",
 		["Felwood"] = "Teufelswald",
@@ -521,9 +602,9 @@ elseif GAME_LOCALE == "deDE" then
 		["Gates of Ahn'Qiraj"] = "Tore von Ahn'Qiraj",
 		["Gnomeregan"] = "Gnomeregan",
 		["Grom'gol Base Camp"] = "Basislager von Grom'gol",
-		["The Great Sea"] = "Das grosse Meer",
+		["The Great Sea"] = "Das große Meer",
 		["Hall of Legends"] = "Halle der Legenden",
-		["Hillsbrad Foothills"] = "Vorgebirge des H\195\188gellands",
+		["Hillsbrad Foothills"] = "Vorgebirge des Hügellands",
 		["The Hinterlands"] = "Hinterland",
 		["Hyjal"] = "Hyjal",
 		["Hyjal Summit"] = "Hyjalgipfel",
@@ -540,7 +621,7 @@ elseif GAME_LOCALE == "deDE" then
 		["Orgrimmar"] = "Orgrimmar",
 		["Ratchet"] = "Ratschet",
 		["Ragefire Chasm"] = "Der Flammenschlund",
-		["Razorfen Downs"] = "H\195\188gel der Klingenhauer",
+		["Razorfen Downs"] = "Hügel der Klingenhauer",
 		["Razorfen Kraul"] = "Kral der Klingenhauer",
 		["Redridge Mountains"] = "Rotkammgebirge",
 		["Ruins of Ahn'Qiraj"] = "Ruinen von Ahn'Qiraj",
@@ -551,11 +632,13 @@ elseif GAME_LOCALE == "deDE" then
 		["Silithus"] = "Silithus",
 		["Silverpine Forest"] = "Silberwald",
 		["The Stockade"] = "Das Verlies",
+		["Stonard"] = "Steinard",
 		["Stonetalon Mountains"] = "Steinkrallengebirge",
 		["Stormwind City"] = "Sturmwind",
+		["Stormwind"] = "Sturmwind",
 		["Stranglethorn Vale"] = "Schlingendorntal",
 		["Stratholme"] = "Stratholme",
-		["Swamp of Sorrows"] = "S\195\188mpfe des Elends",
+		["Swamp of Sorrows"] = "Sümpfe des Elends",
 		["Tanaris"] = "Tanaris",
 		["Teldrassil"] = "Teldrassil",
 		["Temple of Ahn'Qiraj"] = "Tempel von Ahn'Qiraj",
@@ -568,9 +651,9 @@ elseif GAME_LOCALE == "deDE" then
 		["Un'Goro Crater"] = "Krater von Un'Goro",
 		["Undercity"] = "Unterstadt",
 		["Upper Blackrock Spire"] = "Obere Schwarzfelsspitze",
-		["Wailing Caverns"] = "Die H\195\182hlen des Wehklagens",
+		["Wailing Caverns"] = "Die Höhlen des Wehklagens",
 		["Warsong Gulch"] = "Kriegshymnenschlucht",
-		["Western Plaguelands"] = "Westliche Pestl\195\164nder",
+		["Western Plaguelands"] = "Westliche Pestländer",
 		["Westfall"] = "Westfall",
 		["Wetlands"] = "Sumpfland",
 		["Winterspring"] = "Winterquell",
@@ -578,12 +661,13 @@ elseif GAME_LOCALE == "deDE" then
 		["Zul'Gurub"] = "Zul'Gurub",
 
 		["Champions' Hall"] = "Halle der Champions",
+		["Hall of Champions"] = "Halle der Champions",
 		["Blade's Edge Arena"] = "Arena des Schergrats",
 		["Nagrand Arena"] = "Arena von Nagrand",
 		["Ruins of Lordaeron"] = "Ruinen von Lordaeron",
 		["Twisting Nether"] = "Wirbelnder Nether",
-		["The Veiled Sea"] = "Das verh\195\188llte Meer",
-		["The North Sea"] = "Das N\195\182rdliche Meer",
+		["The Veiled Sea"] = "Das verhüllte Meer",
+		["The North Sea"] = "Das nördliche Meer",
 		["Armory"] = "Waffenkammer",
 		["Library"] = "Bibliothek",
 		["Cathedral"] = "Kathedrale",
@@ -593,11 +677,12 @@ elseif GAME_LOCALE == "deDE" then
 
 		-- Subzones used for displaying instances.
 		["Plaguewood"] = "Seuchenwald",
-		["Hellfire Citadel"] = "H\195\182llenfeuerzitadelle",
+		["Hellfire Citadel"] = "Höllenfeuerzitadelle",
 		["Auchindoun"] = "Auchindoun",
-		["The Bone Wastes"] = "Die Knochenw\195\188ste", -- Substitute for Auchindoun, since this is what shows on the minimap.
+		["The Bone Wastes"] = "Die Knochenwüste", -- Substitute for Auchindoun, since this is what shows on the minimap.
 		["Ring of Observance"] = "Ring der Beobachtung",
 		["Coilfang Reservoir"] = "Der Echsenkessel",
+		["Amani Pass"] = "Amanipass",
 
 		["Azuremyst Isle"] = "Azurmythosinsel",
 		["Bloodmyst Isle"] = "Blutmythosinsel",
@@ -607,47 +692,108 @@ elseif GAME_LOCALE == "deDE" then
 		["Silvermoon City"] = "Silbermond",
 		["Shadowmoon Valley"] = "Schattenmondtal",
 		["Black Temple"] = "Der Schwarze Tempel",
-		["Terokkar Forest"] = "W\195\164lder von Terokkar",
+		["Terokkar Forest"] = "Wälder von Terokkar",
 		["Auchenai Crypts"] = "Auchenaikrypta",
 		["Mana-Tombs"] = "Managruft",
 		["Shadow Labyrinth"] = "Schattenlabyrinth",
 		["Sethekk Halls"] = "Sethekkhallen",
-		["Hellfire Peninsula"] = "H\195\182llenfeuerhalbinsel",
+		["Hellfire Peninsula"] = "Höllenfeuerhalbinsel",
 		["The Dark Portal"] = "Das Dunkle Portal",
-		["Hellfire Ramparts"] = "H\195\182llenfeuerbollwerk",
+		["Hellfire Ramparts"] = "Höllenfeuerbollwerk",
 		["The Blood Furnace"] = "Der Blutkessel",
 		["The Shattered Halls"] = "Die zerschmetterten Hallen",
 		["Magtheridon's Lair"] = "Magtheridons Kammer",
 		["Nagrand"] = "Nagrand",
 		["Zangarmarsh"] = "Zangarmarschen",
-		["The Slave Pens"] = "Die Sklavenunterk\195\188nfte",
+		["The Slave Pens"] = "Die Sklavenunterkünfte",
 		["The Underbog"] = "Der Tiefensumpf",
 		["The Steamvault"] = "Die Dampfkammer",
 		["Serpentshrine Cavern"] = "Höhle des Schlangenschreins",
 		["Blade's Edge Mountains"] = "Schergrat",
 		["Gruul's Lair"] = "Gruuls Unterschlupf",
 		["Netherstorm"] = "Nethersturm",
-		["Tempest Keep"] = "Festung der St\195\188rme",
+		["Tempest Keep"] = "Festung der Stürme",
 		["The Mechanar"] = "Die Mechanar",
 		["The Botanica"] = "Die Botanika",
 		["The Arcatraz"] = "Die Arkatraz",
 		["The Eye"] = "Das Auge",
 		["Eye of the Storm"] = "Auge des Sturms",
 		["Shattrath City"] = "Shattrath",
+		["Shattrath"] = "Shattrath",
 		["Karazhan"] = "Karazhan",
-		["Caverns of Time"] = "Die H\195\182hlen der Zeit",
-		["Old Hillsbrad Foothills"] = "Vorgebirge des Alten H\195\188gellands",
+		["Caverns of Time"] = "Die Höhlen der Zeit",
+		["Old Hillsbrad Foothills"] = "Vorgebirge des Alten Hügellands",
 		["The Black Morass"] = "Der schwarze Morast",
 		["Night Elf Village"] = "Nachtelfen Dorf",
-		["Horde Encampment"] = "Horde Lager",
-		["Alliance Base"] = "Allianz Basis",
+		["Horde Encampment"] = "Lager der Horde",
+		["Alliance Base"] = "Basis der Allianz",
 		["Zul'Aman"] = "Zul'Aman",
+		["Quel'thalas"] = "Quel'Thalas",
+		["Isle of Quel'Danas"] = "Insel von Quel'Danas",
+		["Sunwell Plateau"] = "Sonnenbrunnenplateau",
+		["Magisters' Terrace"] = "Terrasse der Magister",
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "",
+		["Vortex Pinnacle"] = "",
+		["Rivendark's Perch"] = "",
+		["Ogri'la"] = "",
+		["Obsidia's Perch"] = "",
+		["Skyguard Outpost"] = "",
+		["Shartuul's Transporter"] = "",
+		["Forge Camp: Wrath"] = "",
+		["Bash'ir Landing"] = "",
+		["Crystal Spine"] = "",
+		["Insidion's Perch"] = "",
+		["Furywing's Perch"] = "",
+
+		["Tirisfal"] = "Tirisfal",
+		["Sunken Temple"] = "Versunkener Tempel",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		--["Borean Tundra"] = true,
+		--["Crystalsong Forest"] = true,
+		--["Dalaran"] = true,
+		--["Dragonblight"] = true,
+		--["Grizzly Hills"] = true,
+		--["Howling Fjord"] = true,
+		--["Icecrown"] = true,
+		--["Sholazar Basin"] = true,
+		--["The Storm Peaks"] = true,
+		--["Wintergrasp"] = true,
+		--["Zul'Drak"] = true,
+
+-- Instances (and subzones used for displaying these instances)
+		--["Ahn'kahet: The Old Kingdom"] = true,
+		--["Azjol-Nerub"] = true,
+		--["Coldarra"] = true,
+		--["The Culling of Stratholme"] = true,
+		--["Drak'Tharon Keep"] = true,
+		--["The Eye of Eternity"] = true,
+		--["Gundrak"] = true,
+		--["Halls of Lightning"] = true,
+		--["Halls of Stone"] = true,
+		--["The Nexus"] = true,
+		--["The Obsidian Sanctum"] = true,
+		--["The Oculus"] = true,
+		--["Ulduar"] = true,
+		--["Utgarde Keep"] = true,
+		--["Utgarde Pinnacle"] = true,
+		--["The Violet Hold"] = true,
+		--["Wyrmrest Temple"] = true,
+
+-- PvP Instances
+		--["Dalaran Sewers"] = true,
+		--["The Ring of Valor"] = true,
+		--["Strand of the Ancients"] = true,
 	}
 elseif GAME_LOCALE == "frFR" then
 	lib:SetCurrentTranslations {
 		["Azeroth"] = "Azeroth",
 		["Eastern Kingdoms"] = "Royaumes de l'est",
 		["Kalimdor"] = "Kalimdor",
+		["Northrend"] = "Norfendre",
 		["Outland"] = "Outreterre",
 		["Cosmic map"] = "Carte cosmique",
 
@@ -723,8 +869,10 @@ elseif GAME_LOCALE == "frFR" then
 		["Silithus"] = "Silithus",
 		["Silverpine Forest"] = "Forêt des Pins argentés",
 		["The Stockade"] = "La Prison",
+		["Stonard"] = "Pierrêche",
 		["Stonetalon Mountains"] = "Les Serres-Rocheuses",
 		["Stormwind City"] = "Hurlevent",
+		["Stormwind"] = "Hurlevent",
 		["Stranglethorn Vale"] = "Vallée de Strangleronce",
 		["Stratholme"] = "Stratholme",
 		["Swamp of Sorrows"] = "Marais des Chagrins",
@@ -750,6 +898,7 @@ elseif GAME_LOCALE == "frFR" then
 		["Zul'Gurub"] = "Zul'Gurub",
 
 		["Champions' Hall"] = "Hall des Champions",
+		["Hall of Champions"] = "Hall des Champions",
 		["Blade's Edge Arena"] = "Arène des Tranchantes",
 		["Nagrand Arena"] = "Arène de Nagrand",
 		["Ruins of Lordaeron"] = "Ruines de Lordaeron",
@@ -765,11 +914,12 @@ elseif GAME_LOCALE == "frFR" then
 
 		-- Subzones used for displaying instances.
 		["Plaguewood"] = "Pestebois",
-		["Hellfire Citadel"] = "Citadelle des flammes infernales",
+		["Hellfire Citadel"] = "Citadelle des Flammes infernales",
 		["Auchindoun"] = "Auchindoun",
 		["The Bone Wastes"] = "Le désert des Ossements", -- Substitute for Auchindoun, since this is what shows on the minimap.
 		["Ring of Observance"] = "Cercle d'observance",
 		["Coilfang Reservoir"] = "Réservoir de Glissecroc",
+		["Amani Pass"] = "Passage des Amani",
 
 		["Azuremyst Isle"] = "Ile de Brume-azur",
 		["Bloodmyst Isle"] = "Ile de Brume-sang",
@@ -803,9 +953,10 @@ elseif GAME_LOCALE == "frFR" then
 		["The Mechanar"] = "Le Méchanar",
 		["The Botanica"] = "La Botanica",
 		["The Arcatraz"] = "L'Arcatraz",
-		["The Eye"] = "L'Oeil",
+		["The Eye"] = "L'Œil",
 		["Eye of the Storm"] = "L'Œil du cyclone",
 		["Shattrath City"] = "Shattrath",
+		["Shattrath"] = "Shattrath",
 		["Karazhan"] = "Karazhan",
 		["Caverns of Time"] = "Grottes du temps",
 		["Old Hillsbrad Foothills"] = "Contreforts de Hautebrande d'antan",
@@ -814,12 +965,72 @@ elseif GAME_LOCALE == "frFR" then
 		["Horde Encampment"] = "Campement de la Horde",
 		["Alliance Base"] = "Base de l'Alliance",
 		["Zul'Aman"] = "Zul'Aman",
+		["Quel'thalas"] = "Quel'thalas",
+		["Isle of Quel'Danas"] = "Île de Quel'Danas",
+		["Sunwell Plateau"] = "Plateau du Puits de soleil",
+		["Magisters' Terrace"] = "Terrasse des Magistères",
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "Camp de forge : Terreur",
+		["Vortex Pinnacle"] = "Cime du vortex",
+		["Rivendark's Perch"] = "Perchoir de Clivenuit",
+		["Ogri'la"] = "Ogri'la",
+		["Obsidia's Perch"] = "Perchoir d'Obsidia",
+		["Skyguard Outpost"] = "Avant-poste de la Garde-ciel",
+		["Shartuul's Transporter"] = "Transporteur de Shartuul",
+		["Forge Camp: Wrath"] = "Camp de forge : Courroux",
+		["Bash'ir Landing"] = "Point d'ancrage de Bash'ir",
+		["Crystal Spine"] = "Éperon de cristal",
+		["Insidion's Perch"] = "Perchoir d'Insidion",
+		["Furywing's Perch"] = "Perchoir d'Aile-furie",
+
+		["Tirisfal"] = "Tirisfal",
+		["Sunken Temple"] = "Temple englouti",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		["Borean Tundra"] = "Toundra Boréenne",
+		["Crystalsong Forest"] = "Forêt du Chant de cristal",
+		["Dalaran"] = "Dalaran",
+		["Dragonblight"] = "Désolation des dragons",
+		["Grizzly Hills"] = "Les Grisonnes",
+		["Howling Fjord"] = "Fjord Hurlant",
+		["Icecrown"] = "La Couronne de glace",
+		["Sholazar Basin"] = "Bassin de Sholazar",
+		["The Storm Peaks"] = "Les pics Foudroyés",
+		["Wintergrasp"] = "Joug-d'hiver",
+		["Zul'Drak"] = "Zul'Drak",
+
+-- Instances (and subzones used for displaying these instances)
+		["Ahn'kahet: The Old Kingdom"] = "Ahn'kahet : l'Ancien royaume",
+		["Azjol-Nerub"] = "Azjol-Nérub",
+		["Coldarra"] = "Frimarra",
+		["The Culling of Stratholme"] = "L'épuration de Stratholme",
+		["Drak'Tharon Keep"] = "Donjon de Drak'Tharon",
+		["The Eye of Eternity"] = "L'Œil d'Eternité",
+		["Gundrak"] = "Gundrak",
+		["Halls of Lightning"] = "Les salles de Foudre",
+		["Halls of Stone"] = "Les salles de Pierre",
+		["The Nexus"] = "Le Nexus",
+		["The Obsidian Sanctum"] = "Le sanctum Obsidien",
+		["The Oculus"] = "L'Oculus",
+		["Ulduar"] = "Ulduar",
+		["Utgarde Keep"] = "Donjon d'Utgarde",
+		["Utgarde Pinnacle"] = "Cime d'Utgarde",
+		["The Violet Hold"] = "Le Fort pourpre",
+		["Wyrmrest Temple"] = "Temple du Repos du ver",
+
+-- PvP Instances
+		["Dalaran Sewers"] = "Égouts de Dalaran",
+		["The Ring of Valor"] = "L'Arène des valeureux",
+		["Strand of the Ancients"] = "Rivage des anciens",
 	}
 elseif GAME_LOCALE == "zhCN" then
 	lib:SetCurrentTranslations {
 		["Azeroth"] = "艾泽拉斯",
 		["Eastern Kingdoms"] = "东部王国",
 		["Kalimdor"] = "卡利姆多",
+		["Northrend"] = "诺森德",
 		["Outland"] = "外域",
 		["Cosmic map"] = "全部地图",
 
@@ -848,9 +1059,9 @@ elseif GAME_LOCALE == "zhCN" then
 		["Deeprun Tram"] = "矿道地铁",
 		["Desolace"] = "凄凉之地",
 		["Dire Maul"] = "厄运之槌",
-		["Dire Maul (East)"] = "厄运之槌(东)",
-		["Dire Maul (West)"] = "厄运之槌(西)",
-		["Dire Maul (North)"] = "厄运之槌(北)",
+		["Dire Maul (East)"] = "厄运之槌 (东)",
+		["Dire Maul (West)"] = "厄运之槌 (西)",
+		["Dire Maul (North)"] = "厄运之槌 (北)",
 		["Dun Morogh"] = "丹莫罗",
 		["Durotar"] = "杜隆塔尔",
 		["Duskwood"] = "暮色森林",
@@ -873,7 +1084,7 @@ elseif GAME_LOCALE == "zhCN" then
 		["Hyjal Summit"] = "海加尔峰",
 		["Ironforge"] = "铁炉堡",
 		["Loch Modan"] = "洛克莫丹",
-		["Lower Blackrock Spire"] = "黑石塔（下层）",
+		["Lower Blackrock Spire"] = "黑石塔 (下层)",
 		["Maraudon"] = "玛拉顿",
 		["Menethil Harbor"] = "米奈希尔港",
 		["Molten Core"] = "熔火之心",
@@ -895,8 +1106,10 @@ elseif GAME_LOCALE == "zhCN" then
 		["Silithus"] = "希利苏斯",
 		["Silverpine Forest"] = "银松森林",
 		["The Stockade"] = "监狱",
+		["Stonard"] = "斯通纳德",
 		["Stonetalon Mountains"] = "石爪山脉",
 		["Stormwind City"] = "暴风城",
+		["Stormwind"] = "暴风城",--TaxiNodesDBC
 		["Stranglethorn Vale"] = "荆棘谷",
 		["Stratholme"] = "斯坦索姆",
 		["Swamp of Sorrows"] = "悲伤沼泽",
@@ -911,7 +1124,7 @@ elseif GAME_LOCALE == "zhCN" then
 		["Uldaman"] = "奥达曼",
 		["Un'Goro Crater"] = "安戈洛环形山",
 		["Undercity"] = "幽暗城",
-		["Upper Blackrock Spire"] = "黑石塔（上层）",
+		["Upper Blackrock Spire"] = "黑石塔 (上层)",
 		["Wailing Caverns"] = "哀嚎洞穴",
 		["Warsong Gulch"] = "战歌峡谷",
 		["Western Plaguelands"] = "西瘟疫之地",
@@ -922,6 +1135,7 @@ elseif GAME_LOCALE == "zhCN" then
 		["Zul'Gurub"] = "祖尔格拉布",
 
 		["Champions' Hall"] = "勇士大厅",
+		["Hall of Champions"] = "勇士大厅",--WMOAreaTableDBC
 		["Blade's Edge Arena"] = "刀锋山竞技场",
 		["Nagrand Arena"] = "纳格兰竞技场",
 		["Ruins of Lordaeron"] = "洛丹伦废墟",
@@ -942,6 +1156,7 @@ elseif GAME_LOCALE == "zhCN" then
 		["The Bone Wastes"] = "白骨荒野",
 		["Ring of Observance"] = "仪式广场",
 		["Coilfang Reservoir"] = "盘牙水库",
+		["Amani Pass"] = "阿曼尼小径",
 
 		["Azuremyst Isle"] = "秘蓝岛",
 		["Bloodmyst Isle"] = "秘血岛",
@@ -978,6 +1193,7 @@ elseif GAME_LOCALE == "zhCN" then
 		["The Eye"] = "风暴要塞",
 		["Eye of the Storm"] = "风暴之眼",
 		["Shattrath City"] = "沙塔斯城",
+		["Shattrath"] = "沙塔斯",--TaxiNodesDBC
 		["Karazhan"] = "卡拉赞",
 		["Caverns of Time"] = "时光之穴",
 		["Old Hillsbrad Foothills"] = "旧希尔斯布莱德丘陵",
@@ -986,12 +1202,72 @@ elseif GAME_LOCALE == "zhCN" then
 		["Horde Encampment"] = "部落营地",
 		["Alliance Base"] = "联盟基地",
 		["Zul'Aman"] = "祖阿曼",
+		["Quel'thalas"] = "奎尔萨拉斯",
+		["Isle of Quel'Danas"] = "奎尔丹纳斯岛",
+		["Sunwell Plateau"] = "太阳之井高地",
+		["Magisters' Terrace"] = "魔导师平台",
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "铸魔营地：恐怖",
+		["Vortex Pinnacle"] = "漩涡峰",
+		["Rivendark's Perch"] = "雷文达克栖木",
+		["Ogri'la"] = "奥格瑞拉",
+		["Obsidia's Perch"] = "欧比斯迪栖木",
+		["Skyguard Outpost"] = "天空卫队哨站",
+		["Shartuul's Transporter"] = "沙图尔的传送器",
+		["Forge Camp: Wrath"] = "铸魔营地：天罚",
+		["Bash'ir Landing"] = "巴什伊尔码头",
+		["Crystal Spine"] = "水晶之脊",
+		["Insidion's Perch"] = "因斯迪安栖木",
+		["Furywing's Perch"] = "弗雷文栖木",
+
+		["Tirisfal"] = "提里斯法林地",--TaxiNodesDBC
+		["Sunken Temple"] = "沉没的神庙",--AreaTableDBC
+
+-- WRATH OF THE LICH KING
+-- Zones
+		["Borean Tundra"] = "北风苔原",
+		["Crystalsong Forest"] = "晶歌森林",
+		["Dalaran"] = "达拉然",
+		["Dragonblight"] = "龙骨荒野",
+		["Grizzly Hills"] = "灰熊丘陵",
+		["Howling Fjord"] = "嚎风峡湾",
+		["Icecrown"] = "冰冠冰川",
+		["Sholazar Basin"] = "索拉查盆地",
+		["The Storm Peaks"] = "风暴峭壁",
+		["Wintergrasp"] = "冬拥湖",
+		["Zul'Drak"] = "祖达克",
+		
+	-- Instances (and subzones used for displaying these instances)
+		["Ahn'kahet: The Old Kingdom"] = "安卡雷：古代王国",
+		["Azjol-Nerub"] = "艾卓-尼鲁布",
+		["Coldarra"] = "考达拉",
+		["The Culling of Stratholme"] = "净化斯坦索姆",
+		["Drak'Tharon Keep"] = "达克萨隆要塞",
+		["The Eye of Eternity"] = "永恒之眼",
+		["Gundrak"] = "古达克",
+		["Halls of Lightning"] = "闪电大厅",
+		["Halls of Stone"] = "岩石大厅",
+		["The Nexus"] = "魔枢",
+		["The Obsidian Sanctum"] = "黑曜石圣殿",
+		["The Oculus"] = "魔环",
+		["Ulduar"] = "奥杜尔", 
+		["Utgarde Keep"] = "乌特加德城堡",
+		["Utgarde Pinnacle"] = "乌特加德之巅",
+		["The Violet Hold"] = "紫罗兰监狱",
+		["Wyrmrest Temple"] = "龙眠神殿",
+
+	-- PvP Instances
+		["Dalaran Sewers"] = "达拉然下水道",
+		["The Ring of Valor"] = "勇武之环",--check
+		["Strand of the Ancients"] = "远古海滩",
 	}
 elseif GAME_LOCALE == "zhTW" then
 	lib:SetCurrentTranslations {
 		["Azeroth"] = "艾澤拉斯",
 		["Eastern Kingdoms"] = "東部王國",
 		["Kalimdor"] = "卡林多",
+		--["Northrend"] = true,
 		["Outland"] = "外域",
 		["Cosmic map"] = "宇宙地圖",
 
@@ -1067,8 +1343,10 @@ elseif GAME_LOCALE == "zhTW" then
 		["Silithus"] = "希利蘇斯",
 		["Silverpine Forest"] = "銀松森林",
 		["The Stockade"] = "監獄",
+		["Stonard"] = "斯通納德",
 		["Stonetalon Mountains"] = "石爪山脈",
 		["Stormwind City"] = "暴風城",
+		--["Stormwind"] = true,
 		["Stranglethorn Vale"] = "荊棘谷",
 		["Stratholme"] = "斯坦索姆",
 		["Swamp of Sorrows"] = "悲傷沼澤",
@@ -1094,6 +1372,7 @@ elseif GAME_LOCALE == "zhTW" then
 		["Zul'Gurub"] = "祖爾格拉布",
 
 		["Champions' Hall"] = "勇士大廳",
+		--["Hall of Champions"] = true,
 		["Blade's Edge Arena"] = "劍刃競技場",
 		["Nagrand Arena"] = "納葛蘭競技場",
 		["Ruins of Lordaeron"] = "羅德隆廢墟",
@@ -1114,6 +1393,7 @@ elseif GAME_LOCALE == "zhTW" then
 		["The Bone Wastes"] = "白骨荒野", -- Substitute for Auchindoun, since this is what shows on the minimap.
 		["Ring of Observance"] = "儀式競技場",
 		["Coilfang Reservoir"] = "盤牙洞穴",
+		["Amani Pass"] = "阿曼尼小俓",
 
 		["Azuremyst Isle"] = "藍謎島",
 		["Bloodmyst Isle"] = "血謎島",
@@ -1150,6 +1430,7 @@ elseif GAME_LOCALE == "zhTW" then
 		["The Eye"] = "風暴要塞",
 		["Eye of the Storm"] = "暴風之眼",
 		["Shattrath City"] = "撒塔斯城",
+		--["Shattrath"] = true,
 		["Karazhan"] = "卡拉贊",
 		["Caverns of Time"] = "時光之穴",
 		["Old Hillsbrad Foothills"] = "希爾斯布萊德丘陵舊址",
@@ -1158,12 +1439,72 @@ elseif GAME_LOCALE == "zhTW" then
 		["Horde Encampment"] = "部落營地",
 		["Alliance Base"] = "聯盟營地",
 		["Zul'Aman"] = "祖阿曼",
+		["Quel'thalas"] = "奎爾薩拉斯",
+		["Isle of Quel'Danas"] = "奎爾達納斯之島",
+		["Sunwell Plateau"] = "太陽之井高地",
+		["Magisters' Terrace"] = "博學者殿堂",
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "煉冶場:驚駭",
+		["Vortex Pinnacle"] = "漩渦尖塔",
+		["Rivendark's Perch"] = "瑞文達科棲所",
+		["Ogri'la"] = "歐格利拉",
+		["Obsidia's Perch"] = "歐比希迪亞棲所",
+		["Skyguard Outpost"] = "禦天者崗哨",
+		["Shartuul's Transporter"] = "夏圖歐的傳送門",
+		["Forge Camp: Wrath"] = "煉冶場:憤怒",
+		["Bash'ir Landing"] = "貝許爾平臺",
+		["Crystal Spine"] = "水晶背脊",
+		["Insidion's Perch"] = "印希迪恩棲所",
+		["Furywing's Perch"] = "狂怒之翼棲所",
+
+		["Tirisfal"] = "提里斯法林地",
+		["Sunken Temple"] = "沉沒的神廟",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		--["Borean Tundra"] = true,
+		--["Crystalsong Forest"] = true,
+		--["Dalaran"] = true,
+		--["Dragonblight"] = true,
+		--["Grizzly Hills"] = true,
+		--["Howling Fjord"] = true,
+		--["Icecrown"] = true,
+		--["Sholazar Basin"] = true,
+		--["The Storm Peaks"] = true,
+		--["Wintergrasp"] = true,
+		--["Zul'Drak"] = true,
+
+-- Instances (and subzones used for displaying these instances)
+		--["Ahn'kahet: The Old Kingdom"] = true,
+		--["Azjol-Nerub"] = true,
+		--["Coldarra"] = true,
+		--["The Culling of Stratholme"] = true,
+		--["Drak'Tharon Keep"] = true,
+		--["The Eye of Eternity"] = true,
+		--["Gundrak"] = true,
+		--["Halls of Lightning"] = true,
+		--["Halls of Stone"] = true,
+		--["The Nexus"] = true,
+		--["The Obsidian Sanctum"] = true,
+		--["The Oculus"] = true,
+		--["Ulduar"] = true,
+		--["Utgarde Keep"] = true,
+		--["Utgarde Pinnacle"] = true,
+		--["The Violet Hold"] = true,
+		--["Wyrmrest Temple"] = true,
+
+-- PvP Instances
+		--["Dalaran Sewers"] = true,
+		--["The Ring of Valor"] = true,
+		--["Strand of the Ancients"] = true,
 	}
 elseif GAME_LOCALE == "koKR" then
 	lib:SetCurrentTranslations {
 		["Azeroth"] = "아제로스",
 		["Eastern Kingdoms"] = "동부 왕국",
 		["Kalimdor"] = "칼림도어",
+		["Northrend"] = "노스랜드",
 		["Outland"] = "아웃랜드",
 		["Cosmic map"] = "세계 지도",
 
@@ -1239,8 +1580,10 @@ elseif GAME_LOCALE == "koKR" then
 		["Silithus"] = "실리더스",
 		["Silverpine Forest"] = "은빛소나무 숲",
 		["The Stockade"] = "스톰윈드 지하감옥",
+		["Stonard"] = "스토나드",
 		["Stonetalon Mountains"] = "돌발톱 산맥",
 		["Stormwind City"] = "스톰윈드",
+		["Stormwind"] = "스톰윈드",
 		["Stranglethorn Vale"] = "가시덤불 골짜기",
 		["Stratholme"] = "스트라솔름",
 		["Swamp of Sorrows"] = "슬픔의 늪",
@@ -1266,6 +1609,7 @@ elseif GAME_LOCALE == "koKR" then
 		["Zul'Gurub"] = "줄구룹",
 
 		["Champions' Hall"] = "용사의 전당",
+		["Hall of Champions"] = "용사의 전당",
 		["Blade's Edge Arena"] = "칼날 투기장",
 		["Nagrand Arena"] = "나그란드 투기장",
 		["Ruins of Lordaeron"] = "로데론의 폐허",
@@ -1280,12 +1624,13 @@ elseif GAME_LOCALE == "koKR" then
 		-- Burning Crusade
 
 		-- Subzones used for displaying instances.
-		["Plaguewood"] = "역병의 숲", -- check
+		["Plaguewood"] = "역병의 숲",
 		["Hellfire Citadel"] = "지옥불 성채",
 		["Auchindoun"] = "아킨둔",
 		["The Bone Wastes"] = "해골 무덤", -- Substitute for Auchindoun, since this is what shows on the minimap.
 		["Ring of Observance"] = "규율의 광장",
 		["Coilfang Reservoir"] = "갈퀴송곳니 저수지",
+		["Amani Pass"] = "아마니 고개",
 
 		["Azuremyst Isle"] = "하늘안개 섬",
 		["Bloodmyst Isle"] = "핏빛안개 섬",
@@ -1322,6 +1667,7 @@ elseif GAME_LOCALE == "koKR" then
 		["The Eye"] = "눈", -- check
 		["Eye of the Storm"] = "폭풍의 눈",
 		["Shattrath City"] = "샤트라스",
+		["Shattrath"] = "샤트라스",
 		["Karazhan"] = "카라잔",
 		["Caverns of Time"] = "시간의 동굴",
 		["Old Hillsbrad Foothills"] = "옛 힐스브래드 구릉지",
@@ -1330,38 +1676,98 @@ elseif GAME_LOCALE == "koKR" then
 		["Horde Encampment"] = "호드 야영지",
 		["Alliance Base"] = "얼라이언스 주둔지",
 		["Zul'Aman"] = "줄아만",
+		["Quel'thalas"] = "쿠엘탈라스",
+		["Isle of Quel'Danas"] = "쿠엘다나스 섬",
+		["Sunwell Plateau"] = "태양샘 고원",
+		["Magisters' Terrace"] = "마법학자의 정원",
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "공포의 괴철로 기지",
+		["Vortex Pinnacle"] = "소용돌이 고원",
+		["Rivendark's Perch"] = "리븐다크의 둥지",
+		["Ogri'la"] = "오그릴라",
+		["Obsidia's Perch"] = "옵시디아의 둥지",
+		["Skyguard Outpost"] = "하늘경비대 전초기지",
+		["Shartuul's Transporter"] = "샤툴의 순간이동기",
+		["Forge Camp: Wrath"] = "격노의 괴철로 기지",
+		["Bash'ir Landing"] = "바쉬르 영지",
+		["Crystal Spine"] = "수정 돌기",
+		["Insidion's Perch"] = "인시디온의 둥지",
+		["Furywing's Perch"] = "퓨리윙의 둥지",
+
+		["Tirisfal"] = "티리스팔",
+		["Sunken Temple"] = "가라앉은 사원",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		["Borean Tundra"] = "북풍의 땅",
+		["Crystalsong Forest"] = "수정노래 숲",
+		["Dalaran"] = "달라란",
+		["Dragonblight"] = "용의 안식처",
+		["Grizzly Hills"] = "회색 구릉지",
+		["Howling Fjord"] = "울부짖는 협만",
+		["Icecrown"] = "얼음왕관",
+		["Sholazar Basin"] = "숄라자르 분지",
+		["The Storm Peaks"] = "폭풍우 봉우리",
+		["Wintergrasp"] = "겨울손아귀",
+		["Zul'Drak"] = "줄드락",
+
+-- Instances (and subzones used for displaying these instances)
+		["Ahn'kahet: The Old Kingdom"] = "앙크헤트: 고대 왕국",
+		["Azjol-Nerub"] = "아졸네룹",
+		["Coldarra"] = "콜다라",
+		["The Culling of Stratholme"] = "옛 스트라솔름",
+		["Drak'Tharon Keep"] = "드랙타론 요새",
+		["The Eye of Eternity"] = "영원의 눈",	-- check
+		["Gundrak"] = "군드락",
+		["Halls of Lightning"] = "전격의 전당",	-- check
+		["Halls of Stone"] = "돌의 전당",
+		["The Nexus"] = "마력의 탑",
+		["The Obsidian Sanctum"] = "흑요석 성소",	-- check
+		["The Oculus"] = "마력의 눈",
+		["Ulduar"] = "울두아",
+		["Utgarde Keep"] = "우트가르드 성채",
+		["Utgarde Pinnacle"] = "우트가르드 첨탑",
+		["The Violet Hold"] = "보라빛 성채",
+		["Wyrmrest Temple"] = "고룡 요새",
+
+-- PvP Instances
+		["Dalaran Sewers"] = "달라란 하수도",	-- check
+		["The Ring of Valor"] = "용맹의 투기장",
+		["Strand of the Ancients"] = "고대의 해안",
 	}
 elseif GAME_LOCALE == "esES" then
 	lib:SetCurrentTranslations {
 		["Azeroth"] = "Azeroth",
 		["Eastern Kingdoms"] = "Reinos del Este",
 		["Kalimdor"] = "Kalimdor",
+		--["Northrend"] = true,
 		["Outland"] = "Terrallende",
-		["Cosmic map"] = "Mapa c\195\179smico",
+		["Cosmic map"] = "Mapa cósmico",
 
 		["Ahn'Qiraj"] = "Ahn'Qiraj",
-		["Alterac Mountains"] = "Monta\195\177as de Alterac",
+		["Alterac Mountains"] = "Montañas de Alterac",
 		["Alterac Valley"] = "Valle de Alterac",
 		["Arathi Basin"] = "Cuenca de Arathi",
 		["Arathi Highlands"] = "Tierras Altas de Arathi",
 		["Ashenvale"] = "Vallefresno",
 		["Auberdine"] = "Auberdine",
 		["Azshara"] = "Azshara",
-		["Badlands"] = "Tierras Inh\195\179spitas",
-		["The Barrens"] = "Los Bald\195\173os",
+		["Badlands"] = "Tierras Inhóspitas",
+		["The Barrens"] = "Los Baldíos",
 		["Blackfathom Deeps"] = "Cavernas de Brazanegra",
 		["Blackrock Depths"] = "Profundidades de Roca Negra",
-		["Blackrock Mountain"] = "Monta\195\177a Roca Negra",
+		["Blackrock Mountain"] = "Montaña Roca Negra",
 		["Blackrock Spire"] = "Cumbre de Roca Negra",
 		["Blackwing Lair"] = "Guarida Alanegra",
 		["Blasted Lands"] = "Las Tierras Devastadas",
-		["Booty Bay"] = "Bah\195\173a del Bot\195\173n",
+		["Booty Bay"] = "Bahía del Botín",
 		["Burning Steppes"] = "Las Estepas Ardientes",
 		["Darkshore"] = "Costa Oscura",
 		["Darnassus"] = "Darnassus",
 		["The Deadmines"] = "Las Minas de la Muerte",
 		["Deadwind Pass"] = "Paso de la Muerte",
-		["Deeprun Tram"] = "Tren Subterr\195\161neo",
+		["Deeprun Tram"] = "Tranvía Subterráneo",
 		["Desolace"] = "Desolace",
 		["Dire Maul"] = "La Masacre",
 		["Dire Maul (East)"] = "La Masacre (Este)",
@@ -1392,59 +1798,62 @@ elseif GAME_LOCALE == "esES" then
 		["Lower Blackrock Spire"] = "Cumbre inferior de Roca Negra",
 		["Maraudon"] = "Maraudon",
 		["Menethil Harbor"] = "Puerto de Menethil",
-		["Molten Core"] = "N\195\186cleo de Magma",
+		["Molten Core"] = "Núcleo de Magma",
 		["Moonglade"] = "Claro de la Luna",
 		["Mulgore"] = "Mulgore",
 		["Naxxramas"] = "Naxxramas",
 		["Onyxia's Lair"] = "Guarida de Onyxia",
 		["Orgrimmar"] = "Orgrimmar",
 		["Ratchet"] = "Trinquete",
-		["Ragefire Chasm"] = "Sima \195\173gnea",
-		["Razorfen Downs"] = "Zah\195\186rda Rojocieno",
+		["Ragefire Chasm"] = "Sima ígnea",
+		["Razorfen Downs"] = "Zahúrda Rajacieno",
 		["Razorfen Kraul"] = "Horado Rajacieno",
-		["Redridge Mountains"] = "Monta\195\177as Crestagrana",
+		["Redridge Mountains"] = "Montañas Crestagrana",
 		["Ruins of Ahn'Qiraj"] = "Ruinas de Ahn'Qiraj",
 		["Scarlet Monastery"] = "Monasterio Escarlata",
 		["Scholomance"] = "Scholomance",
 		["Searing Gorge"] = "La Garganta de Fuego",
 		["Shadowfang Keep"] = "Castillo de Colmillo Oscuro",
 		["Silithus"] = "Silithus",
-		["Silverpine Forest"] = "Bosque de Arg\195\169nteos",
-		["The Stockade"] = "Mazmorras de Ventormenta",
-		["Stonetalon Mountains"] = "Sierra Espol\195\179n",
+		["Silverpine Forest"] = "Bosque de Argénteos",
+		["The Stockade"] = "Las Mazmorras",
+		--["Stonard"] = "",
+		["Stonetalon Mountains"] = "Sierra Espolón",
 		["Stormwind City"] = "Ciudad de Ventormenta",
+		["Stormwind"] = "Ventormenta",
 		["Stranglethorn Vale"] = "Vega de Tuercespina",
 		["Stratholme"] = "Stratholme",
 		["Swamp of Sorrows"] = "Pantano de las Penas",
 		["Tanaris"] = "Tanaris",
 		["Teldrassil"] = "Teldrassil",
-		["Temple of Ahn'Qiraj"] = "Templo de Ahn'Qiraj",
-		["The Temple of Atal'Hakkar"] = "Templo de Atal'Hakkar",
+		["Temple of Ahn'Qiraj"] = "El Templo de Ahn'Qiraj",
+		["The Temple of Atal'Hakkar"] = "El Templo de Atal'Hakkar",
 		["Theramore Isle"] = "Isla Theramore",
 		["Thousand Needles"] = "Las Mil Agujas",
 		["Thunder Bluff"] = "Cima del Trueno",
 		["Tirisfal Glades"] = "Claros de Tirisfal",
 		["Uldaman"] = "Uldaman",
-		["Un'Goro Crater"] = "Cr\195\161ter de Un'Goro",
-		["Undercity"] = "Entra\195\177as",
+		["Un'Goro Crater"] = "Cráter de Un'Goro",
+		["Undercity"] = "Entrañas",
 		["Upper Blackrock Spire"] = "Cumbre de Roca Negra",
 		["Wailing Caverns"] = "Cuevas de los Lamentos",
 		["Warsong Gulch"] = "Garganta Grito de Guerra",
 		["Western Plaguelands"] = "Tierras de la Peste del Oeste",
-		["Westfall"] = "P\195\161ramos de Poniente",
+		["Westfall"] = "Páramos de Poniente",
 		["Wetlands"] = "Los Humedales",
 		["Winterspring"] = "Cuna del Invierno",
 		["Zul'Farrak"] = "Zul'Farrak",
 		["Zul'Gurub"] = "Zul'Gurub",
 
 		["Champions' Hall"] = "Sala de los Campeones",
+		["Hall of Champions"] = "Sala de los Campeones",
 		["Blade's Edge Arena"] = "Arena Filospada",
 		["Nagrand Arena"] = "Arena de Nagrand",
 		["Ruins of Lordaeron"] = "Ruinas de Lordaeron", -- check
-		["Twisting Nether"] = "El Vac\195\173o Abisal",
+		["Twisting Nether"] = "El Vacío Abisal",
 		["The Veiled Sea"] = "Mar de la Bruma",
 		["The North Sea"] = "El Mar Norte",
-		["Armory"] = "Armer\195\173a",
+		["Armory"] = "Armería",
 		["Library"] = "Biblioteca",
 		["Cathedral"] = "Catedral",
 		["Graveyard"] = "Cementerio",
@@ -1456,12 +1865,13 @@ elseif GAME_LOCALE == "esES" then
 		["Hellfire Citadel"] = "Ciudadela del Fuego Infernal",
 		["Auchindoun"] = "Auchindoun",
 		["The Bone Wastes"] = "El Vertedero de Huesos",
-		["Ring of Observance"] = "C\195\173rculo de la Observancia",
+		["Ring of Observance"] = "Círculo de la Observancia",
 		["Coilfang Reservoir"] = "Reserva Colmillo Torcido",
+		["Amani Pass"] = "Paso de Amani",
 
 		["Azuremyst Isle"] = "Isla Bruma Azur",
 		["Bloodmyst Isle"] = "Isla Bruma de Sangre",
-		["Eversong Woods"] = "Bosque Canci\195\179n Eterna",
+		["Eversong Woods"] = "Bosque Canción Eterna",
 		["Ghostlands"] = "Tierras Fantasma",
 		["The Exodar"] = "El Exodar",
 		["Silvermoon City"] = "Ciudad de Lunargenta",
@@ -1469,10 +1879,10 @@ elseif GAME_LOCALE == "esES" then
 		["Black Temple"] = "El Templo Oscuro",          -- check
 		["Terokkar Forest"] = "Bosque de Terokkar",
 		["Auchenai Crypts"] = "Criptas Auchenai",
-		["Mana-Tombs"] = "Tumbas de Man\195\161",
+		["Mana-Tombs"] = "Tumbas de Maná",
 		["Shadow Labyrinth"] = "Laberinto de las Sombras",
 		["Sethekk Halls"] = "Salas Sethekk",
-		["Hellfire Peninsula"] = "Pen\195\173nsula del Fuego Infernal",
+		["Hellfire Peninsula"] = "Península del Fuego Infernal",
 		["The Dark Portal"] = "El Portal Oscuro",
 		["Hellfire Ramparts"] = "Murallas del Fuego Infernal",
 		["The Blood Furnace"] = "El Horno de Sangre",
@@ -1481,28 +1891,563 @@ elseif GAME_LOCALE == "esES" then
 		["Nagrand"] = "Nagrand",
 		["Zangarmarsh"] = "Marisma de Zangar",
 		["The Slave Pens"] = "Recinto de los Esclavos",
-		["The Underbog"] = "La Soti\195\169naga",
-		["The Steamvault"] = "La C\195\161mara de Vapor",
+		["The Underbog"] = "La Sotiénaga",
+		["The Steamvault"] = "La Cámara de Vapor",
 		["Serpentshrine Cavern"] = "Caverna Santuario Serpiente",    -- check
-		["Blade's Edge Mountains"] = "Monta\195\177as Filospada",
+		["Blade's Edge Mountains"] = "Montañas Filospada",
 		["Gruul's Lair"] = "Guarida de Gruul",
 		["Netherstorm"] = "Tormenta Abisal",
 		["Tempest Keep"] = "El Castillo de la Tempestad",
 		["The Mechanar"] = "El Mechanar",
-		["The Botanica"] = "El Invern\195\161culo",
+		["The Botanica"] = "El Invernáculo",
 		["The Arcatraz"] = "El Alcatraz",
 		["The Eye"] = "El Ojo",  -- check
 		["Eye of the Storm"] = "Ojo de la Tormenta",
 		["Shattrath City"] = "Ciudad de Shattrath",
+		["Shattrath"] = "Shattrath",
 		["Karazhan"] = "Karazhan",
 		["Caverns of Time"] = "Cavernas del Tiempo",
 		["Old Hillsbrad Foothills"] = "Viejas Laderas de Trabalomas",   -- doesn't work in spanish anyway
-		["The Black Morass"] = "La Ci\195\169naga Negra",
---		["Night Elf Village"] = true,
---		["Horde Encampment"] = true,
---		["Alliance Base"] = true,
+		["The Black Morass"] = "La Ciénaga Negra",
+		["Night Elf Village"] = "Night Elf Village",
+		["Horde Encampment"] = "Horde Encampment",
+		["Alliance Base"] = "Alliance Base",
 		["Zul'Aman"] = "Zul'Aman",
+		["Quel'thalas"] = "Quel'thalas",
+		["Isle of Quel'Danas"] = "Isla de Quel'Danas",
+		["Sunwell Plateau"] = "Meseta de la Fuente del Sol",
+		["Magisters' Terrace"] = "Bancal Del Magister" ,
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "",
+		["Vortex Pinnacle"] = "",
+		["Rivendark's Perch"] = "",
+		["Ogri'la"] = "",
+		["Obsidia's Perch"] = "",
+		["Skyguard Outpost"] = "",
+		["Shartuul's Transporter"] = "",
+		["Forge Camp: Wrath"] = "",
+		["Bash'ir Landing"] = "",
+		["Crystal Spine"] = "",
+		["Insidion's Perch"] = "",
+		["Furywing's Perch"] = "",
+
+		["Tirisfal"] = "Tirisfal",
+		["Sunken Temple"] = "El Templo de Sunken",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		["Borean Tundra"] = "Tundra Boreal",
+		["Crystalsong Forest"] = "Canto de Cristal",
+		--["Dalaran"] = true,
+		["Dragonblight"] = "Cementerio de Dragones",
+		["Grizzly Hills"] = "Colinas Pardas",
+		["Howling Fjord"] = "Fiordo Aquilonal",
+		["Icecrown"] = "Corona del Invierno",
+		["Sholazar Basin"] = "Cuenca de Sholazar",
+		["The Storm Peaks"] = "Cumbres Tormentosas",
+		["Wintergrasp"] = "Conquista del Invierno",
+		--["Zul'Drak"] = true,
+
+-- Instances (and subzones used for displaying these instances)
+		--["Ahn'kahet: The Old Kingdom"] = true,
+		--["Azjol-Nerub"] = true,
+		--["Coldarra"] = true,
+		["The Culling of Stratholme"] = "El sacrificio de Stratholme", --Check
+		["Drak'Tharon Keep"] = "Fortaleza de Drak'Tharon",
+		["The Eye of Eternity"] = "El Ojo de la Eternidad",
+		--["Gundrak"] = true,
+		["Halls of Lightning"] = "Cámaras de Relámpagos",
+		["Halls of Stone"] = "Cámaras de Piedra",
+		["The Nexus"] = "El Nexo",
+		--["The Obsidian Sanctum"] = true,
+		["The Oculus"] = "El Oculus",
+		--["Ulduar"] = true,
+		["Utgarde Keep"] = "Fortaleza de Utgarde",
+		["Utgarde Pinnacle"] = "Pináculo de Utgarde",
+		--["The Violet Hold"] = true,
+		["Wyrmrest Temple"] = "Templo del Reposo del Dragón",
+
+-- PvP Instances
+		--["Dalaran Sewers"] = true,
+		--["The Ring of Valor"] = true,
+		--["Strand of the Ancients"] = true,
+	}
+elseif GAME_LOCALE == "esMX" then
+	lib:SetCurrentTranslations {
+		["Azeroth"] = "Azeroth",
+		["Eastern Kingdoms"] = "Reinos del Este",
+		["Kalimdor"] = "Kalimdor",
+		--["Northrend"] = true,
+		["Outland"] = "Terrallende",
+		["Cosmic map"] = "Mapa cósmico",
+
+		["Ahn'Qiraj"] = "Ahn'Qiraj",
+		["Alterac Mountains"] = "Montañas de Alterac",
+		["Alterac Valley"] = "Valle de Alterac",
+		["Arathi Basin"] = "Cuenca de Arathi",
+		["Arathi Highlands"] = "Tierras Altas de Arathi",
+		["Ashenvale"] = "Vallefresno",
+		["Auberdine"] = "Auberdine",
+		["Azshara"] = "Azshara",
+		["Badlands"] = "Tierras Inhóspitas",
+		["The Barrens"] = "Los Baldíos",
+		["Blackfathom Deeps"] = "Cavernas de Brazanegra",
+		["Blackrock Depths"] = "Profundidades de Roca Negra",
+		["Blackrock Mountain"] = "Montaña Roca Negra",
+		["Blackrock Spire"] = "Cumbre de Roca Negra",
+		["Blackwing Lair"] = "Guarida Alanegra",
+		["Blasted Lands"] = "Las Tierras Devastadas",
+		["Booty Bay"] = "Bahía del Botín",
+		["Burning Steppes"] = "Las Estepas Ardientes",
+		["Darkshore"] = "Costa Oscura",
+		["Darnassus"] = "Darnassus",
+		["The Deadmines"] = "Las Minas de la Muerte",
+		["Deadwind Pass"] = "Paso de la Muerte",
+		["Deeprun Tram"] = "Tranvía Subterráneo",
+		["Desolace"] = "Desolace",
+		["Dire Maul"] = "La Masacre",
+		["Dire Maul (East)"] = "La Masacre (Este)",
+		["Dire Maul (West)"] = "La Masacre (Oeste)",
+		["Dire Maul (North)"] = "La Masacre (Norte)",
+		["Dun Morogh"] = "Dun Morogh",
+		["Durotar"] = "Durotar",
+		["Duskwood"] = "Bosque del Ocaso",
+		["Dustwallow Marsh"] = "Marjal Revolcafango",
+		["Eastern Plaguelands"] = "Tierras de la Peste del Este",
+		["Elwynn Forest"] = "Bosque de Elwynn",
+		["Everlook"] = "Vista Eterna",
+		["Felwood"] = "Frondavil",
+		["Feralas"] = "Feralas",
+		["The Forbidding Sea"] = "Mar Adusto",
+		["Gadgetzan"] = "Gadgetzan",
+		["Gates of Ahn'Qiraj"] = "Puertas de Ahn'Qiraj",
+		["Gnomeregan"] = "Gnomeregan",
+		["The Great Sea"] = "Mare Magnum",
+		["Grom'gol Base Camp"] = "Campamento Grom'gol",
+		["Hall of Legends"] = "Sala de las Leyendas",
+		["Hillsbrad Foothills"] = "Laderas de Trabalomas",
+		["The Hinterlands"] = "Tierras del Interior",
+		["Hyjal"] = "Hyjal",
+		["Hyjal Summit"] = "Hyjal Summit",
+		["Ironforge"] = "Forjaz",
+		["Loch Modan"] = "Loch Modan",
+		["Lower Blackrock Spire"] = "Cumbre inferior de Roca Negra",
+		["Maraudon"] = "Maraudon",
+		["Menethil Harbor"] = "Puerto de Menethil",
+		["Molten Core"] = "Núcleo de Magma",
+		["Moonglade"] = "Claro de la Luna",
+		["Mulgore"] = "Mulgore",
+		["Naxxramas"] = "Naxxramas",
+		["Onyxia's Lair"] = "Guarida de Onyxia",
+		["Orgrimmar"] = "Orgrimmar",
+		["Ratchet"] = "Trinquete",
+		["Ragefire Chasm"] = "Sima ígnea",
+		["Razorfen Downs"] = "Zahúrda Rajacieno",
+		["Razorfen Kraul"] = "Horado Rajacieno",
+		["Redridge Mountains"] = "Montañas Crestagrana",
+		["Ruins of Ahn'Qiraj"] = "Ruinas de Ahn'Qiraj",
+		["Scarlet Monastery"] = "Monasterio Escarlata",
+		["Scholomance"] = "Scholomance",
+		["Searing Gorge"] = "La Garganta de Fuego",
+		["Shadowfang Keep"] = "Castillo de Colmillo Oscuro",
+		["Silithus"] = "Silithus",
+		["Silverpine Forest"] = "Bosque de Argénteos",
+		["The Stockade"] = "Las Mazmorras",
+		--["Stonard"] = "",
+		["Stonetalon Mountains"] = "Sierra Espolón",
+		["Stormwind City"] = "Ciudad de Ventormenta",
+		["Stormwind"] = "Ventormenta",
+		["Stranglethorn Vale"] = "Vega de Tuercespina",
+		["Stratholme"] = "Stratholme",
+		["Swamp of Sorrows"] = "Pantano de las Penas",
+		["Tanaris"] = "Tanaris",
+		["Teldrassil"] = "Teldrassil",
+		["Temple of Ahn'Qiraj"] = "El Templo de Ahn'Qiraj",
+		["The Temple of Atal'Hakkar"] = "El Templo de Atal'Hakkar",
+		["Theramore Isle"] = "Isla Theramore",
+		["Thousand Needles"] = "Las Mil Agujas",
+		["Thunder Bluff"] = "Cima del Trueno",
+		["Tirisfal Glades"] = "Claros de Tirisfal",
+		["Uldaman"] = "Uldaman",
+		["Un'Goro Crater"] = "Cráter de Un'Goro",
+		["Undercity"] = "Entrañas",
+		["Upper Blackrock Spire"] = "Cumbre de Roca Negra",
+		["Wailing Caverns"] = "Cuevas de los Lamentos",
+		["Warsong Gulch"] = "Garganta Grito de Guerra",
+		["Western Plaguelands"] = "Tierras de la Peste del Oeste",
+		["Westfall"] = "Páramos de Poniente",
+		["Wetlands"] = "Los Humedales",
+		["Winterspring"] = "Cuna del Invierno",
+		["Zul'Farrak"] = "Zul'Farrak",
+		["Zul'Gurub"] = "Zul'Gurub",
+
+		["Champions' Hall"] = "Sala de los Campeones",
+		["Hall of Champions"] = "Sala de los Campeones",
+		["Blade's Edge Arena"] = "Arena Filospada",
+		["Nagrand Arena"] = "Arena de Nagrand",
+		["Ruins of Lordaeron"] = "Ruinas de Lordaeron", -- check
+		["Twisting Nether"] = "El Vacío Abisal",
+		["The Veiled Sea"] = "Mar de la Bruma",
+		["The North Sea"] = "El Mar Norte",
+		["Armory"] = "Armería",
+		["Library"] = "Biblioteca",
+		["Cathedral"] = "Catedral",
+		["Graveyard"] = "Cementerio",
+
+		-- Burning Crusade
+
+		-- Subzones used for displaying instances.
+		["Plaguewood"] = "Bosque de la Plaga",
+		["Hellfire Citadel"] = "Ciudadela del Fuego Infernal",
+		["Auchindoun"] = "Auchindoun",
+		["The Bone Wastes"] = "El Vertedero de Huesos",
+		["Ring of Observance"] = "Círculo de la Observancia",
+		["Coilfang Reservoir"] = "Reserva Colmillo Torcido",
+		["Amani Pass"] = "Paso de Amani",
+
+		["Azuremyst Isle"] = "Isla Bruma Azur",
+		["Bloodmyst Isle"] = "Isla Bruma de Sangre",
+		["Eversong Woods"] = "Bosque Canción Eterna",
+		["Ghostlands"] = "Tierras Fantasma",
+		["The Exodar"] = "El Exodar",
+		["Silvermoon City"] = "Ciudad de Lunargenta",
+		["Shadowmoon Valley"] = "Valle Sombraluna",
+		["Black Temple"] = "El Templo Oscuro",          -- check
+		["Terokkar Forest"] = "Bosque de Terokkar",
+		["Auchenai Crypts"] = "Criptas Auchenai",
+		["Mana-Tombs"] = "Tumbas de Maná",
+		["Shadow Labyrinth"] = "Laberinto de las Sombras",
+		["Sethekk Halls"] = "Salas Sethekk",
+		["Hellfire Peninsula"] = "Península del Fuego Infernal",
+		["The Dark Portal"] = "El Portal Oscuro",
+		["Hellfire Ramparts"] = "Murallas del Fuego Infernal",
+		["The Blood Furnace"] = "El Horno de Sangre",
+		["The Shattered Halls"] = "Las Salas Arrasadas",
+		["Magtheridon's Lair"] = "Guarida de Magtheridon",   -- check - Magtheradon /Magtheridon ??
+		["Nagrand"] = "Nagrand",
+		["Zangarmarsh"] = "Marisma de Zangar",
+		["The Slave Pens"] = "Recinto de los Esclavos",
+		["The Underbog"] = "La Sotiénaga",
+		["The Steamvault"] = "La Cámara de Vapor",
+		["Serpentshrine Cavern"] = "Caverna Santuario Serpiente",    -- check
+		["Blade's Edge Mountains"] = "Montañas Filospada",
+		["Gruul's Lair"] = "Guarida de Gruul",
+		["Netherstorm"] = "Tormenta Abisal",
+		["Tempest Keep"] = "El Castillo de la Tempestad",
+		["The Mechanar"] = "El Mechanar",
+		["The Botanica"] = "El Invernáculo",
+		["The Arcatraz"] = "El Alcatraz",
+		["The Eye"] = "El Ojo",  -- check
+		["Eye of the Storm"] = "Ojo de la Tormenta",
+		["Shattrath City"] = "Ciudad de Shattrath",
+		["Shattrath"] = "Shattrath",
+		["Karazhan"] = "Karazhan",
+		["Caverns of Time"] = "Cavernas del Tiempo",
+		["Old Hillsbrad Foothills"] = "Viejas Laderas de Trabalomas",   -- doesn't work in spanish anyway
+		["The Black Morass"] = "La Ciénaga Negra",
+		["Night Elf Village"] = "Night Elf Village",
+		["Horde Encampment"] = "Horde Encampment",
+		["Alliance Base"] = "Alliance Base",
+		["Zul'Aman"] = "Zul'Aman",
+		["Quel'thalas"] = "Quel'thalas",
+		["Isle of Quel'Danas"] = "Isla de Quel'Danas",
+		["Sunwell Plateau"] = "Meseta de la Fuente del Sol",
+		["Magisters' Terrace"] = "Bancal Del Magister" ,
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "",
+		["Vortex Pinnacle"] = "",
+		["Rivendark's Perch"] = "",
+		["Ogri'la"] = "",
+		["Obsidia's Perch"] = "",
+		["Skyguard Outpost"] = "",
+		["Shartuul's Transporter"] = "",
+		["Forge Camp: Wrath"] = "",
+		["Bash'ir Landing"] = "",
+		["Crystal Spine"] = "",
+		["Insidion's Perch"] = "",
+		["Furywing's Perch"] = "",
+
+		["Tirisfal"] = "Tirisfal",
+		["Sunken Temple"] = "El Templo de Sunken",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		--["Borean Tundra"] = true,
+		--["Crystalsong Forest"] = true,
+		--["Dalaran"] = true,
+		--["Dragonblight"] = true,
+		--["Grizzly Hills"] = true,
+		--["Howling Fjord"] = true,
+		--["Icecrown"] = true,
+		--["Sholazar Basin"] = true,
+		--["The Storm Peaks"] = true,
+		--["Wintergrasp"] = true,
+		--["Zul'Drak"] = true,
+
+-- Instances (and subzones used for displaying these instances)
+		--["Ahn'kahet: The Old Kingdom"] = true,
+		--["Azjol-Nerub"] = true,
+		--["Coldarra"] = true,
+		--["The Culling of Stratholme"] = true,
+		--["Drak'Tharon Keep"] = true,
+		--["The Eye of Eternity"] = true,
+		--["Gundrak"] = true,
+		--["Halls of Lightning"] = true,
+		--["Halls of Stone"] = true,
+		--["The Nexus"] = true,
+		--["The Obsidian Sanctum"] = true,
+		--["The Oculus"] = true,
+		--["Ulduar"] = true,
+		--["Utgarde Keep"] = true,
+		--["Utgarde Pinnacle"] = true,
+		--["The Violet Hold"] = true,
+		--["Wyrmrest Temple"] = true,
+
+-- PvP Instances
+		--["Dalaran Sewers"] = true,
+		--["The Ring of Valor"] = true,
+		--["Strand of the Ancients"] = true,
+	}
+elseif GAME_LOCALE == "ruRU" then
+	lib:SetCurrentTranslations {
+		["Azeroth"] = "Азерот",
+		["Eastern Kingdoms"] = "Восточные королевства",
+		["Kalimdor"] = "Калимдор",
+		--["Northrend"] = true,
+		["Outland"] = "Запределье",
+		["Cosmic map"] = "Карта Вселенной",
+
+		["Ahn'Qiraj"] = "Ан'Кираж",
+		["Alterac Mountains"] = "Альтеракские горы",
+		["Alterac Valley"] = "Альтеракская долина",
+		["Arathi Basin"] = "Низина Арати",
+		["Arathi Highlands"] = "Нагорье Арати",
+		["Ashenvale"] = "Ясеневый лес",
+		["Auberdine"] = "Аубердин",
+		["Azshara"] = "Азшара",
+		["Badlands"] = "Бесплодные земли",
+		["The Barrens"] = "Степи",
+		["Blackfathom Deeps"] = "Непроглядная Пучина",
+		["Blackrock Depths"] = "Глубины Черной горы",
+		["Blackrock Mountain"] = "Черная гора",
+		["Blackrock Spire"] = "Вершина Черной горы",
+		["Blackwing Lair"] = "Логово Крыла Тьмы",
+		["Blasted Lands"] = "Выжженные земли",
+		["Booty Bay"] = "Пиратская Бухта",
+		["Burning Steppes"] = "Пылающие степи",
+		["Darkshore"] = "Темные берега",
+		["Darnassus"] = "Дарнасс",
+		["The Deadmines"] = "Мертвые копи",
+		["Deadwind Pass"] = "Перевал Мертвого Ветра",
+		["Deeprun Tram"] = "Подземный поезд",
+		["Desolace"] = "Пустоши",
+		["Dire Maul"] = "Забытый Город",
+		["Dire Maul (East)"] = "Забытый Город: Восток",
+		["Dire Maul (West)"] = "Забытый Город: Запад",
+		["Dire Maul (North)"] = "Забытый Город: Север",
+		["Dun Morogh"] = "Дун Морог",
+		["Durotar"] = "Дуротар",
+		["Duskwood"] = "Сумеречный лес",
+		["Dustwallow Marsh"] = "Пылевые топи",
+		["Eastern Plaguelands"] = "Восточное Лихоземье",
+		["Elwynn Forest"] = "Элвиннский лес",
+		["Everlook"] = "Круговзор",
+		["Felwood"] = "Оскверненный лес",
+		["Feralas"] = "Фералас",
+		["The Forbidding Sea"] = "Зловещее море",
+		["Gadgetzan"] = "Прибамбасск",
+		["Gates of Ahn'Qiraj"] = "Врата Ан'Киража",
+		["Gnomeregan"] = "Гномреган",
+		["The Great Sea"] = "Великое море",
+		["Grom'gol Base Camp"] = "Лагерь Гром'гол",
+		["Hall of Legends"] = "Зал Легенд",
+		["Hillsbrad Foothills"] = "Предгорья Хилсбрада",
+		["The Hinterlands"] = "Внутренние земли",
+		["Hyjal"] = "Хиджал",
+		["Hyjal Summit"] = "Вершина Хиджала",
+		["Ironforge"] = "Стальгорн",
+		["Loch Modan"] = "Лок Модан",
+		["Lower Blackrock Spire"] = "Нижний ярус Черной горы",
+		["Maraudon"] = "Мародон",
+		["Menethil Harbor"] = "Гавань Менетил",
+		["Molten Core"] = "Огненные Недра",
+		["Moonglade"] = "Лунная поляна",
+		["Mulgore"] = "Мулгор",
+		["Naxxramas"] = "Наксрамас",
+		["Onyxia's Lair"] = "Логово Ониксии",
+		["Orgrimmar"] = "Оргриммар",
+		["Ratchet"] = "Кабестан",
+		["Ragefire Chasm"] = "Огненная  пропасть",
+		["Razorfen Downs"] = "Курганы Иглошкурых",
+		["Razorfen Kraul"] = "Лабиринты Иглошкурых",
+		["Redridge Mountains"] = "Красногорье",
+		["Ruins of Ahn'Qiraj"] = "Руины Ан'Киража",
+		["Scarlet Monastery"] = "Монастырь Алого Ордена",
+		["Scholomance"] = "Некроситет",
+		["Searing Gorge"] = "Тлеющее ущелье",
+		["Shadowfang Keep"] = "Крепость Темного Клыка",
+		["Silithus"] = "Силитус",
+		["Silverpine Forest"] = "Серебряный бор",
+		["The Stockade"] = "Тюрьма",
+		["Stonard"] = "Каменор",
+		["Stonetalon Mountains"] = "Когтистые горы",
+		["Stormwind City"] = "Штормград",
+		["Stormwind"] = "Штормград",
+		["Stranglethorn Vale"] = "Тернистая долина",
+		["Stratholme"] = "Стратхольм",
+		["Swamp of Sorrows"] = "Болото Печали",
+		["Tanaris"] = "Танарис",
+		["Teldrassil"] = "Тельдрассил",
+		["Temple of Ahn'Qiraj"] = "Храм Ан'Кираж",
+		["The Temple of Atal'Hakkar"] = "Храм Атал'Хаккара",
+		["Theramore Isle"] = "Остров Терамор",
+		["Thousand Needles"] = "Тысяча Игл",
+		["Thunder Bluff"] = "Громовой Утес",
+		["Tirisfal Glades"] = "Тирисфальские леса",
+		["Uldaman"] = "Ульдаман",
+		["Un'Goro Crater"] = "Кратер Ун'Горо",
+		["Undercity"] = "Подгород",
+		["Upper Blackrock Spire"] = "Верхний ярус Черной горы",
+		["Wailing Caverns"] = "Пещеры Стенаний",
+		["Warsong Gulch"] = "Ущелье Песни Войны",
+		["Western Plaguelands"] = "Западное Лихоземье",
+		["Westfall"] = "Западный Край",
+		["Wetlands"] = "Болотина",
+		["Winterspring"] = "Зимние Ключи",
+		["Zul'Farrak"] = "Зул'Фаррак",
+		["Zul'Gurub"] = "Зул'Гуруб",
+
+		["Champions' Hall"] = "Зал Защитника",
+		["Hall of Champions"] = "Hall of Champions",
+		["Blade's Edge Arena"] = "Арена Острогорья",
+		["Nagrand Arena"] = "Арена Награнда",
+		["Ruins of Lordaeron"] = "Руины Лордерона",
+		["Twisting Nether"] = "Круговерть Пустоты",
+		["The Veiled Sea"] = "Сокрытое Море",
+		["The North Sea"] = "Северное море",
+		["Armory"] = "Оружейная",
+		["Library"] = "Библиотека",
+		["Cathedral"] = "Собор",
+		["Graveyard"] = "Кладбище",
+
+		-- Burning Crusade
+
+		-- Subzones used for displaying instances.
+		["Plaguewood"] = "Проклятый лес",
+		["Hellfire Citadel"] = "Цитадель Адского Пламени",
+		["Auchindoun"] = "Аукиндон",
+		["The Bone Wastes"] = "Костяные пустоши",
+		["Ring of Observance"] = "Ритуальный Круг",
+		["Coilfang Reservoir"] = "Резервуар Кривого Клыка",
+		["Amani Pass"] = "Перевал Амани",
+
+		["Azuremyst Isle"] = "Остров Лазурной Дымки",
+		["Bloodmyst Isle"] = "Остров Кровавой Дымки",
+		["Eversong Woods"] = "Леса Вечной Песни",
+		["Ghostlands"] = "Призрачные земли",
+		["The Exodar"] = "Экзодар",
+		["Silvermoon City"] = "Луносвет",
+		["Shadowmoon Valley"] = "Долина Призрачной Луны",
+		["Black Temple"] = "Черный храм",
+		["Terokkar Forest"] = "Лес Тероккар",
+		["Auchenai Crypts"] = "Аукенайские гробницы",
+		["Mana-Tombs"] = "Гробницы Маны",
+		["Shadow Labyrinth"] = "Темный Лабиринт",
+		["Sethekk Halls"] = "Сетеккские залы",
+		["Hellfire Peninsula"] = "Полуостров Адского Пламени",
+		["The Dark Portal"] = "Темный портал",
+		["Hellfire Ramparts"] = "Бастионы Адского Пламени",
+		["The Blood Furnace"] = "Кузня Крови",
+		["The Shattered Halls"] = "Разрушенные залы",
+		["Magtheridon's Lair"] = "Логово Магтеридона",
+		["Nagrand"] = "Награнд",
+		["Zangarmarsh"] = "Зангартопь",
+		["The Slave Pens"] = "Узилище",
+		["The Underbog"] = "Нижетопь",
+		["The Steamvault"] = "Паровое Подземелье",
+		["Serpentshrine Cavern"] = "Змеиное святилище",
+		["Blade's Edge Mountains"] = "Острогорье",
+		["Gruul's Lair"] = "Логово Груула",
+		["Netherstorm"] = "Пустоверть",
+		["Tempest Keep"] = "Крепость Бурь",
+		["The Mechanar"] = "Механар",
+		["The Botanica"] = "Ботаника",
+		["The Arcatraz"] = "Аркатрац",
+		["The Eye"] = "Око",
+		["Eye of the Storm"] = "Око Бури",
+		["Shattrath City"] = "Шаттрат",
+		["Shattrath"] = "Шаттрат",
+		["Karazhan"] = "Каражан",
+		["Caverns of Time"] = "Пещеры Времени",
+		["Old Hillsbrad Foothills"] = "Старые предгорья Хилсбрада",
+		["The Black Morass"] = "Черные топи",
+		["Night Elf Village"] = "Деревня ночных эльфов",
+		["Horde Encampment"] = "Стоянка Орды",
+		["Alliance Base"] = "База Альянса",
+		["Zul'Aman"] = "Зул'Аман",
+		["Quel'thalas"] = "Кель'Талас",
+		["Isle of Quel'Danas"] = "Остров Кель'Данас",
+		["Sunwell Plateau"] = "Плато Солнечного Колодца",
+		["Magisters' Terrace"] = "Терраса Магистров",
+
+		-- Blade's Edge Plateau
+		["Forge Camp: Terror"] = "Лагерь Легиона: Ужас",
+		["Vortex Pinnacle"] = "Нагорье Смерчей",
+		["Rivendark's Perch"] = "Гнездо Чернокрыла",
+		["Ogri'la"] = "Огри'ла",
+		["Obsidia's Perch"] = "Гнездо Обсидии",
+		["Skyguard Outpost"] = "Застава Стражи Небес",
+		["Shartuul's Transporter"] = "Транспортер Шартуула",
+		["Forge Camp: Wrath"] = "Лагерь Легиона: Гнев",
+		["Bash'ir Landing"] = "Лагерь Баш'ира",
+		["Crystal Spine"] = "Хрустальное поле",
+		["Insidion's Perch"] = "Гнездо Инсидиона",
+		["Furywing's Perch"] = "Гнездовье Ярокрыла",
+
+		["Tirisfal"] = "Тирисфальские леса",
+		["Sunken Temple"] = "Затонувший храм",
+
+-- WRATH OF THE LICH KING
+-- Zones
+		--["Borean Tundra"] = true,
+		--["Crystalsong Forest"] = true,
+		--["Dalaran"] = true,
+		--["Dragonblight"] = true,
+		--["Grizzly Hills"] = true,
+		--["Howling Fjord"] = true,
+		--["Icecrown"] = true,
+		--["Sholazar Basin"] = true,
+		--["The Storm Peaks"] = true,
+		--["Wintergrasp"] = true,
+		--["Zul'Drak"] = true,
+
+-- Instances (and subzones used for displaying these instances)
+		--["Ahn'kahet: The Old Kingdom"] = true,
+		--["Azjol-Nerub"] = true,
+		--["Coldarra"] = true,
+		--["The Culling of Stratholme"] = true,
+		--["Drak'Tharon Keep"] = true,
+		--["The Eye of Eternity"] = true,
+		--["Gundrak"] = true,
+		--["Halls of Lightning"] = true,
+		--["Halls of Stone"] = true,
+		--["The Nexus"] = true,
+		--["The Obsidian Sanctum"] = true,
+		--["The Oculus"] = true,
+		--["Ulduar"] = true,
+		--["Utgarde Keep"] = true,
+		--["Utgarde Pinnacle"] = true,
+		--["The Violet Hold"] = true,
+		--["Wyrmrest Temple"] = true,
+
+-- PvP Instances
+		--["Dalaran Sewers"] = true,
+		--["The Ring of Valor"] = true,
+		--["Strand of the Ancients"] = true,
 	}
 else
 	error(("%s: Locale %q not supported"):format(MAJOR_VERSION, GAME_LOCALE))
 end
+

@@ -103,7 +103,7 @@ GameTooltip:SetScript('OnTooltipSetItem', function(self, ...)
 	end
 
 	local itemLink = select(2, self:GetItem())
-	if itemLink then
+	if itemLink and GetItemInfo(itemLink) then --fix for blizzard doing craziness when doing getiteminfo
 		AddOwners(self, itemLink)
 	end
 end)
@@ -115,7 +115,7 @@ ItemRefTooltip:SetScript('OnTooltipSetItem', function(self, ...)
 	end
 
 	local itemLink = select(2, self:GetItem())
-	if itemLink then
+	if itemLink and GetItemInfo(itemLink) then --fix for blizzard doing craziness when doing getiteminfo
 		AddOwners(self, itemLink)
 	end
 end)

@@ -1,842 +1,2793 @@
-﻿local MINOR_VERSION = tonumber(("$Revision: 55025 $"):match("%d+"))
+-----------------------------------------------------------------------------
+-- Force used libraries to load. This is necessary because load on demand
+-- addons (in our case, disembedded libs) will no longer load even when
+-- listed in OptionalDeps and can only be loaded via LoadAddOn(). This must
+-- be done before a LibStub("AceAddon-3.0"):NewAddon() call due to
+-- ADDON_LOADED firing, as AceAddon-3.0 will call :OnInit() on any addon's
+-- ADDON_LOADED event due to needing to support submodules which may not be
+-- its their own addons.
+LoadAddOn("Ace3")
+LoadAddOn("LibSharedMedia-3.0")
+LoadAddOn("AceGUI-3.0-SharedMediaWidgets")
+LoadAddOn("LibSink-2.0")
+LoadAddOn("LibRock-1.0")
+LoadAddOn("FuBarPlugin-3.0")
+LoadAddOn("LibDataBroker-1.1")
+LoadAddOn("LibDBIcon-1.0")
 
-local L = AceLibrary("AceLocale-2.2"):new("Omen")
-local dewdrop = AceLibrary("Dewdrop-2.0")
-local waterfall = AceLibrary:HasInstance("Waterfall-1.0") and AceLibrary("Waterfall-1.0")
-local PlayerName = UnitName("player")
-local Threat = AceLibrary("Threat-1.0")
-local media = LibStub("LibSharedMedia-2.0")
-local math_floor = math.floor
-local Aura = AceLibrary("SpecialEvents-Aura-2.0")
-local BS = AceLibrary("Babble-Spell-2.2")
 
-Omen = AceLibrary("AceAddon-2.0"):new("AceEvent-2.0", "AceConsole-2.0", "AceDB-2.0", "FuBarPlugin-2.0", "Sink-1.0")
-Omen.independentProfile = true
-Omen:RegisterDB("OmenDB", "OmenDBPC", "char")
+-----------------------------------------------------------------------------
+-- Addon declaration
+local Omen = LibStub("AceAddon-3.0"):NewAddon("Omen", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "LibSink-2.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Omen", false)
+local LSM = LibStub("LibSharedMedia-3.0")
+local LDB = LibStub("LibDataBroker-1.1", true)
+local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
+_G["Omen"] = Omen
 
-Omen.version = "2.1r" .. MINOR_VERSION
-Omen.revision = MINOR_VERSION
 
+-----------------------------------------------------------------------------
+-- Keybinding globals
 BINDING_HEADER_OMEN = "Omen"
 BINDING_NAME_OMENTOGGLE = L["Toggle Omen"]
+BINDING_NAME_OMENTOGGLEFOCUS = L["Toggle Focus"]
 
-local SkinDefaults = {
-	AnimateBars = true,
-	StretchBarTextures = false,
-	BarTexture = "Blizzard",
-	TPSUpdateFrequency = 0.05,
-	BarHeight = 15,
-	Width = 210,
-	ShowTitle = true,
-	BackdropColor = {r = 0, g = 0, b = 0, a = 0.5},
-	BorderColor = {r = 0, g = 0, b = 0, a = 0.5},
-	CustomColors = {},
-	CustomBarTextures = {},
-	CustomBarHeights = {},
-	ShowVersionNumber = false,
-	ShowMaxSize = false,
-	ShowSelfArrow = true,
-	ShowAggroArrow = true,
-	SelfArrowColor = {r = 0, g = 1, b = 0, a = 1},
-	AggroArrowColor = {r = 1, g = 0, b = 0, a = 1},
-	ShowColumns = true,
-	ShortThreatNumbers = true,
-	-- Custom font: [name] = {size, outlining, color, font}
-	CustomBarFonts = {
-		["_COLUMNS_"] = {11, 0, {r = 1, g = 1, b = 1}, ""},
-		["_BARS_"] = {10, 0, {r = 1, g = 1, b = 1}, ""},
-	},
-	ColumnVisibility = {
-		name = true,
-		tps = true,
-		fight_tps = false,
-		threat = true,
-		threatpercent = true
-	},
-	-- Default font sizes
-	ShowTitle = true,
-	TitleFontSize = 12,
 
-	ColumnFontSizes = {
-		name = {11, 10},
-		tps = {11, 10},
-		fight_tps = {11, 10},
-		threat = {11, 10},
-		threatpercent = {11, 10},
+-----------------------------------------------------------------------------
+-- Register some media
+LSM:Register("sound", "Rubber Ducky", [[Sound\Doodad\Goblin_Lottery_Open01.wav]])
+LSM:Register("sound", "Cartoon FX", [[Sound\Doodad\Goblin_Lottery_Open03.wav]])
+LSM:Register("sound", "Explosion", [[Sound\Doodad\Hellfire_Raid_FX_Explosion05.wav]])
+LSM:Register("sound", "Shing!", [[Sound\Doodad\PortcullisActive_Closed.wav]])
+LSM:Register("sound", "Wham!", [[Sound\Doodad\PVP_Lordaeron_Door_Open.wav]])
+LSM:Register("sound", "Simon Chime", [[Sound\Doodad\SimonGame_LargeBlueTree.wav]])
+LSM:Register("sound", "War Drums", [[Sound\Event Sounds\Event_wardrum_ogre.wav]])
+LSM:Register("sound", "Cheer", [[Sound\Event Sounds\OgreEventCheerUnique.wav]])
+LSM:Register("sound", "Humm", [[Sound\Spells\SimonGame_Visual_GameStart.wav]])
+LSM:Register("sound", "Short Circuit", [[Sound\Spells\SimonGame_Visual_BadPress.wav]])
+LSM:Register("sound", "Fel Portal", [[Sound\Spells\Sunwell_Fel_PortalStand.wav]])
+LSM:Register("sound", "Fel Nova", [[Sound\Spells\SeepingGaseous_Fel_Nova.wav]])
+LSM:Register("sound", "You Will Die!", [[Sound\Creature\CThun\CThunYouWillDIe.wav]])
+LSM:Register("sound", "Omen: Aoogah!", [[Interface\AddOns\Omen\aoogah.ogg]])
+
+
+-----------------------------------------------------------------------------
+-- Localize some global functions
+local floor, format, random, pairs, type = floor, format, random, pairs, type
+local tinsert, tremove, next, sort, wipe = tinsert, tremove, next, sort, wipe
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local UnitDetailedThreatSituation = UnitDetailedThreatSituation
+local UnitExists, UnitGUID, UnitName, UnitClass, UnitHealth = UnitExists, UnitGUID, UnitName, UnitClass, UnitHealth
+local UnitIsPlayer, UnitPlayerControlled, UnitCanAttack = UnitIsPlayer, UnitPlayerControlled, UnitCanAttack
+local GetNumRaidMembers, GetNumPartyMembers = GetNumRaidMembers, GetNumPartyMembers
+
+
+-----------------------------------------------------------------------------
+-- Local variables used
+local db
+local defaults = {
+	profile = {
+		Alpha        = 1,
+		Scale        = 1,
+		GrowUp       = false,
+		Autocollapse = false,
+		NumBars      = 10,
+		CollapseHide = false,
+		Locked       = false,
+		PositionW    = 200,
+		PositionH    = 82,
+		VGrip1       = 85,
+		VGrip2       = 115,
+		UseFocus     = false,
+		IgnorePlayerPets = true,
+		FrameStrata = "3-MEDIUM",
+		ClampToScreen = true,
+		Background = {
+			Texture = "Blizzard Parchment",
+			BorderTexture = "Blizzard Dialog",
+			Color = {r = 1, g = 1, b = 1, a = 1,},
+			BorderColor = {r = 0.8, g = 0.6, b = 0, a = 1,},
+			Tile = false,
+			TileSize = 32,
+			EdgeSize = 8,
+			BarInset = 3,
+		},
+		TitleBar = {
+			Height = 16,
+			Font = "Friz Quadrata TT",
+			FontOutline = "",
+			FontColor = {r = 1, g = 1, b = 1, a = 1,},
+			FontSize = 10,
+			ShowTitleBar = true,
+		},
+		Bar = {
+			Texture = "Blizzard",
+			Height = 12,
+			Spacing = 0,
+			AnimateBars  = true,
+			ShortNumbers = true,
+			Font = "Friz Quadrata TT",
+			FontOutline = "",
+			FontColor = {r = 1, g = 1, b = 1, a = 1,},
+			FontSize = 10,
+			Classes = {
+				DEATHKNIGHT = true,
+				DRUID = true,
+				HUNTER = true,
+				MAGE = true,
+				PALADIN = true,
+				PET = true,
+				PRIEST = true,
+				ROGUE = true,
+				SHAMAN = true,
+				WARLOCK = true,
+				WARRIOR = true,
+				["*NOTINPARTY*"] = true,
+			},
+			ShowTPS = true,
+			TPSWindow = 10,
+			ShowHeadings = true,
+			HeadingBGColor = {r = 0, g = 0, b = 0, a = 0,},
+			UseMyBarColor = false,
+			MyBarColor = {r = 1, g = 0, b = 0, a = 1,},
+			ShowPercent = true,
+			ShowValue = true,
+			UseClassColors = true,
+			BarColor = {r = 1, g = 0, b = 0, a = 1,},
+			UseTankBarColor = false,
+			TankBarColor = {r = 1, g = 0, b = 0, a = 1,},
+			AlwaysShowSelf = true,
+			ShowAggroBar = true,
+			AggroBarColor = {r = 1, g = 0, b = 0, a = 1,},
+			PetBarColor = {r = 0.77, g = 0, b = 1, a = 1},
+		},
+		ShowWith = {
+			UseShowWith = true,
+			Pet = true,
+			Alone = false,
+			Party = true,
+			Raid = true,
+			-- Deprecated SV values
+			-- Resting = false, PVP = false, Dungeon = true, ShowOnlyInCombat = false,
+			HideWhileResting = true,
+			HideInPVP = true,
+			HideWhenOOC = false,
+		},
+		FuBar = {
+			HideMinimapButton = true,
+			AttachMinimap = false,
+		},
+		Warnings = {
+			Sound = true,
+			Flash = true,
+			Shake = false,
+			Message = false,
+			SinkOptions = {},
+			Threshold = 90,
+			SoundFile = "Fel Nova",
+			DisableWhileTanking = true,
+		},
+		MinimapIcon = {
+			hide = false,
+			minimapPos = 220,
+			radius = 80,
+		},
 	},
-	
-	ColumnOffsets = {
-		name = {0.03, "LEFT", "LEFT"},
-		tps = {0.5, "LEFT", "RIGHT"},
-		fight_tps = {0.5, "LEFT", "RIGHT"},
-		threat = {0.33, "LEFT", "RIGHT"},
-		threatpercent = {0.03, "RIGHT", "RIGHT"},
-	}
 }
+local guidNameLookup = {}   -- Format: guidNameLookup[guid] = "Unit Name"
+local guidClassLookup = {}  -- Format: guidClassLookup[guid] = "CLASS"
+local timers = {}           -- Format: timers.timerName = timer returned from AceTimer-3.0
+local bars = {}             -- Format: bars[i] = frame containing the i-th bar from the top of Omen
+local inRaid, inParty       -- boolean variables indicating if the player is in a raid and/or party
+local testMode = false      -- boolean: Are we in test mode?
+local manualToggle = false  -- boolean: Did we manually toggle Omen?
 
-Omen.SkinDefaults = SkinDefaults
+Omen.GuidNameLookup = guidNameLookup
+Omen.GuidClassLookup = guidClassLookup
+Omen.Timers = timers
+Omen.Bars = bars
+setmetatable(guidNameLookup, {__index = function(self, guid) return L["<Unknown>"] end})
 
-Omen:RegisterDefaults('account', {
-	Skins = OmenDefaultSkins,
-})
+-- For speedups. Rather than concantenating every time we need a unitID, we just look
+-- it up instead. That is rID[i] is much faster than format("raid%d", i) or "raid"..i
+local pID = {}
+local ptID = {}
+local ppID = {}
+local pptID = {}
+local rID = {}
+local rtID = {}
+local rpID = {}
+local rptID = {}
+for i = 1, 4 do
+	pID[i] = format("party%d", i)
+	ptID[i] = format("party%dtarget", i)
+	ppID[i] = format("partypet%d", i)
+	pptID[i] = format("partypet%dtarget", i)
+end
+for i = 1, 40 do
+	rID[i] = format("raid%d", i)
+	rtID[i] = format("raid%dtarget", i)
+	rpID[i] = format("raidpet%d", i)
+	rptID[i] = format("raidpet%dtarget", i)
+end
 
-Omen:RegisterDefaults('profile', {
-	-- Operation options
-	AlwaysShowOmen = false,
-	AlwaysShowSelf = true,
-	ActivateSolo = false,
-	ActivateWithPet = true,
-	ShowKtmData = true,
-	ThreatBars = {},
-	ActiveSkin = nil,
-	CurrentSkinSettings = {},
-	EnableKTMPublish = true,
-	
-	EnableWarnings = true,
-	FlashWarningFrame = true,
-	ShowFloatingMessage = true,
-	
-	WarningsWhileTanking = false,
-	WarnLevel = 0.9,
-	WarningSound = "None",
 
-	-- Non-skin display options
-	ShowOmen = true,
-	GrowUp = false,
-	MaxBars = 10,
-	Scale = 1,
-	Classes = {
-		["DRUID"] = true, 
-		["HUNTER"] = true, 
-		["MAGE"] = true, 
-		["PALADIN"] = true, 
-		["PRIEST"] = true, 
-		["ROGUE"] = true, 
-		["SHAMAN"] = true, 
-		["WARLOCK"] = true, 
-		["WARRIOR"] = true
-	},	
-	ShowAggroGain = true
-})
-OmenDefaultSkins = nil
+-----------------------------------------------------------------------------
+-- Table Pool for recycling tables
+local tablePool = {}
+setmetatable(tablePool, {__mode = "kv"}) -- Weak table
 
-local new, newHash, newSet, del
-do
-	local list = setmetatable({}, {__mode='k'})
-	function new(...)
-		local t = next(list)
-		if t then
-			list[t] = nil
-			for i = 1, select('#', ...) do
-				t[i] = select(i, ...)
+-- Get a new table
+local function newTable()
+	local t = next(tablePool) or {}
+	tablePool[t] = nil
+	return t
+end
+
+-- Delete table and return to pool -- Recursive!! -- Use with care!!
+local function delTable(t)
+	if type(t) == "table" then
+		for k, v in pairs(t) do
+			if type(v) == "table" then
+				delTable(v) -- child tables get put into the pool
 			end
-			return t
-		else
-			return {...}
-		end
-	end
-	function newHash(...)
-		local t = next(list)
-		if t then
-			list[t] = nil
-		else
-			t = {}
-		end	
-		for i = 1, select('#', ...), 2 do
-			t[select(i, ...)] = select(i+1, ...)
-		end
-		return t
-	end
-	function newSet(...)
-		local t = next(list)
-		if t then
-			list[t] = nil
-		else
-			t = {}
-		end	
-		for i = 1, select('#', ...) do
-			t[select(i, ...)] = true
-		end
-		return t
-	end
-	function del(t)
-		setmetatable(t, nil)
-		for k in pairs(t) do
 			t[k] = nil
 		end
-		list[t] = true
-		return nil
+		t[true] = true -- resize table to 1 item
+		t[true] = nil
+		setmetatable(t, nil)
+		tablePool[t] = true
 	end
+	return nil -- return nil to assign input reference
 end
 
-Omen.bars = {}
-Omen.ThreatBars = {}
-Omen.SkinList = {}
 
-function Omen:OnInitialize()
-	self.threatTargetName = ""
-	self.titleOffset = 0
-	self.barsOffset = 22 + self.titleOffset
-	self.barList = {}
+-----------------------------------------------------------------------------
+-- Omen initialization and frame functions
 
-	-- FuBar stuff
-	self.hasIcon = "Interface\\AddOns\\Omen\\icon"
-	self.hasNoColor  = true
-	self.cannotDetachTooltip = true
-	self.blizzardTooltip = true
-	self.hideWithoutStandby = true
-	self.cannotDetachTooltip = true
-
-	self.ActiveSkin = self.db.profile.CurrentSkinSettings
-	
-	self:UpdateSkinList()
-
-	if not self.ActiveSkin.Width then
-		self:LoadSkin("Omen Default")
+local function startmoving(self)
+	if not db.Locked then
+		Omen.Anchor.IsMovingOrSizing = 1
+		Omen.Anchor:StartMoving()
 	end
+end
+local function stopmoving(self)
+	if Omen.Anchor.IsMovingOrSizing then
+		Omen.Anchor:StopMovingOrSizing()
+		Omen:SetAnchors()
+		Omen:UpdateBars()
+		Omen.Anchor.IsMovingOrSizing = nil
+	end
+end
+local function sizing(self)
+	local w = Omen.Anchor:GetWidth()
+	db.VGrip1 = w * Omen.Anchor.VGrip1Ratio
+	db.VGrip2 = w * Omen.Anchor.VGrip2Ratio
+	if db.VGrip1 < 10 then db.VGrip1 = 10 end
+	if db.VGrip1 > w - 10 then db.VGrip1 = w - 10 end
+	if db.Bar.ShowTPS then
+		if db.VGrip2 < db.VGrip1 + 10 then db.VGrip2 = db.VGrip1 + 10 end
+		if db.VGrip1 > w - 20 then
+			db.VGrip1 = w - 20
+			db.VGrip2 = w - 10
+		end
+		Omen.VGrip2:ClearAllPoints()
+		Omen.VGrip2:SetPoint("TOPLEFT", Omen.BarList, "TOPLEFT", db.VGrip2, 0)
+		Omen.VGrip2:SetPoint("BOTTOMLEFT", Omen.BarList, "BOTTOMLEFT", db.VGrip2, 0)
+	end
+	Omen.VGrip1:ClearAllPoints()
+	Omen.VGrip1:SetPoint("TOPLEFT", Omen.BarList, "TOPLEFT", db.VGrip1, 0)
+	Omen.VGrip1:SetPoint("BOTTOMLEFT", Omen.BarList, "BOTTOMLEFT", db.VGrip1, 0)
+	Omen:ResizeBars()
+	Omen:ReAnchorLabels()
+	Omen:UpdateBars()
+end
+local function movegrip1(self)
+	local x = GetCursorPosition() / UIParent:GetEffectiveScale() / Omen.Anchor:GetScale()
+	local x1 = Omen.Anchor:GetLeft() + 10
+	local x2 = db.Bar.ShowTPS and Omen.Anchor:GetLeft() + db.VGrip2 - 10 or Omen.Anchor:GetRight() - 10
+	if x > x1 and x < x2 then
+		db.VGrip1 = x - x1 + 10
+		Omen.VGrip1:ClearAllPoints()
+		Omen.VGrip1:SetPoint("TOPLEFT", Omen.BarList, "TOPLEFT", db.VGrip1, 0)
+		Omen.VGrip1:SetPoint("BOTTOMLEFT", Omen.BarList, "BOTTOMLEFT", db.VGrip1, 0)
+	end
+	Omen:ReAnchorLabels()
+end
+local function movegrip2(self)
+	local x = GetCursorPosition() / UIParent:GetEffectiveScale() / Omen.Anchor:GetScale()
+	local x1 = Omen.Anchor:GetLeft() + db.VGrip1 + 10
+	local x2 = Omen.Anchor:GetRight() - 10
+	if x > x1 and x < x2 then
+		db.VGrip2 = x - x1 + db.VGrip1 + 10
+		Omen.VGrip2:ClearAllPoints()
+		Omen.VGrip2:SetPoint("TOPLEFT", Omen.BarList, "TOPLEFT", db.VGrip2, 0)
+		Omen.VGrip2:SetPoint("BOTTOMLEFT", Omen.BarList, "BOTTOMLEFT", db.VGrip2, 0)
+	end
+	Omen:ReAnchorLabels()
+end
 
-	-- Frames setup
+function Omen:CreateFrames()
+	-- Create anchor
 	self.Anchor = CreateFrame("Frame", "OmenAnchor", UIParent)
 	self.Anchor:SetResizable(true)
-	self.Anchor:SetClampedToScreen(true)
-	self.Anchor:SetBackdrop({
-		bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-		tile = true,
-		tileSize = 16,
-		edgeSize = 16,
-		insets = {left = 4, right = 4, top = 4, bottom = 4}
-	})
-	self.Anchor:SetMinResize(100, 22)
+	self.Anchor:SetMinResize(90, db.Background.EdgeSize * 2)
 	self.Anchor:SetMovable(true)
-	self.Anchor:EnableMouse(true)
 	self.Anchor:SetPoint("CENTER", UIParent, "CENTER")
-	self.Anchor:SetScript("OnMouseDown", function() if not Omen.db.profile.Locked then this:StartMoving(); end end)
-	self.Anchor:SetScript("OnMouseUp", function()
-		this:StopMovingOrSizing();		
-		Omen:SetAnchors()
-	end)
-	self.Anchor:SetScript("OnSizeChanged", function()
-		self.ActiveSkin.Width = Omen.Anchor:GetWidth()
-		Omen:UpdateLayout()
-		Omen:ArrangeBars()
-	end)
-	self.Anchor:SetHeight(self.barsOffset + 5)
-	self.Anchor:SetScale(min(5, max(0.2, self.db.profile.Scale)))
-	dewdrop:Register(self.Anchor, "children", self.OnMenuRequest, 'cursorX', true, 'cursorY', true)
+	self.Anchor:SetWidth(225)
+	self.Anchor:SetHeight(150)
+	self.Anchor:SetScript("OnHide", stopmoving)
 
-	-- Resize grip
-	local grip = CreateFrame("Button", "OmenResizeGrip", self.Anchor)
-	grip:SetNormalTexture("Interface\\AddOns\\Omen\\ResizeGrip")
-	grip:SetHighlightTexture("Interface\\AddOns\\Omen\\ResizeGrip")
-	grip:SetWidth(16)
-	grip:SetHeight(16)
-	grip:SetScript("OnMouseDown", function()
-		if not Omen.db.profile.Locked then
-			this:GetParent():StartSizing()
+	-- Create Title
+	self.Title = CreateFrame("Button", "OmenTitle", self.Anchor)
+	self.Title:SetPoint("TOPLEFT", self.Anchor, "TOPLEFT")
+	self.Title:SetPoint("TOPRIGHT", self.Anchor, "TOPRIGHT")
+	self.Title:SetHeight(16)
+	self.Title:SetMinResize(90, db.Background.EdgeSize * 2)
+	self.Title:EnableMouse(true)
+	self.Title:SetScript("OnMouseDown", startmoving)
+	self.Title:SetScript("OnMouseUp", stopmoving)
+	self.Title:SetScript("OnClick", function(self, button, down)
+		if button == "RightButton" then
+			ToggleDropDownMenu(1, nil, Omen_TitleDropDownMenu, self:GetName(), 0, 0)
 		end
 	end)
-	grip:SetScript("OnMouseUp", function()
-		this:GetParent():StopMovingOrSizing()
+	self.Title:RegisterForClicks("RightButtonUp")
+
+	-- Create Title text
+	self.TitleText = self.Title:CreateFontString(nil, nil, "GameFontNormal")
+	self.TitleText:SetPoint("LEFT", self.Title, "LEFT", 8, 1)
+	self.TitleText:SetJustifyH("LEFT")
+	self.TitleText:SetTextColor(1, 1, 1, 1)
+	self.defaultTitle = "Omen|cffffcc003|r"
+	self.TitleText:SetText(self.defaultTitle)
+
+	-- Create Bar List
+	self.BarList = CreateFrame("Frame", "OmenBarList", self.Anchor)
+	self.BarList:SetResizable(true)
+	self.BarList:EnableMouse(true)
+	self.BarList:SetPoint("TOPLEFT", self.Title, "BOTTOMLEFT")
+	self.BarList:SetPoint("BOTTOMRIGHT", self.Anchor, "BOTTOMRIGHT")
+	self.BarList:SetScript("OnMouseDown", startmoving)
+	self.BarList:SetScript("OnMouseUp", stopmoving)
+	self.BarList.barsShown = 0
+
+	-- Create resizing corner grip
+	self.Grip = CreateFrame("Button", "OmenResizeGrip", self.BarList)
+	self.Grip:SetNormalTexture("Interface\\AddOns\\Omen\\ResizeGrip")
+	self.Grip:SetHighlightTexture("Interface\\AddOns\\Omen\\ResizeGrip")
+	self.Grip:SetWidth(16)
+	self.Grip:SetHeight(16)
+	self.Grip:SetPoint("BOTTOMRIGHT", self.BarList, "BOTTOMRIGHT", 0, 1)
+	self.Grip:SetScript("OnMouseDown", function(self, button)
+		if not db.Locked then
+			Omen.Anchor.IsMovingOrSizing = 2
+			Omen.Anchor.VGrip1Ratio = db.VGrip1 / Omen.Anchor:GetWidth()
+			Omen.Anchor.VGrip2Ratio = db.VGrip2 / Omen.Anchor:GetWidth()
+			Omen.Anchor:SetScript("OnSizeChanged", sizing)
+			Omen.Anchor:StartSizing()
+		end
 	end)
-	grip:SetPoint("BOTTOMRIGHT", self.Anchor, "BOTTOMRIGHT", 0, 1)
-	self.Grip = grip
-	
-	self.modName = "|cff6299FFOmen"
+	self.Grip:SetScript("OnMouseUp", function(self)
+		if Omen.Anchor.IsMovingOrSizing == 2 then
+			Omen.Anchor:SetScript("OnSizeChanged", nil)
+			Omen.Anchor:StopMovingOrSizing()
+			sizing()
+			Omen:SetAnchors()
+			Omen.Anchor.IsMovingOrSizing = nil
+			Omen.Anchor.VGrip1Ratio = nil
+		end
+	end)
+	self.Grip:SetScript("OnHide", self.Grip:GetScript("OnMouseUp"))
 
-	-- App title
-	self.Anchor.title = self.Anchor:CreateFontString(nil, nil, "GameFontNormal")
-	self.Anchor.title:SetPoint("BOTTOM", self.Anchor, "TOP", 0, 2)
-	self.Anchor.title:SetText(self.modName)
+	-- Create label resizing vertical grip 1
+	self.VGrip1 = CreateFrame("Button", "OmenVResizeGrip1", self.BarList)
+	self.VGrip1:SetWidth(1)
+	self.VGrip1:SetPoint("TOPLEFT", self.BarList, "TOPLEFT", db.VGrip1, 0)
+	self.VGrip1:SetPoint("BOTTOMLEFT", self.BarList, "BOTTOMLEFT", db.VGrip1, 0)
+	self.VGrip1:SetNormalTexture("Interface\\Tooltips\\UI-Tooltip-Background")
+	self.VGrip1:SetHighlightTexture("Interface\\Tooltips\\UI-Tooltip-Background")
+	self.VGrip1:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+	self.VGrip1:GetHighlightTexture():SetVertexColor(1, 1, 1, 0.5)
+	self.VGrip1:SetScript("OnMouseDown", function(self)
+		if not db.Locked then self:SetScript("OnUpdate", movegrip1) end
+	end)
+	self.VGrip1:SetScript("OnMouseUp", function(self) self:SetScript("OnUpdate", nil) end)
+	self.VGrip1:SetScript("OnHide", self.VGrip1:GetScript("OnMouseUp"))
+	self.VGrip1:SetFrameLevel(self.BarList:GetFrameLevel() + 2)
 
-	-- App revision string
-	self.Anchor.revision = self.Anchor:CreateFontString(nil, nil, "GameFontNormal")
-	self.Anchor.revision:SetPoint("TOPLEFT", self.Anchor, "BOTTOMLEFT", 4, 2)
-	local font, size = self.Anchor.revision:GetFont()
-	self.Anchor.revision:SetFont(font, 8)
-	self.Anchor.revision:SetText(string.format("|cffFFB400Omen r |cffffffff%s /|cffFFB400 Threat-1.0 r |cffffffff%s", MINOR_VERSION, select(2,Threat:GetLibraryVersion())))
+	-- Create label resizing vertical grip 2
+	self.VGrip2 = CreateFrame("Button", "OmenVResizeGrip2", self.BarList)
+	self.VGrip2:SetWidth(1)
+	self.VGrip2:SetPoint("TOPLEFT", self.BarList, "TOPLEFT", db.VGrip2, 0)
+	self.VGrip2:SetPoint("BOTTOMLEFT", self.BarList, "BOTTOMLEFT", db.VGrip2, 0)
+	self.VGrip2:SetNormalTexture("Interface\\Tooltips\\UI-Tooltip-Background")
+	self.VGrip2:SetHighlightTexture("Interface\\Tooltips\\UI-Tooltip-Background")
+	self.VGrip2:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+	self.VGrip2:GetHighlightTexture():SetVertexColor(1, 1, 1, 0.5)
+	self.VGrip2:SetScript("OnMouseDown", function(self)
+		if not db.Locked then self:SetScript("OnUpdate", movegrip2) end
+	end)
+	self.VGrip2:SetScript("OnMouseUp", self.VGrip1:GetScript("OnMouseUp"))
+	self.VGrip2:SetScript("OnHide", self.VGrip1:GetScript("OnMouseUp"))
+	self.VGrip2:SetFrameLevel(self.BarList:GetFrameLevel() + 2)
 
-	-- App "out of date" notification
-	self.Anchor.outofDate = self.Anchor:CreateFontString(nil, nil, "GameFontNormal")
-	self.Anchor.outofDate:SetPoint("TOPLEFT", self.Anchor.revision, "BOTTOMLEFT", 0, -1)
-	self.Anchor.outofDate:Hide()
-	local font, size = self.Anchor.revision:GetFont()
-	self.Anchor.outofDate:SetFont(font, 8)
-	self.Anchor.outofDate:SetText("|cffff0000Out of date notice")
+	--[[self.FocusButton = CreateFrame("Button", "OmenFocusButton", self.Title, "OptionsButtonTemplate")
+	self.FocusButton:SetWidth(16)
+	self.FocusButton:SetHeight(16)
+	self.FocusButton:SetPoint("TOPRIGHT")
+	self.FocusButton:SetText("F")
+	self.FocusButton:SetScript("OnClick", function(self, button, down)
+		db.UseFocus = not db.UseFocus
+		if db.UseFocus then
+			self:GetFontString():SetTextColor(1, 0.82, 0, 1)
+		else
+			self:GetFontString():SetTextColor(0.5, 0.5, 0.5, 1)
+		end
+		Omen:UpdateBars()
+	end)
+	if db.UseFocus then
+		self.FocusButton:GetFontString():SetTextColor(1, 0.82, 0, 1)
+	else
+		self.FocusButton:GetFontString():SetTextColor(0.5, 0.5, 0.5, 1)
+	end]]
+end
 
-	-- Create columns
-	self.Anchor.columns = {}
-	self:CreateColumn("name", L["Name"], 10)
-	self:CreateColumn("tps", L["TPS"], 10)
-	self:CreateColumn("threat", L["Threat"], 10)
-	self:CreateColumn("threatpercent", "%", 10)
-	self:CreateColumn("fight_tps", L["E-TPS"], 10)
-	
-	local columns = {L["Name"], "name", L["TPS"], "tps", L["E-TPS"], "fight_tps", L["Threat"], "threat", "%", "threatpercent"}
-	for i = 1, #columns, 2 do
-		local name = columns[i]
-		local iName = columns[i+1]
-		local val = {
-			type = "group",
-			name = name,
-			desc = name,
-			args = {
-				["toggle_column_" .. iName] = {
-					type = "toggle",
-					name = L["Show"],
-					desc = L["Show"],
-					get = function()
-						return Omen.ActiveSkin.ColumnVisibility[iName]
-					end,
-					set = function(v)
-						Omen.ActiveSkin.ColumnVisibility[iName] = v
-						Omen:ToggleColumn(iName, v)
-					end
-				},
-				["column_offset_" .. iName] = {
-					type = "range",
-					name = L["Offset"],
-					desc = L["Offset"],
-					min = 0,
-					max = 1,
-					step = 0.01,
-					isPercent = true,
-					get = function()
-						return Omen.ActiveSkin.ColumnOffsets[iName][1]
-					end,
-					set = function(v)
-						Omen.ActiveSkin.ColumnOffsets[iName][1] = v
-						Omen:UpdateLayout()
-					end
-				}
-				
-			}			
-		}
-		self.mainMenu.args.skins.args.skinOptions.args.columns.args["column_" .. iName] = val
+function Omen:OnInitialize()
+	-- Create savedvariables
+	self.db = LibStub("AceDB-3.0"):New("Omen3DB", defaults)
+	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
+	db = self.db.profile
+	self:SetSinkStorage(db.Warnings.SinkOptions)
+
+	self:CreateFrames()
+	self:SetupOptions()
+
+	self:RegisterEvent("PLAYER_LOGIN")
+end
+
+function Omen:PLAYER_LOGIN()
+	-- We set up anchors here because we only want to do it once on
+	-- PLAYER_LOGIN, hence we don't do it in OnEnable() which triggers on
+	-- the same event as well as on every subsequent Enable()/Disable() calls.
+	-- It cannot be earlier than PLAYER_LOGIN because layout-cache.txt
+	-- is loaded just before this event fires.
+	self:SetAnchors(true)
+	self.Anchor:SetAlpha(db.Alpha)
+	self.Anchor:SetFrameStrata(strsub(db.FrameStrata, 3))
+	self.Anchor:SetClampedToScreen(db.ClampToScreen)
+	self:UpdateBackdrop()
+	self:UpdateTitleBar()
+	self:UpdateGrips()
+	self:ClearAll()
+	self:UnregisterEvent("PLAYER_LOGIN")
+
+	if LDB then
+		OmenLauncher = LDB:NewDataObject("Omen", {
+			type = "launcher",
+			icon = "Interface\\AddOns\\Omen\\icon",
+			OnClick = function(clickedframe, button)
+				if button == "RightButton" then Omen:ShowConfig() else Omen:Toggle() end
+			end,
+			OnTooltipShow = function(tt)
+				tt:AddLine(self.defaultTitle)
+				tt:AddLine("|cffffff00" .. L["Click|r to toggle the Omen window"])
+				tt:AddLine("|cffffff00" .. L["Right-click|r to open the options menu"])
+			end,
+		})
+		if LDBIcon and not IsAddOnLoaded("Broker2FuBar") and not IsAddOnLoaded("FuBar") then
+			LDBIcon:Register("Omen", OmenLauncher, db.MinimapIcon)
+		end
 	end
-	
-	-- Load threat bars
-	for k,v in pairs(self.db.profile.ThreatBars) do
-		local bar = OmenThreatBar:new()
-		bar:LoadBar(k)
-	end
 
-	-- Final cleanup and stuff
-	
-	if Threat:IsActive() then
-		self:Threat_Activate()
-	end
-	self:PatchSkin()
-	self:RegisterEvent("AceEvent_FullyInitialized")	
-	if not self.Initialized and AceLibrary("AceEvent-2.0"):IsFullyInitialized() then
-		self:AceEvent_FullyInitialized()
+	-- Optional launcher support for LFBP-3.0 if present, this code is placed here so
+	-- that it runs after all other addons have loaded since we don't embed LFBP-3.0
+	-- Yes, this is one big hack since LFBP-3.0 is a Rock library, and we embed it
+	-- via Ace3. OnEmbedInitialize() needs to be called manually.
+	if LibStub:GetLibrary("LibFuBarPlugin-3.0", true) and not IsAddOnLoaded("FuBar2Broker") then
+		local LFBP = LibStub:GetLibrary("LibFuBarPlugin-3.0")
+		LibStub("AceAddon-3.0"):EmbedLibrary(self, "LibFuBarPlugin-3.0")
+		self:SetFuBarOption("tooltipType", "GameTooltip")
+		self:SetFuBarOption("hasNoColor", true)
+		self:SetFuBarOption("cannotDetachTooltip", true)
+		self:SetFuBarOption("hideWithoutStandby", true)
+		self:SetFuBarOption("iconPath", [[Interface\AddOns\Omen\icon]])
+		self:SetFuBarOption("hasIcon", true)
+		self:SetFuBarOption("defaultPosition", "RIGHT")
+		self:SetFuBarOption("tooltipHiddenWhenEmpty", true)
+		self:SetFuBarOption("configType", "None")
+		LFBP:OnEmbedInitialize(self)
+		function Omen:OnUpdateFuBarTooltip()
+			GameTooltip:AddLine(self.defaultTitle)
+			GameTooltip:AddLine("|cffffff00" .. L["Click|r to toggle the Omen window"])
+			GameTooltip:AddLine("|cffffff00" .. L["Right-click|r to open the options menu"])
+		end
+		function Omen:OnFuBarClick(button)
+			if button == "RightButton" then self:ShowConfig() else self:Toggle() end
+		end
+		self.optionsFrames["FuBar"] = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Omen", L["FuBar Options"], "Omen", "FuBar")
+		self:UpdateFuBarSettings()
 	end
 end
 
-local playerClass = select(2, UnitClass("player"))
-local playerIsTanking = false
-
 function Omen:OnEnable()
-	if not self.Initialized and AceLibrary("AceEvent-2.0"):IsFullyInitialized() then
-		self:AceEvent_FullyInitialized()
+	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent("UNIT_PET", "PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent("UNIT_NAME_UPDATE", "PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent("PLAYER_PET_CHANGED", "PARTY_MEMBERS_CHANGED")
+	--self:RegisterEvent("RAID_ROSTER_UPDATE", "PARTY_MEMBERS_CHANGED") -- Is this needed?
+
+	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateVisible")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateVisible")
+
+	if db.ShowWith.HideWhenOOC then
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateVisible")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisible")
 	end
-	if self.db.profile.ActivateSolo then
-		Threat:RequestActiveOnSolo(true)
+	if db.UseFocus then
+		self:RegisterEvent("UNIT_TARGET")
 	end
-	self:RegisterEvent("Threat_Activate")
-	self:RegisterEvent("Threat_Deactivate")		
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	
-	self:RegisterEvent("Threat_ThreatCleared", "Clear")
-	self:RegisterEvent("Threat_PartyChanged")
-	self:RegisterEvent("Threat_OutOfDateNotice")
-	self:RegisterEvent("Threat_ThreatUpdated")
-	self:RegisterEvent("PLAYER_LOGOUT")
-	
-	if playerClass == "WARRIOR" or playerClass == "DRUID" then
-		self:RegisterEvent("SPELLS_CHANGED")
-		self:SPELLS_CHANGED()
-	elseif playerClass == "PALADIN" then
-		self:RegisterEvent("SpecialEvents_PlayerBuffGained", "buffGained")
-		self:RegisterEvent("SpecialEvents_PlayerBuffLost", "buffLost")
-		for buffName in Aura:BuffIter("player") do
-			if buffName == BS["Righteous Fury"] then
-				playerIsTanking = true
-				break
-			end
-		end	
-	end
-	
-	if Threat:IsActive() then
-		self:Threat_Activate()
-	end
-	self:ArrangeBars()
-	self:SetAnchors(true)
-	self:ApplySkin()
-	self:Toggle(self.db.profile.ShowOmen)
-	Threat:EnableKLHTMBroadcast(self.db.profile.EnableKTMPublish)
+
+	self:PARTY_MEMBERS_CHANGED()
+	self:PLAYER_TARGET_CHANGED()
 end
 
 function Omen:OnDisable()
-	self:Clear()
-	self:Toggle(false)
-	Threat:EnableKLHTMBroadcast(false)
-end
-
-function Omen:PLAYER_LOGOUT()
-	self:Clear()
-end
-
--- Only registered when the player is a warrior/druid
-function Omen:SPELLS_CHANGED()
-	if playerClass == "WARRIOR" and GetShapeshiftForm(true) == 2 then
-		playerIsTanking = true
-	elseif playerClass == "DRUID" and GetShapeshiftForm(true) == 1 then
-		playerIsTanking = true
+	-- Cancel all timers (well at least nil them all
+	-- out in timers[], since AceTimer-3.0 cancels
+	-- them all OnDisable anyway).
+	for k, v in pairs(timers) do
+		self:CancelTimer(v, true)
+		timers[k] = nil
 	end
+
+	self:_toggle(false)
 end
 
--- Only registered when the player is a paladin
-function Omen:buffGained(buffName)
-	if buffName == BS["Righteous Fury"] then
-		playerIsTanking = true
+function Omen:OnProfileChanged(event, database, newProfileKey)
+	db = database.profile
+	self:SetAnchors(true)
+	self.Anchor:SetAlpha(db.Alpha)
+	self.Anchor:SetFrameStrata(strsub(db.FrameStrata, 3))
+	self.Anchor:SetClampedToScreen(db.ClampToScreen)
+	self:UpdateBackdrop()
+	self:UpdateTitleBar()
+	self:UpdateGrips()
+	self:ResizeBars()
+	self:ReAnchorBars()
+	self:ReAnchorLabels()
+	self:UpdateBarLabelSettings()
+	self:UpdateFuBarSettings()
+	-- These remainder settings were not placed in functions
+	-- and were just updated directly from the config code.
+	if LDBIcon and not IsAddOnLoaded("Broker2FuBar") and not IsAddOnLoaded("FuBar") then
+		LDBIcon:Refresh("Omen", db.MinimapIcon)
 	end
-end
-
--- Only registered when the player is a paladin
-function Omen:buffLost()
-	if buffName == BS["Righteous Fury"] then
-		playerIsTanking = false
-	end
-end
-
-function Omen:UpdateSkinList()
-	local osl = self.SkinList
-	for i = 1, #osl do
-		tremove(osl)
-	end
-	for k, v in pairs(Omen.db.account.Skins) do
-		tinsert(osl, k)
-	end
-	table.sort(osl)
-end
-
-function Omen:AceEvent_FullyInitialized()
-	self.Initialized = true
-	self:SetAnchors()
-	self:CreateAggroGainBar(string.format("*%s*", L["Aggro Gain"]))
-	if Threat:IsActive() then
-		self:Threat_Activate()
+	if db.ShowWith.HideWhenOOC then
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateVisible")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisible")
 	else
-		self:Threat_Deactivate()
+		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
-	for k,v in ipairs(self.ThreatBars) do
-		v:UpdateTexture()
-	end
-	self:ApplySkin()
-end
-
-local function ConvertToK(n)
-	if not Omen.ActiveSkin.ShortThreatNumbers then return n , "" end
-	if n > 1000 then
-		return n / 1000, "k"
-	end
-	return n, ""
-end
-
-function Omen:Threat_Activate()
-	if not self:IsEventRegistered("UNIT_TARGET") then
+	if db.UseFocus then
 		self:RegisterEvent("UNIT_TARGET")
-	end
-	if not self:IsEventRegistered("PLAYER_TARGET_CHANGED") then
-		self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	end
-	self:PLAYER_TARGET_CHANGED()
-	
-	self:SetIcon("Interface\\AddOns\\Omen\\icon")
-	local pMembers = GetNumPartyMembers() + GetNumRaidMembers()
-	if pMembers == 0 and not self.db.profile.ActivateWithPet then return end
-	if self.db.profile.ShowOmen or Omen.db.profile.AlwaysShowOmen then
-		Omen:Toggle(true)
-	end
-end
-
-function Omen:Threat_Deactivate()
-	if self:IsEventRegistered("UNIT_TARGET") then
+	else
 		self:UnregisterEvent("UNIT_TARGET")
 	end
-	if self:IsEventRegistered("PLAYER_TARGET_CHANGED") then
-		self:UnregisterEvent("PLAYER_TARGET_CHANGED")
+	local f = self.TPSUpdateFrame
+	if f then
+		if db.Bar.ShowTPS then f:Show() else f:Hide() end
 	end
-	self:SetIcon("Interface\\AddOns\\Omen\\icon_off")
-	if not Omen.db.profile.AlwaysShowOmen then
-		self.Anchor:Hide()
+	if db.Bar.ShowValue and db.Bar.ShowPercent then
+		bars[0].Text2:SetText(L["Threat [%]"])
+	else
+		bars[0].Text2:SetText(L["Threat"])
 	end
+	local texturepath = LSM:Fetch("statusbar", db.Bar.Texture)
+	for i = 0, #bars do
+		bars[i].texture:SetTexture(texturepath)
+	end
+
+	self:UpdateVisible()
+	self:UpdateBars()
 end
 
-function Omen:Toggle(state)
-	if state or not self.Anchor:IsVisible() then
+function Omen:SetAnchors(useDB)
+	local x, y, w, h
+
+	-- Set the scale, since the scaling affects the position
+	self.Anchor:SetScale(db.Scale)
+	self.VGrip1:SetWidth(1 / self.VGrip1:GetEffectiveScale())
+	self.VGrip2:SetWidth(1 / self.VGrip2:GetEffectiveScale())
+
+	-- Get position
+	if useDB then
+		x, y = db.PositionX, db.PositionY
+		if not x or not y then
+			self.Anchor:ClearAllPoints()
+			self.Anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+			x, y = self.Anchor:GetLeft(), db.GrowUp and self.Anchor:GetBottom() or self.Anchor:GetTop()
+		end
+	else
+		x, y = self.Anchor:GetLeft(), db.GrowUp and self.Anchor:GetBottom() or self.Anchor:GetTop()
+	end
+
+	-- Get width/height
+	w = useDB and db.PositionW or self.Anchor:GetWidth()
+	h = useDB and db.PositionH or self.Anchor:GetHeight()
+
+	-- Set the anchors and size
+	self.Anchor:ClearAllPoints()
+	self.Anchor:SetPoint(db.GrowUp and "BOTTOMLEFT" or "TOPLEFT", UIParent, "BOTTOMLEFT", x, y)
+	self.Anchor:SetWidth(w)
+	self.Anchor:SetHeight(h)
+	self.Anchor:SetUserPlaced(nil)
+
+	-- Save the data
+	db.PositionX, db.PositionY = x, y
+	db.PositionW, db.PositionH = w, h
+end
+
+-- For public use
+function Omen:Toggle(setting)
+	-- Don't set the manualToggle flag is "Hide Omen on 0 bars" option is active
+	if not (db.Autocollapse and db.CollapseHide) then
+		manualToggle = true
+	end
+	return self:_toggle(setting)
+end
+
+-- For internal use
+function Omen:_toggle(setting)
+	if setting == nil then
+		setting = not self.Anchor:IsShown()
+	end
+	if setting then
 		self.Anchor:Show()
-		self:ArrangeBars()
 	else
 		self.Anchor:Hide()
 	end
-
-	self.db.profile.ShowOmen = (Omen.Anchor:IsVisible() and true or false) -- DB didn't like nil
 end
 
--- If our party changes around, we want to follow our target by name
--- We use the Threat event rather than the Blizzard event because this way we
--- know that Threat:GetUnitIDByUnitName will be accurate
-function Omen:Threat_PartyChanged()	
-	for k,v in pairs(self.bars) do
-		local partyID = Threat:GetUnitIDByUnitName(v.unitname)
-		if partyID then
-			v.unitid = partyID
-		end
+function Omen:UpdateVisible(event)
+	if event == "PLAYER_ENTERING_WORLD" then manualToggle = false end
+
+	local t = db.ShowWith
+	if not t.UseShowWith or manualToggle then return end
+
+	-- Hide if HideWhenOOC option is on, we're not in combat, and the triggering event is not
+	-- "PLAYER_REGEN_DISABLED" (we're out of combat during this event just before entering combat)
+	if t.HideWhenOOC and not InCombatLockdown() and event ~= "PLAYER_REGEN_DISABLED" then
+		self:_toggle(false)
+		return
 	end
-	if self.partyMemberName then
-		local partyID = Threat:GetUnitIDByUnitName(self.partyMemberName)
-		if partyID then
-			self.watchedUnitID = partyID
-			self.threatTargetName = UnitName(partyID .. "target")
+
+	-- Check for pet|party|raid|alone
+	local show = (t.Pet and UnitExists("pet")) or
+		(t.Party and inParty) or
+		(t.Raid and inRaid) or
+		(t.Alone and not inParty and not inRaid and not UnitExists("pet"))
+
+	-- Then hide override if necessary for resting|pvp
+	local inInstance, instanceType = IsInInstance()
+	if (t.HideWhileResting and IsResting()) or (t.HideInPVP and (instanceType == "pvp" or instanceType == "arena")) then
+		show = false
+	end
+
+	-- Hide if Autocollapse and Hide Omen on 0 Bars are both active and there are 0 bars.
+	if db.Autocollapse and db.CollapseHide and self.BarList.barsShown == 0 then
+		show = false
+	end
+
+	self:_toggle(show)
+end
+
+local bgFrame = {insets = {}}
+function Omen:UpdateBackdrop()
+	bgFrame.bgFile = LSM:Fetch("background", db.Background.Texture)
+	bgFrame.edgeFile = LSM:Fetch("border", db.Background.BorderTexture)
+	bgFrame.tile = db.Background.Tile
+	bgFrame.tileSize = db.Background.TileSize
+	bgFrame.edgeSize = db.Background.EdgeSize
+	local inset = floor(db.Background.EdgeSize / 4)
+	bgFrame.insets.left = inset
+	bgFrame.insets.right = inset
+	bgFrame.insets.top = inset
+	bgFrame.insets.bottom = inset
+	self.Title:SetBackdrop(bgFrame)
+	self.BarList:SetBackdrop(bgFrame)
+
+	local c = db.Background.Color
+	self.Title:SetBackdropColor(c.r, c.g, c.b, c.a)
+	self.BarList:SetBackdropColor(c.r, c.g, c.b, c.a)
+	c = db.Background.BorderColor
+	self.Title:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+	self.BarList:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+
+	local h = db.Background.EdgeSize * 2
+	self.Anchor:SetMinResize(90, h)
+	self.Title:SetMinResize(90, h)
+	if not db.TitleBar.ShowTitleBar then
+		self.Title:SetHeight(1e-6) -- See comment in Omen:UpdateTitleBar()
+	elseif h > db.TitleBar.Height then
+		self.Title:SetHeight(h)
+	else
+		self.Title:SetHeight(db.TitleBar.Height)
+	end
+	self.Options.args.TitleBar.args.Height.min = h
+
+	--self.FocusButton:SetPoint("TOPRIGHT", -inset, -inset)
+
+	self.BarList:ClearAllPoints() -- See comment in Omen:UpdateTitleBar()
+	self.BarList:SetPoint("TOPLEFT", self.Title, "BOTTOMLEFT")
+	self.BarList:SetPoint("BOTTOMRIGHT", self.Anchor, "BOTTOMRIGHT")
+
+	self:ResizeBars()
+	self:ReAnchorBars()
+	self:UpdateBars()
+end
+
+function Omen:UpdateTitleBar()
+	local font = LSM:Fetch("font", db.TitleBar.Font)
+	local size = db.TitleBar.FontSize
+	local flags = db.TitleBar.FontOutline
+	local color = db.TitleBar.FontColor
+	self.TitleText:SetFont(font, size, flags)
+	self.TitleText:SetTextColor(color.r, color.g, color.b, color.a)
+	if not db.TitleBar.ShowTitleBar then
+		-- Yes, its a hack, since it can't be set to 0
+		self.Title:SetHeight(1e-6)
+		self.Title:Hide()
+	elseif db.Background.EdgeSize * 2 > db.TitleBar.Height then
+		self.Title:SetHeight(db.Background.EdgeSize * 2)
+		self.Title:Show()
+	else
+		self.Title:SetHeight(db.TitleBar.Height)
+		self.Title:Show()
+	end
+	-- This forces the UI to redraw it, I couldn't find a better way. Although it is
+	-- anchored to the Title, it doesn't update automatically on the height change.
+	self.BarList:ClearAllPoints()
+	self.BarList:SetPoint("TOPLEFT", self.Title, "BOTTOMLEFT")
+	self.BarList:SetPoint("BOTTOMRIGHT", self.Anchor, "BOTTOMRIGHT")
+end
+
+function Omen:UpdateFuBarSettings()
+	if LibStub:GetLibrary("LibFuBarPlugin-3.0", true) then
+		if db.FuBar.HideMinimapButton then
+			self:Hide()
 		else
-			-- We couldn't find a corresponding unit for the party member we want to watch
-			-- Go ahead and invalidate them
-			self.partyMemberName = nil
-			self.watchedUnitID = nil
-			self.threatTargetName = nil
-		end
-		self:UpdateThreatLists(self.threatTargetName or Threat.GlobalTarget)
-	end
-end
-
-function Omen:UpdateThreatLists(target)
-	if not target and self.AggroBar then
-		self.AggroBar.threatVal = 0
-	end
-	target = target or Threat.GlobalTarget
-
-	if self.lastTargetName == target then return end
-	self.lastTargetName = target
-	
-	self:Clear()
-	self.threatWarned = false
-
-	self.Anchor.title:SetText(target and string.format("%s - |cffFF4200%s", self.modName, target) or "")
-	-- self.Anchor.mobName:SetText(target and string.format("|cffFF4200%s", target) or "")
-	for k, v in Threat:IterateGroupThreatForTarget(target) do
-		local bar = self.bars[k]
-		if not bar then
-			local unit = Threat:GetUnitIDByUnitName(k)
-			if unit then
-				bar = self:addOrGetBar(k, unit)
+			self:Show()
+			if self:IsFuBarMinimapAttached() ~= db.FuBar.AttachMinimap then
+				self:ToggleFuBarMinimapAttached()
 			end
 		end
+	end
+end
 
-		if  bar then -- unit can be non-existent when self or someone leaves party
-			local val, isK = ConvertToK(v)
-			bar.targetThreat = 0
-			bar.globalThreat = 0
-			self.bars[k].threatVal = v
-			self.bars[k].labels.threat:SetText(string.format("%2.2f%s", val, isK))
+function Omen:UpdateGrips()
+	self.VGrip1:ClearAllPoints()
+	self.VGrip1:SetPoint("TOPLEFT", self.BarList, "TOPLEFT", db.VGrip1, 0)
+	self.VGrip1:SetPoint("BOTTOMLEFT", self.BarList, "BOTTOMLEFT", db.VGrip1, 0)
+	self.VGrip2:ClearAllPoints()
+	self.VGrip2:SetPoint("TOPLEFT", self.BarList, "TOPLEFT", db.VGrip2, 0)
+	self.VGrip2:SetPoint("BOTTOMLEFT", self.BarList, "BOTTOMLEFT", db.VGrip2, 0)
+	if db.Locked then
+		self.Grip:Hide()
+		self.VGrip1:Hide()
+		self.VGrip2:Hide()
+	else
+		self.Grip:Show()
+		self.VGrip1:Show()
+		if db.Bar.ShowTPS then
+			self.VGrip2:Show()
+		else
+			self.VGrip2:Hide()
+		end
+	end
+end
+
+function Omen:ToggleFocus()
+	db.UseFocus = not db.UseFocus
+	if db.UseFocus then
+		Omen:RegisterEvent("UNIT_TARGET")
+	else
+		Omen:UnregisterEvent("UNIT_TARGET")
+	end
+	Omen:UpdateBars()
+end
+
+
+-----------------------------------------------------------------------------
+-- Omen warnings
+
+function Omen:Flash()
+	if not self.FlashFrame then
+		local flasher = CreateFrame("Frame", "OmenFlashFrame")
+		flasher:SetToplevel(true)
+		flasher:SetFrameStrata("FULLSCREEN_DIALOG")
+		flasher:SetAllPoints(UIParent)
+		flasher:EnableMouse(false)
+		flasher:Hide()
+		flasher.texture = flasher:CreateTexture(nil, "BACKGROUND")
+		flasher.texture:SetTexture("Interface\\FullScreenTextures\\LowHealth")
+		flasher.texture:SetAllPoints(UIParent)
+		flasher.texture:SetBlendMode("ADD")
+		flasher:SetScript("OnShow", function(self)
+			self.elapsed = 0
+			self:SetAlpha(0)
+		end)
+		flasher:SetScript("OnUpdate", function(self, elapsed)
+			elapsed = self.elapsed + elapsed
+			if elapsed < 2.6 then
+				local alpha = elapsed % 1.3
+				if alpha < 0.15 then
+					self:SetAlpha(alpha / 0.15)
+				elseif alpha < 0.9 then
+					self:SetAlpha(1 - (alpha - 0.15) / 0.6)
+				else
+					self:SetAlpha(0)
+				end
+			else
+				self:Hide()
+			end
+			self.elapsed = elapsed
+		end)
+		self.FlashFrame = flasher
+	end
+
+	self.FlashFrame:Show()
+end
+
+-- This function is adapted from Omen2 to be self-contained,
+-- which was initially taken from BigWigs
+function Omen:Shake()
+	local shaker = self.ShakerFrame
+	if not shaker then
+		shaker = CreateFrame("Frame", "OmenShaker", UIParent)
+		shaker:Hide()
+		shaker:SetScript("OnUpdate", function(self, elapsed)
+			elapsed = self.elapsed + elapsed
+			local x, y = 0, 0 -- Resets to original position if we're supposed to stop.
+			if elapsed >= 0.8 then
+				self:Hide()
+			else
+				x, y = random(-8, 8), random(-8, 8)
+			end
+			if WorldFrame:IsProtected() and InCombatLockdown() then
+				if not shaker.fail then
+					Omen:Print(L["|cffff0000Error:|r Omen cannot use shake warning if you have turned on nameplates at least once since logging in."])
+					shaker.fail = true
+				end
+				self:Hide()
+			else
+				WorldFrame:ClearAllPoints()
+				for i = 1, #self.originalPoints do
+					local v = self.originalPoints[i]
+					WorldFrame:SetPoint(v[1], v[2], v[3], v[4] + x, v[5] + y)
+				end
+			end
+			self.elapsed = elapsed
+		end)
+		shaker:SetScript("OnShow", function(self)
+			-- Store old worldframe positions, we need them all, people have frame modifiers for it
+			if not self.originalPoints then
+				self.originalPoints = {}
+				for i = 1, WorldFrame:GetNumPoints() do
+					tinsert(self.originalPoints, {WorldFrame:GetPoint(i)})
+				end
+			end
+			self.elapsed = 0
+		end)
+		self.ShakerFrame = shaker
+	end
+
+	shaker:Show()
+end
+
+function Omen:Warn(sound, flash, shake, message)
+	if sound then PlaySoundFile(LSM:Fetch("sound", db.Warnings.SoundFile)) end
+	if flash then self:Flash() end
+	if shake then self:Shake() end
+	if message then self:Pour(message, 1, 0, 0, nil, 24, "OUTLINE", true) end
+end
+
+
+-----------------------------------------------------------------------------
+-- Omen bar stuff
+
+do
+	-- OnUpdate function for bar animation
+	local function animate(self, elapsed)
+		self.animationCursor = self.animationCursor + elapsed
+		if self.animationCursor > self.animationTime then
+			self.texture:SetWidth(self.animations[1])
+			tremove(self.animations, 1)
+			tremove(self.animations, 1)
+			tremove(self.animations, 1)
+			self.animationCursor = self.animationCursor - self.animationTime
+			if #self.animations == 0 then
+				self:SetScript("OnUpdate", nil)
+			end
+		else
+			self.texture:SetWidth(self.animations[2] + (self.animations[3] * (self.animationCursor / self.animationTime)))
 		end
 	end
 
-	self:ArrangeBars()
+	-- function to start/queue bar animations
+	local function AnimateTo(self, val)
+		if val == 1/0 or val == -1/0 then return end
+		if val == 0 then val = 1 end
+		if #self.animations > 0 and self.animations[#self.animations-2] == val then
+			return
+		end
+		local currentWidth = self.texture:GetWidth()
+		local diff = (val - currentWidth)
+		tinsert(self.animations, val)
+		tinsert(self.animations, currentWidth)
+		tinsert(self.animations, diff)
+		self:SetScript("OnUpdate", animate)
+	end
+
+	-- Create bars on demand
+	setmetatable(bars, {__index = function(self, barID)
+		local bar = CreateFrame("Frame", nil, Omen.BarList)
+		self[barID] = bar
+
+		local inset = db.Background.BarInset
+		local inset2 = db.Background.BarInset * 2
+		local color = db.Bar.FontColor
+
+		bar:SetWidth(Omen.Anchor:GetWidth() - inset2)
+		bar:SetHeight(db.Bar.Height)
+		if db.Bar.ShowHeadings then
+			bar:SetPoint("TOPLEFT", Omen.BarList, "TOPLEFT", inset, -inset + (barID) * -(db.Bar.Height + db.Bar.Spacing))
+		else
+			bar:SetPoint("TOPLEFT", Omen.BarList, "TOPLEFT", inset, -inset + (barID-1) * -(db.Bar.Height + db.Bar.Spacing))
+		end
+
+		bar.Text1 = bar:CreateFontString(nil, nil, "GameFontNormalSmall")
+		bar.Text1:SetPoint("LEFT", bar, "LEFT", 5, 1)
+		bar.Text1:SetJustifyH("LEFT")
+		bar.Text1:SetFont(LSM:Fetch("font", db.Bar.Font), db.Bar.FontSize, db.Bar.FontOutline)
+		bar.Text1:SetTextColor(color.r, color.g, color.b, color.a)
+		bar.Text1:SetWidth(db.VGrip1 - 5)
+		bar.Text1:SetHeight(db.Bar.FontSize)
+		bar.Text1:SetNonSpaceWrap(false)
+
+		bar.Text2 = bar:CreateFontString(nil, nil, "GameFontNormalSmall")
+		bar.Text2:SetPoint("RIGHT", bar, "RIGHT", -5, 1)
+		bar.Text2:SetJustifyH("RIGHT")
+		bar.Text2:SetFont(LSM:Fetch("font", db.Bar.Font), db.Bar.FontSize, db.Bar.FontOutline)
+		bar.Text2:SetTextColor(color.r, color.g, color.b, color.a)
+		if db.Bar.ShowTPS then
+			bar.Text2:SetWidth(Omen.BarList:GetWidth() - db.VGrip2 - 5)
+		else
+			bar.Text2:SetWidth(Omen.BarList:GetWidth() - db.VGrip1 - 5)
+		end
+		bar.Text2:SetHeight(db.Bar.FontSize)
+		bar.Text2:SetNonSpaceWrap(false)
+
+		bar.Text3 = bar:CreateFontString(nil, nil, "GameFontNormalSmall")
+		bar.Text3:SetPoint("LEFT", bar.Text1, "RIGHT", 0, 0)
+		bar.Text3:SetJustifyH("RIGHT")
+		bar.Text3:SetFont(LSM:Fetch("font", db.Bar.Font), db.Bar.FontSize, db.Bar.FontOutline)
+		bar.Text3:SetTextColor(color.r, color.g, color.b, color.a)
+		bar.Text3:SetWidth(db.VGrip2 - db.VGrip1 - 5)
+		bar.Text3:SetHeight(db.Bar.FontSize)
+		bar.Text3:SetNonSpaceWrap(false)
+		if not db.Bar.ShowTPS then bar.Text3:Hide() end
+
+		bar.texture = bar:CreateTexture()
+		bar.texture:SetTexture(LSM:Fetch("statusbar", db.Bar.Texture))
+		bar.texture:SetPoint("TOPLEFT", bar, "TOPLEFT")
+		bar.texture:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT")
+
+		bar.animations = {}
+		bar.animationCursor = 0
+		bar.animationTime = 0.25
+		bar.AnimateTo = AnimateTo
+
+		if barID == 0 then
+			bar.Text1:SetText(L["Name"])
+			if db.Bar.ShowValue and db.Bar.ShowPercent then
+				bar.Text2:SetText(L["Threat [%]"])
+			else
+				bar.Text2:SetText(L["Threat"])
+			end
+			bar.Text3:SetText(L["TPS"])
+			color = db.Bar.HeadingBGColor
+			bar.texture:SetVertexColor(color.r, color.g, color.b, color.a)
+			bar:Hide()
+		elseif barID == 1 then
+			-- Parent our TPS update frame to the first bar, so that TPS updates
+			-- updates happen when at least 1 bar (the first bar) is shown.
+			Omen.TPSUpdateFrame = CreateFrame("Frame", nil, bar)
+			Omen.TPSUpdateFrame:SetScript("OnUpdate", function(self, elapsed) Omen:UpdateTPS() end)
+			if not db.Bar.ShowTPS then Omen.TPSUpdateFrame:Hide() end
+		end
+
+		return bar
+	end})
+end
+
+function Omen:ResizeBars()
+	local inset = db.Background.BarInset * 2
+	local w = Omen.Anchor:GetWidth() - inset
+	for i = 0, #bars do
+		bars[i]:SetWidth(w)
+		bars[i]:SetHeight(db.Bar.Height)
+	end
+end
+
+function Omen:ReAnchorBars()
+	local inset = db.Background.BarInset
+	if db.Bar.ShowHeadings then
+		for i = 0, #bars do
+			bars[i]:SetPoint("TOPLEFT", self.BarList, "TOPLEFT", inset, -inset + (i) * -(db.Bar.Height + db.Bar.Spacing))
+		end
+	else
+		for i = 1, #bars do
+			bars[i]:SetPoint("TOPLEFT", self.BarList, "TOPLEFT", inset, -inset + (i-1) * -(db.Bar.Height + db.Bar.Spacing))
+		end
+		bars[0]:Hide()
+	end
+end
+
+function Omen:UpdateBarLabelSettings()
+	local font = LSM:Fetch("font", db.Bar.Font)
+	local size = db.Bar.FontSize
+	local flags = db.Bar.FontOutline
+	local color = db.Bar.FontColor
+	for i = 0, #bars do
+		bars[i].Text1:SetFont(font, size, flags)
+		bars[i].Text2:SetFont(font, size, flags)
+		bars[i].Text3:SetFont(font, size, flags)
+		bars[i].Text1:SetTextColor(color.r, color.g, color.b, color.a)
+		bars[i].Text2:SetTextColor(color.r, color.g, color.b, color.a)
+		bars[i].Text3:SetTextColor(color.r, color.g, color.b, color.a)
+		bars[i].Text1:SetHeight(size)
+		bars[i].Text2:SetHeight(size)
+		bars[i].Text3:SetHeight(size)
+	end
+	color = db.Bar.HeadingBGColor
+	bars[0].texture:SetVertexColor(color.r, color.g, color.b, color.a)
+end
+
+function Omen:ReAnchorLabels()
+	local w = db.VGrip1
+	local w2 = db.Bar.ShowTPS and Omen.BarList:GetWidth() - db.VGrip2 or Omen.BarList:GetWidth() - w
+	local w3 = db.VGrip2 - db.VGrip1
+	for i = 0, #bars do
+		bars[i].Text1:SetWidth(w - 5)
+		bars[i].Text2:SetWidth(w2 - 5)
+		if db.Bar.ShowTPS then
+			bars[i].Text3:SetWidth(w3 - 5)
+			bars[i].Text3:Show()
+		else
+			bars[i].Text3:Hide()
+		end
+	end
+end
+
+
+-----------------------------------------------------------------------------
+-- Omen event functions
+
+-- Fired when a mob has its threat list updated. The mob that
+-- had its list updated is the first parameter of the event.
+function Omen:UNIT_THREAT_LIST_UPDATE(event, unitID)
+	-- It appears that unitID can only be "target" or "focus"
+	self:UpdateBars()
+end
+
+-- Fired when a unit's threat situation changes. The unit that
+-- had a change in threat situation is the first parameter of
+-- the event. Note that this only triggers when major state
+-- changes, not when the raw threat values change.
+function Omen:UNIT_THREAT_SITUATION_UPDATE(...)
+	self:UpdateBars()
 end
 
 function Omen:PLAYER_TARGET_CHANGED()
-	self.threatTargetName = UnitName("target")
-	if self.threatTargetName then
-		self.watchedUnitID = "target"
-	else
-		self.watchedUnitID = nil
+	-- Stop our unit update timer for updating threat on "targettarget"
+	if timers.UpdateBars then
+		self:CancelTimer(timers.UpdateBars, true)
+		timers.UpdateBars = nil
 	end
-		
-	self.lastWithAggro = UnitName("targettarget")
-
-	if UnitInParty("target") or UnitInRaid("target") or UnitIsUnit("target", "pet") then
-		self.threatTargetName = UnitName("targettarget")
-		self.lastWithAggro = UnitName("targettargettarget")
-	end
-	
-	self:UpdateThreatLists(self.threatTargetName)
+	self:UpdateBars()
 end
 
-local function func(self, name)
-	self.lastWithAggro = name
+function Omen:UNIT_TARGET(event, unitID)
+	if unitID == "focus" and db.UseFocus and self.unitID == "focustarget" then
+		self:UpdateBars()
+	end
 end
 
-function Omen:UNIT_TARGET(arg1)
-	if UnitIsUnit("player", arg1) then
-		return
-		
-	-- Anyone know the conditions for getting a unit named "npc"?
-	elseif self.watchedUnitID and UnitIsUnit(arg1, self.watchedUnitID) and arg1 ~= "npc" then
-		local lastThreatTarget = self.threatTargetName
-		if UnitInParty(arg1) or UnitInRaid(arg1) or UnitIsUnit(arg1, "pet") then
-			local et = arg1 .. "target"
-			local ett = arg1 .. "targettarget"
-			self.threatTargetName = UnitName(et)
-			if UnitInParty(ett) or UnitInRaid(ett) or UnitIsUnit(ett, "pet") then
-				local ettN = UnitName(ett)
-				if not lastThreatTarget or Threat:GetThreat(ettN, lastThreatTarget) > Threat:GetThreat(self.lastWithAggro, lastThreatTarget) then
-					self.lastWithAggro = ettN
-					if self:IsEventScheduled("OmenSwitchAggro") then
-						self:CancelScheduledEvent("OmenSwitchAggro")
-					end
-				else
-					self:ScheduleEvent("OmenSwitchAggro", func, 2.5, self, ettN)
+local lastPartyUpdateTime = GetTime()
+
+function Omen:PARTY_MEMBERS_CHANGED()
+	local oldInParty, oldInRaid = inParty, inRaid
+	inParty = GetNumPartyMembers() > 0
+	inRaid = GetNumRaidMembers() > 0
+	if oldInParty ~= inParty or oldInRaid ~= inRaid then manualToggle = false end
+	self:UpdateVisible()
+
+	-- Run the update if the last call is more than 0.5 seconds ago else
+	-- schedule an update 0.5 seconds later if one isn't already scheduled
+	if GetTime() - lastPartyUpdateTime > 0.5 then
+		self:UpdatePartyGUIDs()
+	elseif not timers.UpdatePartyGUIDs then
+		timers.UpdatePartyGUIDs = self:ScheduleTimer("UpdatePartyGUIDs", 0.5)
+	end
+end
+
+-- This function updates the name and class guid lookup tables of the raid
+function Omen:UpdatePartyGUIDs()
+	lastPartyUpdateTime = GetTime()
+	if timers.UpdatePartyGUIDs then
+		self:CancelTimer(timers.UpdatePartyGUIDs, true)
+		timers.UpdatePartyGUIDs = nil
+	end
+
+	local _
+	local me = UnitGUID("player")
+	wipe(guidClassLookup)
+	if me then -- Because it sometimes is nil on zoning/logging in.
+		guidNameLookup[me] = UnitName("player")
+		_, guidClassLookup[me] = UnitClass("player")
+	end
+	if UnitExists("pet") then
+		guidClassLookup[UnitGUID("pet")] = "PET"
+		guidNameLookup[UnitGUID("pet")] = UnitName("pet")--.." ["..UnitName("player").."]"
+	end
+
+	if inParty or inRaid then
+		local playerFmt = inRaid and rID or pID
+		local petFmt = inRaid and rpID or ppID
+		local currentPartySize = inRaid and GetNumRaidMembers() or GetNumPartyMembers()
+
+		for i = 1, currentPartySize do
+			local unitID = playerFmt[i]
+			local pGUID = UnitGUID(unitID)
+
+			if pGUID then
+				guidNameLookup[pGUID] = UnitName(unitID)
+				_, guidClassLookup[pGUID] = UnitClass(unitID)
+
+				-- lookup pet (if existing)
+				local petID = petFmt[i]
+				local petGUID = UnitGUID(petID)
+				if petGUID then
+					guidNameLookup[petGUID] = UnitName(petID)--.." ["..UnitName(unitID).."]"
+					guidClassLookup[petGUID] = "PET"
 				end
 			end
-			self:UpdateThreatLists(self.threatTargetName)
-		else
-			self.threatTargetName = UnitName(arg1)
-			local et = arg1 .. "target"
-			if UnitInParty(et) or UnitInRaid(et) or UnitIsUnit(et, "pet") then
-				local ettN = UnitName(et)
-				if not lastThreatTarget or Threat:GetThreat(ettN, lastThreatTarget) > Threat:GetThreat(self.lastWithAggro, lastThreatTarget) then
-					self.lastWithAggro = ettN
-					if self:IsEventScheduled("OmenSwitchAggro") then
-						self:CancelScheduledEvent("OmenSwitchAggro")
-					end
-				else
-					self:ScheduleEvent("OmenSwitchAggro", func, 2.5, self, ettN)
+		end
+	end
+	guidClassLookup["AGGRO"] = "AGGRO"
+end
+guidNameLookup["AGGRO"] = L["> Pull Aggro <"]
+
+
+-----------------------------------------------------------------------------
+-- Omen update functions
+
+--[[
+First, some definitions:
+* mob - enemy creature
+* threat list - a mob's list of possible targets, along with each possible target's current threat value
+* threat situation - the situation that a unit is currently in (either globally, or with respect to a certain mob)
+* scaled percentage - a threat percentage, where 100% means you will pull aggro (become the primary target of the mob), and thus this % cannot be higher than 100% under normal circumstances
+* raw threat percentage - the percentage of the units threat when divided by the threat of the mob's current primary target, this % CAN be over 100%
+---------
+state = UnitThreatSituation(unit, mob)
+
+Returns the unit's threat situation with respect to the given mob. The state can be one of the following values:
+nil = the unit is not on the mob's threat list
+0 = 0-99% raw threat percentage (no indicator shown)
+1 = 100% or more raw threat percentage (yellow warning indicator shown)
+2 = tanking, other has 100% or more raw threat percentage (orange indicator shown)
+3 = tanking, all others have less than 100% raw percentage threat (red indicator shown)
+---------
+state = UnitThreatSituation(unit)
+
+Returns the unit's maximum threat state on any mob's threat list.
+---------
+isTanking, state, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation(unit, mob)
+
+Returns detailed information about the unit's state on the mob's threat list.
+isTanking is true if the unit the primary target of the mob (and by definition has 100% threat)
+state is the unit's threat situation, as listed above.
+scaledPercent is the current percent threat of the unit, scaled in the 0-100% range based on distance from target.
+rawPercent is the current percent threat of the unit relative to the primary target of the mob.
+threatValue is the amount of threat that the unit has on the mob's threat list. This is roughly approximate to the amount of damage and healing the unit has done.
+---------
+r, g, b = GetThreatStatusColor(state)
+
+Returns the colors used in the UI to represent each major threat state.
+]]
+
+local threatTable           -- Format: threatTable[guid] = threatValue
+local sortTable = {}        -- Format: threatTable[i] = guid -- used for sorting by sortfunction()
+local tankGUID              -- Used to store which unit is tanking and hence has 100% threat by definition
+local topthreat             -- Used to store the top threat value
+local lastWarn = {          -- Used to store information for threat warnings
+	threatpercent = 0,
+}
+local threatStore = {}      -- Format: threatStore[i] = threatTable[guid] -- used for storing past threatTables
+local threatStoreTime = {}  -- Format: threatStoreTime[i] = GetTime()
+
+local function sortfunction(a, b)
+	return threatTable[a] > threatTable[b]
+end
+
+local function updatethreat(unitid, mobunitid)
+	local guid = UnitGUID(unitid)
+	if guid and not threatTable[guid] then
+		local isTanking, state, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation(unitid, mobunitid)
+		threatTable[guid] = threatValue or -1
+		if threatValue and threatValue > topthreat then topthreat = threatValue end
+		if isTanking then tankGUID = guid end
+	end
+end
+
+local threatUnitIDFindList = {"target", "targettarget"}
+local threatUnitIDFindList2 = {"focus", "focustarget", "target", "targettarget"}
+function Omen:FindThreatMob()
+	-- Figure out which mob to show threat on.
+	-- It has to be attackable and not human controlled.
+	local t = db.UseFocus and threatUnitIDFindList2 or threatUnitIDFindList
+	local name, name2
+	for i = 1, #t do
+		local mob = t[i]
+		if UnitExists(mob) then
+			name2 = UnitName(mob)
+			guidNameLookup[UnitGUID(mob)] = name2
+			if not name then name = name2 end
+			if not UnitIsPlayer(mob) and UnitCanAttack("player", mob) and UnitHealth(mob) > 0 then
+				if not db.IgnorePlayerPets or not UnitPlayerControlled(mob) then
+					self.TitleText:SetText(name2)
+					self.unitID = mob
+					return mob
 				end
 			end
 		end
-		if lastThreatTarget ~= self.threatTargetName then
-			self:UpdateThreatLists(self.threatTargetName)
-		end
-	end	
-end
-
-function Omen:PLAYER_REGEN_ENABLED()
-	self:ScheduleEvent("ResetTPSTimerTables", self.DisableTPSUpdate, 3.5, self)
-end
-
-local function WarnOnThreatThreshold(self, warningLevel)
-	if playerIsTanking and not self.db.profile.WarningsWhileTanking then return end
-	
-	local ttName = self.threatTargetName
-	if not ttName then return end
-	if PlayerName == self.lastWithAggro then return end
-	local playerThreat = Threat:GetThreat(PlayerName, ttName)
-	local tankThreat = Threat:GetThreat(self.lastWithAggro, ttName)
-	if tankThreat == 0 then return end
-	local threshold = tankThreat * warningLevel
-	if playerThreat >= threshold and not self.threatWarned then
-		if self.db.profile.FlashWarningFrame then
-			LowHealthFrame:Hide();
-			UIFrameFlash(LowHealthFrame, 0.25, 0.75, 2.2, false, 0, 0.1)
-		end
-		if self.db.profile.ShowFloatingMessage then
-			self:Pour((L["Warning: Passed %2.0f%% of %s's threat!"]):format(warningLevel * 100, self.lastWithAggro), 1, 0, 0, nil, 24, "OUTLINE", true)
-		end		
-		local sound = media:Fetch("sound", Omen.db.profile.WarningSound)
-		if sound then
-			PlaySoundFile(sound)
-		end
-		self.threatWarned = true
-	elseif playerThreat < threshold then
-		self.threatWarned = false
 	end
+	self.TitleText:SetText(name)
+	self.unitID = nil
 end
 
-local TTL, TTLBase = 0.5, 0.5
-
-local GTARGET = Threat.GlobalTarget
-function Omen:Threat_ThreatUpdated(pName, pUnit, targetHash)
-	if not self:IsEventScheduled("OmenTPSUpdate") then
-		self:EnableTPSUpdate()
+local queried = false
+function Omen:UpdateBars()
+	if db.Autocollapse and db.CollapseHide then
+		-- Update the visibility because it could have been hidden on 0 bars
+		self.BarList.barsShown = 1 -- Dummy value
+		self:UpdateVisible()
 	end
-	if not targetHash then
-		self:Print(string.format("Error: Got a nil target, %s, %s, %s", pName, pUnit, threatVal))
+	if not self.Anchor:IsShown() then
+		self.BarList.barsShown = 0
 		return
 	end
-	local isCurrentTarget = self.threatTargetName and Threat:UnitIsUnit(self.threatTargetName, targetHash)
-	if not isCurrentTarget and not Threat:UnitIsUnit(targetHash, GTARGET) then return end
 
-	local threatVal = Threat:GetThreat(pName, self.threatTargetName or GTARGET)
-	local bar = self:addOrGetBar(pName, pUnit)
-	
-	if (pName == PlayerName or pName == self.lastWithAggro) and self.db.profile.EnableWarnings then
-		WarnOnThreatThreshold(self, self.db.profile.WarnLevel, threatVal)
-	end
-	
-	local isK
-	bar.threatVal = threatVal
-	threatVal, isK = ConvertToK(threatVal)
-	bar.labels.threat:SetText(string.format("%2.1f%s", threatVal, isK))
-	TTL = TTL - GetTime()
-	if TTL < 0 then
-		TTL = TTL + TTLBase
-		self:ArrangeBars()
-	end
-end
+	-- TODO: Put a update throtle on this function
 
-function Omen:Threat_OutOfDateNotice(myVersion, newVersion, newVersionHolder, isCritical)
-	if isCritical then
-		self.Anchor.outofDate:SetText(string.format("|cffff0000CRITICAL UPDATE AVAILABLE! |cffFFB400r |cffffffff%s (%s)", newVersion, newVersionHolder))
+	local myGUID = UnitGUID("player")
+	local dbBar = db.Bar
+	local mob, mobGUID, mobTargetGUID
+	topthreat = -1
+
+	if testMode then
+		threatTable = newTable()
+		local classes = self.Options.args.ShowClasses.args.Classes.values
+		local key = next(classes)
+		for i = 1, 25 do
+			if i == 22 and myGUID then -- Because I've got myGUID == nil before
+				threatTable[myGUID] = i*5000
+			else
+				threatTable[i] = i*5000
+				guidNameLookup[i] = classes[key]
+				if key ~= "*NOTINPARTY*" then guidClassLookup[i] = key end
+				key = next(classes, key) or next(classes)
+			end
+		end
+		tankGUID = 25
+		topthreat = 25*5000
+		mob = ""
+		self.TitleText:SetText(L["Test Mode"])
 	else
-		self.Anchor.outofDate:SetText(string.format("|cffff0000New version available! |cffFFB400r |cffffffff%s (%s)", newVersion, newVersionHolder))
+		mob = self:FindThreatMob()
+		if not mob then
+			self:ClearAll()
+			return
+		end
+		mobGUID = UnitGUID(mob)
+
+		-- Schedule a repeating timer for updating threat on "targettarget"
+		-- since we get no events on a targettarget change.
+		if mob == "targettarget" and not timers.UpdateBars then
+			timers.UpdateBars = self:ScheduleRepeatingTimer("UpdateBars", 0.5)
+		end
+
+		-- We want the mob's target just in case the tank isn't
+		-- in our raid (say an NPC or some other player)
+		local mobTarget = mob.."target"
+		local mobTargetGUID = UnitGUID(mobTarget)
+		if mobTargetGUID then
+			guidNameLookup[mobTargetGUID] = UnitName(mobTarget)
+		end
+
+		threatTable = newTable()
+		threatTable[mobGUID] = -1
+		tankGUID = nil
+
+		-- Get data for threat on mob by scanning the whole raid
+		if inParty or inRaid then
+			if inRaid then
+				for i = 1, GetNumRaidMembers() do
+					updatethreat(rID[i], mob)
+					updatethreat(rpID[i], mob)
+					updatethreat(rtID[i], mob)
+					updatethreat(rptID[i], mob)
+				end
+			else
+				for i = 1, GetNumPartyMembers() do
+					updatethreat(pID[i], mob)
+					updatethreat(ppID[i], mob)
+					updatethreat(ptID[i], mob)
+					updatethreat(pptID[i], mob)
+				end
+			end
+
+		end
+		if not inRaid then
+			updatethreat("player", mob)
+			updatethreat("pet", mob)
+			updatethreat("target", mob)
+			updatethreat("pettarget", mob)
+		end
+		updatethreat("target", mob)
+		updatethreat("targettarget", mob)
+		updatethreat("focus", mob)
+		updatethreat("focustarget", mob)
+		updatethreat(mobTarget, mob)
+		updatethreat("mouseover", mob)
+		updatethreat("mouseovertarget", mob)
 	end
-	self.Anchor.outofDate:Show()
+	local tankThreat = tankGUID and threatTable[tankGUID] or mobTargetGUID and threatTable[mobTargetGUID] or topthreat
+	if dbBar.ShowAggroBar and tankThreat > 0 then
+		if GetItemInfo(37727) then -- 5 yards (Ruby Acorn - http://www.wowhead.com/?item=37727)
+			threatTable["AGGRO"] = tankThreat * (IsItemInRange(37727, mob) == 1 and 1.1 or 1.3)
+		else -- 9 yards compromise
+			threatTable["AGGRO"] = tankThreat * (CheckInteractDistance(mob, 3) and 1.1 or 1.3)
+			if not queried and not ItemRefTooltip:IsVisible() then
+				ItemRefTooltip:SetHyperlink("item:37727")
+				queried = true -- Only query once per session
+			end
+		end
+	end
+
+	-- Sort the threatTable
+	local i = 1
+	for k, v in pairs(threatTable) do
+		if v >= 0 then
+			sortTable[i] = k
+			i = i + 1
+		end
+	end
+	for j = i, #sortTable do
+		sortTable[j] = nil
+	end
+	if #sortTable == 0 then
+		self:ClearAll()
+		self.TitleText:SetText(guidNameLookup[mobGUID])
+		return
+	end
+	sort(sortTable, sortfunction)
+
+	-- Now update the bars on screen
+	local inset = db.Background.BarInset * 2
+	local w = self.BarList:GetWidth() - inset
+	local h = self.BarList:GetHeight() - inset
+	topthreat = threatTable[sortTable[1]]
+	if topthreat == 0 then topthreat = 1 end -- To avoid 0/0 division
+	local showSelfYet = true
+
+	if dbBar.AlwaysShowSelf then
+		-- Check if we're one of the bars to be displayed
+		for j = 1, #sortTable do
+			if sortTable[j] == myGUID then
+				showSelfYet = false -- Yes, so flag it false
+				break
+			end
+		end
+	end
+
+	-- Check how many bars of space we have
+	local numBars = db.Autocollapse and db.NumBars or floor((h - dbBar.Height) / (dbBar.Height + dbBar.Spacing) + 1.01)
+	
+	i = 1 -- Counts one higher than number of bars used
+	if dbBar.ShowHeadings then
+		if i <= numBars then
+			i = i + 1
+			bars[0].texture:SetWidth(w)
+			bars[0]:Show()
+		end
+	else
+		bars[0]:Hide()
+	end
+	for j = 1, #sortTable do
+		if i > numBars then break end
+		local guid = sortTable[j]
+		local class = guidClassLookup[guid]
+		local show = class == nil and dbBar.Classes["*NOTINPARTY*"] or class == "AGGRO" and dbBar.ShowAggroBar or dbBar.Classes[class]
+		if dbBar.AlwaysShowSelf and i == numBars and not showSelfYet and guid ~= myGUID then
+			show = false
+		end
+		if dbBar.AlwaysShowSelf and guid == myGUID then
+			show = true
+			showSelfYet = true
+		end
+		if show then
+			local bar = bars[dbBar.ShowHeadings and i-1 or i]
+			local threat = threatTable[guid]
+
+			-- Update the text on the bar
+			bar.Text1:SetText(guidNameLookup[guid])
+			if dbBar.ShowPercent and dbBar.ShowValue then
+				if dbBar.ShortNumbers and threat > 100000 then
+					bar.Text2:SetFormattedText("%2.1fk [%d%%]", threat / 100000, tankThreat == 0 and 0 or threat / tankThreat * 100)
+				else
+					bar.Text2:SetFormattedText("%d [%d%%]", threat / 100, tankThreat == 0 and 0 or threat / tankThreat * 100)
+				end
+			elseif dbBar.ShowValue then
+				if dbBar.ShortNumbers and threat > 100000 then
+					bar.Text2:SetFormattedText("%2.1fk", threat / 100000)
+				else
+					bar.Text2:SetFormattedText("%d", threat / 100)
+				end
+			else
+				bar.Text2:SetFormattedText("%d%%", tankThreat == 0 and 0 or threat / tankThreat * 100)
+			end
+
+			-- Update the color of the bar
+			local c = (guid == myGUID and dbBar.UseMyBarColor and dbBar.MyBarColor) or
+				(guid == tankGUID and dbBar.UseTankBarColor and dbBar.TankBarColor) or
+				(guid == "AGGRO" and dbBar.AggroBarColor) or
+				(dbBar.UseClassColors and (RAID_CLASS_COLORS[class] or (class == "PET" and dbBar.PetBarColor))) or
+				dbBar.BarColor
+			bar.texture:SetVertexColor(c.r, c.g, c.b, c.a or 1)
+
+			-- Update the width of the bar, and animate if necessary
+			local width = w * threat / topthreat
+			if width == 0 then width = 1 end
+			if dbBar.AnimateBars and self.Anchor.IsMovingOrSizing ~= 2 then
+				bar:AnimateTo(width)
+			else
+				bar.texture:SetWidth(width)
+			end
+
+			bar.guid = guid -- For TPS calcs
+			bar:Show()
+			i = i + 1
+		end
+	end
+	-- And hide the rest
+	for j = dbBar.ShowHeadings and i-1 or i, #bars do
+		bars[j]:Hide()
+	end
+	if db.Autocollapse then
+		self.Anchor:SetHeight((i-1)*dbBar.Height + (i-2)*dbBar.Spacing + self.Title:GetHeight() + inset)
+	end
+	self.BarList:Show()
+	self.BarList.barsShown = dbBar.ShowHeadings and i-2 or i-1
+
+	-- Threat warnings
+	if testMode then
+		threatTable = delTable(threatTable)
+	elseif myGUID then
+		local myClass = guidClassLookup[myGUID]
+		local myThreatPercent = threatTable[myGUID] / tankThreat * 100
+		local t = db.Warnings
+		if lastWarn.mobGUID == mobGUID and myThreatPercent >= t.Threshold and t.Threshold > lastWarn.threatpercent then
+			if not t.DisableWhileTanking or not (myClass == "WARRIOR" and GetBonusBarOffset() == 2 or
+			  myClass == "DRUID" and GetBonusBarOffset() == 3 or
+			  myClass == "PALADIN" and UnitAura("player", GetSpellInfo(25780)) or
+			  myClass == "DEATHKNIGHT" and GetShapeshiftFormInfo(GetShapeshiftForm()) == "Interface\\Icons\\Spell_Deathknight_FrostPresence") then
+				self:Warn(t.Sound, t.Flash, t.Shake, t.Message and L["Passed %s%% of %s's threat!"]:format(t.Threshold, guidNameLookup[tankGUID or mobTargetGUID or sortTable[1]]))
+			end
+		end
+		-- Remove TPS data if the last scanned mob is different
+		if lastWarn.mobGUID ~= mobGUID then
+			delTable(threatStore)
+			threatStore = newTable()
+			wipe(threatStoreTime)
+		end
+		tinsert(threatStore, threatTable)
+		tinsert(threatStoreTime, GetTime())
+		-- Store last scanned mob GUID
+		lastWarn.mobGUID = mobGUID
+		lastWarn.threatpercent = myThreatPercent
+		threatTable = nil
+	end
 end
 
-function Omen:OnClick()
-	if IsShiftKeyDown() then
-		Threat:RequestThreatClear()
-	elseif IsControlKeyDown() then
-		if waterfall then
-			waterfall:Open("Omen")
+function Omen:ClearAll()
+	for i = 0, #bars do
+		bars[i]:Hide()
+	end
+	self.TitleText:SetText(self.defaultTitle)
+	if db.Autocollapse then
+		self.Anchor:SetHeight(self.Title:GetHeight())
+		self.BarList:Hide()
+		if db.CollapseHide and not self.Anchor.IsMovingOrSizing and not manualToggle then
+			self.Anchor:Hide()
+		end
+	end
+	self.BarList.barsShown = 0
+	-- Store last scanned mob GUID
+	lastWarn.mobGUID = nil
+	lastWarn.threatpercent = 0
+	-- Remove TPS data
+	delTable(threatStore)
+	threatStore = newTable()
+	wipe(threatStoreTime)
+	threatTable = nil
+end
+
+function Omen:UpdateTPS()
+	local numBars = #bars
+	if testMode then
+		if db.Bar.ShowAggroBar then
+			bars[1].Text3:SetText("--")
+			for i = 2, numBars do
+				bars[i].Text3:SetText(1300 - 50*(i-1))
+			end
 		else
-			self:Print("Waterfall-1.0 is required to access the GUI.")
+			for i = 1, numBars do
+				bars[i].Text3:SetText(1300 - 50*i)
+			end
 		end
-	else
-		self:Toggle()
+		return
 	end
-end
-
-function Omen:OnTooltipUpdate()
-	GameTooltip:AddLine("|cffffff00" .. L["Click|r to toggle the Omen window"])
-	GameTooltip:AddLine("|cffffff00" .. L["Ctrl-Click|r to open the options menu"])
-	GameTooltip:AddLine("|cffffff00" .. L["Shift-Click|r to issue a threat clear request"])
-end
-
-------------------------------------------------
--- UI Manipulation
-------------------------------------------------
-
-function Omen:CreateTPSGraph(unitNameA, unitNameB)
-end
-
-------------------------------------------------------------------------------------------------
--- TPS crap
-------------------------------------------------------------------------------------------------
-
-function Omen:EnableTPSUpdate()
-	if not self:IsEventScheduled("OmenTPSUpdate") then
-		self:ScheduleRepeatingEvent("OmenTPSUpdate", self.UpdateAllTPS, Omen.ActiveSkin.TPSUpdateFrequency, self)
-		self:ScheduleEvent("ResetTPSTimerTables", self.DisableTPSUpdate, 10, self)
+	-- Remove data that is too old
+	local TPSWindow = db.Bar.TPSWindow
+	local startTime = GetTime() - TPSWindow
+	while threatStoreTime[2] and startTime > threatStoreTime[2] do
+		delTable(tremove(threatStore, 1))
+		tremove(threatStoreTime, 1)
 	end
-end
-
-function Omen:DisableTPSUpdate()
-	if self:IsEventScheduled("OmenTPSUpdate") then
-		self:CancelScheduledEvent("OmenTPSUpdate")
+	-- Now check that we still have enough data
+	local dataSize = #threatStoreTime
+	if dataSize == 0 or startTime <= threatStoreTime[1] then
+		-- We do not have enough data, TPSWindow seconds has not passed
+		for i = 1, numBars do
+			bars[i].Text3:SetText("??")
+		end
+		return
 	end
-end
-
-function Omen:UpdateAllTPS()
-	local target = self.threatTargetName or GTARGET
-	for k, v in ipairs(self.barList) do
-		if v.validUnit and v.unitname and v:IsVisible() then
-			local tps, e_tps = Threat:GetTPS(v.unitname, target)
-			v.labels.tps:SetText(math_floor(tps or 0))
-			v.labels.fight_tps:SetText(math_floor(e_tps or 0))
+	-- Check for special case with just 1 data point past TPSWindow seconds
+	if dataSize == 1 then
+		-- Threat generated is 0
+		for i = 1, numBars do
+			bars[i].Text3:SetText("0")
+		end
+		return
+	end
+	-- We have at least 2 data points
+	for i = 1, numBars do
+		local bar = bars[i]
+		if not bar:IsShown() then return end
+		local guid = bar.guid
+		if guid == "AGGRO" then
+			bar.Text3:SetText("--")
+		else
+			local baseThreat = threatStore[1][guid]
+			local secondThreat = threatStore[2][guid]
+			local finalThreat = threatStore[dataSize][guid]
+			if baseThreat and secondThreat and finalThreat then
+				-- Calculate TPS
+				local ratio = (startTime - threatStoreTime[1]) / (threatStoreTime[2] - threatStoreTime[1])
+				local startThreat = (secondThreat - baseThreat) * ratio + baseThreat
+				bar.Text3:SetFormattedText("%d", (finalThreat - startThreat) / TPSWindow / 100)
+			else
+				-- We don't have enough data for this unit
+				bar.Text3:SetText("??")
+			end
 		end
 	end
 end
 
-function Omen:GetTPS(player, target)
-	return Threat:GetTPS(player, target)
-end
 
--- Thanks to Kalman for working out the TPS formula with me.
--- It's just a single-pole IIR filter which decreases the weight of older samples
--- over time. 0 < p1 < 1 - a higher p1 results in faster decay (which means a shorter window)
-------------------------------------------------------------------------------------
--- Graphing
-------------------------------------------------------------------------------------
-function Omen:UpdateGraphCompare(unit)
-	self.graph_unitA = unit
+-----------------------------------------------------------------------------
+-- Title Right Click menu
 
-	self.graph_unitB = PlayerName
-	if not self.GraphFrame then
-		self:CreateGraph()
-	end
+do
+	local info = {}
+	local Omen_TitleDropDownMenu = CreateFrame("Frame", "Omen_TitleDropDownMenu")
+	Omen_TitleDropDownMenu.displayMode = "MENU"
+	Omen_TitleDropDownMenu.initialize = function(self, level)
+		if not level then return end
+		wipe(info)
+		if level == 1 then
+			-- Create the title of the menu
+			info.isTitle      = 1
+			info.text         = L["Omen Quick Menu"]
+			info.notCheckable = 1
+			UIDropDownMenu_AddButton(info, level)
 
-	local r, g, b = self.bars[self.graph_unitA].tex:GetVertexColor()
-	self.GraphA:SetBarColors({r, g, b, 0.1},{r, g, b, 0.6})
-end
+			info.disabled     = nil
+			info.isTitle      = nil
+			info.notCheckable = nil
 
-function Omen:CreateGraph()
-	self.GraphFrame = CreateFrame("Frame", "OmenThreatGraph", self.Anchor)
-	self.GraphFrame:SetBackdrop({
-		bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-		tile = true,
-		tileSize = 16,
-		edgeSize = 16,
-		insets = {left = 4, right = 4, top = 4, bottom = 4}
-	})
+			info.text = L["Lock Omen"]
+			info.func = function()
+				db.Locked = not db.Locked
+				Omen:UpdateGrips()
+				LibStub("AceConfigRegistry-3.0"):NotifyChange("Omen")
+			end
+			info.checked = db.Locked
+			info.tooltipTitle = L["Lock Omen"]
+			info.tooltipText = L["Locks Omen in place and prevents it from being dragged or resized."]
+			UIDropDownMenu_AddButton(info, level)
 
-	local f = self.db.profile.BackdropColor
-	self.GraphFrame:SetBackdropColor(f.r, f.g, f.b, f.a)
+			info.text = L["Use Focus Target"]
+			info.func = function() Omen:ToggleFocus() end
+			info.checked = db.UseFocus
+			info.tooltipTitle = L["Use Focus Target"]
+			info.tooltipText = L["Tells Omen to additionally check your 'focus' and 'focustarget' before your 'target' and 'targettarget' in that order for threat display."]
+			UIDropDownMenu_AddButton(info, level)
 
-	local f = self.db.profile.BorderColor
-	self.GraphFrame:SetBackdropBorderColor(f.r, f.g, f.b, f.a)
-	
-	self.GraphFrame:SetWidth(self.Anchor:GetWidth())
-	self.GraphFrame:SetHeight(50)
-	self.GraphFrame:SetPoint("TOPLEFT", self.Anchor, "BOTTOMLEFT", 0, -10)
-	local width = math.floor(self.GraphFrame:GetWidth() - 7)
-	local height = math.floor(self.GraphFrame:GetHeight() - 7)
-	
-	local Graph = AceLibrary("Graph-1.0")
+			info.text = L["Test Mode"]
+			info.func = function()
+				testMode = not testMode
+				Omen:UpdateBars()
+				LibStub("AceConfigRegistry-3.0"):NotifyChange("Omen")
+			end
+			info.checked = testMode
+			info.tooltipTitle = L["Test Mode"]
+			info.tooltipText = L["Tells Omen to enter Test Mode so that you can configure Omen's display much more easily."]
+			UIDropDownMenu_AddButton(info, level)
 
-	self.GraphA = Graph:CreateGraphRealtime("OmenThreatGraphA", self.GraphFrame, "TOPLEFT", "TOPLEFT", 5, -4, width, height)
-	self.GraphB = Graph:CreateGraphRealtime("OmenThreatGraphB", self.GraphFrame, "TOPLEFT", "TOPLEFT", 5, -4, width, height)
+			info.text = L["Open Config"]
+			info.func = function() Omen:ShowConfig() end
+			info.checked = nil
+			info.tooltipTitle = L["Open Config"]
+			info.tooltipText = L["Open Omen's configuration panel"]
+			UIDropDownMenu_AddButton(info, level)
 
-	self.graphMax = 0
-		
-	local g = self.GraphA
-	g:SetAutoScale(false)
-	g:SetGridSpacing(1.0,10.0)
-	g:SetXAxis(-10,-1)
-	g:SetFilterRadius(1.5)
-	g:SetYMax(0.01)
-	local cr, cg, cb = self.bars[self.graph_unitA].tex:GetVertexColor()
-	g:SetBarColors({cr, cg, cb, 0.1},{cr, cg, cb, 0.6})
+			info.text = L["Hide Omen"]
+			info.func = function() Omen:Toggle() end
+			info.tooltipTitle = L["Hide Omen"]
+			info.tooltipText = nil
+			UIDropDownMenu_AddButton(info, level)
 
-	g = self.GraphB
-	g:SetAutoScale(false)
-	g:SetGridSpacing(1.0,10.0)
-	g:SetXAxis(-10,-1)
-	g:SetYMax(0.01)
-	g:SetFilterRadius(1.5)
-	if self.bars[self.graph_unitB] then
-		local cr, cg, cb = self.bars[self.graph_unitB].tex:GetVertexColor()
-		g:SetBarColors({cr, cg, cb, 0.1},{cr, cg, cb, 0.6})
-	else
-		local cr, cg, cb = 1, 0, 0
-		g:SetBarColors({cr, cg, cb, 0.1},{cr, cg, cb, 0.6})
-	end
-	self.updateCt = 9
-	self.tA = 0
-	self.tB = 0	
-	self.tSA = 0
-	self.tSB = 0	
-	
-	self:ScheduleRepeatingEvent("OmenUpdateThreatGraphA", function()
-		self.updateCt = self.updateCt + 1
-		if self.updateCt == 10 then
-			local tpsA = self:GetTPS(self.graph_unitA, self.threatTargetName or "") or 0
-			local tpsB = self:GetTPS(self.graph_unitB, self.threatTargetName or "") or 0
-			local yMax = max(self.GraphA:GetMaxValue(), self.GraphB:GetMaxValue()) * 1.1
-			self.oldTPSA = tpsA
-			self.oldTPSB = tpsB
-			self.GraphA.YMax = yMax
-			self.GraphB.YMax = yMax
-			self.tSA = (tpsA - self.tA) / 10
-			self.tSB = (tpsB - self.tB) / 10
-			self.tA = tpsA
-			self.tB = tpsB
-			self.updateCt = 0
+			-- Close menu item
+			info.text         = CLOSE
+			info.func         = function() CloseDropDownMenus() end
+			info.checked      = nil
+			info.arg1         = nil
+			info.notCheckable = 1
+			info.tooltipTitle = CLOSE
+			UIDropDownMenu_AddButton(info, level)
 		end
-		self.GraphA:AddTimeData(self.tA + (self.tSA * self.updateCt))
-		self.GraphB:AddTimeData(self.tB + (self.tSB * self.updateCt))
-	end, 0.1, self)
+	end
+end
+
+
+-----------------------------------------------------------------------------
+-- Omen config stuff
+
+local outlines = {
+	[""]             = L["None"],
+	["OUTLINE"]      = L["Outline"],
+	["THICKOUTLINE"] = L["Thick Outline"],
+}
+
+local function GetFuBarMinimapAttachedStatus(info)
+	return Omen:IsFuBarMinimapAttached() or db.FuBar.HideMinimapButton
+end
+
+-- Option table for the AceGUI config only
+local options = {
+	type = "group",
+	name = "Omen",
+	get = function(info) return db[ info[#info] ] end,
+	set = function(info, value) db[ info[#info] ] = value end,
+	args = {
+		General = {
+			order = 1,
+			type = "group",
+			name = L["General Settings"],
+			desc = L["General Settings"],
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["OMEN_DESC"],
+				},
+				Alpha = {
+					order = 3,
+					name = L["Alpha"],
+					desc = L["Controls the transparency of the main Omen window."],
+					type = "range",
+					min = 0, max = 1, step = 0.01,
+					isPercent = true,
+					set = function(info, value)
+						db.Alpha = value
+						Omen.Anchor:SetAlpha(value)
+					end,
+				},
+				Scale = {
+					order = 4,
+					name = L["Scale"],
+					desc = L["Controls the scaling of the main Omen window."],
+					type = "range",
+					min = 0.50, max = 1.50, step = 0.01,
+					isPercent = true,
+					set = function(info, value)
+						db.Scale = value
+						Omen:SetAnchors()
+					end,
+				},
+				FrameStrata = {
+					type = "select",
+					order = 5,
+					name = L["Frame Strata"],
+					desc = L["Controls the frame strata of the main Omen window. Default: MEDIUM"],
+					values = { -- A hack to sort them in the menu
+						["1-BACKGROUND"] = "BACKGROUND",
+						["2-LOW"] = "LOW",
+						["3-MEDIUM"] = "MEDIUM",
+						["4-HIGH"] = "HIGH",
+						["5-DIALOG"] = "DIALOG",
+						["6-FULLSCREEN"] = "FULLSCREEN",
+						["7-FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG",
+						["8-TOOLTIP"] = "TOOLTIP",
+					},
+					set = function(info, value)
+						db.FrameStrata = value
+						Omen.Anchor:SetFrameStrata(strsub(value, 3))
+					end,
+				},
+				ClampToScreen = {
+					type = "toggle",
+					name = L["Clamp To Screen"],
+					desc = L["Controls whether the main Omen window can be dragged offscreen"],
+					order = 6,
+					set = function(info, value)
+						db.ClampToScreen = value
+						Omen.Anchor:SetClampedToScreen(value)
+					end,
+				},
+				Locked = {
+					type = "toggle",
+					name = L["Lock Omen"],
+					desc = L["Locks Omen in place and prevents it from being dragged or resized."],
+					order = 7,
+					set = function(info, value)
+						db.Locked = value
+						Omen:UpdateGrips()
+					end,
+				},
+				UseFocus = {
+					type = "toggle",
+					name = L["Use Focus Target"],
+					desc = L["Tells Omen to additionally check your 'focus' and 'focustarget' before your 'target' and 'targettarget' in that order for threat display."],
+					order = 8,
+					set = function(info, value)
+						Omen:ToggleFocus()
+					end,
+				},
+				TestMode = {
+					type = "toggle",
+					name = L["Test Mode"],
+					desc = L["Tells Omen to enter Test Mode so that you can configure Omen's display much more easily."],
+					order = 9,
+					get = function(info) return testMode end,
+					set = function(info, value)
+						testMode = value
+						Omen:UpdateBars()
+					end,
+				},
+				MinimapIcon = {
+					type = "toggle",
+					name = L["Show minimap button"],
+					desc = L["Show the Omen minimap button"],
+					order = 10,
+					get = function(info) return not db.MinimapIcon.hide end,
+					set = function(info, value)
+						db.MinimapIcon.hide = not value
+						if value then LDBIcon:Show("Omen") else LDBIcon:Hide("Omen") end
+					end,
+					hidden = function() return not LDBIcon or IsAddOnLoaded("Broker2FuBar") or IsAddOnLoaded("FuBar") end,
+				},
+				IgnorePlayerPets = {
+					type = "toggle",
+					name = L["Ignore Player Pets"],
+					desc = L["IGNORE_PLAYER_PETS_DESC"],
+					order = 11,
+					set = function(info, value)
+						db.IgnorePlayerPets = value
+						Omen:UpdateBars()
+					end,
+				},
+				AutocollapseGroup = {
+					type = "group",
+					name = L["Autocollapse Options"],
+					guiInline = true,
+					order = 21,
+					disabled = function() return not db.Autocollapse end,
+					set = function(info, value)
+						db[ info[#info] ] = value
+						Omen:UpdateVisible()
+						Omen:UpdateBars()
+					end,
+					args = {
+						Autocollapse = {
+							type = "toggle",
+							name = L["Autocollapse"],
+							desc = L["Collapse to show a minimum number of bars"],
+							order = 1,
+							set = function(info, value)
+								db.Autocollapse = value
+								Omen.Anchor:SetHeight(6*db.Bar.Height + 5*db.Bar.Spacing + Omen.Title:GetHeight() + 2*db.Background.BarInset)
+								Omen:SetAnchors()
+								Omen.BarList:Show()
+								Omen:UpdateVisible()
+								Omen:UpdateBars()
+							end,
+							disabled = false,
+						},
+						GrowUp = {
+							order = 2,
+							type = "toggle",
+							name = L["Grow bars upwards"],
+							desc = L["Grow bars upwards"],
+							set = function(info, value)
+								db.GrowUp = value
+								Omen:SetAnchors()
+							end,
+						},
+						CollapseHide = {
+							order = 3,
+							type = "toggle",
+							name = L["Hide Omen on 0 bars"],
+							desc = L["Hide Omen entirely if it collapses to show 0 bars"],
+							set = function(info, value)
+								db.CollapseHide = value
+								if value then manualToggle = false end
+								Omen:UpdateVisible()
+								Omen:UpdateBars()
+							end,
+						},
+						NumBars = {
+							order = 4,
+							name = L["Max bars to show"],
+							desc = L["Max number of bars to show"],
+							type = "range",
+							min = 1, max = 40, step = 1,
+						},
+					},
+				},
+				Background = {
+					type = "group",
+					name = L["Background Options"],
+					guiInline = true,
+					order = 31,
+					get = function(info) return db.Background[ info[#info] ] end,
+					set = function(info, value)
+						db.Background[ info[#info] ] = value
+						Omen:UpdateBackdrop()
+					end,
+					args = {
+						Texture = {
+							type = "select", dialogControl = 'LSM30_Background',
+							order = 1,
+							name = L["Background Texture"],
+							desc = L["Texture to use for the frame's background"],
+							values = AceGUIWidgetLSMlists.background,
+						},
+						BorderTexture = {
+							type = "select", dialogControl = 'LSM30_Border',
+							order = 2,
+							name = L["Border Texture"],
+							desc = L["Texture to use for the frame's border"],
+							values = AceGUIWidgetLSMlists.border,
+						},
+						Color = {
+							type = "color",
+							order = 3,
+							name = L["Background Color"],
+							desc = L["Frame's background color"],
+							hasAlpha = true,
+							get = function(info)
+								local t = db.Background.Color
+								return t.r, t.g, t.b, t.a
+							end,
+							set = function(info, r, g, b, a)
+								local t = db.Background.Color
+								t.r, t.g, t.b, t.a = r, g, b, a
+								Omen:UpdateBackdrop()
+							end,
+						},
+						BorderColor = {
+							type = "color",
+							order = 4,
+							name = L["Border Color"],
+							desc = L["Frame's border color"],
+							hasAlpha = true,
+							get = function(info)
+								local t = db.Background.BorderColor
+								return t.r, t.g, t.b, t.a
+							end,
+							set = function(info, r, g, b, a)
+								local t = db.Background.BorderColor
+								t.r, t.g, t.b, t.a = r, g, b, a
+								Omen:UpdateBackdrop()
+							end,
+						},
+						Tile = {
+							type = "toggle",
+							order = 5,
+							name = L["Tile Background"],
+							desc = L["Tile the background texture"],
+						},
+						TileSize = {
+							type = "range",
+							order = 6,
+							name = L["Background Tile Size"],
+							desc = L["The size used to tile the background texture"],
+							min = 16, max = 256, step = 1,
+							disabled = function() return not db.Background.Tile end,
+						},
+						EdgeSize = {
+							type = "range",
+							order = 7,
+							name = L["Border Thickness"],
+							desc = L["The thickness of the border"],
+							min = 1, max = 16, step = 1,
+						},
+						BarInset = {
+							type = "range",
+							order = 8,
+							name = L["Bar Inset"],
+							desc = L["Sets how far inside the frame the threat bars will display from the 4 borders of the frame"],
+							min = 1, max = 16, step = 1,
+						},
+					},
+				},
+			},
+		},
+		ShowWhen = {
+			order = 2,
+			type = "group",
+			name = L["Show When..."],
+			desc = L["Show Omen when..."],
+			get = function(info) return db.ShowWith[ info[#info] ] end,
+			set = function(info, value)
+				db.ShowWith[ info[#info] ] = value
+				manualToggle = false
+				Omen:UpdateVisible()
+				Omen:UpdateBars()
+			end,
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["This section controls when Omen is automatically shown or hidden."],
+					disabled = false,
+				},
+				UseShowWith = {
+					type = "toggle",
+					order = 2,
+					name = L["Use Auto Show/Hide"],
+					desc = L["Use Auto Show/Hide"],
+					disabled = false,
+				},
+				ShowWithGroup = {
+					type = "group",
+					order = 3,
+					guiInline = true,
+					name = L["Use Auto Show/Hide"],
+					desc = L["Use Auto Show/Hide"],
+					disabled = function(info) return not db.ShowWith.UseShowWith end,
+					args = {
+						intro2 = {
+							order = 10,
+							type = "description",
+							name = L["Show Omen when any of the following are true"],
+						},
+						Alone = {
+							type = "toggle",
+							order = 11,
+							name = L["You are alone"],
+							desc = L["Show Omen when you are alone"],
+						},
+						Party = {
+							type = "toggle",
+							order = 12,
+							name = L["You are in a party"],
+							desc = L["Show Omen when you are in a 5-man party"],
+						},
+						Raid = {
+							type = "toggle",
+							order = 13,
+							name = L["You are in a raid"],
+							desc = L["Show Omen when you are in a raid"],
+						},
+						Pet = {
+							type = "toggle",
+							order = 14,
+							name = L["You have a pet"],
+							desc = L["Show Omen when you have a pet out"],
+						},
+						intro3 = {
+							order = 20,
+							type = "description",
+							name = L["However, hide Omen if any of the following are true (higher priority than the above)."],
+						},
+						HideInPVP = {
+							type = "toggle",
+							order = 21,
+							width = "double",
+							name = L["You are in a battleground"],
+							desc = L["Turning this on will cause Omen to hide whenever you are in a battleground or arena."],
+						},
+						HideWhileResting = {
+							type = "toggle",
+							order = 22,
+							width = "double",
+							name = L["You are resting"],
+							desc = L["Turning this on will cause Omen to hide whenever you are in a city or inn."],
+						},
+						HideWhenOOC = {
+							type = "toggle",
+							order = 23,
+							width = "double",
+							name = L["You are not in combat"],
+							desc = L["Turning this on will cause Omen to hide whenever you are not in combat."],
+							set = function(info, value)
+								db.ShowWith.HideWhenOOC = value
+								manualToggle = false
+								if value then
+									Omen:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateVisible")
+									Omen:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisible")
+								else
+									Omen:UnregisterEvent("PLAYER_REGEN_DISABLED")
+									Omen:UnregisterEvent("PLAYER_REGEN_ENABLED")
+								end
+								Omen:UpdateVisible()
+								Omen:UpdateBars()
+							end,
+						},
+						intro4 = {
+							order = 30,
+							type = "description",
+							name = L["AUTO_SHOW/HIDE_NOTE"],
+						},
+					},
+				},
+			},
+		},
+		ShowClasses = {
+			order = 3,
+			type = "group",
+			name = L["Show Classes..."],
+			desc = L["Show Classes..."],
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["SHOW_CLASSES_DESC"],
+				},
+				Classes = {
+					type = "multiselect",
+					order = 30,
+					name = L["Show bars for these classes"],
+					values = {
+						DEATHKNIGHT = L["DEATHKNIGHT"],
+						DRUID = L["DRUID"],
+						HUNTER = L["HUNTER"],
+						MAGE = L["MAGE"],
+						PALADIN = L["PALADIN"],
+						PET = L["PET"],
+						PRIEST = L["PRIEST"],
+						ROGUE = L["ROGUE"],
+						SHAMAN = L["SHAMAN"],
+						WARLOCK = L["WARLOCK"],
+						WARRIOR = L["WARRIOR"],
+						["*NOTINPARTY*"] = L["*Not in Party*"],
+					},
+					get = function(info, k) return db.Bar.Classes[k] end,
+					set = function(info, k, v)
+						db.Bar.Classes[k] = v
+						Omen:UpdateBars()
+					end,
+				},
+			},
+		},
+		TitleBar = {
+			order = 4,
+			type = "group",
+			name = L["Title Bar Settings"],
+			desc = L["Title Bar Settings"],
+			get = function(info) return db.TitleBar[ info[#info] ] end,
+			set = function(info, value)
+				db.TitleBar[ info[#info] ] = value
+				Omen:UpdateTitleBar()
+				Omen:UpdateBars()
+			end,
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["Configure title bar settings."],
+				},
+				ShowTitleBar = {
+					type = "toggle",
+					order = 2,
+					name = L["Show Title Bar"],
+					desc = L["Show the Omen Title Bar"],
+				},
+				Height = {
+					type = "range",
+					order = 5,
+					name = L["Title Bar Height"],
+					desc = L["Height of the title bar. The minimum height allowed is twice the background border thickness."],
+					min = 2, max = 32, step = 1,
+				},
+				TitleText = {
+					type = "group",
+					name = L["Title Text Options"],
+					guiInline = true,
+					order = 20,
+					set = function(info, value)
+						db.TitleBar[ info[#info] ] = value
+						Omen:UpdateTitleBar()
+					end,
+					args = {
+						Font = {
+							type = "select", dialogControl = 'LSM30_Font',
+							order = 1,
+							name = L["Font"],
+							desc = L["The font that the title text will use"],
+							values = AceGUIWidgetLSMlists.font,
+						},
+						FontOutline = {
+							type = "select",
+							order = 2,
+							name = L["Font Outline"],
+							desc = L["The outline that the title text will use"],
+							values = outlines,
+						},
+						FontColor = {
+							type = "color",
+							order = 3,
+							name = L["Font Color"],
+							desc = L["The color of the title text"],
+							hasAlpha = true,
+							get = function(info)
+								local t = db.TitleBar.FontColor
+								return t.r, t.g, t.b, t.a
+							end,
+							set = function(info, r, g, b, a)
+								local t = db.TitleBar.FontColor
+								t.r, t.g, t.b, t.a = r, g, b, a
+								Omen:UpdateTitleBar()
+							end,
+						},
+						FontSize = {
+							type = "range",
+							order = 4,
+							name = L["Font Size"],
+							desc = L["Control the font size of the title text"],
+							min = 4, max = 30, step = 1,
+						},
+					},
+				},
+			},
+		},
+		Bars = {
+			order = 5,
+			type = "group",
+			name = L["Bar Settings"],
+			desc = L["Bar Settings"],
+			get = function(info) return db.Bar[ info[#info] ] end,
+			set = function(info, value)
+				db.Bar[ info[#info] ] = value
+				Omen:UpdateBars()
+			end,
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["Configure bar settings."],
+				},
+				AnimateBars = {
+					type = "toggle",
+					order = 2,
+					name = L["Animate Bars"],
+					desc = L["Smoothly animate bar changes"],
+				},
+				ShortNumbers = {
+					type = "toggle",
+					order = 3,
+					name = L["Short Numbers"],
+					desc = L["Display large numbers in Ks"],
+					disabled = function() return not db.Bar.ShowValue end
+				},
+				Height = {
+					type = "range",
+					order = 4,
+					name = L["Bar Height"],
+					desc = L["Height of each bar"],
+					min = 5, max = 50, step = 1, bigStep = 1,
+					set = function(info, value)
+						db.Bar.Height = value
+						Omen:ReAnchorBars()
+						Omen:ResizeBars()
+						Omen:UpdateBars()
+					end,
+				},
+				Spacing = {
+					type = "range",
+					order = 5,
+					name = L["Bar Spacing"],
+					desc = L["Spacing between each bar"],
+					min = 0, max = 20, step = 1, bigStep = 1,
+					set = function(info, value)
+						db.Bar.Spacing = value
+						Omen:ReAnchorBars()
+						Omen:UpdateBars()
+					end,
+				},
+				ShowTPS = {
+					type = "toggle",
+					order = 6,
+					name = L["Show TPS"],
+					desc = L["Show threat per second values"],
+					set = function(info, value)
+						db.Bar.ShowTPS = value
+						if db.VGrip1 > db.VGrip2 then
+							db.VGrip1, db.VGrip2 = db.VGrip2, db.VGrip1
+						end
+						movegrip1()
+						movegrip2()
+						Omen:UpdateGrips()
+						local f = Omen.TPSUpdateFrame
+						if f then
+							if value then f:Show() else f:Hide() end
+						end
+					end,
+				},
+				TPSWindow = {
+					type = "range",
+					order = 7,
+					name = L["TPS Window"],
+					desc = L["TPS_WINDOW_DESC"],
+					min = 3, max = 15, step = 0.1,
+					disabled = function() return not db.Bar.ShowTPS end,
+				},
+				ShowValue = {
+					type = "toggle",
+					order = 8,
+					name = L["Show Threat Values"],
+					desc = L["Show Threat Values"],
+					set = function(info, value)
+						db.Bar.ShowValue = value
+						if not value then
+							db.Bar.ShowPercent = true
+							bars[0].Text2:SetText(L["Threat"])
+						elseif db.Bar.ShowPercent then
+							bars[0].Text2:SetText(L["Threat [%]"])
+						end
+						Omen:UpdateBars()
+					end,
+				},
+				ShowPercent = {
+					type = "toggle",
+					order = 9,
+					name = L["Show Threat %"],
+					desc = L["Show Threat %"],
+					set = function(info, value)
+						db.Bar.ShowPercent = value
+						if not value then
+							db.Bar.ShowValue = true
+							bars[0].Text2:SetText(L["Threat"])
+						elseif db.Bar.ShowValue then
+							bars[0].Text2:SetText(L["Threat [%]"])
+						end
+						Omen:UpdateBars()
+					end,
+				},
+				ShowHeadings = {
+					type = "toggle",
+					order = 11,
+					name = L["Show Headings"],
+					desc = L["Show column headings"],
+					set = function(info, value)
+						db.Bar.ShowHeadings = value
+						Omen:ReAnchorBars()
+						Omen:UpdateBars()
+					end,
+				},
+				HeadingBGColor = {
+					type = "color",
+					order = 12,
+					name = L["Heading BG Color"],
+					desc = L["Heading background color"],
+					hasAlpha = true,
+					get = function(info)
+						local t = db.Bar.HeadingBGColor
+						return t.r, t.g, t.b, t.a
+					end,
+					set = function(info, r, g, b, a)
+						local t = db.Bar.HeadingBGColor
+						t.r, t.g, t.b, t.a = r, g, b, a
+						Omen:UpdateBarLabelSettings()
+					end,
+					disabled = function() return not db.Bar.ShowHeadings end,
+				},
+				UseMyBarColor = {
+					type = "toggle",
+					order = 13,
+					name = L["Use 'My Bar' color"],
+					desc = L["Use a different colored background for your threat bar in Omen"],
+				},
+				MyBarColor = {
+					type = "color",
+					order = 14,
+					name = L["'My Bar' BG Color"],
+					desc = L["The background color for your threat bar"],
+					hasAlpha = true,
+					get = function(info)
+						local t = db.Bar.MyBarColor
+						return t.r, t.g, t.b, t.a
+					end,
+					set = function(info, r, g, b, a)
+						local t = db.Bar.MyBarColor
+						t.r, t.g, t.b, t.a = r, g, b, a
+						Omen:UpdateBars()
+					end,
+					disabled = function() return not db.Bar.UseMyBarColor end,
+				},
+				UseTankBarColor = {
+					type = "toggle",
+					order = 15,
+					name = L["Use Tank Bar color"],
+					desc = L["Use a different colored background for the tank's threat bar in Omen"],
+				},
+				TankBarColor = {
+					type = "color",
+					order = 16,
+					name = L["Tank Bar Color"],
+					desc = L["The background color for your tank's threat bar"],
+					hasAlpha = true,
+					get = function(info)
+						local t = db.Bar.TankBarColor
+						return t.r, t.g, t.b, t.a
+					end,
+					set = function(info, r, g, b, a)
+						local t = db.Bar.TankBarColor
+						t.r, t.g, t.b, t.a = r, g, b, a
+						Omen:UpdateBars()
+					end,
+					disabled = function() return not db.Bar.UseTankBarColor end,
+				},
+				ShowAggroBar = {
+					type = "toggle",
+					order = 17,
+					name = L["Show Pull Aggro Bar"],
+					desc = L["Show a bar for the amount of threat you will need to reach in order to pull aggro."],
+				},
+				AggroBarColor = {
+					type = "color",
+					order = 18,
+					name = L["Pull Aggro Bar Color"],
+					desc = L["The background color for your Pull Aggro bar"],
+					hasAlpha = true,
+					get = function(info)
+						local t = db.Bar.AggroBarColor
+						return t.r, t.g, t.b, t.a
+					end,
+					set = function(info, r, g, b, a)
+						local t = db.Bar.AggroBarColor
+						t.r, t.g, t.b, t.a = r, g, b, a
+						Omen:UpdateBars()
+					end,
+					disabled = function() return not db.Bar.ShowAggroBar end,
+				},
+				UseClassColors = {
+					type = "toggle",
+					order = 20,
+					name = L["Use Class Colors"],
+					desc = L["Use standard class colors for the background color of threat bars"],
+				},
+				PetBarColor = {
+					type = "color",
+					order = 21,
+					name = L["Pet Bar Color"],
+					desc = L["The background color for pets"],
+					hasAlpha = true,
+					get = function(info)
+						local t = db.Bar.PetBarColor
+						return t.r, t.g, t.b, t.a
+					end,
+					set = function(info, r, g, b, a)
+						local t = db.Bar.PetBarColor
+						t.r, t.g, t.b, t.a = r, g, b, a
+						Omen:UpdateBars()
+					end,
+					disabled = function() return not db.Bar.UseClassColors end,
+				},
+				AlwaysShowSelf = {
+					type = "toggle",
+					order = 26,
+					name = L["Always Show Self"],
+					desc = L["Always show your threat bar on Omen (ignores class filter settings), showing your bar on the last row if necessary"],
+				},
+				BarColor = {
+					type = "color",
+					order = 27,
+					name = L["Bar BG Color"],
+					desc = L["The background color for all threat bars"],
+					hasAlpha = true,
+					get = function(info)
+						local t = db.Bar.BarColor
+						return t.r, t.g, t.b, t.a
+					end,
+					set = function(info, r, g, b, a)
+						local t = db.Bar.BarColor
+						t.r, t.g, t.b, t.a = r, g, b, a
+						Omen:UpdateBars()
+					end,
+					disabled = function() return db.Bar.UseClassColors end,
+				},
+				Texture = {
+					type = "select", dialogControl = 'LSM30_Statusbar',
+					order = 29,
+					name = L["Bar Texture"],
+					desc = L["The texture that the bar will use"],
+					values = AceGUIWidgetLSMlists.statusbar,
+					set = function(info, v)
+						db.Bar.Texture = v
+						local texturepath = LSM:Fetch("statusbar", v)
+						for i = 0, #bars do
+							bars[i].texture:SetTexture(texturepath)
+						end
+					end,
+				},
+				BarLabelsGroup = {
+					type = "group",
+					name = L["Bar Label Options"],
+					guiInline = true,
+					order = 30,
+					set = function(info, v)
+						db.Bar[ info[#info] ] = v
+						Omen:UpdateBarLabelSettings()
+					end,
+					args = {
+						Font = {
+							type = "select", dialogControl = 'LSM30_Font',
+							order = 1,
+							name = L["Font"],
+							desc = L["The font that the labels will use"],
+							values = AceGUIWidgetLSMlists.font,
+						},
+						FontOutline = {
+							type = "select",
+							order = 2,
+							name = L["Font Outline"],
+							desc = L["The outline that the labels will use"],
+							values = outlines,
+						},
+						FontColor = {
+							type = "color",
+							order = 3,
+							name = L["Font Color"],
+							desc = L["The color of the labels"],
+							hasAlpha = true,
+							get = function(info)
+								local t = db.Bar.FontColor
+								return t.r, t.g, t.b, t.a
+							end,
+							set = function(info, r, g, b, a)
+								local t = db.Bar.FontColor
+								t.r, t.g, t.b, t.a = r, g, b, a
+								Omen:UpdateBarLabelSettings()
+							end,
+						},
+						FontSize = {
+							type = "range",
+							order = 4,
+							name = L["Font Size"],
+							desc = L["Control the font size of the labels"],
+							min = 4, max = 30, step = 1,
+						},
+					},
+				},
+			},
+		},
+		Warnings = {
+			order = 6,
+			type = "group",
+			name = L["Warning Settings"],
+			desc = L["Warning Settings"],
+			get = function(info) return db.Warnings[ info[#info] ] end,
+			set = function(info, value)
+				db.Warnings[ info[#info] ] = value
+			end,
+			args = {
+				intro = {
+					order = 1,
+					type = "description",
+					name = L["OMEN_WARNINGS_DESC"],
+				},
+				Sound = {
+					type = "toggle",
+					order = 2,
+					name = L["Enable Sound"],
+					desc = L["Causes Omen to play a chosen sound effect"],
+				},
+				Flash = {
+					type = "toggle",
+					order = 3,
+					name = L["Enable Screen Flash"],
+					desc = L["Causes the entire screen to flash red momentarily"],
+				},
+				Shake = {
+					type = "toggle",
+					order = 4,
+					name = L["Enable Screen Shake"],
+					desc = L["Causes the entire game world to shake momentarily. This option only works if nameplates are turned off."],
+				},
+				Message = {
+					type = "toggle",
+					order = 5,
+					name = L["Enable Warning Message"],
+					desc = L["Print a message to screen when you accumulate too much threat"],
+				},
+				Output = Omen:GetSinkAce3OptionsDataTable(),
+				Threshold = {
+					type = "range",
+					order = 7,
+					name = L["Warning Threshold %"],
+					desc = L["Warning Threshold %"],
+					min = 60, max = 130, step = 1,
+				},
+				SoundFile = {
+					type = "select", dialogControl = 'LSM30_Sound',
+					order = 8,
+					name = L["Sound to play"],
+					desc = L["Sound to play"],
+					values = AceGUIWidgetLSMlists.sound,
+					disabled = function() return not db.Warnings.Sound end,
+				},
+				DisableWhileTanking = {
+					type = "toggle",
+					order = 9,
+					name = L["Disable while tanking"],
+					desc = L["DISABLE_WHILE_TANKING_DESC"],
+				},
+				test = {
+					type = "execute",
+					order = -1,
+					name = L["Test warnings"],
+					desc = L["Test warnings"],
+					func = function()
+						local t = db.Warnings
+						Omen:Warn(t.Sound, t.Flash, t.Shake, t.Message and L["Test warnings"])
+					end,
+				},
+			},
+		},
+		FuBar = {
+			order = -4,
+			type = "group",
+			name = L["FuBar Options"],
+			desc = L["FuBar Options"],
+			hidden = function() return Omen.IsFuBarMinimapAttached == nil end,
+			args = {
+				hideIcon = {
+					type = "toggle",
+					order = 1,
+					name = L["Hide minimap/FuBar icon"],
+					desc = L["Hide minimap/FuBar icon"],
+					get = function(info) return db.FuBar.HideMinimapButton end,
+					set = function(info, v)
+						db.FuBar.HideMinimapButton = v
+						Omen:UpdateFuBarSettings()
+					end,
+				},
+				attachMinimap = {
+					type = "toggle",
+					order = 2,
+					name = L["Attach to minimap"],
+					desc = L["Attach to minimap"],
+					get = function(info) return Omen:IsFuBarMinimapAttached() end,
+					set = function(info, v)
+						Omen:ToggleFuBarMinimapAttached()
+						db.FuBar.AttachMinimap = Omen:IsFuBarMinimapAttached()
+					end,
+					disabled = function() return db.FuBar.HideMinimapButton end,
+				},
+				showIcon = {
+					type = "toggle",
+					order = 3,
+					name = L["Show icon"],
+					desc = L["Show icon"],
+					get = function(info) return Omen:IsFuBarIconShown() end,
+					set = function(info, v) Omen:ToggleFuBarIconShown() end,
+					disabled = GetFuBarMinimapAttachedStatus,
+				},
+				showText = {
+					type = "toggle",
+					order = 4,
+					name = L["Show text"],
+					desc = L["Show text"],
+					get = function(info) return Omen:IsFuBarTextShown() end,
+					set = function(info, v) Omen:ToggleFuBarTextShown() end,
+					disabled = GetFuBarMinimapAttachedStatus,
+				},
+				position = {
+					type = "select",
+					order = 5,
+					name = L["Position"],
+					desc = L["Position"],
+					values = {LEFT = L["Left"], CENTER = L["Center"], RIGHT = L["Right"]},
+					get = function() return Omen:GetPanel() and Omen:GetPanel():GetPluginSide(Omen) end,
+					set = function(info, val)
+						if Omen:GetPanel() and Omen:GetPanel().SetPluginSide then
+							Omen:GetPanel():SetPluginSide(Omen, val)
+						end
+					end,
+					disabled = GetFuBarMinimapAttachedStatus,
+				}
+			}
+		},
+		Help = {
+			type = "group",
+			order = -1,
+			name = L["Help File"],
+			desc = L["A collection of help pages"],
+			childGroups = "select",
+			args = {
+				FAQ1 = {
+					type = "group",
+					order = 1,
+					name = L["FAQ Part 1"],
+					args = {
+						header = {
+							type = "header",
+							name = L["Frequently Asked Questions"],
+							order = 0,
+						},
+						text = {
+							order = 1,
+							type = "description",
+							name = L["GENERAL_FAQ"],
+						},
+					},
+				},
+				FAQ2 = {
+					type = "group",
+					order = 2,
+					name = L["FAQ Part 2"],
+					args = {
+						header = {
+							type = "header",
+							name = L["Frequently Asked Questions"],
+							order = 0,
+						},
+						text = {
+							order = 1,
+							type = "description",
+							name = L["GENERAL_FAQ2"],
+						},
+					},
+				},
+				WARRIOR = {
+					type = "group",
+					name = L["Warrior"],
+					args = {
+						header = {
+							type = "header",
+							name = L["Warrior"],
+							order = 0,
+						},
+						text = {
+							order = 1,
+							type = "description",
+							name = L["WARRIOR_FAQ"],
+						},
+					},
+				},
+			},
+		},
+	},
+}
+Omen.Options = options
+options.args.Warnings.args.Output.order = 6
+options.args.Warnings.args.Output.inline = true
+options.args.Warnings.args.Output.disabled = function() return not db.Warnings.Message end
+
+-- Option table for the slash command only
+local optionsSlash = {
+	type = "group",
+	name = L["Slash Command"],
+	order = -3,
+	args = {
+		intro = {
+			order = 1,
+			type = "description",
+			name = L["OMEN_SLASH_DESC"],
+			cmdHidden = true,
+		},
+		toggle = {
+			type = "execute",
+			name = L["Toggle Omen"],
+			desc = L["Toggle Omen"].." ( /omen toggle )",
+			func = function() Omen:Toggle() end,
+		},
+		center = {
+			type = "execute",
+			name = L["Center Omen"],
+			desc = L["Center Omen"].." ( /omen center )",
+			func = function()
+				Omen.Anchor:ClearAllPoints()
+				Omen.Anchor:SetPoint("CENTER", UIParent, "CENTER")
+				Omen:SetAnchors()
+			end,
+		},
+		config = {
+			type = "execute",
+			name = L["Configure"],
+			desc = L["Open the configuration dialog"].." ( /omen config )",
+			func = function() Omen:ShowConfig() end,
+			guiHidden = true,
+		},
+	},
+}
+Omen.OptionsSlash = optionsSlash
+
+function Omen:SetupOptions()
+	self.optionsFrames = {}
+
+	-- setup options table
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Omen", options)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("OmenSlashCommand", optionsSlash, "omen")
+	local ACD3 = LibStub("AceConfigDialog-3.0")
+
+	-- The ordering here matters, it determines the order in the Blizzard Interface Options
+	self.optionsFrames.Omen = ACD3:AddToBlizOptions("Omen", nil, nil, "General")
+	self.optionsFrames.ShowWhen = ACD3:AddToBlizOptions("Omen", L["Show When..."], "Omen", "ShowWhen")
+	self.optionsFrames.ShowClasses = ACD3:AddToBlizOptions("Omen", L["Show Classes..."], "Omen", "ShowClasses")
+	self.optionsFrames.TitleBar = ACD3:AddToBlizOptions("Omen", L["Title Bar Settings"], "Omen", "TitleBar")
+	self.optionsFrames.Bars = ACD3:AddToBlizOptions("Omen", L["Bar Settings"], "Omen", "Bars")
+	self.optionsFrames.Warnings = ACD3:AddToBlizOptions("Omen", L["Warning Settings"], "Omen", "Warnings")
+	self:RegisterModuleOptions("OmenSlashCommand", optionsSlash, L["Slash Command"])
+	self:RegisterModuleOptions("Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db), L["Profiles"])
+	self.optionsFrames.Help = ACD3:AddToBlizOptions("Omen", L["Help File"], "Omen", "Help")
+
+	-- Add ordering data to the option table generated by AceDBOptions-3.0
+	options.args.Profiles.order = -2
+end
+
+function Omen:RegisterModuleOptions(name, optionTbl, displayName)
+	options.args[name] = (type(optionTbl) == "function") and optionTbl() or optionTbl
+	self.optionsFrames[name] = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Omen", displayName, "Omen", name)
+end
+
+function Omen:ShowConfig()
+	-- Open the profiles tab before, so the menu expands
+	InterfaceOptionsFrame_OpenToCategory(self.optionsFrames.Profiles)
+	InterfaceOptionsFrame_OpenToCategory(self.optionsFrames.Omen)
 end

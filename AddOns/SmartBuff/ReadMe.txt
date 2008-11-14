@@ -3,13 +3,6 @@ SmartBuff
 Created by Aeldra (EU-Proudmoore)
 ***********************************************************************
 
-!!!NEW!!!
-SmartDebuff
-A movable frame with debuff buttons for all players in solo/party/raid.
-Binds your debuff spells to left and right click (left = blue, right = red) on the debuff button.
-Highligths the debuff button blue or red on the player that needs to debuffed.
-
-
 SmartBuff is a buff addon, to cast buffs ease and quickly. All classes are supported.
 Bind a key and it checks if you, a party/raid member, also hunter and warlock pets, needs your buff and cast it.
 Use the options menu to configure it you like, as example: buffs, raid subgroups, pets, etc.
@@ -171,12 +164,49 @@ aeldra@sonnenkinder.org
 Changes: 
 Rev     Date        Description
 ------  ----------  -----------------------
+3.0b    2008-10-25  Fixed group buff support
+                    Added buffs: Mage (Focus Magic), Warrior (Vigilance)
+                    Added items: Warlock (Spellstone, Master Firestone)
+                    Updated druids can cast any buff in tree form, no matter if cast 'Shapeshifted' is not set
+                    Updated Titan support
+                    Updated font size
+                    Updated ruRU translation (thanks to Dr. Jet Cheshirsky)
+                    Removed buffs: Druid (Omen of Clarity), Rogue (Crippling Poison II, Mind-numbing Poison II & III)
+                    Removed option: 'Grp range check'
+                     
+3.0a    2008-10-15  Updated to patch 3.0
+                    Added special crusader aura check, if crusader aura is checked, SB will only buff it if you are mounted or flying
+                    Added fishing check, if you are fishing it will not buff
+                    Updated battlefield and arena detection for auto template change
+                    Updated buff and item detection
+                    Fixed wrong spell Id for 'Seal of Righteousness'
+                    Fixed Anti-Daze feature
+
+2.4a    2008-09-01  Redesign to the new GetSpellInfo method, localization of the spells and items is not longer needed and SD will now work for every language
+                    Fixed mousewheel binding
+                    Changed Shaman Earth Shield as group buff (all classes are disabled per default), use the "additional" list to buff your favorite target
+                    Added weapon buffs: Fel Sharpening Stone, Adamantite Sharpening Stone, Fel Weightstone, Adamantite Weightstone
+                    Added food buffs: Broiled Bloodfin, Spicy Hot Talbuk, Skullfish Soup
+                    Added new option: 'Shapshift', if you want to allow buffing in shapeshifted forms
+                    Added check to not buff if you are eating/drinking
+                    Added check to not buff 'Arcane Intellect' if 'K'iru's Song of Victory' is active
+                    Added option to allow cast buffs in shapeshifted forms
+                    Added picnic check, if you are eating/drinking it will not buff
+                    Fixed lightning shield issue
+                    Updated buff and item detection
+                    Updated timeleft detection of buffs
+                    Updated zhCN translation (thanks to Kurax)
+
+2.3b    2008-01-09  Added new buffs: Mage (Icy Veins), Warrior (Rampage)
+                    Updated german localization: Mage (Einäschern), Priest (Göttlicher Wille)
+                    Changed order of Warlock buffs
+
 2.3a    2007-11-14  Updated ignore checks for group/class buffs
                     Added new buff: Mage (Presence of Mind)
                     Fixed buff issue in cross-realm battlegrounds
                     Fixed Hunter Trueshot Aura  (thanks to gramg)
                     Fixed Tracking abilities (thanks to gramg)
-                    Updated zhtw localization  (thanks to spawn)
+                    Updated zhtw localization (thanks to spawn)
                     Updated TOC 
 
 2.2a    2007-09-26  Updated buffs: All Paladin blessings

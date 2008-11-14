@@ -328,4 +328,12 @@ L:RegisterTranslations("frFR", function() return {
 	["Accepting All Eggs"] = "Tous les œufs sont bons à prendre",
 	["Netherwing Egg"] = "Oeuf de l'Aile-du-Néant",
 
+	-- 2.4 Battleground mark turn-in
+  ["Concerted Efforts"] = "Des efforts concertés",
+  ["For Great Honor"] = "Pour un grand honneur",
+  ["Alterac Valley Mark of Honor"] = "Marque d'honneur de la vallée d'Alterac",
+	["Arathi Basin Mark of Honor"] = " Marque d'honneur du bassin d'Arathi",
+	["Warsong Gulch Mark of Honor"] = "Marque d'honneur du goulet des Chanteguerres",
+	["Eye of the Storm Mark of Honor"] = " Marque d'honneur de l'Oeil du cyclone",
+			
 } end )

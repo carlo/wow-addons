@@ -1,8 +1,8 @@
-<Bindings>
+﻿<Bindings>
 	<Binding name="smmTOGGLE" header="smmTITLE">
 		ToggleMinimap()
 	</Binding>
 	<Binding name="smmEXPAND" header="smmTITLE" runOnUp="true">
 		simpleMinimap:ExpandMinimap(keystate)
 	</Binding>
- </Bindings>
+</Bindings>

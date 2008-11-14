@@ -1,1 +1,0 @@
-## Interface: 30000## Title: TinyPad## Notes: Lightweight notepad mod## Author: Gello## SavedVariables: TinyPadPages, TinyPadSettingsTinyPad.xml

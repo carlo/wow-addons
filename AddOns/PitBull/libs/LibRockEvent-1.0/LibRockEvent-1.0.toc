@@ -1,6 +1,6 @@
-﻿## Interface: 20300
+﻿## Interface: 30000
 
-## Title: LibRockEvent-1.0
+## Title: Lib: RockEvent-1.0
 ## Notes: Event library
 ## Author: ckknight
 ## X-Website: http://www.wowace.com

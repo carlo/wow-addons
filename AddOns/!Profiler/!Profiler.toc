@@ -1,1 +1,0 @@
-## Interface: 30000## LoadOnDemand: 0## Title: !Profiler## Author: Warbaby, warbaby@163.com## Notes: Addon for development, watch cpu counting and memory usage of each addon. use:/pfshow. /cpustart /cpustop(will reload ui);!Profiler.xml

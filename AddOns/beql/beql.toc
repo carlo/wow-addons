@@ -1,1 +1,59 @@
-## Interface: 30000## Title: Bayi's Extended Questlog |cff7fff7f -Ace2-|r## Title-deDE: Bayi's Extended Questlog## Title-frFR: Bayi's Extended Questlog## Title-esES: Registro de Misiones Extendido de Bayi |cff7fff7f -Ace2-|r## Notes: A Quest Log and Tracker addon based on Extended Quest Log (BETA!)## Notes-deDE: Ein Questlog mit Tracker basierend auf Extended Quest Log## Notes-esES: Un registro de misiones basado en el Extended Quest Log (BETA) ## Author: bayi## SavedVariables: beqlDB## SavedVariablesPerCharacter: beqlDBPC## Version: 0.89## X-Email: itsme@bayi.hu (or bayi@freemail.hu)## X-Credits: Daniel Rehn for EQL which is this mod based on## X-Category: Quest## OptionalDeps: Ace2, Titan, FuBar, FuBarPlugin-2.0, Deformat, TabletLib, Quixote## X-Embeds: Ace2, FuBar, FuBarPlugin-2.0, Deformat, TabletLib, Quixote## X-RelSite-UI.WoW: 4536## X-AceForum: 7262embeds.xmllocales\localization.lualocales\localization-de.lualocales\localization-ru.lualocales\localization-ko.lualocales\localization-es.lualocales\localization-cn.lualocales\localization-tw.lualocales\localization-hu.lualocales\localization-fr.luabeql.luaquestlog.luatracker.luatooltip.luaoptions.luaextra\goodies.luaextra\beqlfu.luaextra\beqltitan.xmlextra\questhistory.xml
+## Interface: 30000
+## Title: Bayi's Extended Questlog |cff7fff7f -Ace2-|r
+## Title-deDE: Bayi's Extended Questlog
+## Title-frFR: Bayi's Extended Questlog
+## Title-esES: Registro de Misiones Extendido de Bayi |cff7fff7f -Ace2-|r
+## Notes: A Quest Log and Tracker addon based on Extended Quest Log (BETA!)
+## Notes-zhCN: 基于增强任务日志的任务记录和追踪器 (BETA!)
+## Notes-zhTW: 基於增強任務日誌的任務記錄和追蹤器 (BETA!)
+## Notes-deDE: Ein Questlog mit Tracker basierend auf Extended Quest Log
+## Notes-esES: Un registro de misiones basado en el Extended Quest Log (BETA) 
+## Author: Angelike
+## SavedVariables: beqlDB
+## SavedVariablesPerCharacter: beqlDBPC
+## Version: 1.0.3:3.0.3
+## OptionalDeps: Ace2, Ace3, Titan, FuBar, FuBarPlugin-2.0, Deformat, TabletLib, Quixote, Waterfall-1.0, DewdropLib
+## X-Curse-Packaged-Version: r183
+
+
+## X-Author-Server: Gilneas EU
+## X-Author-Faction: Alliance
+## X-Credits: Daniel Rehn for EQL which is this mod based on, bayi which developed it on ace2
+## X-Category: Quest
+## X-Email: no yet
+## X-Embeds: Ace2, FuBarPlugin-2.0, Deformat, TabletLib, Quixote, Waterfall-1.0, DewdropLib
+## X-License: none
+## X-RelSite-UI.WoW: 4536
+## X-AceForum: 6891
+## X-Website: http://wow.curse.com/downloads/wow-addons/details/bayis-extended-questlog.aspx
+## X-Feedback: http://www.curse.com/
+## X-RelSite-Curse: 5253
+
+
+
+embeds.xml
+
+locales\localization.lua
+locales\localization-de.lua
+locales\localization-ru.lua
+locales\localization-ko.lua
+locales\localization-es.lua
+locales\localization-mx.lua
+locales\localization-cn.lua
+locales\localization-tw.lua
+locales\localization-hu.lua
+locales\localization-fr.lua
+
+beql.lua
+questlog.lua
+tracker.lua
+tooltip.lua
+achievement.lua
+options.lua
+
+extra\goodies.lua
+extra\beqlfu.lua
+extra\beqltitan.xml
+extra\questhistory.xml
+
+options3.0.lua

@@ -42,6 +42,13 @@ L:RegisterTranslations("esES", function() return({
 	mouse = "Bot\195\179n del rat\195\179n",
 	mouse_desc = "Bot\195\179n del rat\195\179n que activa el men\195\186 desplegable"
 }) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	gui = "ГИП",
+	gui_desc = "Контекстное меню настроек",
+	mouse = "Кнопка мыши",
+	mouse_desc = "Кнопка мыши приводящая в действие контекстное меню"
+}) end)
 
 local mod = simpleMinimap:NewModule("gui", "AceHook-2.1")
 mod.desc = L["gui_desc"]

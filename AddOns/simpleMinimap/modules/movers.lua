@@ -26,10 +26,10 @@ L:RegisterTranslations("koKR", function() return({
 
 L:RegisterTranslations("deDE", function() return({
 	alpha = "Helligkeit",
-	alpha_desc = "Helligkeit der Questfenster",
-	movers = "Questfenster",
-	movers_desc = "Optionen für die Questfenster",
-	drag = "Links-Klick zum Ziehen"
+	alpha_desc = "Helligkeit der Quest-/Ankerfenster",
+	movers = "Quest-/Ankerfenster",
+	movers_desc = "Optionen für die Quest-/Ankerfenster - HINWEIS: Um die Quest-/Ankerfenster auszublenden Minimap sperren ('Sperre Minimap')",
+	drag = "Linksklick zum ziehen"
 }) end)
 
 L:RegisterTranslations("zhCN", function() return({ 
@@ -47,6 +47,14 @@ L:RegisterTranslations("esES", function() return({
 	movers_desc = "Desplazadores - NOTA: bloquea el minimapa para ocultarlos",
 	drag = "Clic para arrastrar"
 }) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	alpha = "Прозрачность",
+	alpha_desc = "Прозрачность передвигаемого фрейма",
+	movers = "Перемещения",
+	movers_desc = "Перемещение фреймов - Заметка :: Закрепите мини-карту для скрытия выделения фреймов перемещения",
+	drag = "ЛКМ чтобы перетащить"
+}) end)
 
 local mod = simpleMinimap:NewModule("movers", "AceEvent-2.0")
 mod.desc = L["movers_desc"]
@@ -56,13 +64,15 @@ local movers = {
 	QuestWatchFrame = { 280, 80 },
 	DurabilityFrame = { 60, 65 },
 	QuestTimerFrame = { 160, 72 },
-	CaptureMover = { 178, 30 }
+	CaptureMover = { 178, 30 },
+	AchievementWatchFrame = { 280, 80 }
 }
 local framesDefault = {
 	QuestWatchFrame = { anchor=MinimapCluster, point="TOPRIGHT", rpoint="BOTTOMRIGHT", x=0, y=10 },
 	DurabilityFrame = { anchor=MinimapCluster, point="TOPRIGHT", rpoint="BOTTOMRIGHT", x=40, y=15 },
 	QuestTimerFrame = { anchor=MinimapCluster, point="TOPRIGHT", rpoint="BOTTOMRIGHT", x=10, y=0 },
-	CaptureMover = { anchor=MinimapCluster, point="TOPRIGHT", rpoint="BOTTOMRIGHT", x=10, y=15 }
+	CaptureMover = { anchor=MinimapCluster, point="TOPRIGHT", rpoint="BOTTOMRIGHT", x=10, y=15 },
+	AchievementWatchFrame = { anchor=MinimapCluster, point="TOPRIGHT", rpoint="BOTTOMRIGHT", x=0, y=10}
 }
 
 mod.options = {

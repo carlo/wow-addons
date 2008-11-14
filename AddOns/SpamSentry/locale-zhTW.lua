@@ -10,12 +10,15 @@ L:RegisterTranslations("zhTW", function() return {
   ["general"] = "綜合",
   ["trade"] = "交易",
   ["guildrecruitment"] = "公會招募",
-  
+  ["emote"] = "emote",
+  ["lookingforgroup"] = "寻求组队",
+  ["localdefense"] = "本地防务",
+
   -- Welcome message 
   ["SpamSentry v%s by Anea. Type |cffffffff/sentry|r or right-click the icon for options."] = "SpamSentry v%s Anea. 鍵入 |cffffffff/sentry|r 可設定選項.",
   
   -- Alerts
-  ["%s has been added to the feedback list"] = "%s 已被加入待回報清單",
+  ["%s has been added to the SpamSentry feedback list"] = "SpamSentry: %s 已被加入待回報清單",
   ["* Alert: %s tried to send you %s (%s). Click %s to report."] = "* 警告: %s 嘗試傳送給你 %s (%s). 待回報清單內含1名以上的玩家. 點擊 %s 向 GM 回報.",
   ["this message"] = "此訊息",
   ["One or more characters are on the reportlist. Click %s to report them to a GM."] = "待回報清單內含1名以上的玩家. 點擊 %s 向 GM 回報.",

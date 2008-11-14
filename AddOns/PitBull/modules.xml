@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-
-<Script file="Aura\Aura.lua"/>
+<!--@debug@
+<Include file="Aura\Aura.xml"/>
 <Script file="CombatIcon\CombatIcon.lua"/>
 <Script file="ComboPoints\ComboPoints.lua"/>
 <Script file="HealthBar\HealthBar.lua"/>
@@ -21,12 +21,14 @@
 <Script file="Spark\Spark.lua"/>
 <Script file="DruidManaBar\DruidManaBar.lua"/>
 <Script file="BarFader\BarFader.lua"/>
-<Script file="EstimatedHeals\EstimatedHeals.lua"/>
-<Script file="InteractLines\InteractLines.lua"/>
 <Script file="CombatFader\CombatFader.lua"/>
 <Script file="Banzai\Banzai.lua"/>
 <Script file="RangeCheck\RangeCheck.lua"/>
+<Script file="ReadyCheckIcon\ReadyCheckIcon.lua"/>
 <Script file="ThreatBar\ThreatBar.lua"/>
+<Script file="TotemTimers\TotemTimers.lua"/>
 <Script file="VoiceIcon\VoiceIcon.lua"/>
-
+<Script file="HappinessIcon\HappinessIcon.lua"/>
+<Script file="VisualHeal\VisualHeal.lua"/>
+@end-debug@-->
 </Ui>

@@ -18,6 +18,10 @@ elseif locale == "zhTW" then
 		["Dismount"] = "自動下馬",
 		["Automatically dismount when you receive the 'You are mounted' error"] = "當收到'您正在騎乘狀態' 的訊息時自動下馬",
 	}
+elseif locale == "zhCN" then
+	L = {
+		["Automatically dismount when you receive the 'You are mounted' error"] = "当收到“您正在骑乘状态”这样的信息时自动下马",
+	}
 end
 L = setmetatable(L or {}, { __index = function(self, key) rawset(self, key, key) return key end })
 

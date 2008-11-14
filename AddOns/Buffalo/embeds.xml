@@ -11,6 +11,6 @@
 <Script file="Libs\AceLocale-2.2\AceLocale-2.2.lua"/>
 
 <Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
-<Script file="Libs\Abacus-2.0\Abacus-2.0.lua"/>
+<Script file="Libs\LibAbacus-3.0\LibAbacus-3.0.lua"/>
 
 </Ui>

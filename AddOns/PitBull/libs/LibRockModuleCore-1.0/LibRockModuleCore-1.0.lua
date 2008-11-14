@@ -1,6 +1,6 @@
 --[[
 Name: LibRockModuleCore-1.0
-Revision: $Rev: 49165 $
+Revision: $Rev: 234 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to provide a module system so that modules or plugins can use an addon as its core.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockModuleCore-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 49165 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 234 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 

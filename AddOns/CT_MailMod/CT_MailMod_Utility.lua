@@ -112,9 +112,9 @@ do
 	end
 	
 	local oldFunc = ContainerFrameItemButton_OnModifiedClick;
-	function ContainerFrameItemButton_OnModifiedClick(...)
-		local bag, item = this:GetParent():GetID(), this:GetID(); -- Ugly, but can't be helped
-		if ( (...) == "LeftButton" and IsAltKeyDown() ) then
+	function ContainerFrameItemButton_OnModifiedClick(self, button)
+		local bag, item = self:GetParent():GetID(), self:GetID(); -- Ugly, but can't be helped
+		if ( button == "LeftButton" and IsAltKeyDown() ) then
 			if ( not CursorHasItem() and 
 			     ( not TradeFrame or not TradeFrame:IsVisible() ) and
 			     ( not AuctionFrame or not AuctionFrame:IsVisible() ) and
@@ -128,6 +128,6 @@ do
 				return;
 			end
 		end
-		return oldFunc(...);
+		return oldFunc(self, button);
 	end
 end

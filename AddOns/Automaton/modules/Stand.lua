@@ -22,6 +22,10 @@ L:RegisterTranslations("zhTW", function() return {
 	["Automatically stand when you receive the 'You must be standing' error"] = "當你收到'你必須處於站立狀態'的訊息時自動站立",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Automatically stand when you receive the 'You must be standing' error"] = "当收到“你必须处于站立状态”错误信息时自动起立",
+} end)
+
 module.description = L["Automatically stand when you receive the 'You must be standing' error"]
 module.options = {
 }

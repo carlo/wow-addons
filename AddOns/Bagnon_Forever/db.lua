@@ -68,7 +68,12 @@ function BagnonDB:Initialize()
 			self[event](self, event, ...)
 		end
 	end)
-	self:RegisterEvent('PLAYER_LOGIN')
+
+	if IsLoggedIn() then
+		self:PLAYER_LOGIN()
+	else
+		self:RegisterEvent('PLAYER_LOGIN')
+	end
 end
 
 function BagnonDB:LoadSettings()
@@ -90,17 +95,15 @@ function BagnonDB:LoadSettings()
 	end
 
 	self.db = BagnonForeverDB
-	local realm = GetRealmName()
-	if not self.db[realm] then
-		self.db[realm] = {}
+	if not self.db[currentRealm] then
+		self.db[currentRealm] = {}
 	end
-	self.rdb = self.db[realm]
+	self.rdb = self.db[currentRealm]
 
-	local player = UnitName('player')
-	if not self.rdb[player] then
-		self.rdb[player] = {}
+	if not self.rdb[currentPlayer] then
+		self.rdb[currentPlayer] = {}
 	end
-	self.pdb = self.rdb[player]
+	self.pdb = self.rdb[currentPlayer]
 end
 
 function BagnonDB:UpdateSettings()
@@ -108,7 +111,7 @@ end
 
 function BagnonDB:UpdateVersion()
 	BagnonForeverDB.version = CURRENT_VERSION
-	self:Print(format('Updated to v%s', BagnonForeverDB.version))
+	print(format('BagnonForever: Updated to v%s', BagnonForeverDB.version))
 end
 
 
@@ -116,8 +119,8 @@ end
 
 function BagnonDB:PLAYER_LOGIN()
 	self:SaveMoney()
-	self:SaveBagAll(BACKPACK_CONTAINER)
-	self:SaveBagAll(KEYRING_CONTAINER)
+	self:UpdateBag(BACKPACK_CONTAINER)
+	self:UpdateBag(KEYRING_CONTAINER)
 	self:SaveEquipment()
 	self:SaveNumBankSlots()
 
@@ -141,7 +144,7 @@ function BagnonDB:BAG_UPDATE(event, bag)
 end
 
 function BagnonDB:PLAYERBANKSLOTS_CHANGED()
-	self:OnBagUpdate(BANK_CONTAINER)
+	self:UpdateBag(BANK_CONTAINER)
 end
 
 function BagnonDB:PLAYERBANKBAGSLOTS_CHANGED()
@@ -150,9 +153,10 @@ end
 
 function BagnonDB:BANKFRAME_OPENED()
 	self.atBank = true
-	self:SaveBagAll(BANK_CONTAINER)
+
+	self:UpdateBag(BANK_CONTAINER)
 	for i = 1, GetNumBankSlots() do
-		self:SaveBagAll(i + 4)
+		self:UpdateBag(i + 4)
 	end
 end
 
@@ -233,7 +237,6 @@ end
 		returns:
 			(number or nil) How many bank slots the current player has purchased
 --]]
-
 function BagnonDB:GetNumBankSlots(player)
 	local playerData = self.rdb[player]
 	if playerData then
@@ -264,14 +267,8 @@ function BagnonDB:GetBagData(bag, player)
 		local bagInfo = playerDB[ToBagIndex(bag)]
 		if bagInfo then
 			local size, link, count = strsplit(',', bagInfo)
-			local _, hyperLink, quality, texture
-			if(link) then
-				_,hyperLink,_,_,_,_,_,_,_, texture = GetItemInfo(link)
-				-- if not hyperLink then
-					-- self:QueryLink(link)
-				-- end
-			end
-			return tonumber(size), hyperLink, tonumber(count) or 1, texture
+			local hyperLink = (link and select(2, GetItemInfo(link))) or nil
+			return tonumber(size), hyperLink, tonumber(count) or 1, GetItemIcon(link)
 		end
 	end
 end
@@ -302,12 +299,9 @@ function BagnonDB:GetItemData(bag, slot, player)
 		local itemInfo = playerDB[ToIndex(bag, slot)]
 		if itemInfo then
 			local link, count = strsplit(',', itemInfo)
-			if(link) then
-				local _,hyperLink, quality,_,_,_,_,_,_, texture = GetItemInfo(link)
-				-- if not hyperLink then
-					-- self:QueryLink(link)
-				-- end
-				return hyperLink, tonumber(count) or 1, texture, tonumber(quality)
+			if link then
+				local hyperLink, quality = select(2, GetItemInfo(link))
+				return hyperLink, tonumber(count) or 1, GetItemIcon(link), tonumber(quality)
 			end
 		end
 	end
@@ -395,16 +389,17 @@ function BagnonDB:SaveBag(bag)
 	local index = ToBagIndex(bag)
 
 	if size > 0 then
-		local link = bag > 0 and ToShortLink(GetInventoryItemLink('player', ContainerIDToInventoryID(bag)))
-		local count =  GetInventoryItemCount('player', slot)
+		local equipSlot = bag > 0 and ContainerIDToInventoryID(bag)
+		local link = ToShortLink(GetInventoryItemLink('player', equipSlot))
+		local count =  GetInventoryItemCount('player', equipSlot)
 		if count < 1 then
 			count = nil
 		end
 
 		if(size and link and count) then
-			self.pdb[index] = format('%s,%s,%d', size, link, count)
+			self.pdb[index] = format('%d,%s,%d', size, link, count)
 		elseif(size and link) then
-			self.pdb[index] = format('%s,%s', size, link)
+			self.pdb[index] = format('%d,%s', size, link)
 		else
 			self.pdb[index] = size
 		end
@@ -414,7 +409,7 @@ function BagnonDB:SaveBag(bag)
 end
 
 --saves both relevant information about the given bag, and all information about items in the given bag
-function BagnonDB:SaveBagAll(bag)
+function BagnonDB:UpdateBag(bag)
 	self:SaveBag(bag)
 	for slot = 1, GetBagSize(bag) do
 		self:SaveItem(bag, slot)
@@ -456,8 +451,4 @@ function BagnonDB:RemovePlayer(player, realm)
 			end
 		end
 	end
-end
-
-function BagnonDB:QueryLink(link)
-	self:SetHyperlink(tonumber(link) and format('item:%d', link) or link)
 end

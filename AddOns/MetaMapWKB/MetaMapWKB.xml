@@ -64,7 +64,7 @@
 				this:SetFrameLevel(10);
 			</OnLoad>
 			<OnClick>
-				MetaKBMenu_Select(this:GetID());
+				MetaKBMenu_Select(self:GetID());
 			</OnClick>
 			<OnEnter>
 				getglobal(this:GetName().."Highlight"):Show();
@@ -146,6 +146,9 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString	name="$parentText" inherits="MetaMap_FontTemplate" justifyH="LEFT">
+							<Anchors> <Anchor point="CENTER"/> </Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -154,13 +157,29 @@
 						this:SetHeight(WKB_BUTTON_HEIGHT)
 					</OnLoad>
 					<OnClick>
-						WKB_ScrollFrameButtonOnClick(arg1)
+						WKB_ScrollFrameButtonOnClick(self, button)
 					</OnClick>
 					<OnEnter>
-						getglobal(this:GetName().."Highlight"):Show();
+						getglobal(self:GetName().."Highlight"):Show();
+						if (WKB_SearchResults and WKB_SearchResults[self:GetID()]["zoneName"] ~= GetRealZoneText()) then
+							self.oldText = getglobal(self:GetName().."Coords"):GetText()
+							getglobal(self:GetName().."Coords"):SetText(WKB_SearchResults[self:GetID()].location2 or "No Coordinates");
+							self.oldTextColorR, self.oldTextColorG, self.oldTextColorB, _ = getglobal(self:GetName().."Coords"):GetTextColor()
+							getglobal(self:GetName().."Coords"):SetTextColor(1,0.5,0);
+							getglobal(self:GetName().."Coords"):Show()
+							self:Show();
+							self.coords = true;
+						end
 					</OnEnter>
 					<OnLeave>
-						getglobal(this:GetName().."Highlight"):Hide();
+						getglobal(self:GetName().."Highlight"):Hide();
+						if self.coords and WKB_SearchResults then
+							getglobal(self:GetName().."Coords"):SetText(self.oldText or WKB_SearchResults[self:GetID()]["zoneName"]);
+							getglobal(self:GetName().."Coords"):SetTextColor(self.oldTextColorR or 1, self.oldTextColorG or 0, self.oldTextColorB or 0);
+							getglobal(self:GetName().."Coords"):Show()
+							self:Show();
+							self.coords = nil
+						end
 					</OnLeave>
 				</Scripts>
 			</Button>
@@ -631,7 +650,7 @@
 							this:SetAlpha(255)
 						</OnShow>
 						<OnVerticalScroll>
-							FauxScrollFrame_OnVerticalScroll(WKB_BUTTON_HEIGHT,	WKB_UpdateScrollFrame)
+							FauxScrollFrame_OnVerticalScroll(self, offset, WKB_BUTTON_HEIGHT, WKB_UpdateScrollFrame)
 						</OnVerticalScroll>
 					</Scripts>
 				</ScrollFrame>
@@ -868,9 +887,9 @@
  
 	<Frame name="MetaKBMenu" enableMouse="true" hidden="true" toplevel="true" parent="UIParent" frameStrata="FULLSCREEN">
 		<Size>
-			<AbsDimension	x="160"	y="170"/>
+			<AbsDimension	x="160"	y="185"/> --increased y from 170 to 185 to accomodate new option 9
 		</Size>
-		<Backdrop	bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"	tile="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset	left="11"	right="12" top="12"	bottom="11"/>
 			</BackgroundInsets>
@@ -890,41 +909,136 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_1" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option2" inherits="MetaKBMenu_ButtonTemplate" id="2" text="WKB_QUICK_MENU_2">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option1" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_2" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option3" inherits="MetaKBMenu_ButtonTemplate" id="3" text="WKB_QUICK_MENU_3">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option2" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_3" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option4" inherits="MetaKBMenu_ButtonTemplate" id="4" text="WKB_QUICK_MENU_4">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option3" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_4" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option5" inherits="MetaKBMenu_ButtonTemplate" id="5" text="WKB_QUICK_MENU_5">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option4" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_5" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option6" inherits="MetaKBMenu_ButtonTemplate" id="6" text="WKB_QUICK_MENU_6">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option5" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_6" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option7" inherits="MetaKBMenu_ButtonTemplate" id="7" text="WKB_QUICK_MENU_7">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option6" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_7" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 			<Button	name="MetaKBMenu_Option8" inherits="MetaKBMenu_ButtonTemplate" id="8" text="WKB_QUICK_MENU_8">
 				<Anchors>
 					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option7" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_8" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
+			</Button>
+			<Button	name="MetaKBMenu_Option9" inherits="MetaKBMenu_ButtonTemplate" id="9" text="WKB_QUICK_MENU_9">
+				<Anchors>
+					<Anchor	point="TOPLEFT"	relativeTo="MetaKBMenu_Option8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="WKB_QUICK_MENU_9" justifyH="CENTER"> 
+							<Size x="160" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>
 			</Button>
 		</Frames>
 		<Scripts>
@@ -945,7 +1059,7 @@
 				WKB_EventFrame_OnLoad();
 			</OnLoad>
 			<OnEvent>
-				WKB_OnEvent(event);
+				WKB_OnEvent(self, event, ...);
 			</OnEvent>
 		</Scripts>
 	</Frame>

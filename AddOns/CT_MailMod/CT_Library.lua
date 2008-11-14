@@ -746,7 +746,7 @@ local function checkbuttonOnClick(self)
 end
 
 objectHandlers.checkbutton = function(self, parent, name, virtual, option, text, textColor)
-	local checkbutton = CreateFrame("CheckButton", name, parent, virtual or "UIOptionsCheckButtonTemplate");
+	local checkbutton = CreateFrame("CheckButton", name, parent, virtual or "InterfaceOptionsBaseCheckButtonTemplate");
 	local textObj = checkbutton:CreateFontString(nil, "ARTWORK", "ChatFontNormal");
 	textObj:SetPoint("LEFT", checkbutton, "RIGHT", 4, 0);
 	checkbutton.text = textObj;
@@ -917,14 +917,14 @@ end
 local function dropdownSetWidth(self, width)
 	-- Ugly, ugly hack.
 	self.SetWidth = self.oldSetWidth;
-	UIDropDownMenu_SetWidth(width, self);
+	UIDropDownMenu_SetWidth(self, width);
 	self.SetWidth = dropdownSetWidth;
 end
 
-local function dropdownClick()
+local function dropdownClick(self)
 	local dropdown = _G[UIDROPDOWNMENU_OPEN_MENU];
 	if ( dropdown ) then
-		local value = this.value;
+		local value = self.value;
 		local option = dropdown.option;
 		
 		UIDropDownMenu_SetSelectedValue(dropdown, value);
@@ -962,7 +962,7 @@ objectHandlers.dropdown = function(self, parent, name, virtual, option, ...)
 	end);
 	
 	UIDropDownMenu_SetSelectedValue(frame, self:getOption(option) or 1);
-	UIDropDownMenu_JustifyText("LEFT", frame);
+	UIDropDownMenu_JustifyText(frame, "LEFT");
 	return frame;
 end
 

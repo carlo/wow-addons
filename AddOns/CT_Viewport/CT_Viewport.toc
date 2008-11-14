@@ -1,1 +1,7 @@
-## Interface: 30000## Version: 2.02 (CTMod 2.0)## Title: CT_Viewport## Notes: Allows you to change the rendered world's size## SavedVariablesPerCharacter: CT_Viewport_SavedCT_Library.luaCT_Viewport.xml
+## Interface: 30000
+## Version: 3.0 (CTMod 3.0)
+## Title: CT_Viewport
+## Notes: Allows you to change the rendered world's size
+## SavedVariablesPerCharacter: CT_Viewport_Saved
+CT_Library.lua
+CT_Viewport.xml

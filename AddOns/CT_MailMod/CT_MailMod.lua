@@ -191,7 +191,7 @@ do
 		[ERR_INV_FULL] = true
 	};
 
-	local function onEvent(event, arg1)
+	local function onEvent(self, event, arg1, ...)
 		if ( event == "UI_ERROR_MESSAGE" and lootErrors[arg1] ) then
 			inventoryFull(arg1);
 		else

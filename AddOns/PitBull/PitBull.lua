@@ -1,28 +1,36 @@
-﻿local VERSION = tonumber(("$Revision: 50612 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 1762 $"):match("%d+"))
 
-local SharedMedia = Rock("LibSharedMedia-2.0")
-
-SharedMedia:Register("font", "ABF", [[Interface\AddOns\PitBull\media\ABF.ttf]])
-SharedMedia:Register("font", "Vera Serif", [[Interface\AddOns\PitBull\media\VeraSe.ttf]])
-SharedMedia:Register("statusbar", "Cilo", [[Interface\AddOns\PitBull\media\Cilo]])
+local SharedMedia = Rock("LibSharedMedia-3.0")
 
 local SharedMedia_border_None = SharedMedia:Fetch('border', "None")
 
+local WotLK = select(4, GetBuildInfo()) >= 30000
 PitBull = Rock:NewAddon("PitBull", "LibRockDB-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockHook-1.0", "LibRockComm-1.0", "LibRockConfig-1.0")
 local PitBull, self = PitBull, PitBull
-PitBull.version = "2.0r" .. VERSION
+PitBull.version = "3.0r" .. VERSION
 PitBull.revision = VERSION
-PitBull.date = ("$Date: 2007-10-02 03:48:51 -0400 (Tue, 02 Oct 2007) $"):match("%d%d%d%d%-%d%d%-%d%d")
+PitBull.date = ("$Date: 2008-10-16 05:55:08 +0000 (Thu, 16 Oct 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
 
-local localeTables = {}
-function PitBull:L(name, defaultTable)
-	if not localeTables[name] then
-		localeTables[name] = setmetatable(defaultTable or {}, {__index = function(self, key)
-			self[key] = key
-			return key
-		end})
+function PitBull:ProvideVersion(revision, date)
+	revision = tonumber(tostring(revision):match("%d+"))
+	if revision > PitBull.revision then
+		PitBull.version = "3.0r" .. revision
+		PitBull.revision = revision
+		PitBull.date = date:match("%d%d%d%d%-%d%d%-%d%d")
 	end
-	return localeTables[name]
+end
+
+do
+	local localeTables = {}
+	function PitBull:L(name, defaultTable)
+		if not localeTables[name] then
+			localeTables[name] = setmetatable(defaultTable or {}, {__index = function(self, key)
+				self[key] = key
+				return key
+			end})
+		end
+		return localeTables[name]
+	end
 end
 
 local localization = (GetLocale() == "koKR") and {
@@ -30,102 +38,93 @@ local localization = (GetLocale() == "koKR") and {
 	["Target"] = "대상",
 	["Player's pet"] = "플레이어의 소환수",
 	["Party"] = "파티",
-	["Party pets"] = "파티 소환수",
-	["Party pet"] = "파티 소환수",
+	["Party pets"] = "파티원 소환수",
+	["Party pet"] = "파티원 소환수",
 	["Raid"] = "공격대",
-	["Raid pets"] = "공격대 소환수",
-	["Raid pet"] = "공격대 소환수",
-	["Mouse-over"] = "마우스 오버",
+	["Raid pets"] = "공격대원 소환수",
+	["Raid pet"] = "공격대원 소환수",
+	["Mouse-over"] = "마우스-오버",
 	["Focus"] = "주시 대상",
-	["Main tanks"] = "메인 탱커",
-	["Main tank"] = "메인 탱커",
-	["Main assists"] = "메인 지원자",
-	["Main assist"] = "메인 지원자",
+	["Main tanks"] = "방어 전담",
+	["Main tank"] = "방어 전담",
+	["Main assists"] = "지원공격 전담",
+	["Main assist"] = "지원공격 전담",
 	["%s's target"] = "%s의 대상",
 	["%s target"] = "%s의 대상",
 	["%s targets"] = "%s의 대상",
-	["%s pet"] = "%s의 소환수",
-	["%s pets"] = "%s의 소환수",
-
+	["Unit Frames of awesomeness. Woof. It'll bite your face off."] ="두려움이 없는 유닛 프레임입니다. 훕! 당신의 얼굴을 물어 뜯으려고 합니다.",
 	["Modules"] = "모듈",
 	["Extra units"] = "별도 유닛",
-	["List of units which are not currently enabled. Click one to enable it."] = "현재 활성화되지 않은 유닛의 목록. 활성화하려면 하나를 클릭하시요.",
-	[" "] = " ",
+	["List of units which are not currently enabled. Click one to enable it."] = "현재 활성화되어 있지 않은 유닛의 목록입니다. 활성화할 하나를 클릭하십시오.",
 	["Configuration mode"] = "설정 모드",
-	["Show all frames that can be shown, for easy configuration."] = "쉬운 설정을 위해 보여줄 수 있는 모든 프레임을 표시합니다.",
+	["Show all frames that can be shown, for easy configuration."] = "쉬운 설정을 위해서 보여줄 수 있는 모든 프레임을 보여줍니다.",
 	["Solo"] = "솔로",
 	["Disabled"] = "비활성화",
 	["Layouts"] = "레이아웃",
 	["Choose layout options here."] = "여기서 레이아웃 옵션을 선택합니다.",
-	["Import layout"] = "레이아웃 가져옴",
-	["Import a layout from an external source."] = "외부 자료로 부터 레이아웃을 가져 옵니다.",
-	["Export layout"] = "레이아웃 내보냄",
+	["Import layout"] = "레이아웃 들여오기",
+	["Import a layout from an external source."] = "외부 자료로 부터 레이아웃을 들여 옵니다.",
+	["Import"] = "들여오기",
+	["Export layout"] = "레이아웃 내보내기",
 	["Export a specified layout."] = "지정한 레이아웃을 내보냅니다.",
 	["Remove"] = "제거",
 	["Remove a layout you no longer wish to use."] = "더 이상 사용하지 않을 레이아웃을 제거합니다.",
-	["Send in-game"] = "친구에게 보냄",
-	["Send a saved layout to a friend in-game."] = "저장된 레이아웃을 게임내의 친구에게 보냅니다.",
-	["Send to specific player"] = "지정한 플레이어에게 보냄",
+	["Send in-game"] = "아군에게 보내기",
+	["Send a saved layout to a friend in-game."] = "저장된 레이아웃을 게임내의 아군에게 보냅니다.",
+	["Send to specific player"] = "지정한 플레이어에게 보내기",
 	["Send a saved layout to a specific player."] = "지정한 플레이어에게 저장된 레이아웃을 보냅니다.",
 	["Name of player"] = "플레이어의 이름",
 	["The name of the player you wish to send the layout to."] = "레이아웃을 보내고자 하는 플레이어의 이름을 입력합니다.",
 	["Layout"] = "레이아웃",
-	["The layout to send."] = "보내기 위한 레이아웃",
-	["Send to guild"] = "길드에 보냄",
+	["The layout to send."] = "보내기 위한 레이아웃을 선택합니다.",
+	["Send to guild"] = "길드원에게 보내기",
 	["Send a saved layout to your guild."] = "저장된 레이아웃을 길드원에게 보냅니다.",
-	["Send to group"] = "그룹에 보냄",
-	["Send a saved layout to your party or raid."] = "저장된 레이아웃을 파티 혹은 공격대에 보냅니다.",
+	["Send to group"] = "그룹원에게 보내기",
+	["Send a saved layout to your party or raid."] = "저장된 레이아웃을 파티 혹은 공격대원에게 보냅니다.",
 	["Global settings"] = "공통 설정",
-	["Settings that apply to all PitBull frames."] = "모든 PitBull 프레임에 적용할 설정",
+	["Settings that apply to all PitBull frames."] = "모든 PitBull 프레임에 적용할 설정입니다.",
 	["StatusBar texture"] = "상태바 텍스쳐",
-	["Sets what texture to use for the statusbars, like health, power, and cast bar."] = "생명력/마력/시전바 같은 상태바를 위해 사용할 텍스쳐를 설정합니다.",
+	["Sets what texture to use for the statusbars, like health, power, and cast bar."] = "생명력, 마력, 시전바 같은 상태바를 위해 사용할 텍스쳐를 설정합니다.",
 	["Font"] = "글꼴",
-	["Font settings."] = "글꼴 설정",
+	["Font settings."] = "글꼴 설정입니다.",
 	["Type"] = "유형",
-	["What font face to use."] = "사용할 글꼴을 선택합니다.",
+	["What font face to use."] = "사용할 글꼴체를 선택합니다.",
 	["Size"] = "크기",
-	["Font size."] = "글꼴 크기를 조절합니다.",
-	["Locked"] = "잠김",
+	["Font size."] = "글꼴의 크기를 조절합니다.",
+	["Locked"] = "잠금",
 	["Make it so the frames cannot be moved"] = "프레임을 이동할 수 없게 만듭니다.",
-	["Frame Strata"] = "프레임 레벨",
-	["Choose the layer the unit frames are located on."] = "유닛 프레임이 위치할 레이어를 선택합니다.",
-	["Background"] = "배경",
-	["Low"] = "낮은",
-	["Medium"] = "중간",
-	["High"] = "높은",
-	["Dialog"] = "디아로그",
-	["Tooltip"] = "툴팁",
-	["Clamp frames to screen"] = "화면안으로 프레임 끌어들임",
-	["Make it so that frames cannot be dragged off-screen."] = "프레임이 화면밖으로 이동할 수 없게 만듭니다.",
-	["Hide tooltips in combat"] = "전투중 툴팁 숨김",
+	["Frame Strata"] = "창 표시 우선순위",
+	["Choose the layer the unit frames are located on."] = "유닛 프레임이 위치할 우선순위를 선택합니다.",
+	["Background"] = "Background",
+	["Low"] = "Low",
+	["Medium"] = "Medium",
+	["High"] = "High",
+	["Dialog"] = "Dialog",
+	["Tooltip"] = "Tooltip",
+	["Clamp frames to screen"] = "화면에 프레임 고정",
+	["Make it so that frames cannot be dragged off-screen."] = "화면밖으로 프레임이 이동할 수 없게 만듭니다.",
+	["Hide tooltips in combat"] = "전투시 툴팁 숨김",
 	["Hides the unit frame tooltips while the player is in combat."] = "플레이어가 전투중인 동안에는 유닛 프레임의 툴팁을 숨깁니다.",
-	["Show colored border on elite or rare unit"] = "정예 혹은 희귀 유닛의 경우 색상 테두리 표시",
-	["Show a border specifically colored for an elite or rare unit, otherwise use the standard border."] = "정예 혹은 희귀 유닛의 경우에는 특별한 색상을 입힌 테두리를 표시합니다. 그외 경우는 기본 테두리를 사용합니다.",
+	["Show colored border on elite or rare unit"] = "정예나 희귀 유닛에 색상 테두리 보기",
+	["Show a border specifically colored for an elite or rare unit, otherwise use the standard border."] = "정예나 희귀 유닛을 위해 특별히 색상을 입힌 테두리를 보기합니다. 그외 경우는 기본 테두리를 사용합니다.",
 	["Colors"] = "색상",
 	["Power"] = "마력",
 	["Rage"] = "분노",
 	["Mana"] = "마나",
 	["Focus(Pet)"] = "집중",
 	["Energy"] = "기력",
+	["Runic Power"] = "룬 마력",
 	["Classes"] = "직업",
 	["Warlock"] = "흑마법사",
-	["Warlocks"] = "흑마법사",
 	["Priest"] = "사제",
-	["Priests"] = "사제",
 	["Warrior"] = "전사",
-	["Warriors"] = "전사",
 	["Paladin"] = "성기사",
-	["Paladins"] = "성기사",
 	["Shaman"] = "주술사",
-	["Shamans"] = "주술사",
 	["Mage"] = "마법사",
-	["Mages"] = "마법사",
 	["Druid"] = "드루이드",
-	["Druids"] = "드루이드",
 	["Rogue"] = "도적",
-	["Rogues"] = "도적",
 	["Hunter"] = "사냥꾼",
-	["Hunters"] = "사냥꾼",
+	["Death Knight"] = "죽음의 기사",
 	["Reaction"] = "우호도",
 	["Hostile"] = "적대적",
 	["Neutral"] = "중립적",
@@ -136,43 +135,51 @@ local localization = (GetLocale() == "koKR") and {
 	["Neutral(Pet)"] = "만족",
 	["Angry"] = "불만족",
 	["Health gradient"] = "생명력 기울기",
-	["No health"] = "생명력 없음",
+	["No health"] = "0% 생명력",
 	["50% health"] = "50% 생명력",
 	["Maximum health"] = "최대 생명력",
 	["Other"] = "기타",
 	["Dead or Ghost"] = "죽음 혹은 유령",
-	["Disconnected"] = "접속 해제",
+	["Disconnected"] = "연결 끊김",
 	["In combat"] = "전투중",
 	["Resting"] = "휴식중",
-	["Tapped"] = "선점",
+	["Tapped"] = "선점됨",
 	["Unknown"] = "알 수 없음",
 	["Frame colors"] = "프레임 색상",
-	["Background"] = "배경",
 	["Border"] = "테두리",
 	["Rare"] = "희귀",
 	["Elite"] = "정예",
+	["Other options."] = "기타 옵션입니다.",
+	["All units"] = "모든 유닛",
+	["Change settings for all units."] = "모든 유닛을 위한 설정을 변경합니다.",
+	["|cffffffffEverything|r"] = "|cffffffff모두|r",
+	["\n\nAffects: "] = "\n\n영향: ",
+	["Affects: "] = "영향: ",
+	["Options for %s."] = "%s|1을;를; 위한 옵션입니다.",
 	["Bars"] = "바",
-	["Options for bars."] = "바를 위한 옵션",
+	["Options for bars."] = "바를 위한 옵션입니다.",
 	["Texts"] = "문자",
-	["Options for texts."] = "문자를 위한 옵션",
+	["Options for texts."] = "문자를 위한 옵션입니다.",
 	["Icons"] = "아이콘",
-	["Options for icons."] = "아이콘을 위한 옵션",
-	["Other"] = "기타",
-	["Other options."] = "기타 옵션",
-	["Size"] = "크기",
-	["Options for changing the size of this unit type."] = "이 유닛 유형의 크기를 변경하기 위한 옵션",
-	["Scale"] = "비율",
-	["Scale of the unit frame."] = "유닛 프레임의 비율",
+	["Options for icons."] = "아이콘을 위한 옵션입니다.",
+	["Options for changing the size of this unit type."] = "이 유닛 유형의 크기를 변경하기 위한 옵션입니다.",
+	["Scale"] = "크기",
+	["Scale of the unit frame."] = "유닛 프레임의 크기를 조절합니다.",
 	["Width"] = "너비",
-	["Width of the unit frame."] = "유닛 프레임의 너비",
+	["Width of the unit frame."] = "유닛 프레임의 너비를 조절합니다.",
 	["Height"] = "높이",
-	["Height of the unit frame."] = "유닛 프레임의 높이",
-	["Layout"] = "레이아웃",
-	["Layout options for this unit type"] = "이 유닛 프레임을 위한 레이아웃 옵션",
+	["Height of the unit frame."] = "유닛 프레임의 높이를 조절합니다.",
+	["Position"] = "위치",
+	["Options for changing the position of this unit type."] = "이 유닛 유형의 위치를 변경하기 위한 옵션입니다.",
+	["Horizontal"] = "가로",
+	["Horizontal position on the x-axis."] = "x-축에서의 수평적 위치를 변경합니다.",
+	["Vertical"] = "세로",
+	["Vertical position on the y-axis."] = "y-축에서의 수직적 위치를 변경합니다.",
+	["Layout options for this unit type"] = "이 유닛 유형을 위한 레이아웃 옵션입니다.",
 	["Choose"] = "선택",
-	["Select the layout to use for this unit type."] = "이 유닛 유형에 사용할 레이아웃을 선택합니다.",
+	["Select the layout to use for this unit type."] = "이 유닛 유형을 위해 사용할 레이아웃을 선택합니다.",
 	["Save layout"] = "레이아웃 저장",
-	["Save your current settings for this unit type as a layout."] = "이 유닛을 위한 현재의 설정을 레이아웃으로 저장합니다.",
+	["Save your current settings for this unit type as a layout."] = "이 유닛 유형을 위한 현재의 설정을 레이아웃으로 저장합니다.",
 	["Copy from other frame"] = "다른 프레임에서 복사",
 	["Copy the layout used on another frame."] = "다른 프레임에서 사용하고 있는 레이아웃을 복사합니다.",
 	["Border"] = "테두리",
@@ -180,76 +187,513 @@ local localization = (GetLocale() == "koKR") and {
 	["Disable"] = "비활성화",
 	["Disables units of this type."] = "이 유형의 유닛을 비활성화합니다.",
 	["Grouping"] = "그룹화",
-	["Options for how to position the units in this group relative to eachother."] = "이 그룹과 상관 있는 유닛간의 위치 방식을 위한 옵션",
-	["Enable freeform movement"] = "자유로운 이동 형태 활성화",
+	["Options for how to position the units in this group relative to eachother."] = "다른 각 그룹과 관련된 이 그룹에 속해 있는 유닛의 위치 선정 방식을 위한 옵션입니다.",
+	["Enable freeform movement"] = "임의 형식 이동 활성화",
 	["Direction"] = "방향",
-	["What direction to group these units in."] = "이 유닛을 그룹에 포함시킬 방향",
-	["Vertical Spacing"] = "수직 간격",
-	["Horizontal Spacing"] = "수평 간격",
-	["How much space there should be between each unit, in pixels."] = "각 유닛간의 픽셀당 간격을 설정합니다.",
+	["What direction to group these units in."] = "이 유닛이 속해 있는 그룹의 방향을 선택합니다.",
+	["Left"] = "좌측",
+	["Right"] = "우측",
+	["Up"] = "위",
+	["Down"] = "아래",
+	["Vertical Spacing"] = "세로 간격",
+	["How much space there should be between each unit, in pixels."] = "각 유닛간의 픽셀당 공간 간격을 설정합니다.",
+	["Horizontal Spacing"] = "가로 간격",
 	["Hide party frames in raid"] = "공격대 참여시 파티 프레임 숨김",
-	["Hides the party frames while the player is in a raid group."] = "플레이어가 공격대 그룹에 속해 있는 동안에는 파티 프레임을 숨깁니다.",
-	["Show player in party"] = "파티 참여시 플레이어 표시",
-	["Shows the player in the party frames while the player is in a party."] = "플레이어가 파티에 속해 있는 동안에는 플레이어를 표시합니다.",
-	["Show 5-man raid as a party"] = "5명의 공격대원을 1 파티로 표시",
-	["Show a 5-man, 1-party raid as a party instead of a raid. Could be useful in arena battles, for example."] = "하나의 공격대 대신에 5명, 1 파티 공격대로 파티를 표시합니다. 예를 들자면 아레나 전투시에 이 옵션은 유용합니다.",
-	["Sort by name"] = "이름별 정렬",
-	["Whether to sort the units in this group by name or index."] = "이 그룹에서 이름별로 유닛을 정렬 혹은 색인별로 정렬할 것인지를 선택합니다.",
-	["Style"] = "형식",
-	["Style to group by"] = "그룹별 형식",
-	["Class"] = "직업",
-	["Raid group"] = "공격대 그룹",
-	["Flat, group by class"] = "Flat, 직업별 그룹",
-	["Flat, group by raid group"] = "Flat, 공격대 그룹별 그룹",
-	["Flat, no grouping"] = "Flat, 그룹화 안함",
-	["Show 9 raid headers, one for each class."] = "9 공격대 머릿말 표시, 각 직업을 위해서는 하나로",
-	["Show up to 8 raid headers, one for each raid group."] = "8 넘는 공격대 머릿말 표시, 각 공격대 그룹을 위해서는 하나로",
-	["Show a single raid header, grouping units by class."] = "단일 공격대 머릿말 표시, 직업별 유닛 그룹화",
-	["Show a single raid header, grouping units by raid group."] = "단일 공격대 머릿말 표시, 공격대 그룹별 유닛 그룹화",
-	["Show a single raid header, don't do any special grouping."] = "단일 공격대 머릿말 표시, 모두 특별히 그룹화하지 않음",
+	["Hides the party frames while the player is in a raid group."] = "플레이어가 공격대 그룹에 속해 있는 동안에는 파티 프레임을 숨김 설정합니다.",
+	["Show player in party"] = "파티 참여시 플레이어 보기",
+	["Shows the player in the party frames while the player is in a party."] = "플레이어가 파티에 속해 있는 동안에는 플레이어를 보여줍니다.",
+	["Show 5-man raid as a party"] = "하나의 파티로 5명의 공격대원 보이기",
+	["Show a 5-man, 1-party raid as a party instead of a raid. Could be useful in arena battles, for example."] = "하나의 공격대 대신에 하나의 파티로 5명, 1 파티 공격대로 보여줍니다. 예를 들면, 투기장 전투시에 유용할 수 있습니다.",
+	["Sort by name"] = "이름에 따른 정렬",
+	["Whether to sort the units in this group by name or index."] = "이 그룹에서 이름 혹은 색인에 따라 유닛을 정돈할 것인지의 여부를 선택합니다.",
+	["Style"] = "양식",
+	["Style to group by"] = "분류에 따라 그룹화하기 위한 양식입니다.",
+	["Class"] = "직업에 따라",
+	["Raid group"] = "공격대 그룹에 따라",
+	["Flat, group by class"] = "직업에 따른 그룹으로 평범하게",
+	["Flat, group by raid group"] = "공격대 그룹에 따른 그룹으로 평범하게",
+	["Flat, no grouping"] = "그룹화하지 않고 평범하게",
+	["Show 9 raid headers, one for each class."] = "각 직업에 대해 하나로, 9개의 공격대 머릿자로 보여줍니다.",
+	["Show up to 8 raid headers, one for each raid group."] = "각 공격대 그룹에 대해 하나로, 8개 이상의 공격대 머릿자로 보여줍니다.",
+	["Show a single raid header, grouping units by class."] = "직업에 따라 유닛을 그룹화해, 단일 공격대 머릿자로 보여줍니다.",
+	["Show a single raid header, grouping units by raid group."] = "공격대 그룹에 따라 유닛을 그룹화해, 단일 공격대 머릿자로 보여줍니다.",
+	["Show a single raid header, don't do any special grouping."] = "특별히 전체를 그룹화하지 않고, 단일 공격대 머릿자로 보여줍니다.",
 	["Group Filter"] = "그룹 선별",
-	["Set which groups to filter by."] = "그룹별로 선별하기 위한 옵션",
+	["Set which groups to filter by."] = "분류에 따라 선별하기 위한 그룹을 설정합니다.",
 	["Group #%d"] = "그룹 #%d",
 	["Class Filter"] = "직업 선별",
-	["Set which classes to filter by."] = "직업별로 선별하기 위한 옵션",
-	["Show in Battleground"] = "전장에서 표시",
-	["Show the raid frames in the given battlegrounds, otherwise only showing the party frames."] = "주어진 전장에서는 공격대 프레임을 표시합니다. 그외는 파티 프레임만 표시합니다.",
+	["Set which classes to filter by."] = "분류에 따라 선별하기 위한 직업을 설정합니다.",
+	["Show in Battleground"] = "전장에서 보이기",
+	["Show the raid frames in the given battlegrounds, otherwise only showing the party frames."] = "주어진 전장에서 공격대 프레임을 보여줍니다. 그외는 파티 프레임만 보여줍니다.",
 	["Square"] = "사각형",
-	["Square Layout"] = "사각형 레이아웃",
+	["Square Layout"] = "사각형 레이아웃입니다.",
+	["Enable %s."] = "%s|1을;를; 활성화합니다.",
 	["Enable"] = "활성화",
-	["All units"] = "모든 유닛",
-	["Change settings for all units."] = "모든 유닛을 위한 설정을 변경합니다.",
-	["Toggle whether the %s module is active"] = "%s 모듈을 활성화시킬 것인지 여부를 전환합니다.",
-	["Off"] = "끄기",
-	["Configuration mode"] = "설정 모드",
-	["|cffffff00Click|r to lock/unlock unit frames."] = "|cffffff00클릭:|r 유닛 프레임 잠금/풀림",
-	["|cffffff00Shift-Click|r to change configuration mode."] = "|cffffff00Shift-클릭:|r 설정 모드 변경",
-	["|cffffff00Right-Click|r to change settings."] = "|cffffff00우-클릭:|r 설정 변경",
-	["Enable %s."] = "활성화: %s",
+	["Group %d"] = "그룹 %d",
+	["Warriors"] = "전사",
+	["Hunters"] = "사냥꾼",
+	["Rogues"] = "도적",
+	["Paladins"] = "성기사",
+	["Shamans"] = "주술사",
+	["Priests"] = "사제",
+	["Mages"] = "마법사",
+	["Warlocks"] = "흑마법사",
+	["Druids"] = "드루이드",
+	["%s pet"] = "%s의 소환수",
+	["%s pets"] = "%s의 소환수",
 	["Custom"] = "사용자",
-	["Export: Press Ctrl-A to select the text, then Ctrl-C to copy."] = "내보냄: 문자 선택은 Ctrl-A를, 복사는 Ctrl-C를 누르시요.",
-	["Export: Press Cmd-A to select the text, then Cmd-C to copy."] = "내보냄: 문자 선택은 Cmd-A를, 복사는 Cmd-C를 누르시요.",
-	["Import: Copy text from an external source and press Ctrl-V to paste."] = "외부 자료로 부터 문자를 복사하고 붙히기는 Ctrl-V를 누르시요.",
-	["Import: Copy text from an external source and press Cmd-V to paste."] = "외부 자료로 부터 문자를 복사하고 붙히기는 Cmd-V를 누르시요.",
+	["Export: Press Ctrl-A to select the text, then Ctrl-C to copy."] = "내보내기: 문자 선택은 Ctrl-A를, 복사는 Ctrl-C를 누르십시오.",
+	["Export: Press Cmd-A to select the text, then Cmd-C to copy."] = "내보내기: 문자 선택은 Cmd-A를, 복사는 Cmd-C를 누르십시오.",
+	["Import: Copy text from an external source and press Ctrl-V to paste."] = "들여오기:외부 자료로 부터 문자를 복사하고 붙혀 넣기는 Ctrl-V를 누르십시오.",
+	["Import: Copy text from an external source and press Cmd-V to paste."] = "들여오기:외부 자료로 부터 문자를 복사하고 붙혀 넣기는 Cmd-V를 누르십시오.",
+    ["PitBull Raid Group Style"] = "PitBull Raid Group Style",
+    ["Toggle between Class and Raid group"] = "Toggle between Class and Raid group",
+} or (GetLocale() == "zhCN") and {
+	["Player"] = "玩家",
+	["Target"] = "目标",
+	["Player's pet"] = "玩家宠物",
+	["Party"] = "小队",
+	["Party pets"] = "小队宠物",
+	["Party pet"] = "小队宠物",
+	["Raid"] = "团队",
+	["Raid pets"] = "团队宠物",
+	["Raid pet"] = "团队宠物",
+	["Mouse-over"] = "鼠标指向",
+	["Focus"] = "焦点",
+	["Main tanks"] = "主坦克",
+	["Main tank"] = "主坦克",
+	["Main assists"] = "主助理",
+	["Main assist"] = "主助理",
+	["%s's target"] = "%s的目标",
+	["%s target"] = "%s目标",
+	["%s targets"] = "%s目标",
+	["Unit Frames of awesomeness. Woof. It'll bite your face off."] = "这是很棒的单位框体插件，汪，小心它咬你脸。",
+	["Modules"] = "模块",
+	["Extra units"] = "未启用的框体",
+	["List of units which are not currently enabled. Click one to enable it."] = "当前没有启用的框体列表，点击以启用。",
+	["Configuration mode"] = "配置模式",
+	["Show all frames that can be shown, for easy configuration."] = "显示所有能显示的框体，以方便配置。",
+	["Solo"] = "Solo",
+	["Disabled"] = "已禁用",
+	["Layouts"] = "布局",
+	["Choose layout options here."] = "更改布局选项。",
+	["Import layout"] = "导入布局",
+	["Import a layout from an external source."] = "由外部来源导入一个布局。",
+	["Import"] = "导入",
+	["Export layout"] = "导出布局",
+	["Export a specified layout."] = "导出一个指定的布局。",
+	["Remove"] = "移除",
+	["Remove a layout you no longer wish to use."] = "移除一个你不打算再使用的布局。",
+	["Send in-game"] = "发送给好友",
+	["Send a saved layout to a friend in-game."] = "将一个已保存的布局发送给游戏好友。",
+	["Send to specific player"] = "发送给玩家",
+	["Send a saved layout to a specific player."] = "将一个已保存的布局发送给指定的玩家。",
+	["Name of player"] = "玩家姓名",
+	["The name of the player you wish to send the layout to."] = "要将布局发送给其的玩家姓名。",
+	["Layout"] = "布局",
+	["The layout to send."] = "要发送的布局。",
+	["Send to guild"] = "发送至公会",
+	["Send a saved layout to your guild."] = "将一个已保存的布局发送给你的公会。",
+	["Send to group"] = "发送至队伍",
+	["Send a saved layout to your party or raid."] = "将一个已保存的布局发送给你的小队或者团队。",
+	["Global settings"] = "全局设定",
+	["Settings that apply to all PitBull frames."] = "PitBull所有框体都共用的设置。",
+	["StatusBar texture"] = "状态条纹理",
+	["Sets what texture to use for the statusbars, like health, power, and cast bar."] = "设置状态条的纹理，例如生命条，能量条，施法条等。",
+	["Font"] = "字体",
+	["Font settings."] = "设置使用的字体。",
+	["Type"] = "类型",
+	["What font face to use."] = "使用那一种字体.",
+	["Size"] = "大小",
+	["Font size."] = "设置字体的大小。",
+	["Locked"] = "已锁定",
+	["Make it so the frames cannot be moved"] = "锁定后则所有的框体无法再被拖动。",
+	["Frame Strata"] = "框体层级",
+	["Choose the layer the unit frames are located on."] = "设定单位框体所位于的框体层级。",
+	["Background"] = "背景层",
+	["Low"] = "低",
+	["Medium"] = "中",
+	["High"] = "高",
+	["Dialog"] = "对话框",
+	["Tooltip"] = "提示信息",
+	["Clamp frames to screen"] = "框体限制在屏幕内",
+	["Make it so that frames cannot be dragged off-screen."] = "设定单位框体无法被拖动到屏幕之外。",
+	["Hide tooltips in combat"] = "战斗中隐藏提示",
+	["Hides the unit frame tooltips while the player is in combat."] = "当玩家进入战斗后隐藏框体的提示信息。",
+	["Show colored border on elite or rare unit"] = "精英及稀有怪显示彩色边框",
+	["Show a border specifically colored for an elite or rare unit, otherwise use the standard border."] = "对精英/稀有怪使用特殊的彩色边框，否则使用标准边框。",
+	["Colors"] = "颜色",
+	["Power"] = "能量",
+	["Rage"] = "怒气",
+	["Mana"] = "魔法",
+	["Focus(Pet)"] = "集中(宠物)",
+	["Energy"] = "能量",
+	["Classes"] = "职业",
+	["Warlock"] = "术士",
+	["Priest"] = "牧师",
+	["Warrior"] = "战士",
+	["Paladin"] = "圣骑士",
+	["Shaman"] = "萨满祭司",
+	["Mage"] = "法师",
+	["Druid"] = "德鲁伊",
+	["Rogue"] = "潜行者",
+	["Hunter"] = "猎人",
+	["Reaction"] = "反应",
+	["Hostile"] = "敌对",
+	["Neutral"] = "中立",
+	["Friendly"] = "友好",
+	["Civilian"] = "平民",
+	["Pet happiness"] = "宠物快乐度",
+	["Happy"] = "高兴",
+	["Neutral(Pet)"] = "一般",
+	["Angry"] = "生气",
+	["Health gradient"] = "生命渐变",
+	["No health"] = "无生命",
+	["50% health"] = "50% 生命",
+	["Maximum health"] = "最大生命",
+	["Other"] = "其他",
+	["Dead or Ghost"] = "死亡或灵魂",
+	["Disconnected"] = "离线",
+	["In combat"] = "战斗",
+	["Resting"] = "休息",
+	["Tapped"] = "已被攻击",
+	["Unknown"] = "未知",
+	["Frame colors"] = "框体颜色",
+	["Border"] = "边框",
+	["Rare"] = "稀有",
+	["Elite"] = "精英",
+	["All units"] = "所有单位",
+	["Change settings for all units."] = "为所有单位更改设定。",
+	["|cffffffffEverything|r"] = "|cffffffff全部|r",
+	["\n\nAffects: "] = "\n\n作用于：",
+	["Affects: "] = "作用于：",
+	["Options for %s."] = "%s的选项。",
+	["Bars"] = "状态条",
+	["Options for bars."] = "状态条选项。",
+	["Texts"] = "文字",
+	["Options for texts."] = "文字选项。",
+	["Icons"] = "图标",
+	["Options for icons."] = "图标选项。",
+	["Other options."] = "其他选项。",
+	["Options for changing the size of this unit type."] = "更改这种单位类型大小的选项。",
+	["Scale"] = "缩放",
+	["Scale of the unit frame."] = "设置框体的缩放。",
+	["Width"] = "宽度",
+	["Width of the unit frame."] = "该框体的宽度。",
+	["Height"] = "高度",
+	["Height of the unit frame."] = "该框体的高度。",
+	["Position"] = "位置",
+	["Options for changing the position of this unit type."] = "更改这种单位类型位置的选项。",
+	["Horizontal"] = "横向",
+	["Horizontal position on the x-axis."] = "在横向轴上的位置。",
+	["Vertical"] = "纵向",
+	["Vertical position on the y-axis."] = "在纵向轴上的位置。",
+	["Layout options for this unit type"] = "更改这种单位类型的布局选项。",
+	["Choose"] = "选择",
+	["Select the layout to use for this unit type."] = "为该框体选择所使用的布局。",
+	["Save layout"] = "保存布局",
+	["Save your current settings for this unit type as a layout."] = "把你当前对该单位类型的设置保存为一个布局。",
+	["Copy from other frame"] = "从其他框体复制",
+	["Copy the layout used on another frame."] = "复制一个其他框体所使用的布局。",
+	["Border"] = "边框",
+	["Change the border type."] = "更改边框类型。",
+	["Disable"] = "禁用",
+	["Disables units of this type."] = "禁用这个单位类型。",
+	["Grouping"] = "分组",
+	["Options for how to position the units in this group relative to eachother."] = "设置这一组的每个单位和其他单位的相对位置。",
+	["Enable freeform movement"] = "启用任意移动",
+	["Direction"] = "方向",
+	["What direction to group these units in."] = "将这些单位所分组的方向。",
+	["Left"] = "左",
+	["Right"] = "右",
+	["Up"] = "上",
+	["Down"] = "下",
+	["Vertical Spacing"] = "垂直间距",
+	["How much space there should be between each unit, in pixels."] = "每个框体之间的垂直间距，以像素为单位。",
+	["Horizontal Spacing"] = "水平间距",
+	["Hide party frames in raid"] = "进团队隐藏小队",
+	["Hides the party frames while the player is in a raid group."] = "当进入一个团队时隐藏小队的框体。",
+	["Show player in party"] = "小队中显示自己",
+	["Shows the player in the party frames while the player is in a party."] = "当自己加入一个队伍时，在队伍框体中也显示自己。",
+	["Show 5-man raid as a party"] = "将5人团队以小队显示",
+	["Show a 5-man, 1-party raid as a party instead of a raid. Could be useful in arena battles, for example."] = "将5人小队的团队作为队伍显示，而不是以团队方式显示。在竞技场中可能十分有用。",
+	["Sort by name"] = "按姓名排序",
+	["Whether to sort the units in this group by name or index."] = "设置分组中的单位是按姓名还是按序号排序。",
+	["Style"] = "样式",
+	["Style to group by"] = "按照以下类型分组",
+	["Class"] = "职业",
+	["Raid group"] = "团队小队",
+	["Flat, group by class"] = "整合，按职业分组",
+	["Flat, group by raid group"] = "整合，按团队小队分组",
+	["Flat, no grouping"] = "整合，不分组",
+	["Show 9 raid headers, one for each class."] = "显示9个团队标头，每职业一个。",
+	["Show up to 8 raid headers, one for each raid group."] = "显示8个团队标头，每团队小队1个。",
+	["Show a single raid header, grouping units by class."] = "显示单个团队标头，单位按职业分组。",
+	["Show a single raid header, grouping units by raid group."] = "显示单个团队标头，单位按团队小队分组。",
+	["Show a single raid header, don't do any special grouping."] = "显示单个团队标头，不进行分组。",
+	["Group Filter"] = "分组过滤",
+	["Set which groups to filter by."] = "设置分组过滤条件。",
+	["Group #%d"] = "分组%d",
+	["Class Filter"] = "职业过滤",
+	["Set which classes to filter by."] = "设置职业过滤条件。",
+	["Show in Battleground"] = "战场中显示",
+	["Show the raid frames in the given battlegrounds, otherwise only showing the party frames."] = "只在指定的战场中显示团队框体，否则在战场只显示小队框体。",
+	["Square"] = "方形",
+	["Square Layout"] = "方形布局方式",
+	["Enable %s."] = "启用%s。",
+	["Enable"] = "启用",
+	["Group %d"] = "分组%d",
+	["Warriors"] = "战士",
+	["Hunters"] = "猎人",
+	["Rogues"] = "潜行者",
+	["Paladins"] = "圣骑士",
+	["Shamans"] = "萨满祭司",
+	["Priests"] = "牧师",
+	["Mages"] = "法师",
+	["Warlocks"] = "术士",
+	["Druids"] = "德鲁伊",
+	["%s pet"] = "%s的宠物",
+	["%s pets"] = "%s的宠物",
+	["Custom"] = "自定义",
+	["Export: Press Ctrl-A to select the text, then Ctrl-C to copy."] = "导出: 按Ctrl+A选择文本，然后按Ctrl+C复制。",
+	["Export: Press Cmd-A to select the text, then Cmd-C to copy."] = "导出: 按Cmd+A选择文本，然后按Cmd+C复制。",
+	["Import: Copy text from an external source and press Ctrl-V to paste."] = "导入: 从外部源拷贝文本，然后按Ctrl+V粘贴。",
+	["Import: Copy text from an external source and press Cmd-V to paste."] = "导入: 从外部源拷贝文本，然后按Cmd+V粘贴。",
+    ["PitBull Raid Group Style"] = "PitBull Raid Group Style",
+    ["Toggle between Class and Raid group"] = "Toggle between Class and Raid group",
+} or (GetLocale() == "zhTW") and {
+	["Player"] = "玩家",
+	["Target"] = "目標",
+	["Player's pet"] = "玩家的寵物",
+	["Party"] = "隊伍",
+	["Party pets"] = "小隊成員的寵物",
+	["Party pet"] = "小隊成員的寵物",
+	["Raid"] = "團隊",
+	["Raid pets"] = "團隊成員的寵物",
+	["Raid pet"] = "團隊成員的寵物",
+	["Mouse-over"] = "滑鼠位置",
+	["Focus"] = "鎖定的目標",
+	["Main tanks"] = "主坦",
+	["Main tank"] = "主坦",
+	["Main assists"] = "主要助理",
+	["Main assist"] = "主要助理",
+	["%s's target"] = "%s的目標",
+	["%s target"] = "%s的目標",
+	["%s targets"] = "%s的目標(多個)",
+	["Unit Frames of awesomeness. Woof. It'll bite your face off."] ="框架高度有誤.將導致頭像關閉.",
+	["Modules"] = "模組",
+	["Extra units"] = "未啟用的框體",
+	["List of units which are not currently enabled. Click one to enable it."] = "列出目前未啟用的單元列表,點選啟用",
+	["Configuration mode"] = "配置模式",
+	["Show all frames that can be shown, for easy configuration."] = "顯示所有可顯示的框架進行配置",
+	["Solo"] = "solo",
+	["Disabled"] = "停用",
+	["Layouts"] = "佈局",
+	["Choose layout options here."] = "在這裡設定版面佈局",
+	["Import layout"] = "導入佈局",
+	["Import a layout from an external source."] = "從外部資源導入佈局",
+	["Import"] = "導入",
+	["Export layout"] = "導出佈局",
+	["Export a specified layout."] = "導出一種佈局",
+	["Remove"] = "移除",
+	["Remove a layout you no longer wish to use."] = "刪除你不再使用的佈局",
+	["Send in-game"] = "遊戲中發送",
+	["Send a saved layout to a friend in-game."] = "把一個保存的佈局發送給遊戲中的朋友.",
+	["Send to specific player"] = "發送給特定的玩家",
+	["Send a saved layout to a specific player."] = "把這種佈局發送給一個特定的玩家.",
+	["Name of player"] = "玩家名稱",
+	["The name of the player you wish to send the layout to."] = "你希望發送佈局給那個玩家的名稱.",
+	["Layout"] = "佈局",
+	["The layout to send."] = "要發送的佈局.",
+	["Send to guild"] = "發送給公會",
+	["Send a saved layout to your guild."] = "把佈局發送給公會裡",
+	["Send to group"] = "發送給小隊",
+	["Send a saved layout to your party or raid."] = "把佈局發送給小隊裡",
+	["Global settings"] = "總體設定",
+	["Settings that apply to all PitBull frames."] = "套用到所有PitBull框架的配置.",
+	["StatusBar texture"] = "狀態欄紋理",
+	["Sets what texture to use for the statusbars, like health, power, and cast bar."] = "設定狀態欄紋理,例如生命,能量以及施法欄",
+	["Font"] = "字體",
+	["Font settings."] = "字體設定.",
+	["Type"] = "類型",
+	["What font face to use."] = "要使用的字體",
+	["Size"] = "大小",
+	["Font size."] = "字體大小",
+	["Locked"] = "鎖定",
+	["Make it so the frames cannot be moved"] = "使用該選項將使框架不能移動.",
+	["Frame Strata"] = "框架層",
+	["Choose the layer the unit frames are located on."] = "選擇單位框架存放的層.",
+	["Background"] = "背景",
+	["Low"] = "低",
+	["Medium"] = "中",
+	["High"] = "高",
+	["Dialog"] = "對話方塊",
+	["Tooltip"] = "工具提示",
+	["Clamp frames to screen"] = "限制框架在螢幕內",
+	["Make it so that frames cannot be dragged off-screen."] = "使用該選項將使框架不可以被移動到螢幕外.",
+	["Hide tooltips in combat"] = "戰鬥中隱藏工具提示",
+	["Hides the unit frame tooltips while the player is in combat."] = "當玩家戰鬥時隱藏框架提示",
+	["Show colored border on elite or rare unit"] = "精英和稀有怪物顯示彩色邊框",
+	["Show a border specifically colored for an elite or rare unit, otherwise use the standard border."] = "對精英和稀有怪物顯示特殊的彩色邊框,否則使用標準邊框",
+	["Colors"] = "顏色",
+	["Power"] = "能力",
+	["Rage"] = "怒氣",
+	["Mana"] = "法力",
+	["Focus(Pet)"] = "鎖定目標(寵物)",
+	["Energy"] = "能量",
+	["Classes"] = "職業",
+	["Warlock"] = "術士",
+	["Priest"] = "牧師",
+	["Warrior"] = "戰士",
+	["Paladin"] = "聖騎士",
+	["Shaman"] = "薩滿",
+	["Mage"] = "法師",
+	["Druid"] = "德魯伊",
+	["Rogue"] = "盜賊",
+	["Hunter"] = "獵人",
+	["Reaction"] = "反應",
+	["Hostile"] = "敵對",
+	["Neutral"] = "中立",
+	["Friendly"] = "友好",
+	["Civilian"] = "平民",
+	["Pet happiness"] = "寵物快樂值",
+	["Happy"] = "高興",
+	["Neutral(Pet)"] = "平靜",
+	["Angry"] = "生氣",
+	["Health gradient"] = "生命值比例",
+	["No health"] = "無生命值",
+	["50% health"] = "50%生命",
+	["Maximum health"] = "最大生命值",
+	["Other"] = "其他",
+	["Dead or Ghost"] = "死亡或者靈魂",
+	["Disconnected"] = "離線中",
+	["In combat"] = "戰鬥中",
+	["Resting"] = "休息中",
+	["Tapped"] = "觸發",
+	["Unknown"] = "未知",
+	["Frame colors"] = "框架顏色",
+	["Background"] = "背景",
+	["Border"] = "邊框",
+	["Rare"] = "稀有",
+	["Elite"] = "精英",
+	["|cffffffffEverything|r"] = "|cffffffff所有|r",
+	["\n\nAffects: "] = "\n\n影響框架: ",
+	["Affects: "] = "影響框架: ",
+	["All units"] = "所有單位",
+	["Change settings for all units."] = "同時改變所有單位的設定.",
+	["Options for %s."] = "%s 的選項.",
+	["Bars"] = "條(Bars)",
+	["Options for bars."] = "條的選項.",
+	["Texts"] = "文字",
+	["Options for texts."] = "文字選項",
+	["Icons"] = "圖示",
+	["Options for icons."] = "圖示的選項.",
+	["Other options."] = "其他的選項.",
+	["Options for changing the size of this unit type."] = "用來改變此單位類型大小的選項.",
+	["Scale"] = "縮放",
+	["Scale of the unit frame."] = "單位框架縮放.",
+	["Width"] = "寬",
+	["Width of the unit frame."] = "框架寬度.",
+	["Height"] = "高",
+	["Height of the unit frame."] = "框架高度.",
+	["Position"] = "定位點",
+	["Options for changing the position of this unit type."] = "改變此單位類型的定位點",
+	["Horizontal"] = "水平",
+	["Horizontal position on the x-axis."] = "水平定位點Ｘ座標",
+	["Vertical"] = "垂直",
+	["Vertical position on the y-axis."] = "垂直定位點Ｙ座標",
+	["Layout options for this unit type"] = "此單位類型的佈局設定.",
+	["Choose"] = "選擇",
+	["Select the layout to use for this unit type."] = "選擇此單位類型使用的佈局.",
+	["Save layout"] = "保存佈局",
+	["Save your current settings for this unit type as a layout."] = "保存目前單位類型的設定為一種佈局.",
+	["Copy from other frame"] = "從其他框架複製",
+	["Copy the layout used on another frame."] = "從其他的框架複製過來.",
+	["Border"] = "邊框",
+	["Change the border type."] = "改變邊框類型.",
+	["Disable"] = "停用",
+	["Disables units of this type."] = "禁止此類對象.",
+	["Grouping"] = "分組",
+	["Options for how to position the units in this group relative to eachother."] = "設定隊伍成員在螢幕上顯示的方法.",
+	["Enable freeform movement"] = "打開自由移動",
+	["Direction"] = "方向",
+	["Left"] = "左",
+	["Right"] = "右",
+	["Up"] =  "上",
+	["Down"] = "下",
+	["What direction to group these units in."] = "整個編組移動的方向.",
+	["Vertical Spacing"] = "垂直間距",
+	["How much space there should be between each unit, in pixels."] = "各個單位間的距離,以像素為單位.",
+	["Horizontal Spacing"] = "水平間距",
+	["Hide party frames in raid"] = "在團隊中隱藏小隊面板",
+	["Hides the party frames while the player is in a raid group."] = "當玩家在一個團隊中時隱藏小隊面板.",
+	["Show player in party"] = "在小隊中顯示玩家",
+	["Shows the player in the party frames while the player is in a party."] = "在小隊面板內顯示玩家(在小隊中時)",
+	["Show 5-man raid as a party"] = "將5人團隊顯示為小隊",
+	["Show a 5-man, 1-party raid as a party instead of a raid. Could be useful in arena battles, for example."] = "將5人的團隊顯示為小隊,在一些場合很有用,例如競技場.",
+	["Sort by name"] = "按名稱排序",
+	["Whether to sort the units in this group by name or index."] = "隊伍中成員按名稱或是類型排序.",
+	["Style"] = "風格",
+	["Style to group by"] = "該組使用的風格",
+	["Class"] = "分類",
+	["Raid group"] = "團隊",
+	["Flat, group by class"] = "平面,以職業分組",
+	["Flat, group by raid group"] = "平面,以團隊分組",
+	["Flat, no grouping"] = "平面,無分組",
+	["Show 9 raid headers, one for each class."] = "顯示9個團隊標頭,每種職業一個.",
+	["Show up to 8 raid headers, one for each raid group."] = "顯示8個團隊標頭,每個小隊一個.",
+	["Show a single raid header, grouping units by class."] = "顯示1個團隊標頭,按職業分組.",
+	["Show a single raid header, grouping units by raid group."] = "顯示1個團隊標頭,按小隊分組.",
+	["Show a single raid header, don't do any special grouping."] = "顯示1個團隊標頭,不分組.",
+	["Group Filter"] = "分組過濾",
+	["Set which groups to filter by."] = "設定小隊過濾",
+	["Group #%d"] = "小隊 #%d",
+	["Class Filter"] = "職業過濾",
+	["Set which classes to filter by."] = "設定職業過濾",
+	["Show in Battleground"] = "戰場中顯示",
+	["Show the raid frames in the given battlegrounds, otherwise only showing the party frames."] = "在指定的戰場中顯示團隊框架,否則只顯示小隊框架.",
+	["Square"] = "方形",
+	["Square Layout"] = "方形佈局",
+	["Enable %s."] = "啟用: %s",
+	["Enable"] = "啟用",
+	["Group %d"] = "小隊 %d",
+	["Warriors"] = "戰士",
+	["Hunters"] = "獵人",
+	["Rogues"] = "盜賊",
+	["Paladins"] = "聖騎士",
+	["Shamans"] = "薩滿",
+	["Priests"] = "牧師",
+	["Mages"] = "法師",
+	["Warlocks"] = "術士",
+	["Druids"] = "德魯伊",
+	["%s pet"] = "%s 的寵物",
+	["%s pets"] = "%s 的寵物",
+	["Custom"] = "自定",
+	["Export: Press Ctrl-A to select the text, then Ctrl-C to copy."] = "導出:按Ctrl+A選擇全部文字,然後按Ctrl+C複製.",
+	["Export: Press Cmd-A to select the text, then Cmd-C to copy."] = "導出:按Cmd+A選擇全部文字,然後按Cmd+C複製.",
+	["Import: Copy text from an external source and press Ctrl-V to paste."] = "導入:複製外部來源文字,按Ctrl+V貼上",
+	["Import: Copy text from an external source and press Cmd-V to paste."] = "導入:複製外部來源文字,按Cmd+V貼上",
+    ["PitBull Raid Group Style"] = "PitBull Raid Group Style",
+    ["Toggle between Class and Raid group"] = "Toggle between Class and Raid group",
 } or {}
 
 local L = PitBull:L("PitBull", localization)
 
+BINDING_HEADER_PITBULL_RAID_GROUP = L["PitBull Raid Group Style"]
+BINDING_NAME_PITBULL_SET_RAID_GROUP_CLASS = L["Class"]
+BINDING_NAME_PITBULL_SET_RAID_GROUP_GROUP = L["Raid group"]
+BINDING_NAME_PITBULL_SET_RAID_GROUP_FLAT_CLASS = L["Flat, group by class"]
+BINDING_NAME_PITBULL_SET_RAID_GROUP_FLAT_GROUP = L["Flat, group by raid group"]
+BINDING_NAME_PITBULL_SET_RAID_GROUP_FLAT = L["Flat, no grouping"]
+BINDING_NAME_PITBULL_TOGGLE_RAID_GROUP = L["Toggle between Class and Raid group"]
+
 local configMode = false
 PitBull.configMode = configMode
 
---local Dewdrop = Rock("Dewdrop-2.0")
-local DogTag = Rock("LibDogTag-2.0")
+local DogTag = Rock("LibDogTag-3.0")
+Rock("LibDogTag-Unit-3.0")
 
 local BZ = Rock("LibBabble-Zone-3.0"):GetLookupTable()
-
---function PitBull:AcquireDBNamespace(...)
---	return self:GetDatabaseNamespace(...)
---end
-
---function PitBull:RegisterDefaults(...)
---	return self:SetDatabaseNamespaceDefaults(...)
---end
 
 local table_insert = table.insert
 local table_remove = table.remove
@@ -304,12 +748,9 @@ local GetAddOnDependencies = GetAddOnDependencies
 local GetNumAddOns = GetNumAddOns
 local loadstring = loadstring
 local setmetatable = setmetatable
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local rawget = rawget
 
-recycle_num = 0
-
-local newList, del, newDict, newSet, unpackDictAndDel = Rock:GetRecyclingFunctions("PitBull", "newList", "del", "newDict", "newSet", "unpackDictAndDel")
+local newList, del, newDict, newSet, unpackDictAndDel, unpackListAndDel = Rock:GetRecyclingFunctions("PitBull", "newList", "del", "newDict", "newSet", "unpackDictAndDel", "unpackListAndDel")
 local deepCopy, deepDel
 do
 	function deepCopy(from)
@@ -334,11 +775,17 @@ do
 	end
 end
 
-local newFrame, delFrame
+local newFrame, delFrame, newFrameType
 do
 	local frameCache = {}
 	local frameCount = {}
-	function newFrame(kind, parent, extra)
+	
+
+	local madeByPitBull = {}
+	local customFrameTypes = {}
+	local realKindToCustom = {}
+	
+	function newFrame(kind, parent, ...)
 		if type(kind) ~= "string" then
 			error(("Bad argument #1 to `newFrame'. %s expected, got %s"):format("string", type(kind)), 2)
 		end
@@ -346,41 +793,69 @@ do
 			error(("Bad argument #2 to `newFrame'. %s expected, got %s"):format("table", type(parent)), 2)
 		end
 		local frame
-		if frameCache[kind] then
-			frame = table_remove(frameCache[kind])
-			if #frameCache[kind] == 0 then
-				frameCache[kind] = del(frameCache[kind])
+		local customKind = kind
+		if customFrameTypes[customKind] then
+			kind = customFrameTypes[customKind][1]
+		end
+		local frameCache_customKind = frameCache[customKind]
+		if frameCache_customKind then
+			frame = next(frameCache_customKind)
+			frameCache_customKind[frame] = nil
+			if not next(frameCache_customKind) then
+				frameCache[customKind] = del(frameCache_customKind)
 			end
 			frame:SetParent(parent)
+			frame:ClearAllPoints()
+			frame:SetAlpha(1)
+			if kind == "Texture" then
+				frame:SetTexture(nil)
+				frame:SetVertexColor(1, 1, 1, 1)
+			end
 			if kind == "Texture" or kind == "FontString" then
-				frame:SetDrawLayer(extra)
+				frame:SetDrawLayer((...))
 			end
 			frame:Show()
 		else
-			frameCount[kind] = (frameCount[kind] or 0) + 1
-			local name = "PitBull" .. kind .. frameCount[kind]
-			if kind == "Texture" then
-				frame = parent:CreateTexture(name, extra)
+			frameCount[customKind] = (frameCount[customKind] or 0) + 1
+			local name = "PitBull" .. customKind .. frameCount[customKind]
+			if customKind ~= kind then
+				frame = CreateFrame(kind, name, parent, customFrameTypes[customKind][5])
+				frame.customKind = customKind
+				customFrameTypes[customKind][2](frame) -- onCreate
+			elseif kind == "Texture" then
+				frame = parent:CreateTexture(name, (...))
 			elseif kind == "FontString" then
-				frame = parent:CreateFontString(name, extra)
+				frame = parent:CreateFontString(name, (...))
+				
+			elseif kind == "Cooldown" then
+				frame = CreateFrame("Cooldown", name, parent, "CooldownFrameTemplate")
+				frame:Show()
 			else
-				if kind == "Cooldown" then
-					frame = CreateFrame("Cooldown", name, parent, "CooldownFrameTemplate")
-					frame:Show()
-				else
-					frame = CreateFrame(kind, name, parent)
-				end
+				frame = CreateFrame(kind, name, parent)
 			end
+			madeByPitBull[frame] = true
+		end
+		if customKind ~= kind then
+			customFrameTypes[customKind][3](frame, ...) -- onRetrieve
 		end
 		return frame
 	end
 	
 	function delFrame(frame)
 		if type(frame) ~= "table" then
-			error(("Bad argument #1 to `delFrame'. %s expected, got %s"):format("table", type(frame)), 2)
+			error(("Bad argument #1 to `delFrame'. %q expected, got %q"):format("table", type(frame)), 2)
+		elseif type(frame.GetObjectType) ~= "function" then
+			error(("Bad argument #1 to `delFrame'. %q expected, got %q"):format("Frame", "table"), 2)
 		end
+		
 		local kind = frame:GetObjectType()
-		if kind == "FontString" then
+		local customKind = frame.customKind or kind
+		
+		if not madeByPitBull[frame] then
+			error(("Deleting a frame not created by PitBull of type %q"):format(kind), 2)
+		end
+
+		if customKind == "FontString" then
 			DogTag:RemoveFontString(frame)
 			frame:SetText("")
 			frame:SetJustifyH("CENTER")
@@ -388,38 +863,423 @@ do
 			frame:SetNonSpaceWrap(true)
 			frame:SetTextColor(1, 1, 1, 1)
 			frame:SetFontObject(nil)
-		elseif kind == "Texture" then
-			frame:SetTexture(nil)
-			frame:SetVertexColor(1, 1, 1, 1)
+		elseif customKind == "Texture" then
+			frame:SetTexture([[Interface\Buttons\WHITE8X8]])
+			frame:SetVertexColor(0, 0, 0, 0)
 			frame:SetBlendMode("BLEND")
 			frame:SetDesaturated(false)
 			frame:SetTexCoord(0, 1, 0, 1)
 			frame:SetTexCoordModifiesRect(false)
-		elseif kind == "StatusBar" then
+		elseif customKind == "StatusBar" then
 			frame:SetStatusBarColor(1, 1, 1, 1)
 			frame:SetStatusBarTexture(nil)
 			frame:SetValue(1)
 			frame:SetOrientation("HORIZONTAL")
-		elseif kind == "Cooldown" then
+		elseif customKind == "Cooldown" then
 			frame:SetReverse(false)
+		elseif customKind ~= kind then
+			customFrameTypes[customKind][4](frame) -- onDelete
 		end
+		
+		if kind ~= "Texture" and kind ~= "FontString" and not _G.OmniCC and customKind == kind and _G.UnitClassBase then
+			if frame:GetNumRegions() > 0 then
+				error(("Deleting a frame of type %q that still has %d regions"):format(kind, frame:GetNumRegions()), 2)
+			elseif frame:GetNumChildren() > 0 then
+				error(("Deleting a frame of type %q that still has %d children"):format(kind, frame:GetNumChildren()), 2)
+			end
+		end
+		frame:ClearAllPoints()
+		frame:SetPoint("LEFT", UIParent, "RIGHT", 1e5, 0)
 		frame:Hide()
 		if frame.SetBackdrop then
 			frame:SetBackdrop(nil)
 		end
 		frame:SetParent(UIParent)
-		frame:ClearAllPoints()
-		frame:SetAlpha(1)
+		frame:SetAlpha(0)
 		frame:SetHeight(0)
 		frame:SetWidth(0)
-		local frameCache_kind = frameCache[kind]
-		if not frameCache_kind then
-			frameCache_kind = newList()
-			frameCache[kind] = frameCache_kind
+		local frameCache_customKind = frameCache[customKind]
+		if not frameCache_customKind then
+			frameCache_customKind = newList()
+			frameCache[customKind] = frameCache_customKind
 		end
-		frameCache_kind[#frameCache_kind+1] = frame
+		if frameCache_customKind[frame] then
+			error(("Double-free frame syndrome of type %q"):format(customKind), 2)
+		end
+		frameCache_customKind[frame] = true
 		return nil
 	end
+	
+	function newFrameType(kind, realKind, onCreate, onRetrieve, onDelete, inheritTemplate)
+		if type(kind) ~= "string" then
+			error(("Bad argument #1 to `newFrameType'. Expected %q, got %q."):format("string", type(kind)), 2)
+		elseif customFrameTypes[kind] then
+			error(("Bad argument #1 to `newFrameType'. %q has already been specified."):format(kind), 2)
+		elseif type(realKind) ~= "string" then
+			error(("Bad argument #2 to `newFrameType'. Expected %q, got %q."):format("string", type(realKind)), 2)
+		elseif type(onCreate) ~= "function" then
+			error(("Bad argument #3 to `newFrameType'. Expected %q, got %q."):format("function", type(onCreate)), 2)
+		elseif type(onRetrieve) ~= "function" then
+			error(("Bad argument #4 to `newFrameType'. Expected %q, got %q."):format("function", type(onRetrieve)), 2)
+		elseif type(onDelete) ~= "function" then
+			error(("Bad argument #5 to `newFrameType'. Expected %q, got %q."):format("function", type(onDelete)), 2)
+		elseif inheritTemplate and type(inheritTemplate) ~= "string" then
+			error(("Bad argument #6 to `newFrameType'. Expected %q or %q, got %q."):format("nil", "string", type(inheritTemplate)), 2)
+		end
+		customFrameTypes[kind] = { realKind, onCreate, onRetrieve, onDelete, inheritTemplate }
+		if not realKindToCustom[realKind] then
+			realKindToCustom[realKind] = {}
+		end
+		realKindToCustom[realKind][kind] = true
+	end
+end
+
+do
+	local FakeStatusBar_methods = {
+		value = 1,
+		extraValue = 0,
+		orientation = "HORIZONTAL",
+		reverse = false,
+		deficit = false,
+		bgR = false,
+		bgG = false,
+		bgB = false,
+		bgA = false,
+		extraR = false,
+		extraG = false,
+		extraB = false,
+		extraA = false,
+	}
+	local FakeStatusBar_scripts = {}
+	
+	local function OnUpdate(self)
+		self:SetScript("OnUpdate", nil)
+		self:SetValue(self.value)
+	end
+	
+	function FakeStatusBar_methods:SetValue(value)
+		self.value = value
+		if self.deficit then
+			value = 1 - value
+		end
+		if value <= 0 then
+			value = 1e-5
+		elseif value >= 1 then
+			value = 1
+		end
+		local extraValue = self.extraValue
+		if extraValue <= 0 then
+			extraValue = 1e-5
+		elseif extraValue+value >= 1 then
+			extraValue = 1 - value
+		end
+		if self.orientation == "VERTICAL" then
+			if self:GetHeight() == 0 then
+				self:SetScript("OnUpdate", OnUpdate)
+			end
+			self.fg:SetHeight(self:GetHeight() * value)
+			self.extra:SetHeight(self:GetHeight() * extraValue)
+			if not self.reverse then
+				self.fg:SetTexCoord(value, 0, 0, 0, value, 1, 0, 1)
+				self.extra:SetTexCoord(value+extraValue, 0, value, 0, value+extraValue, 1, value, 1)
+				self.bg:SetTexCoord(1, 0, value+extraValue, 0, 1, 1, value+extraValue, 1)
+			else
+				self.fg:SetTexCoord(0, 0, value, 0, 0, 1, value, 1)
+				self.extra:SetTexCoord(value, 0, value+extraValue, 0, value, 1, value+extraValue, 1)
+				self.bg:SetTexCoord(value+extraValue, 0, 1, 0, value+extraValue, 1, 1, 1)
+			end
+		else
+			if self:GetWidth() == 0 then
+				self:SetScript("OnUpdate", OnUpdate)
+			end
+			self.fg:SetWidth(self:GetWidth() * value)
+			self.extra:SetWidth(self:GetWidth() * extraValue)
+			if not self.reverse then
+				self.fg:SetTexCoord(0, 0, 0, 1, value, 0, value, 1)
+				self.extra:SetTexCoord(value, 0, value, 1, value+extraValue, 0, value+extraValue, 1)
+				self.bg:SetTexCoord(value+extraValue, 0, value+extraValue, 1, 1, 0, 1, 1)
+			else
+				self.fg:SetTexCoord(value, 0, value, 1, 0, 0, 0, 1)
+				self.extra:SetTexCoord(value+extraValue, 0, value+extraValue, 1, value, 0, value, 1)
+				self.bg:SetTexCoord(1, 0, 1, 1, value+extraValue, 0, value+extraValue, 1)
+			end
+		end
+	end
+	function FakeStatusBar_methods:GetValue()
+		return self.value
+	end
+	
+	function FakeStatusBar_methods:SetExtraValue(value)
+		self.extraValue = value
+		self:SetValue(self.value)
+	end
+	function FakeStatusBar_methods:GetExtraValue()
+		return self.extraValue
+	end
+	
+	local function fixOrientation(self)
+		local orientation, reverse = self.orientation, self.reverse
+		local fg, extra, bg = self.fg, self.extra, self.bg
+		fg:ClearAllPoints()
+		extra:ClearAllPoints()
+		bg:ClearAllPoints()
+		fg:SetWidth(0)
+		fg:SetHeight(0)
+		extra:SetWidth(0)
+		extra:SetHeight(0)
+		if orientation == "VERTICAL" then
+			fg:SetHeight(1e-5)
+			if not reverse then
+				fg:SetPoint("BOTTOM")
+				fg:SetPoint("LEFT")
+				fg:SetPoint("RIGHT")
+			
+				extra:SetPoint("BOTTOM", fg, "TOP")
+				extra:SetPoint("LEFT")
+				extra:SetPoint("RIGHT")
+			
+				bg:SetPoint("BOTTOM", extra, "TOP")
+				bg:SetPoint("LEFT")
+				bg:SetPoint("RIGHT")
+				bg:SetPoint("TOP")
+			else
+				fg:SetPoint("TOP")
+				fg:SetPoint("LEFT")
+				fg:SetPoint("RIGHT")
+		
+				extra:SetPoint("TOP", fg, "BOTTOM")
+				extra:SetPoint("LEFT")
+				extra:SetPoint("RIGHT")
+		
+				bg:SetPoint("TOP", extra, "BOTTOM")
+				bg:SetPoint("LEFT")
+				bg:SetPoint("RIGHT")
+				bg:SetPoint("BOTTOM")
+			end
+		else
+			fg:SetWidth(1e-5)
+			if not reverse then
+				fg:SetPoint("LEFT")
+				fg:SetPoint("TOP")
+				fg:SetPoint("BOTTOM")
+			
+				extra:SetPoint("LEFT", fg, "RIGHT")
+				extra:SetPoint("TOP")
+				extra:SetPoint("BOTTOM")
+			
+				bg:SetPoint("LEFT", extra, "RIGHT")
+				bg:SetPoint("RIGHT")
+				bg:SetPoint("TOP")
+				bg:SetPoint("BOTTOM")
+			else
+				fg:SetPoint("RIGHT")
+				fg:SetPoint("TOP")
+				fg:SetPoint("BOTTOM")
+		
+				extra:SetPoint("RIGHT", fg, "LEFT")
+				extra:SetPoint("TOP")
+				extra:SetPoint("BOTTOM")
+		
+				bg:SetPoint("RIGHT", extra, "LEFT")
+				bg:SetPoint("LEFT")
+				bg:SetPoint("TOP")
+				bg:SetPoint("BOTTOM")
+			end
+		end
+		
+		self:SetValue(self.value)
+	end
+	
+	function FakeStatusBar_methods:SetOrientation(orientation)
+		if self.orientation == orientation then
+			return
+		end
+		self.orientation = orientation
+		
+		fixOrientation(self)
+	end
+	function FakeStatusBar_methods:GetOrientation()
+		return self.orientation
+	end
+	
+	function FakeStatusBar_methods:SetReverse(reverse)
+		reverse = not not reverse
+		if self.reverse == reverse then
+			return
+		end
+		self.reverse = reverse
+		
+		fixOrientation(self)
+	end
+	function FakeStatusBar_methods:GetReverse()
+		return self.reverse
+	end
+
+	function FakeStatusBar_methods:SetDeficit(deficit)
+		deficit = not not deficit
+		if self.deficit == deficit then
+			return
+		end
+		self.deficit = deficit
+		
+		self:SetValue(self.value)
+	end
+	function FakeStatusBar_methods:GetDeficit()
+		return self.deficit
+	end
+
+	function FakeStatusBar_methods:SetTexture(texture)
+		self.fg:SetTexture(texture)
+		self.extra:SetTexture(texture)
+		self.bg:SetTexture(texture)
+	end
+	
+	function FakeStatusBar_methods:GetTexture()
+		return self.fg:GetTexture()
+	end
+	FakeStatusBar_methods.GetStatusBarTexture = FakeStatusBar_methods.GetTexture
+	
+	function FakeStatusBar_methods:SetColor(r, g, b)
+		self.fg:SetVertexColor(r, g, b)
+		if self.extraR then
+			self.extra:SetVertexColor(self.extraR, self.extraG, self.extraB)
+		else
+			self.extra:SetVertexColor((r + 0.25)/1.5, (g + 0.25)/1.5, (b + 0.25)/1.5)
+		end
+		if self.bgR then
+			self.bg:SetVertexColor(self.bgR, self.bgG, self.bgB)
+		else
+			self.bg:SetVertexColor((r + 0.2)/3, (g + 0.2)/3, (b + 0.2)/3)
+		end
+	end
+	
+	function FakeStatusBar_methods:GetColor()
+		local r, g, b = self.fg:GetVertexColor()
+		return r, g, b
+	end
+	FakeStatusBar_methods.GetStatusBarColor = FakeStatusBar_methods.GetColor
+	
+	function FakeStatusBar_methods:SetNormalAlpha(a)
+		if not a then
+			a = 1
+		end
+		self.fg:SetAlpha(a)
+		if not self.extraA then
+			self.extra:SetAlpha(a)
+		end
+		if not self.bgA then
+			self.bg:SetAlpha(a)
+		end
+	end
+	
+	function FakeStatusBar_methods:GetNormalAlpha()
+		return self.fg:GetAlpha()
+	end
+	
+	function FakeStatusBar_methods:SetBackgroundColor(br, bg, bb)
+		self.bgR, self.bgG, self.bgB = br or false, bg or false, bb or false
+		if not br then
+			local r, g, b = self.fg:GetVertexColor()
+			self.bg:SetVertexColor((r + 0.2)/3, (g + 0.2)/3, (b + 0.2)/3)
+		else
+			self.bg:SetVertexColor(br, bg, bb)
+		end
+	end
+	
+	function FakeStatusBar_methods:GetBackgroundColor()
+		local r, g, b = self.bg:GetVertexColor()
+		return r, g, b
+	end
+	
+	function FakeStatusBar_methods:SetBackgroundAlpha(a)
+		if not a then
+			a = self.fg:GetAlpha()
+		else
+			self.bgA = a
+		end
+		self.bg:SetAlpha(a)
+	end
+	
+	function FakeStatusBar_methods:GetBackgroundAlpha()
+		return self.bg or self.fg:GetAlpha()
+	end
+	
+	function FakeStatusBar_methods:SetExtraColor(er, eg, eb)
+		self.extraR, self.extraG, self.extraB = er or false, eg or false, eb or false
+		if not er then
+			local r, g, b = self.fg:GetVertexColor()
+			self.extra:SetVertexColor((r + 0.25)/1.5, (g + 0.2)/1.5, (b + 0.25)/1.5)
+		else
+			self.extra:SetVertexColor(er, eg, eb)
+		end
+	end
+	
+	function FakeStatusBar_methods:GetExtraColor()
+		return self.extra:GetVertexColor()
+	end
+	
+	function FakeStatusBar_methods:SetExtraAlpha(a)
+		if not a then
+			a = self.fg:GetAlpha()
+		else
+			self.extraA = a
+		end
+		self.extra:SetAlpha(a)
+	end
+	
+	function FakeStatusBar_methods:GetExtraAlpha()
+		return self.extraA or self.fg:GetAlpha()
+	end
+	
+	function FakeStatusBar_methods:GetMinMaxValues()
+		return 0, 1
+	end
+	
+	function FakeStatusBar_scripts:OnSizeChanged()
+		self:SetValue(self.value)
+	end
+	
+	newFrameType("FakeStatusBar", "Frame", function(frame)
+		-- onCreate
+		local frame_fg = newFrame("Texture", frame, "BACKGROUND")
+		frame.fg = frame_fg
+		frame_fg:SetPoint("LEFT")
+		frame_fg:SetPoint("TOP")
+		frame_fg:SetPoint("BOTTOM")
+		
+		local frame_extra = newFrame("Texture", frame, "BACKGROUND")
+		frame.extra = frame_extra
+		frame_extra:SetPoint("LEFT", frame_fg, "RIGHT")
+		frame_extra:SetPoint("TOP")
+		frame_extra:SetPoint("BOTTOM")
+		
+		local frame_bg = newFrame("Texture", frame, "BACKGROUND")
+		frame.bg = frame_bg
+		frame_bg:SetPoint("LEFT", frame_extra, "RIGHT")
+		frame_bg:SetPoint("RIGHT")
+		frame_bg:SetPoint("TOP")
+		frame_bg:SetPoint("BOTTOM")
+	end, function(frame)
+		-- onRetrieve
+		for k,v in pairs(FakeStatusBar_methods) do
+			frame[k] = v
+		end
+		for k,v in pairs(FakeStatusBar_scripts) do
+			frame:SetScript(k, v)
+		end
+		fixOrientation(frame)
+		frame:SetColor(1, 1, 1)
+		frame:SetNormalAlpha(1)
+	end, function(frame)
+		-- onDelete
+		for k,v in pairs(FakeStatusBar_methods) do
+			frame[k] = nil
+		end	
+		for k,v in pairs(FakeStatusBar_scripts) do
+			frame:SetScript(k, nil)
+		end
+		frame:SetScript("OnUpdate", nil)
+	end)
 end
 
 PitBull.new = newList
@@ -429,6 +1289,7 @@ PitBull.del = del
 PitBull.deepCopy = deepCopy
 PitBull.deepDel = deepDel
 PitBull.newFrame = newFrame
+PitBull.newFrameType = newFrameType
 PitBull.delFrame = delFrame
 
 local frames = {}
@@ -463,6 +1324,7 @@ do
 		energy = { 1, 220/255, 25/255 },
 		focus = { 1, 210/255, 0 },
 		mana = { 48/255, 113/255, 191/255 },
+		runicPower = { 0, 209/255, 1 },
 		
 		unknown = { 0.8, 0.8, 0.8 },
 		
@@ -491,7 +1353,7 @@ do
 		maxHP = { 0, 1, 0 },
 	}
 	
-	for k, v in pairs(RAID_CLASS_COLORS) do
+	for k, v in pairs(_G.RAID_CLASS_COLORS) do
 		colors[k] = { v.r, v.g, v.b }
 	end
 	
@@ -501,8 +1363,8 @@ do
 	
 	PitBull:SetDatabaseDefaults('profile', {
 		settings = {
-			texture = "Cilo",
-			font = "ABF",
+			texture = "Blizzard",
+			font = "Friz Quadrata TT",
 			fontsize = 12,
 			locked = false,
 			clamped = true,
@@ -636,8 +1498,8 @@ local function IsInNonRaidBG()
 	return false
 end
 
-local function ShouldShowParty()
-	if configMode == "raid" then
+local function ShouldShowParty(dontCheckConfigMode)
+	if configMode == "raid" and not dontCheckConfigMode then
 		return not PitBull.db.profile.groups.party.hidePartyInRaid
 	end
 	if NumRaidMembers > 0 then
@@ -649,14 +1511,14 @@ local function ShouldShowParty()
 		end
 		return not PitBull.db.profile.groups.party.hidePartyInRaid
 	end
-	if configMode == "party" or NumPartyMembers > 0 then
+	if (configMode == "party" and not dontCheckConfigMode) or NumPartyMembers > 0 then
 		return true
 	end
 	return false
 end
 
-local function ShouldShowRaid()
-	if configMode == "raid" then
+local function ShouldShowRaid(dontCheckConfigMode)
+	if configMode == "raid" and not dontCheckConfigMode then
 		return true
 	end
 	if NumRaidMembers > 0 then
@@ -819,7 +1681,10 @@ PitBull.OnCommReceive = {}
 
 local removableLayoutNames = {}
 
+local AddGroupToAceOptions_todo = {}
+local UpdateLayoutSettings_todo = {}
 local ProfilePitBull_open = false
+local options = setmetatable({}, {__mode='v'})
 do
 	local function colorSet(key, r, g, b, a)
 		local t = self.db.profile.settings.colors[key]
@@ -843,8 +1708,15 @@ do
 	end
 	local function set_Active(name, value)
 		if not self:HasModule(name) then
-			local _,_,_,_,loadable = GetAddOnInfo("PitBull_" .. name) 
-			if loadable then
+			local _,_,_,enabled,loadable = GetAddOnInfo("PitBull_" .. name)
+			if not enabled and value then
+				EnableAddOn("PitBull_" .. name)
+				_,_,_,enabled,loadable = GetAddOnInfo("PitBull_" .. name)
+				if not loadable then
+					DisableAddOn("PitBull_" .. name)
+				end
+			end
+			if enabled and loadable then
 				LoadAddOn("PitBull_" .. name)
 			else
 				return
@@ -878,644 +1750,736 @@ do
 		return self[key]
 	end, __mode='kv'})
 	
+	local globalSettings = {}
+	function PitBull:RegisterGlobalSetting(...)
+		if type(options.args) == "table" then
+			local current = options.args.global.args
+			local n = select('#', ...)
+			for i = 1, n - 2 do
+				local v = select(i, ...)
+				current = current[v]
+			end
+			current[select(n-1, ...)] = select(n, ...)
+			return
+		end
+		local path = newList(...)
+		path[#path] = nil
+		local data = select(select('#', ...), ...)
+		globalSettings[path] = data
+	end
+	
+	local recurseCheck
 	PitBull.options = {
 		type = 'group',
 		name = L["PitBull"],
 		desc = L["Unit Frames of awesomeness. Woof. It'll bite your face off."],
 		handler = PitBull,
 		icon = [[Interface\Addons\PitBull\media\icon]],
-		args = {
-			modules = {
-				name = L["Modules"],
-				desc = L["Modules"],
-				type = 'group',
-				args = function()
-					local args = newList()
-					for i = 1, GetNumAddOns() do
-						local deps = newSet(GetAddOnDependencies(i))
-						if deps["PitBull"] and IsAddOnLoadOnDemand(i) then
-							local name = GetAddOnInfo(i)
-							if name:find("^PitBull_") then
-								local modName = name:sub(9)
-								local condition = GetAddOnMetadata(name, "X-PitBull-Condition")
-								local good = true
-								if condition then
-									local func, err = loadstring(condition)
-									if func then
-										local success, ret = pcall(func)
-										if success then
-											good = ret
+		args = function()
+			local args; args = {
+				modules = {
+					name = L["Modules"],
+					desc = L["Modules"],
+					type = 'group',
+					args = function()
+						local args = newList()
+						for i = 1, GetNumAddOns() do
+							local deps = newSet(GetAddOnDependencies(i))
+							if deps["PitBull"] and IsAddOnLoadOnDemand(i) then
+								local name = GetAddOnInfo(i)
+								if name:find("^PitBull_") then
+									local modName = name:sub(9)
+									local condition = GetAddOnMetadata(name, "X-PitBull-Condition")
+									local good = true
+									if condition then
+										local func, err = loadstring(condition)
+										if func then
+											local success, ret = pcall(func)
+											if success then
+												good = ret
+											end
 										end
 									end
-								end
-								if good then
-									args[modName] = moduleArgs[modName]
+									if good then
+										args[modName] = moduleArgs[modName]
+									end
 								end
 							end
+							deps = del(deps)
 						end
-						deps = del(deps)
-					end
-					for name in PitBull:IterateModules() do
-						args[name] = moduleArgs[name]
-					end
-					return "@dict", unpackDictAndDel(args)
-				end,
-				order = 3,
-			},
-			disabledUnits = {
-				name = L["Extra units"],
-				desc = L["List of units which are not currently enabled. Click one to enable it."],
-				type = "group",
-				args = {},
-				disabled = function() return not next(PitBull.options.args.disabledUnits.args) end,
-				order = 5,
-			},
---			spacer = {
---				name = L[" "],
---				type = "header",
---				order = 45,
---			},
-			configMode = {
-				name = L["Configuration mode"],
-				desc = L["Show all frames that can be shown, for easy configuration."],
-				type = 'choice',
-				choices = {
-					solo = L["Solo"],
-					party = L["Party"],
-					raid = L["Raid"],
-					disabled = L["Disabled"]
+						for name in PitBull:IterateModules() do
+							args[name] = moduleArgs[name]
+						end
+						return "@dict", unpackDictAndDel(args)
+					end,
+					order = 3,
 				},
-				get = function()
-					return configMode or "disabled"
-				end,
-				set = "ChangeConfigMode",
-				handler = self,
-				disabled = InCombatLockdown,
-				order = 2,
-			},
-			layout = {
-				name = L["Layouts"],
-				desc = L["Choose layout options here."],
-				type = 'group',
-				args = {
-					import = {
-						name = L["Import layout"],
-						desc = L["Import a layout from an external source."],
-						buttonText = L["Import"],
-						type = 'execute',
-						func = "OpenImportLayoutFrame",
-						handler = PitBull,
-						order = 50,
-					},
-					export = {
-						name = L["Export layout"],
-						desc = L["Export a specified layout."],
-						type = 'choice',
-						choices = removableLayoutNames,
-						get = false,
-						set = "ExportLayout",
-						disabled = function()
-							return not next(removableLayoutNames)
-						end,
-						handler = PitBull,
-						order = 51,
-					},
-					remove = {
-						name = L["Remove"],
-						desc = L["Remove a layout you no longer wish to use."],
-						type = 'choice',
-						choices = removableLayoutNames,
-						get = false,
-						set = "RemoveLayout",
-						disabled = function()
-							return not next(removableLayoutNames)
-						end,
-						handler = PitBull,
-						order = 52,
-					},
-					sendTo = {
-						name = L["Send in-game"],
-						desc = L["Send a saved layout to a friend in-game."],
-						type = 'group',
-						disabled = function()
-							return not next(removableLayoutNames)
-						end,
-						args = {
-							whisper = {
-								name = L["Send to specific player"],
-								desc = L["Send a saved layout to a specific player."],
-								type = 'group',
-								args = {
-									player = {
-										name = L["Name of player"],
-										desc = L["The name of the player you wish to send the layout to."],
-										type = 'string',
-										usage = "<Name of player>",
-										get = function()
-											return sendToPlayerName
-										end,
-										set = function(value)
-											sendToPlayerName = value
-										end,
-									},
-									layout = {
-										name = L["Layout"],
-										desc = L["The layout to send."],
-										type = 'choice',
-										choices = removableLayoutNames,
-										get = false,
-										set = function(...)
-											PitBull:SendLayoutToPlayer(sendToPlayerName, ...)
-										end,
-										disabled = function()
-											return not sendToPlayerName
-										end
+				disabledUnits = {
+					name = L["Extra units"],
+					desc = L["List of units which are not currently enabled. Click one to enable it."],
+					type = "group",
+					args = {},
+					disabled = function() return not next(args.disabledUnits.args) end,
+					order = 5,
+				},
+	--			spacer = {
+	--				name = L[" "],
+	--				type = "header",
+	--				order = 45,
+	--			},
+				configMode = {
+					name = L["Configuration mode"],
+					desc = L["Show all frames that can be shown, for easy configuration."],
+					type = 'choice',
+					choices = function()
+						if ShouldShowParty(true) then
+							return '@dict', 'party', L["Party"], 'disabled', L["Disabled"]
+						elseif ShouldShowRaid(true) then
+							return '@dict', 'raid', L["Raid"], 'disabled', L["Disabled"]
+						else
+							return '@dict', 'raid', L["Raid"], 'party', L["Party"], 'solo', L["Solo"], 'disabled', L["Disabled"]
+						end
+					end,
+					choiceOrder = function()
+						if ShouldShowParty(true) then
+							return '@list', 'disabled', 'party'
+						elseif ShouldShowRaid(true) then
+							return '@list', 'disabled', 'raid'
+						else
+							return '@list', 'disabled', 'solo', 'party', 'raid'
+						end
+					end,
+					get = function()
+						return configMode or "disabled"
+					end,
+					set = "ChangeConfigMode",
+					handler = self,
+					disabled = InCombatLockdown,
+					order = 2,
+				},
+				layout = {
+					name = L["Layouts"],
+					desc = L["Choose layout options here."],
+					type = 'group',
+					args = {
+						import = {
+							name = L["Import layout"],
+							desc = L["Import a layout from an external source."],
+							buttonText = L["Import"],
+							type = 'execute',
+							func = "OpenImportLayoutFrame",
+							handler = PitBull,
+							order = 50,
+						},
+						export = {
+							name = L["Export layout"],
+							desc = L["Export a specified layout."],
+							type = 'choice',
+							choices = removableLayoutNames,
+							get = false,
+							set = "ExportLayout",
+							disabled = function()
+								return not next(removableLayoutNames)
+							end,
+							handler = PitBull,
+							order = 51,
+						},
+						remove = {
+							name = L["Remove"],
+							desc = L["Remove a layout you no longer wish to use."],
+							type = 'choice',
+							choices = removableLayoutNames,
+							get = false,
+							set = "RemoveLayout",
+							disabled = function()
+								return not next(removableLayoutNames)
+							end,
+							handler = PitBull,
+							order = 52,
+						},
+						sendTo = {
+							name = L["Send in-game"],
+							desc = L["Send a saved layout to a friend in-game."],
+							type = 'group',
+							disabled = function()
+								return not next(removableLayoutNames)
+							end,
+							args = {
+								whisper = {
+									name = L["Send to specific player"],
+									desc = L["Send a saved layout to a specific player."],
+									type = 'group',
+									args = {
+										player = {
+											name = L["Name of player"],
+											desc = L["The name of the player you wish to send the layout to."],
+											type = 'string',
+											usage = "<Name of player>",
+											get = function()
+												return sendToPlayerName
+											end,
+											set = function(value)
+												sendToPlayerName = value
+											end,
+										},
+										layout = {
+											name = L["Layout"],
+											desc = L["The layout to send."],
+											type = 'choice',
+											choices = removableLayoutNames,
+											get = false,
+											set = function(...)
+												PitBull:SendLayoutToPlayer(sendToPlayerName, ...)
+											end,
+											disabled = function()
+												return not sendToPlayerName
+											end
+										}
 									}
-								}
-							},
-							guild = {
-								name = L["Send to guild"],
-								desc = L["Send a saved layout to your guild."],
-								disabled = function()
-									return not IsInGuild()
-								end,
-								type = 'choice',
-								choices = removableLayoutNames,
-								get = false,
-								set = "SendLayoutToGuild",
-								handler = PitBull,
-							},
-							group = {
-								name = L["Send to group"],
-								desc = L["Send a saved layout to your party or raid."],
-								disabled = function()
-									return GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0
-								end,
-								type = 'choice',
-								choices = removableLayoutNames,
-								get = false,
-								set = "SendLayoutToGroup",
-								handler = PitBull,
-							},
+								},
+								guild = {
+									name = L["Send to guild"],
+									desc = L["Send a saved layout to your guild."],
+									disabled = function()
+										return not IsInGuild()
+									end,
+									type = 'choice',
+									choices = removableLayoutNames,
+									get = false,
+									set = "SendLayoutToGuild",
+									handler = PitBull,
+								},
+								group = {
+									name = L["Send to group"],
+									desc = L["Send a saved layout to your party or raid."],
+									disabled = function()
+										return GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0
+									end,
+									type = 'choice',
+									choices = removableLayoutNames,
+									get = false,
+									set = "SendLayoutToGroup",
+									handler = PitBull,
+								},
+							}
 						}
-					}
+					},
+					order = 4,
 				},
-				order = 4,
-			},
-			global = {
-				order = 1,
-				name = L["Global settings"],
-				desc = L["Settings that apply to all PitBull frames."],
-				type = "group",
-				args = {
-					texture = {
-						name = L["StatusBar texture"],
-						desc = L["Sets what texture to use for the statusbars, like health, power, and cast bar."],
-						type = 'choice',
-						choices = SharedMedia:List('statusbar'),
-						choiceTextures = SharedMedia:HashTable('statusbar'),
-						get = function()
-							return self.db.profile.settings.texture
-						end,
-						set = function(value)
-							self.db.profile.settings.texture = value
-							self:UpdateAllStatusBarTextures()
-						end,
-					},
-					font = {
-						type = "group",
-						name = L["Font"],
-						desc = L["Font settings."],
-						args = {
-							fonttype = {
-								name = L["Type"],
-								desc = L["What font face to use."],
-								type = 'choice',
-								choices = SharedMedia:List('font'),
-								choiceFonts = SharedMedia:HashTable('font'),
-								get = function()
-									return self.db.profile.settings.font
-								end,
-								set = function(value)
-									self.db.profile.settings.font = value
-									self:UpdateAllFonts()
-								end,
-							},
-							fontsize = {
-								name = L["Size"],
-								desc = L["Font size."],
-								type = 'number',
-								get = function()
-									return self.db.profile.settings.fontsize
-								end,
-								set = function(value)
-									self.db.profile.settings.fontsize = value
-									self:UpdateAllFonts()
-								end,
-								min = 8,
-								max = 32,
-								step = 1,
-							},
+				global = {
+					order = 1,
+					name = L["Global settings"],
+					desc = L["Settings that apply to all PitBull frames."],
+					type = "group",
+					args = {
+						texture = {
+							name = L["StatusBar texture"],
+							desc = L["Sets what texture to use for the statusbars, like health, power, and cast bar."],
+							type = 'choice',
+							choices = SharedMedia:List('statusbar'),
+							choiceTextures = SharedMedia:HashTable('statusbar'),
+							get = function()
+								return self.db.profile.settings.texture
+							end,
+							set = function(value)
+								self.db.profile.settings.texture = value
+								self:UpdateAllStatusBarTextures()
+							end,
 						},
-					},			
-					locked = {
-						name = L["Locked"],
-						desc = L["Make it so the frames cannot be moved"],
-						type = 'boolean',
-						get = function()
-							return self.db.profile.settings.locked
-						end,
-						set = function(value)
-							self.db.profile.settings.locked = value
-						end,
-					},
-					strata = {
-						name = L["Frame Strata"],
-						desc = L["Choose the layer the unit frames are located on."],
-						type = 'text',
-						validate = {
-							L["Background"],
-							L["Low"],
-							L["Medium"],
-							L["High"],
-							L["Dialog"],
-							L["Tooltip"],
+						font = {
+							type = "group",
+							name = L["Font"],
+							desc = L["Font settings."],
+							args = {
+								fonttype = {
+									name = L["Type"],
+									desc = L["What font face to use."],
+									type = 'choice',
+									choices = SharedMedia:List('font'),
+									choiceFonts = SharedMedia:HashTable('font'),
+									get = function()
+										return self.db.profile.settings.font
+									end,
+									set = function(value)
+										self.db.profile.settings.font = value
+										self:UpdateAllFonts()
+									end,
+								},
+								fontsize = {
+									name = L["Size"],
+									desc = L["Font size."],
+									type = 'number',
+									get = function()
+										return self.db.profile.settings.fontsize
+									end,
+									set = function(value)
+										self.db.profile.settings.fontsize = value
+										self:UpdateAllFonts()
+									end,
+									min = 8,
+									max = 32,
+									step = 1,
+								},
+							},
+						},			
+						locked = {
+							name = L["Locked"],
+							desc = L["Make it so the frames cannot be moved"],
+							type = 'boolean',
+							get = function()
+								return self.db.profile.settings.locked
+							end,
+							set = function(value)
+								self.db.profile.settings.locked = value
+							end,
 						},
-						get = function()
-							local strata = self.db.profile.settings.strata
-							if strata == "BACKGROUND" then
-								return L["Background"]
-							elseif strata == "LOW" then
-								return L["Low"]
-							elseif strata == "MEDIUM" then
-								return L["Medium"]
-							elseif strata == "HIGH" then
-								return L["High"]
-							elseif strata == "DIALOG" then
-								return L["Dialog"]
-							elseif strata == "TOOLTIP" then
-								return L["Tooltip"]
-							else
-								return strata
-							end
-						end,
-						set = function(value)
-							local strata = "MEDIUM"
-							if value == L["Background"] then
-								strata = "BACKGROUND"
-							elseif value == L["Low"] then
-								strata = "LOW"
-							elseif value == L["Medium"] then
-								strata = "MEDIUM"
-							elseif value == L["High"] then
-								strata = "HIGH"
-							elseif value == L["Dialog"] then
-								strata = "DIALOG"
-							elseif value == L["Tooltip"] then
-								strata = "TOOLTIP"
-							end
-							self.db.profile.settings.strata = strata
-							PitBull:UpdateAllFrameStratas()
-						end,
-						disabled = InCombatLockdown,
-					},
-					clamped = {
-						name = L["Clamp frames to screen"],
-						desc = L["Make it so that frames cannot be dragged off-screen."],
-						type = 'boolean',
-						get = "AreUnitFramesClampedToScreen",
-						set = "ToggleUnitFramesClampedToScreen",
-						handler = self,
-						disabled = InCombatLockdown,
-					},
-					hideTooltipInCombat = {
-						name = L["Hide tooltips in combat"],
-						desc = L["Hides the unit frame tooltips while the player is in combat."],
-						type = 'boolean',
-						get = function()
-							return self.db.profile.settings.hideTooltipInCombat
-						end,
-						set = function(value)
-							self.db.profile.settings.hideTooltipInCombat = value
-						end,
-					},
-					showEliteBorder = {
-						name = L["Show colored border on elite or rare unit"],
-						desc = L["Show a border specifically colored for an elite or rare unit, otherwise use the standard border."],
-						type = 'boolean',
-						get = function()
-							return self.db.profile.settings.showEliteBorder
-						end,
-						set = function(value)
-							self.db.profile.settings.showEliteBorder = value
-							self:UpdateAllBackdropsAndBorders(true)
-						end,
-					},
-					colors = {
-						name = L["Colors"],
-						desc = L["Colors"],
-						type = 'group',
-						args = {
-							power = {
-								name = L["Power"],
-								desc = L["Power"],
-								type = 'group',
-								child_get = colorGet,
-								child_set = colorSet,
-								child_type = 'color',
-								args = {
-									rage = {
-										name = L["Rage"],
-										desc = L["Rage"],
-										passValue = 'rage',
-									},
-									mana = {
-										name = L["Mana"],
-										desc = L["Mana"],
-										passValue = 'mana',
-									},
-									focus = {
-										name = L["Focus(Pet)"],
-										desc = L["Focus(Pet)"],
-										passValue = 'focus',
-									},
-									energy = {
-										name = L["Energy"],
-										desc = L["Energy"],
-										passValue = 'energy',
-									},
-								}
+						strata = {
+							name = L["Frame Strata"],
+							desc = L["Choose the layer the unit frames are located on."],
+							type = 'text',
+							validate = {
+								L["Background"],
+								L["Low"],
+								L["Medium"],
+								L["High"],
+								L["Dialog"],
+								L["Tooltip"],
 							},
-							class = {
-								name = L["Classes"],
-								desc = L["Classes"],
-								type = 'group',
-								child_get = colorGet,
-								child_set = colorSet,
-								child_type = 'color',
-								args = {
-									WARLOCK = {
-										name = L["Warlock"],
-										desc = L["Warlock"],
-										passValue = 'WARLOCK',
-									},
-									PRIEST = {
-										name = L["Priest"],
-										desc = L["Priest"],
-										passValue = 'PRIEST',
-									},
-									WARRIOR = {
-										name = L["Warrior"],
-										desc = L["Warrior"],
-										passValue = 'WARRIOR',
-									},
-									PALADIN = {
-										name = L["Paladin"],
-										desc = L["Paladin"],
-										passValue = 'PALADIN',
-									},
-									SHAMAN = {
-										name = L["Shaman"],
-										desc = L["Shaman"],
-										passValue = 'SHAMAN',
-									},
-									MAGE = {
-										name = L["Mage"],
-										desc = L["Mage"],
-										passValue = 'MAGE',
-									},
-									DRUID = {
-										name = L["Druid"],
-										desc = L["Druid"],
-										passValue = 'DRUID',
-									},
-									ROGUE = {
-										name = L["Rogue"],
-										desc = L["Rogue"],
-										passValue = 'ROGUE',
-									},
-									HUNTER = {
-										name = L["Hunter"],
-										desc = L["Hunter"],
-										passValue = 'HUNTER',
-									},
-								}
-							},
-							reaction = {
-								name = L["Reaction"],
-								desc = L["Reaction"],
-								type = 'group',
-								child_get = colorGet,
-								child_set = colorSet,
-								child_type = 'color',
-								args = {
-									hostile = {
-										color = 90,
-										name = L["Hostile"],
-										desc = L["Hostile"],
-										passValue = 'hostile',
-									},
-									neutral = {
-										color = 91,
-										name = L["Neutral"],
-										desc = L["Neutral"],
-										passValue = 'neutral',
-									},
-									friendly = {
-										color = 92,
-										name = L["Friendly"],
-										desc = L["Friendly"],
-										passValue = 'friendly',
-									},
-									civilian = {
-										color = 93,
-										name = L["Civilian"],
-										desc = L["Civilian"],
-										passValue = 'civilian',
-									},
-								}
-							},
-							petHappiness = {
-								name = L["Pet happiness"],
-								desc = L["Pet happiness"],
-								type = 'group',
-								child_get = colorGet,
-								child_set = colorSet,
-								child_type = 'color',
-								args = {
-									petHappy = {
-										order = 90,
-										name = L["Happy"],
-										desc = L["Happy"],
-										passValue = 'petHappy',
-									},
-									petNeutral = {
-										order = 91,
-										name = L["Neutral(Pet)"],
-										desc = L["Neutral(Pet)"],
-										passValue = 'petNeutral',
-									},
-									petAngry = {
-										order = 92,
-										name = L["Angry"],
-										desc = L["Angry"],
-										passValue = 'petAngry',
-									},
-								}
-							},
-							health = {
-								name = L["Health gradient"],
-								desc = L["Health gradient"],
-								type = 'group',
-								child_get = colorGet,
-								child_set = colorSet,
-								child_type = 'color',
-								args = {
-									minHP = {
-										order = 90,
-										name = L["No health"],
-										desc = L["No health"],
-										passValue = 'minHP',
-									},
-									midHP = {
-										order = 91,
-										name = L["50% health"],
-										desc = L["50% health"],
-										passValue = 'midHP',
-									},
-									maxHP = {
-										order = 92,
-										name = L["Maximum health"],
-										desc = L["Maximum health"],
-										passValue = 'maxHP',
+							get = function()
+								local strata = self.db.profile.settings.strata
+								if strata == "BACKGROUND" then
+									return L["Background"]
+								elseif strata == "LOW" then
+									return L["Low"]
+								elseif strata == "MEDIUM" then
+									return L["Medium"]
+								elseif strata == "HIGH" then
+									return L["High"]
+								elseif strata == "DIALOG" then
+									return L["Dialog"]
+								elseif strata == "TOOLTIP" then
+									return L["Tooltip"]
+								else
+									return strata
+								end
+							end,
+							set = function(value)
+								local strata = "MEDIUM"
+								if value == L["Background"] then
+									strata = "BACKGROUND"
+								elseif value == L["Low"] then
+									strata = "LOW"
+								elseif value == L["Medium"] then
+									strata = "MEDIUM"
+								elseif value == L["High"] then
+									strata = "HIGH"
+								elseif value == L["Dialog"] then
+									strata = "DIALOG"
+								elseif value == L["Tooltip"] then
+									strata = "TOOLTIP"
+								end
+								self.db.profile.settings.strata = strata
+								PitBull:UpdateAllFrameStratas()
+							end,
+							disabled = InCombatLockdown,
+						},
+						clamped = {
+							name = L["Clamp frames to screen"],
+							desc = L["Make it so that frames cannot be dragged off-screen."],
+							type = 'boolean',
+							get = "AreUnitFramesClampedToScreen",
+							set = "ToggleUnitFramesClampedToScreen",
+							handler = self,
+							disabled = InCombatLockdown,
+						},
+						hideTooltipInCombat = {
+							name = L["Hide tooltips in combat"],
+							desc = L["Hides the unit frame tooltips while the player is in combat."],
+							type = 'boolean',
+							get = function()
+								return self.db.profile.settings.hideTooltipInCombat
+							end,
+							set = function(value)
+								self.db.profile.settings.hideTooltipInCombat = value
+							end,
+						},
+						showEliteBorder = {
+							name = L["Show colored border on elite or rare unit"],
+							desc = L["Show a border specifically colored for an elite or rare unit, otherwise use the standard border."],
+							type = 'boolean',
+							get = function()
+								return self.db.profile.settings.showEliteBorder
+							end,
+							set = function(value)
+								self.db.profile.settings.showEliteBorder = value
+								self:UpdateAllBackdropsAndBorders(true)
+							end,
+						},
+						colors = {
+							name = L["Colors"],
+							desc = L["Colors"],
+							type = 'group',
+							args = {
+								power = {
+									name = L["Power"],
+									desc = L["Power"],
+									type = 'group',
+									child_get = colorGet,
+									child_set = colorSet,
+									child_type = 'color',
+									args = {
+										rage = {
+											name = L["Rage"],
+											desc = L["Rage"],
+											passValue = 'rage',
+										},
+										mana = {
+											name = L["Mana"],
+											desc = L["Mana"],
+											passValue = 'mana',
+										},
+										focus = {
+											name = L["Focus(Pet)"],
+											desc = L["Focus(Pet)"],
+											passValue = 'focus',
+										},
+										energy = {
+											name = L["Energy"],
+											desc = L["Energy"],
+											passValue = 'energy',
+										},
+										runicPower = WotLK and {
+											name = L["Runic Power"],
+											desc = L["Runic Power"],
+											passValue = 'runicPower',
+										} or nil
 									}
-								}
-							},
-							other = {
-								name = L["Other"],
-								desc = L["Other"],
-								type = 'group',
-								child_get = colorGet,
-								child_set = colorSet,
-								child_type = 'color',
-								args = {
-									dead = {
-										name = L["Dead or Ghost"],
-										desc = L["Dead or Ghost"],
-										passValue = 'dead',
-									},
-									disconnected = {
-										name = L["Disconnected"],
-										desc = L["Disconnected"],
-										passValue = 'disconnected',
-									},
-									inCombat = {
-										name = L["In combat"],
-										desc = L["In combat"],
-										passValue = 'inCombat',
-									},
-									resting = {
-										name = L["Resting"],
-										desc = L["Resting"],
-										passValue = 'resting',
-									},
-									tapped = {
-										name = L["Tapped"],
-										desc = L["Tapped"],
-										passValue = 'tapped',
-									},
-									unknown = {
-										name = L["Unknown"],
-										desc = L["Unknown"],
-										passValue = 'unknown',
-									},
-								}
-							},
-							frame = {
-								name = L["Frame colors"],
-								desc = L["Frame colors"],
-								type = 'group',
-								args = {
-									background = {
-										name = L["Background"],
-										desc = L["Background"],
-										type = 'color',
-										get = function()
-											return unpack(self.db.profile.settings.colors.frameBG)
-										end,
-										set = function(r, g, b, a)
-											local t = self.db.profile.settings.colors.frameBG
-											t[1] = r
-											t[2] = g
-											t[3] = b
-											t[4] = a
-											self:UpdateAllBackdropsAndBorders(true)
-										end,
-										hasAlpha = true,
-									},
-									border = {
-										name = L["Border"],
-										desc = L["Border"],
-										type = 'color',
-										get = function()
-											return unpack(self.db.profile.settings.colors.frameBorder)
-										end,
-										set = function(r, g, b, a)
-											local t = self.db.profile.settings.colors.frameBorder
-											t[1] = r
-											t[2] = g
-											t[3] = b
-											t[4] = a
-											self:UpdateAllBackdropsAndBorders(true)
-										end,
-										hasAlpha = true,
-									},
-									rare = {
-										name = L["Rare"],
-										desc = L["Rare"],
-										type = 'color',
-										get = function()
-											return unpack(self.db.profile.settings.colors.rare)
-										end,
-										set = function(r, g, b)
-											local t = self.db.profile.settings.colors.rare
-											t[1] = r
-											t[2] = g
-											t[3] = b
-											self:UpdateAllBackdropsAndBorders(true)
-										end,
-									},
-									elite = {
-										name = L["Elite"],
-										desc = L["Elite"],
-										type = 'color',
-										get = function()
-											return unpack(self.db.profile.settings.colors.elite)
-										end,
-										set = function(r, g, b)
-											local t = self.db.profile.settings.colors.elite
-											t[1] = r
-											t[2] = g
-											t[3] = b
-											self:UpdateAllBackdropsAndBorders(true)
-										end,
+								},
+								class = {
+									name = L["Classes"],
+									desc = L["Classes"],
+									type = 'group',
+									child_get = colorGet,
+									child_set = colorSet,
+									child_type = 'color',
+									args = {
+										WARLOCK = {
+											name = L["Warlock"],
+											desc = L["Warlock"],
+											passValue = 'WARLOCK',
+										},
+										PRIEST = {
+											name = L["Priest"],
+											desc = L["Priest"],
+											passValue = 'PRIEST',
+										},
+										WARRIOR = {
+											name = L["Warrior"],
+											desc = L["Warrior"],
+											passValue = 'WARRIOR',
+										},
+										PALADIN = {
+											name = L["Paladin"],
+											desc = L["Paladin"],
+											passValue = 'PALADIN',
+										},
+										SHAMAN = {
+											name = L["Shaman"],
+											desc = L["Shaman"],
+											passValue = 'SHAMAN',
+										},
+										MAGE = {
+											name = L["Mage"],
+											desc = L["Mage"],
+											passValue = 'MAGE',
+										},
+										DRUID = {
+											name = L["Druid"],
+											desc = L["Druid"],
+											passValue = 'DRUID',
+										},
+										ROGUE = {
+											name = L["Rogue"],
+											desc = L["Rogue"],
+											passValue = 'ROGUE',
+										},
+										HUNTER = {
+											name = L["Hunter"],
+											desc = L["Hunter"],
+											passValue = 'HUNTER',
+										},
+										DEATHKNIGHT = WotLK and {
+											name = L["Death Knight"],
+											desc = L["Death Knight"],
+											passValue = 'DEATHKNIGHT',
+										} or nil
+									}
+								},
+								reaction = {
+									name = L["Reaction"],
+									desc = L["Reaction"],
+									type = 'group',
+									child_get = colorGet,
+									child_set = colorSet,
+									child_type = 'color',
+									args = {
+										hostile = {
+											color = 90,
+											name = L["Hostile"],
+											desc = L["Hostile"],
+											passValue = 'hostile',
+										},
+										neutral = {
+											color = 91,
+											name = L["Neutral"],
+											desc = L["Neutral"],
+											passValue = 'neutral',
+										},
+										friendly = {
+											color = 92,
+											name = L["Friendly"],
+											desc = L["Friendly"],
+											passValue = 'friendly',
+										},
+										civilian = {
+											color = 93,
+											name = L["Civilian"],
+											desc = L["Civilian"],
+											passValue = 'civilian',
+										},
+									}
+								},
+								petHappiness = {
+									name = L["Pet happiness"],
+									desc = L["Pet happiness"],
+									type = 'group',
+									child_get = colorGet,
+									child_set = colorSet,
+									child_type = 'color',
+									args = {
+										petHappy = {
+											order = 90,
+											name = L["Happy"],
+											desc = L["Happy"],
+											passValue = 'petHappy',
+										},
+										petNeutral = {
+											order = 91,
+											name = L["Neutral(Pet)"],
+											desc = L["Neutral(Pet)"],
+											passValue = 'petNeutral',
+										},
+										petAngry = {
+											order = 92,
+											name = L["Angry"],
+											desc = L["Angry"],
+											passValue = 'petAngry',
+										},
+									}
+								},
+								health = {
+									name = L["Health gradient"],
+									desc = L["Health gradient"],
+									type = 'group',
+									child_get = colorGet,
+									child_set = colorSet,
+									child_type = 'color',
+									args = {
+										minHP = {
+											order = 90,
+											name = L["No health"],
+											desc = L["No health"],
+											passValue = 'minHP',
+										},
+										midHP = {
+											order = 91,
+											name = L["50% health"],
+											desc = L["50% health"],
+											passValue = 'midHP',
+										},
+										maxHP = {
+											order = 92,
+											name = L["Maximum health"],
+											desc = L["Maximum health"],
+											passValue = 'maxHP',
+										}
+									}
+								},
+								other = {
+									name = L["Other"],
+									desc = L["Other"],
+									type = 'group',
+									child_get = colorGet,
+									child_set = colorSet,
+									child_type = 'color',
+									args = {
+										dead = {
+											name = L["Dead or Ghost"],
+											desc = L["Dead or Ghost"],
+											passValue = 'dead',
+										},
+										disconnected = {
+											name = L["Disconnected"],
+											desc = L["Disconnected"],
+											passValue = 'disconnected',
+										},
+										inCombat = {
+											name = L["In combat"],
+											desc = L["In combat"],
+											passValue = 'inCombat',
+										},
+										resting = {
+											name = L["Resting"],
+											desc = L["Resting"],
+											passValue = 'resting',
+										},
+										tapped = {
+											name = L["Tapped"],
+											desc = L["Tapped"],
+											passValue = 'tapped',
+										},
+										unknown = {
+											name = L["Unknown"],
+											desc = L["Unknown"],
+											passValue = 'unknown',
+										},
+									}
+								},
+								frame = {
+									name = L["Frame colors"],
+									desc = L["Frame colors"],
+									type = 'group',
+									args = {
+										background = {
+											name = L["Background"],
+											desc = L["Background"],
+											type = 'color',
+											get = function()
+												return unpack(self.db.profile.settings.colors.frameBG)
+											end,
+											set = function(r, g, b, a)
+												local t = self.db.profile.settings.colors.frameBG
+												t[1] = r
+												t[2] = g
+												t[3] = b
+												t[4] = a
+												self:UpdateAllBackdropsAndBorders(true)
+											end,
+											hasAlpha = true,
+										},
+										border = {
+											name = L["Border"],
+											desc = L["Border"],
+											type = 'color',
+											get = function()
+												return unpack(self.db.profile.settings.colors.frameBorder)
+											end,
+											set = function(r, g, b, a)
+												local t = self.db.profile.settings.colors.frameBorder
+												t[1] = r
+												t[2] = g
+												t[3] = b
+												t[4] = a
+												self:UpdateAllBackdropsAndBorders(true)
+											end,
+											hasAlpha = true,
+										},
+										rare = {
+											name = L["Rare"],
+											desc = L["Rare"],
+											type = 'color',
+											get = function()
+												return unpack(self.db.profile.settings.colors.rare)
+											end,
+											set = function(r, g, b)
+												local t = self.db.profile.settings.colors.rare
+												t[1] = r
+												t[2] = g
+												t[3] = b
+												self:UpdateAllBackdropsAndBorders(true)
+											end,
+										},
+										elite = {
+											name = L["Elite"],
+											desc = L["Elite"],
+											type = 'color',
+											get = function()
+												return unpack(self.db.profile.settings.colors.elite)
+											end,
+											set = function(r, g, b)
+												local t = self.db.profile.settings.colors.elite
+												t[1] = r
+												t[2] = g
+												t[3] = b
+												self:UpdateAllBackdropsAndBorders(true)
+											end,
+										},
 									},
 								},
 							},
 						},
 					},
 				},
-			},
-		},
+			}
+			options.args = args
+			for path, data in pairs(globalSettings) do
+				local current = args.global.args
+				for i = 1, #path-1 do
+					local v = path[i]
+					current = current[v]
+				end
+				current[path[#path]] = data
+			end
+			for group in pairs(AddGroupToAceOptions_todo) do
+				PitBull:AddGroupToAceOptions(group)
+			end
+			for group in pairs(UpdateLayoutSettings_todo) do
+				PitBull:UpdateLayoutSettings(group)
+			end
+		
+			local nextCheck = 0
+			local allUnits_args; allUnits_args = {
+				other = {
+					type = 'group',
+					name = L["Other"],
+					desc = L["Other options."],
+					order = 50,
+					args = function()
+						allUnits_args.other = nil
+						args.allUnits.args = function()
+							if nextCheck <= GetTime() then
+								nextCheck = GetTime() + 5
+								for _, group in ipairs(orderedGroupMenus) do
+									recurseCheck(args[group].args, allUnits_args)
+								end
+							end
+							return allUnits_args
+						end
+						args.allUnits.args()
+						local RockConfig = Rock("LibRockConfig-1.0")
+						self:AddTimer(0, RockConfig.RefreshConfigMenu, RockConfig, self)
+						return {}
+					end
+				}
+			}
+			args.allUnits = {
+				name = L["All units"],
+				desc = L["Change settings for all units."],
+				type = 'group',
+				order = 49,
+				args = allUnits_args,
+			}
+			return "@cache", args
+		end
 	}
 	
-	local convertSingleToMultiple, recurseCheck
+	local convertSingleToMultiple
 	do
 		local function findPath(...)
-			local opt = self.options
+			local opt = options
 			for i = 1, select('#', ...) do
 				local args = opt.args
-				opt = args and args[select(i, ...)]
+				opt = type(args) == "table" and args[select(i, ...)]
 				if not opt then
 					return nil
 				end
@@ -1553,19 +2517,36 @@ do
 			return figureHandler(select2(1, n-1, ...))
 		end
 
-		local function figurePassValue(...)
-			local opt = findPath(...)
-			if opt.passValue then
-				return opt.passValue
+		local function figurePassValue(t, ...)
+			local i = 0
+			while true do
+				i = i + 1
+				local k = "passValue"
+				if i > 1 then
+					k = k .. i
+				end
+				for _ = 1, 1 do
+					local opt = findPath(...)
+					if opt[k] then
+						t[#t+1] = opt[k]
+						break
+					end
+					opt = findPath(select2(1, select('#', ...)-1, ...))
+					if not opt then
+						return
+					end
+					if opt["child_" .. k] then
+						t[#t+1] = opt["child_" .. k]
+						break
+					end
+					if i == 1 and opt.pass then
+						t[#t+1] = select(select('#', ...), ...)
+						break
+					end
+					return
+				end
 			end
-			opt = findPath(select2(1, select('#', ...)-1, ...))
-			if not opt then
-				return nil
-			end
-			if opt.pass then
-				return select(select('#', ...), ...)
-			end
-			return nil
+			return
 		end
 
 		local function figurePassFunc(funcName, ...)
@@ -1595,7 +2576,10 @@ do
 				else
 					func = opt[funcName]
 				end
-				t[#t+1] = figurePassValue(...)
+				if type(func) == "boolean" then
+					return func
+				end
+				figurePassValue(t, ...)
 				local value = func(unpack(t))
 				t = del(t)
 				if value then
@@ -1627,6 +2611,25 @@ do
 				end
 				return false
 			end
+			local function wrapFunction(kind)
+				return function()
+					for _, group in ipairs(orderedGroupMenus) do
+						local p = findPath(group, unpackPlus(path, k))
+						if p then
+							local value = p[kind]
+							if type(value) == "function" then
+								local t = newList()
+								figurePassValue(t, group, unpackPlus(path, k))
+								value = newList(value(unpack(t)))
+								t = del(t)
+								return unpackListAndDel(value)
+							end
+							return value
+						end
+					end
+					return nil
+				end
+			end
 			if v.type == 'boolean' then
 				local function get()
 					for _, group in ipairs(orderedGroupMenus) do
@@ -1640,7 +2643,7 @@ do
 									get = handler[get]
 									t[#t+1] = handler
 								end
-								t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+								figurePassValue(t, group, unpackPlus(path, k))
 								local value = get(unpack(t))
 								t = del(t)
 								if not value then
@@ -1664,7 +2667,7 @@ do
 										get = handler[get]
 										t[#t+1] = handler
 									end
-									t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+									figurePassValue(t, group, unpackPlus(path, k))
 									local old_value = get(unpack(t))
 									t = del(t)
 									if not value ~= not old_value then
@@ -1675,7 +2678,7 @@ do
 											set = handler[set]
 											t[#t+1] = handler
 										end
-										t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+										figurePassValue(t, group, unpackPlus(path, k))
 										t[#t+1] = value
 										set(unpack(t))
 										t = del(t)
@@ -1687,8 +2690,8 @@ do
 				end
 				return {
 					type = 'boolean',
-					name = v.name,
-					desc = v.desc,
+					name = wrapFunction("name"),
+					desc = wrapFunction("desc"),
 					get = get,
 					set = set,
 					order = v.order,
@@ -1715,7 +2718,7 @@ do
 									get = handler[get]
 									t[#t+1] = handler
 								end
-								t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+								figurePassValue(t, group, unpackPlus(path, k))
 								for i = 1, select('#', ...) do
 									t[#t+1] = select(i, ...)
 								end
@@ -1739,7 +2742,7 @@ do
 										get = handler[get]
 										t[#t+1] = handler
 									end
-									t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+									figurePassValue(t, group, unpackPlus(path, k))
 									for i = 1, select('#', ...)-1 do
 										t[#t+1] = select(i, ...)
 									end
@@ -1753,7 +2756,7 @@ do
 											set = handler[set]
 											t[#t+1] = handler
 										end
-										t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+										figurePassValue(t, group, unpackPlus(path, k))
 										for i = 1, select('#', ...) do
 											t[#t+1] = select(i, ...)
 										end
@@ -1765,20 +2768,55 @@ do
 						end
 					end
 				end
+				local syntaxHighlighter, multiline
+				if v.type == 'string' then
+					function syntaxHighlighter(...)
+						for _, group in ipairs(orderedGroupMenus) do
+							if not figureHiddenOrDisabled(group, unpackPlus(path, k)) then
+								local opt = findPath(group, unpackPlus(path, k))
+								if opt then
+									local syntaxHighlighter = figurePassFunc('syntaxHighlighter', group, unpackPlus(path, k))
+									if syntaxHighlighter then
+										local t = newList()
+										if type(syntaxHighlighter) == "string" then
+											local handler = figureHandler(group, unpackPlus(path, k))
+											syntaxHighlighter = handler[syntaxHighlighter]
+											t[#t+1] = handler
+										end
+										figurePassValue(t, group, unpackPlus(path, k))
+										for i = 1, select('#', ...) do
+											t[#t+1] = select(i, ...)
+										end
+										local value = syntaxHighlighter(unpack(t))
+										t = del(t)
+										return value
+									end
+								end
+							end
+						end
+					end
+					function multiline()
+						for _, group in ipairs(orderedGroupMenus) do
+							return figureSimpleFunc('multiline', group, unpackPlus(path, k))
+						end
+					end
+				end
 				return {
 					type = v.type,
-					name = v.name,
-					desc = v.desc,
+					name = wrapFunction("name"),
+					desc = wrapFunction("desc"),
 					input = v.input,
 					validate = v.validate,
 					validateDesc = v.validateDesc,
-					choices = v.choices,
-					choiceDescs = v.choiceDescs,
-					choiceFonts = v.choiceFonts,
-					choiceIcons = v.choiceIcons,
-					choiceIconSizes = v.choiceIconSizes,
+					choices = wrapFunction("choices"),
+					choiceDescs = wrapFunction("choiceDescs"),
+					choiceFonts = wrapFunction("choiceFonts"),
+					choiceIcons = wrapFunction("choiceIcons"),
+					choiceIconSizes = wrapFunction("choiceIconSizes"),
 					keybindingOnly = v.keybindingOnly,
 					keybindingExcept = v.keybindingExcept,
+					syntaxHighlighter = syntaxHighlighter,
+					multiline = multiline,
 					usage = v.usage,
 					error = v.error,
 					message = v.message,
@@ -1804,7 +2842,7 @@ do
 									get = handler[get]
 									t[#t+1] = handler
 								end
-								t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+								figurePassValue(t, group, unpackPlus(path, k))
 								for i = 1, select('#', ...) do
 									t[#t+1] = select(i, ...)
 								end
@@ -1829,7 +2867,7 @@ do
 										get = handler[get]
 										t[#t+1] = handler
 									end
-									t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+									figurePassValue(t, group, unpackPlus(path, k))
 									for i = 1, select('#', ...)-1 do
 										t[#t+1] = select(i, ...)
 									end
@@ -1843,7 +2881,7 @@ do
 											set = handler[set]
 											t[#t+1] = handler
 										end
-										t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+										figurePassValue(t, group, unpackPlus(path, k))
 										for i = 1, select('#', ...) do
 											t[#t+1] = select(i, ...)
 										end
@@ -1859,8 +2897,8 @@ do
 				end
 				return {
 					type = 'number',
-					name = v.name,
-					desc = v.desc,
+					name = wrapFunction("name"),
+					desc = wrapFunction("desc"),
 					order = v.order,
 					min = v.min,
 					max = v.max,
@@ -1893,7 +2931,7 @@ do
 									get = handler[get]
 									t[#t+1] = handler
 								end
-								t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+								figurePassValue(t, group, unpackPlus(path, k))
 								for i = 1, select('#', ...) do
 									t[#t+1] = select(i, ...)
 								end
@@ -1917,7 +2955,7 @@ do
 										set = handler[set]
 										t[#t+1] = handler
 									end
-									t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+									figurePassValue(t, group, unpackPlus(path, k))
 									for i = 1, select('#', ...) do
 										t[#t+1] = select(i, ...)
 									end
@@ -1930,8 +2968,8 @@ do
 				end
 				return {
 					type = 'color',
-					name = v.name,
-					desc = v.desc,
+					name = wrapFunction("name"),
+					desc = wrapFunction("desc"),
 					order = v.order,
 					hasAlpha = v.hasAlpha,
 					colorType = v.colorType,
@@ -1945,11 +2983,44 @@ do
 					hidden = hidden,
 				}
 			elseif v.type == "group" then
-				local t = {
+				local t; t = {
 					type = 'group',
-					name = v.name,
-					desc = v.desc,
-					args = {},
+					groupType = v.groupType,
+					name = wrapFunction("name"),
+					desc = wrapFunction("desc"),
+					args = function()
+						local t_args = {}
+						local good = true
+						for _, group in ipairs(orderedGroupMenus) do
+							local opt = findPath(group, unpackPlus(path, k))
+							local args = opt and opt.args
+							if args then
+								if type(args) == "table" then
+									for l, u in pairs(args) do
+										if not t_args[l] then
+											t_args[l] = convertSingleToMultiple(l, u, unpackPlus(path, k))
+										end
+									end
+--[[								elseif type(args) == "function" then
+									good = false
+									local t = newList()
+									figurePassValue(t, group, unpackPlus(path, k))
+									args = args(unpack(t))
+									t = del(t)
+									
+									for l, u in pairs(args) do
+										if not t_args[l] then
+											t_args[l] = convertSingleToMultiple(l, u, unpackPlus(path, k))
+										end
+									end]]
+								end
+							end
+						end
+						if good then
+							t.args = t_args
+						end
+						return t_args
+					end,
 					icon = v.icon,
 					iconWidth = v.iconWidth,
 					iconHeight = v.iconHeight,
@@ -1957,17 +3028,6 @@ do
 					disabled = disabled,
 					hidden = hidden,
 				}
-				for _, group in ipairs(orderedGroupMenus) do
-					local opt = findPath(group, unpackPlus(path, k))
-					local args = opt and opt.args
-					if args then
-						for l, u in pairs(args) do
-							if not t.args[l] then
-								t.args[l] = convertSingleToMultiple(l, u, unpackPlus(path, k))
-							end
-						end
-					end
-				end
 				return t
 			else -- execute	
 				local function func(...)
@@ -1983,7 +3043,7 @@ do
 										func = handler[func]
 										t[#t+1] = handler
 									end
-									t[#t+1] = figurePassValue(group, unpackPlus(path, k))
+									figurePassValue(t, group, unpackPlus(path, k))
 									for i = 1, select('#', ...) do
 										t[#t+1] = select(i, ...)
 									end
@@ -1997,8 +3057,8 @@ do
 				return {
 					type = 'execute',
 					buttonText = v.buttonText,
-					name = v.name,
-					desc = v.desc,
+					name = wrapFunction("name"),
+					desc = wrapFunction("desc"),
 					func = func,
 					icon = v.icon,
 					iconWidth = v.iconWidth,
@@ -2012,6 +3072,9 @@ do
 		end
 
 		function recurseCheck(stealArgs, args, ...)
+			if type(stealArgs) ~= "table" or type(args) ~= "table" then
+				return
+			end
 			for k,v in pairs(stealArgs) do
 				if not args[k] and k ~= "disable" then
 					args[k] = convertSingleToMultiple(k, v, ...)
@@ -2019,6 +3082,9 @@ do
 				if args[k] then
 					if args[k].type == "group" then
 						local t = newList(...)
+						if type(stealArgs[k].args) == "function" then
+							stealArgs[k].args(stealArgs[k].passValue)
+						end
 						recurseCheck(stealArgs[k].args, args[k].args, unpackPlus(t, k))
 						t = del(t)
 					elseif args[k].desc then
@@ -2028,11 +3094,17 @@ do
 						end
 						local t = newList()
 						for _, group in ipairs(orderedGroupMenus) do
-							local a = self.options.args[group]
+							local a = options.args[group]
 							for i = 1, select('#', ...) do
-								a = a and a.args and a.args[select(i, ...)]
+								if a and type(a.args) == "function" then
+									a.args(a.passValue)
+								end
+								a = a and type(a.args) == "table" and a.args[select(i, ...)]
 							end
-							a = a and a.args and a.args[k]
+							if a and type(a.args) == "function" then
+								a.args(a.passValue)
+							end
+							a = a and type(a.args) == "table" and a.args[k]
 							if a then
 								t[#t+1] = "|cffffffff"
 								t[#t+1] = GroupToLocale[group]
@@ -2042,15 +3114,17 @@ do
 						end
 						if #t == #orderedGroupMenus*4 then
 							t = del(t)
-							t = newList("|cffffffffEverything|r", '')
+							t = newList(L["|cffffffffEverything|r"], '')
 						end
 						if t[1] then
 							t[#t] = nil
 							local s = table.concat(t)
 							if desc then
-								args[k].desc = desc .. "\n\nAffects: " .. s
+								if type(desc) == "string" then
+									args[k].desc = desc .. L["\n\nAffects: "] .. s
+								end
 							else
-								args[k].desc = "Affects: " .. s
+								args[k].desc = L["Affects: "] .. s
 							end
 						else
 							args[k].desc = v.desc or " "
@@ -2064,31 +3138,6 @@ do
 			end
 		end
 	end
-	
-	local allUnits_args = {}
-	local nextCheck = 0
-	PitBull.options.args.allUnits = {
-		name = L["All units"],
-		desc = L["Change settings for all units."],
-		type = 'group',
-		order = 49,
-		args = function()
-			if nextCheck <= GetTime() then
-				nextCheck = GetTime() + 5
-				for _, group in ipairs(orderedGroupMenus) do
-					recurseCheck(self.options.args[group].args, allUnits_args)
-				end
-			end
-			return allUnits_args
---				return {
---					header = {
---						order = 1,
---						name = L["All units"],
---						type = 'header',
---					},
---				},
-		end
-	}
 end
 --PitBull.OnMenuRequest = PitBull.options
 
@@ -2114,8 +3163,8 @@ local function InitializeExternalModules()
 					local defaultState = tonumber(GetAddOnMetadata(name, "X-PitBull-DefaultState"))
 					self:SetModuleDefaultState(modName, defaultState ~= 0)
 					if self:IsModuleActive(modName, true) then
-						local _,_,_,_,loadable = GetAddOnInfo(i)
-						if loadable then
+						local _,_,_,enabled,loadable = GetAddOnInfo(i)
+						if enabled and loadable then
 							LoadAddOn(i)
 						end
 					end
@@ -2209,11 +3258,11 @@ function PitBull:OnEnable(first)
 	self:AddEventListener("LibRockEvent-1.0", "FullyInitialized")
 	self:AddEventListener("PLAYER_LEAVING_WORLD")
 	self:AddEventListener("PLAYER_ENTERING_WORLD")
-	self:AddEventListener("PLAYER_PET_CHANGED")
-	SharedMedia:RegisterCallback(self.SharedMedia_Registered)
+	SharedMedia.RegisterCallback(self, "LibSharedMedia_Registered")
 	self:AddEventListener("PLAYER_REGEN_ENABLED")
 	self:AddEventListener("PLAYER_REGEN_DISABLED")
 	self:AddEventListener("UNIT_HAPPINESS")
+	self:AddEventListener("UNIT_CLASSIFICATION_CHANGED")
 	self:AddEventListener("PLAYER_ALIVE")
 	self:AddEventListener("PLAYER_UNGHOST", "PLAYER_ALIVE")
 	self:AddEventListener("PLAYER_DEAD", "PLAYER_ALIVE")
@@ -2224,7 +3273,9 @@ function PitBull:OnEnable(first)
 	
 	self:AddRepeatingTimer(0.15, "UpdateWackyFrames")
 	
-	DogTag:SetColorConstantTable(self.colorConstants)
+--	if not WoW24 then
+--		DogTag:SetColorConstantTable(self.colorConstants)
+--	end
 end
 
 function PitBull:FullyInitialized()
@@ -2275,6 +3326,24 @@ local function getWidth(group)
 end
 local function getHeight(group)
 	return self.db.profile.groups[group].height
+end
+local function getMaxPositionX()
+	return math.ceil(GetScreenWidth()/20) * 10
+end
+local function getMinPositionX()
+	return -math.ceil(GetScreenWidth()/20) * 10
+end
+local function getMaxPositionY()
+	return math.ceil(GetScreenHeight()/20) * 10
+end
+local function getMinPositionY()
+	return -math.ceil(GetScreenHeight()/20) * 10
+end
+local function getPositionX(group)
+	return self.db.profile.units[group].x
+end
+local function getPositionY(group)
+	return self.db.profile.units[group].y
 end
 local function getBorder(group)
 	return self.db.profile.groups[group].border
@@ -2327,7 +3396,10 @@ local function addModuleOptionsMethod(group, module, method)
 	
 	local subgroup = figureSubgroup(name)
 	
-	local options = PitBull.options.args[group].args[subgroup].args
+	local options = options.args[group].args[subgroup].args
+	if type(options) == "function" then
+		return
+	end
 	if type(method) == "function" then
 		options[name] = method(group)
 	else
@@ -2374,7 +3446,7 @@ local function addModuleOptionsMethod(group, module, method)
 end
 
 local function mySort(alpha, bravo)
-	return PitBull.options.args[alpha].order < PitBull.options.args[bravo].order
+	return options.args[alpha].order < options.args[bravo].order
 end
 
 local validateLayoutName
@@ -2383,10 +3455,13 @@ local layoutNames
 local groupCopyFromValidate = {}
 
 function PitBull:AddGroupToAceOptions(group)
-	if self.options.args[group] then
+	AddGroupToAceOptions_todo[group] = true
+	if type(options.args) ~= "table" then
 		return
 	end
-	groupMenus[group] = true
+	if options.args[group] then
+		return
+	end
 	groupCopyFromValidate[group] = GroupToLocale[group]
 	local order
 	if group:find("^player") then
@@ -2414,10 +3489,13 @@ function PitBull:AddGroupToAceOptions(group)
 	else
 		order = 61 + group:len()/1000
 	end
-	self.options.args[group] = {
+	
+	local cluster = group:match("^party") or group:match("^raid") or group:match("^maintank") or group:match("^mainassist")
+	
+	options.args[group] = {
 		order = order,
 		name = GroupToLocale[group],
-		desc = ("Options for %s."):format(GroupToLocale[group]),
+		desc = (L["Options for %s."]):format(GroupToLocale[group]),
 		type = "group",
 		args = {
 			header = {
@@ -2447,9 +3525,22 @@ function PitBull:AddGroupToAceOptions(group)
 				type = 'group',
 				name = L["Icons"],
 				desc = L["Options for icons."],
-				args = {
+				args = function()
+					local args = {}
+					options.args[group].args.icons.args = args
 					
-				},
+					for module, method in pairs(moduleOptionsMethods) do
+						addModuleOptionsMethod(group, module, method)
+					end
+					
+					if UpdateLayoutSettings_todo[group] then
+						PitBull:UpdateLayoutSettings(group)
+					end
+					
+					local RockConfig = Rock("LibRockConfig-1.0")
+					self:AddTimer(0, RockConfig.RefreshConfigMenu, RockConfig, self)
+					return args
+				end,
 				order = 50
 			},
 			other = {
@@ -2496,7 +3587,7 @@ function PitBull:AddGroupToAceOptions(group)
 								name = L["Height"],
 								desc = L["Height of the unit frame."],
 								type = 'number',
-								min = 10,
+								min = 5,
 								max = 400,
 								step = 1,
 								bigStep = 5,
@@ -2509,6 +3600,42 @@ function PitBull:AddGroupToAceOptions(group)
 						},
 						disabled = InCombatLockdown,
 					},
+					position = not cluster and {
+						name = L["Position"],
+						desc = L["Options for changing the position of this unit type."],
+						type = 'group',
+						args = {
+							x = {
+								name = L["Horizontal"],
+								desc = L["Horizontal position on the x-axis."],
+								type = 'number',
+								min = getMinPositionX,
+								max = getMaxPositionX,
+								step = 1,
+								bigStep = 5,
+								get = getPositionX,
+								set = "ChangePositionX",
+								passValue = group,
+								handler = PitBull,
+								disabled = InCombatLockdown,
+							},
+							y = {
+								name = L["Vertical"],
+								desc = L["Vertical position on the y-axis."],
+								type = 'number',
+								min = getMinPositionY,
+								max = getMaxPositionY,
+								step = 1,
+								bigStep = 5,
+								get = getPositionY,
+								set = "ChangePositionY",
+								passValue = group,
+								handler = PitBull,
+								disabled = InCombatLockdown,
+							},
+						},
+						disabled = InCombatLockdown,
+					} or nil,
 					layout = {
 						name = L["Layout"],
 						desc = L["Layout options for this unit type"],
@@ -2574,6 +3701,14 @@ function PitBull:AddGroupToAceOptions(group)
 		},
 	}
 	
+	for k in pairs(groupMenus) do
+		groupMenus[k] = nil
+	end
+	for k in pairs(AddGroupToAceOptions_todo) do
+		if options.args[k] then
+			groupMenus[k] = true
+		end
+	end
 	for i = 1, #orderedGroupMenus do
 		orderedGroupMenus[i] = nil
 	end
@@ -2583,7 +3718,7 @@ function PitBull:AddGroupToAceOptions(group)
 	table.sort(orderedGroupMenus, mySort)
 	
 	if group:find("^party") or group:find("^raid") or group:find("^maintank") or group:find("^mainassist") then
-		self.options.args[group].args.other.args.grouping = {
+		options.args[group].args.other.args.grouping = {
 			name = L["Grouping"],
 			desc = L["Options for how to position the units in this group relative to eachother."],
 			type = 'group',
@@ -2603,10 +3738,10 @@ function PitBull:AddGroupToAceOptions(group)
 					desc = L["What direction to group these units in."],
 					type = 'choice',
 					choices = {
-						left = "Left",
-						right = "Right",
-						up = "Up",
-						down = "Down",
+						left = L["Left"],
+						right = L["Right"],
+						up = L["Up"],
+						down = L["Down"],
 					},
 					order = 1,
 					get = getDirection,
@@ -2653,7 +3788,7 @@ function PitBull:AddGroupToAceOptions(group)
 
 
 	if group == "party" then
-		self.options.args[group].args.other.args.hidePartyInRaid = {
+		options.args[group].args.other.args.hidePartyInRaid = {
 			name = L["Hide party frames in raid"],
 			desc = L["Hides the party frames while the player is in a raid group."],
 			type = 'boolean',
@@ -2664,7 +3799,7 @@ function PitBull:AddGroupToAceOptions(group)
 			handler = self,
 			disabled = InCombatLockdown,
 		}
-		self.options.args[group].args.other.args.showPlayerInParty = {
+		options.args[group].args.other.args.showPlayerInParty = {
 			name = L["Show player in party"],
 			desc = L["Shows the player in the party frames while the player is in a party."],
 			type = 'boolean',
@@ -2677,7 +3812,7 @@ function PitBull:AddGroupToAceOptions(group)
 		}
 	end
 	if group == "raid" or group == "party" then
-		self.options.args[group].args.other.args.show5manAsParty = {
+		options.args[group].args.other.args.show5manAsParty = {
 			name = L["Show 5-man raid as a party"],
 			desc = L["Show a 5-man, 1-party raid as a party instead of a raid. Could be useful in arena battles, for example."],
 			type = 'boolean',
@@ -2690,7 +3825,7 @@ function PitBull:AddGroupToAceOptions(group)
 		}
 	end
 	if group == "raid" or group == "party" or group == "maintank" or group == "mainassist" then
-		self.options.args[group].args.other.args.grouping.args.nameSort = {
+		options.args[group].args.other.args.grouping.args.nameSort = {
 			name = L["Sort by name"],
 			desc = L["Whether to sort the units in this group by name or index."],
 			type = 'boolean',
@@ -2705,7 +3840,7 @@ function PitBull:AddGroupToAceOptions(group)
 	end
 	
 	if group == "raid" then
-		self.options.args[group].args.other.args.grouping.args.groupStyle = {
+		options.args[group].args.other.args.grouping.args.groupStyle = {
 			name = L["Style"],
 			desc = L["Style to group by"],
 			type = 'choice',
@@ -2730,7 +3865,7 @@ function PitBull:AddGroupToAceOptions(group)
 			disabled = InCombatLockdown,
 			handler = PitBull,
 		}
-		self.options.args[group].args.other.args.grouping.args.groupFilter = {
+		options.args[group].args.other.args.grouping.args.groupFilter = {
 			name = L["Group Filter"],
 			desc = L["Set which groups to filter by."],
 			type = 'multichoice',
@@ -2750,7 +3885,7 @@ function PitBull:AddGroupToAceOptions(group)
 			},
 			handler = PitBull,
 		}
-		self.options.args[group].args.other.args.grouping.args.classFilter = {
+		options.args[group].args.other.args.grouping.args.classFilter = {
 			name = L["Class Filter"],
 			desc = L["Set which classes to filter by."],
 			type = 'multichoice',
@@ -2768,10 +3903,11 @@ function PitBull:AddGroupToAceOptions(group)
 				SHAMAN = L["Shaman"],
 				PALADIN = L["Paladin"],
 				DRUID = L["Druid"],
+				DEATHKNIGHT = WotLK and L["Death Knight"] or nil,
 			},
 			handler = PitBull,
 		}
-		self.options.args[group].args.other.args.showInBG = {
+		options.args[group].args.other.args.showInBG = {
 			name = L["Show in Battleground"],
 			desc = L["Show the raid frames in the given battlegrounds, otherwise only showing the party frames."],
 			type = 'multichoice',
@@ -2790,7 +3926,7 @@ function PitBull:AddGroupToAceOptions(group)
 	end
 	
 	if group:find("^party") then
-		self.options.args[group].args.other.args.grouping.args.square = {
+		options.args[group].args.other.args.grouping.args.square = {
 			name = L["Square"],
 			desc = L["Square Layout"],
 			type = 'boolean',
@@ -2803,8 +3939,8 @@ function PitBull:AddGroupToAceOptions(group)
 			handler = PitBull,
 		}
 	end
---	if not self.options.args.sep then
---		self.options.args.sep = {
+--	if not options.args.sep then
+--		options.args.sep = {
 --			order = 60,
 --			type = 'header'
 --		}
@@ -2812,8 +3948,8 @@ function PitBull:AddGroupToAceOptions(group)
 
 	if getHidden(group) then
 		-- Hide the group and create a new toggle in disabledUnits
-		self.options.args[group].hidden = true
-		self.options.args.disabledUnits.args[group] = {
+		options.args[group].hidden = true
+		options.args.disabledUnits.args[group] = {
 			type = 'execute',
 			name = GroupToLocale[group],
 			desc = L["Enable %s."]:format(GroupToLocale[group]),
@@ -2821,10 +3957,6 @@ function PitBull:AddGroupToAceOptions(group)
 			func = enableDisabledUnit,
 			passValue = group,
 		}
-	end
-	
-	for module, method in pairs(moduleOptionsMethods) do
-		addModuleOptionsMethod(group, module, method)
 	end
 end
 
@@ -2975,12 +4107,17 @@ function ScheduleDestroyCluster(cluster)
 		PitBull:DestroyUnitCluster(cluster)
 		return
 	end
+	local made = false
 	if not clustersToCreateOrDestroy then
 		clustersToCreateOrDestroy = newList()
-		PitBull:ScheduleLeaveCombatAction(handleCreateDestroyClusters)
+		made = true
 	end
 	
 	clustersToCreateOrDestroy[cluster] = 'destroy'
+	
+	if made then
+		PitBull:ScheduleLeaveCombatAction(handleCreateDestroyClusters)
+	end
 end
 
 local function ScheduleCreateCluster(cluster)
@@ -3341,28 +4478,37 @@ function PitBull:PARTY_MEMBERS_CHANGED()
 	
 	self:_UpdateLayouts()
 end
-PitBull.UNIT_PET = PitBull.PARTY_MEMBERS_CHANGED
+
+function PitBull:UNIT_PET(ns, event, unit)
+	if unit == "player" then
+		for frame in self:IterateUnitFramesForUnit("pet") do
+			if not self.db.profile.groups['pet'].hidden and (configMode or UnitExists('pet')) then
+				if frame:IsShown() then
+					self:PopulateUnitFrame(frame, true)
+				end
+			elseif frames[frame] then
+				self:ClearUnitFrame(frame)
+			end
+		end
+	else
+		self:PARTY_MEMBERS_CHANGED()
+	end
+end
 
 function PitBull:SecureGroupHeader_Update(this)
 	framesByUnit_needsUpdate = true
 	swapAroundRaidFrames(this)
 end
 
-function PitBull:PLAYER_PET_CHANGED()
-	for frame in self:IterateUnitFramesForUnit("pet") do
-		if not self.db.profile.groups['pet'].hidden and (configMode or UnitExists('pet')) then
-			if frame:IsShown() then
-				self:PopulateUnitFrame(frame, true)
-			end
-		elseif frames[frame] then
-			self:ClearUnitFrame(frame)
-		end
-	end
-end
-
 function PitBull:UNIT_HAPPINESS()
 	for frame in self:IterateUnitFramesForUnit("pet") do
 		self:UpdateFrame(frame)
+	end
+end
+
+function PitBull:UNIT_CLASSIFICATION_CHANGED(ns, event, unit)
+	for frame in self:IterateUnitFramesForUnit(unit) do
+		self:UpdateBackdropAndBorder(frame)
 	end
 end
 
@@ -3373,6 +4519,7 @@ function PitBull:PLAYER_ALIVE()
 end
 
 function PitBull:oRA_MainTankUpdate()
+	print('oRA_MainTankUpdate')
 	for cluster in pairs(clusters) do
 		if cluster:find("^raidMAINTANK") then
 			self:ScheduleLeaveCombatAction(self, 'DestroyUnitCluster', cluster)
@@ -3401,12 +4548,14 @@ function PitBull:UpdateWackyFrames()
 	for frame in pairs(wackyFrames) do
 		local unit = frame:GetUnit()
 		if configMode or UnitExists(unit) then
-			self:UpdateFrame(frame)
+			self:UpdateFrame(frame, true)
 		end
 	end
 end
 
-function PitBull:UpdateFrame(frame)
+local framesByUnitName_needsUpdate = false
+
+function PitBull:UpdateFrame(frame, nonCrucial)
 	-- update everything about a frame
 	if not isframe(frame) then
 		error(("Bad argument #2 to `UpdateFrame'. Expected %s, got %s"):format("frame", type(frame)), 2)
@@ -3419,7 +4568,12 @@ function PitBull:UpdateFrame(frame)
 		self:ClearUnitFrame(frame)
 		return
 	end
-	frame.__name = UnitName(unit)
+	local oldName = frame.__name
+	frame.__name = nil
+	local newName = frame:GetUnitName()
+	if oldName ~= newName then
+		framesByUnitName_needsUpdate = true
+	end
 	
 	if not frame.overlay then
 		local overlay = newFrame("Frame", frame)
@@ -3428,10 +4582,12 @@ function PitBull:UpdateFrame(frame)
 	end
 	
 	lazyLayout = lazyLayout + 1
-	self:CallMethodOnAllModules(true, "OnUpdateFrame", unit, frame)
+	self:CallMethodOnAllModules(true, "OnUpdateFrame", unit, frame, nonCrucial and oldName == newName)
 	lazyLayout = lazyLayout - 1
 	
-	DogTag:UpdateAllForFrame(frame)
+	if nonWackyFrames[frame] then
+		DogTag:UpdateAllForFrame(frame)
+	end
 	
 	self:_UpdateLayout(frame)
 	
@@ -3528,7 +4684,7 @@ function PitBull:_UpdateLayout(frame, force)
 
 	if metaLayout.extraFrames then
 		for k, v in pairs(metaLayout.extraFrames) do
-			v(unit, frame)
+			v(unit, frame, k)
 			if frame[k] then
 				tmp2[k] = frame[k]
 				tmp[k] = frame[k]:IsShown()
@@ -3540,7 +4696,7 @@ function PitBull:_UpdateLayout(frame, force)
 		tmp2[k] = nil
 		local func = metaLayout.positions[k]
 		if type(func) == "function" then
-			local success, ret = pcall(func, unit, frame)
+			local success, ret = pcall(func, unit, frame, k)
 			if not success then
 --				self:Print("There was an error with the layout %q, preventing the frame for %q to be shown properly. Please inform the author: %s", layoutName, unit, ret)
 				geterrorhandler()(ret)
@@ -3771,8 +4927,10 @@ end
 
 function PitBull:_PopulateUnitFrame(frame)
 	if frames[frame] then
-		local name = UnitName(frame:GetUnit())
-		if name ~= frame.__name then
+		local oldName = frame.__name
+		frame.__name = nil
+		if frame:GetUnitName() ~= oldName then
+			framesByUnitName_needsUpdate = true
 			lazyLayout = lazyLayout + 1
 			self:UpdateLayout(frame)
 			self:UpdateFrame(frame)
@@ -3846,7 +5004,11 @@ function PitBull:_ClearUnitFrame(frame)
 	end
 	local unit = frame:GetUnit()
 	
+	local oldName = frame.__name
 	frame.__name = nil
+	if oldName then
+		framesByUnitName_needsUpdate = true
+	end
 	
 	local group = frame.group
 	if not group then
@@ -3931,8 +5093,10 @@ function PitBull:PopulateUnitFrame(frame, force)
 		return
 	end
 	if frames[frame] then
-		local name = UnitName(frame:GetUnit())
-		if force or frame.__name ~= name then
+		local oldName = frame.__name
+		frame.__name = nil
+		if force or oldName ~= frame:GetUnitName() then
+			framesByUnitName_needsUpdate = true
 			lazyLayout = lazyLayout + 1
 			self:UpdateLayout(frame)
 			self:UpdateFrame(frame)
@@ -3995,13 +5159,13 @@ local function frame_menu(this, unit)
 			num = unit:match("^raid(%d%d?)$")
 			if num then
 				type = FriendsDropDown
-				this.unit = unit
-				this.name = UnitName(unit)
-				this.id = this:GetID()
-				FriendsDropDown.displayMode = "MENU"
-				FriendsDropDown.initialize = RaidFrameDropDown_Initialize
+				type.unit = unit
+				type.name = UnitName(unit)
+				type.id = this:GetID()
+				type.displayMode = "MENU"
+				type.initialize = RaidFrameDropDown_Initialize
 			else
-				return frame_custom_menu(this, unit)
+				return-- frame_custom_menu(this, unit)
 			end
 		end
 	end
@@ -4030,7 +5194,6 @@ local function frame_OnEnter(this)
 		UnitFrame_OnEnter(this)
 		this.unit = nil
 	end
-	DogTag:OnMouseoverUpdate()
 end
 
 local function frame_OnLeave(this)
@@ -4040,7 +5203,6 @@ local function frame_OnLeave(this)
 	local unit = this:GetUnit()
 	self:CallMethodOnAllModules(true, "OnFrameOnLeave", unit, this)
 	UnitFrame_OnLeave(this)
-	DogTag:OnMouseoverUpdate()
 end
 
 local function frame_OnDragStart(this)
@@ -4122,8 +5284,10 @@ local function frame_OnDragStop(this)
 	end
 	
 	if cluster and not freeform then
-		PitBull:ReorganizeCluster(cluster)
+		PitBull:ScheduleLeaveCombatAction(PitBull, 'ReorganizeCluster', cluster)
 	end
+	
+	Rock("LibRockConfig-1.0"):RefreshConfigMenu(self)
 end
 
 local function frame_OnShow(this)
@@ -4166,7 +5330,9 @@ local function frame_OnAttributeChanged(this, key, value)
 	end
 	
 	local lastUnit = last_frameToUnit[this]
+--	this.__unit = nil
 	local unit = this:GetUnit()
+--	this.__unit = unit
 	if unit == lastUnit then
 		return
 	end
@@ -4221,6 +5387,18 @@ local function UnitFrame_GetUnit(self)
 		end
 		return nil
 	end
+end
+
+local function UnitFrame_GetUnitName(self)
+	if self.__name then
+		return self.__name
+	end
+	local name, server = UnitName(self:GetUnit())
+	if server and server ~= "" then
+		name = name .. "-" .. server
+	end
+	self.__name = name
+	return name
 end
 
 local count = 0
@@ -4288,7 +5466,8 @@ function PitBull:CreateUnitFrame(unit, secure)
 	
 	if setup then
 		frame.GetUnit = UnitFrame_GetUnit
-		frame:EnableMouse(true)
+		frame.GetUnitName = UnitFrame_GetUnitName
+		PitBull:ScheduleLeaveCombatAction(frame, 'EnableMouse', true)
 		frame:SetScript("OnEnter", frame_OnEnter)
 		frame:SetScript("OnLeave", frame_OnLeave)
 		frame:SetScript("OnDragStart", frame_OnDragStart)
@@ -4298,9 +5477,9 @@ function PitBull:CreateUnitFrame(unit, secure)
 		frame:SetMovable(true)
 		frame:RegisterForDrag("LeftButton")
 		frame:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp","Button4Up","Button5Up")
-		frame:SetAttribute("*type1", "target")
-		frame:SetAttribute("type2", "menu")
-		frame:SetAttribute("*type2", "custom_menu")
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "*type1", "target")
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "type2", "menu")
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "*type2", "custom_menu")
 		frame.menu = frame_menu
 		frame.custom_menu = frame_custom_menu
 		frame:SetClampedToScreen(self.db.profile.settings.clamped)
@@ -4321,9 +5500,9 @@ function PitBull:CreateUnitFrame(unit, secure)
 	end
 	allFramesByGroup[group][frame] = true
 	if secure then
-		frame:SetAttribute("initial-width", self.db.profile.groups[group].width)
-		frame:SetAttribute("initial-height", self.db.profile.groups[group].height)
-		frame:SetAttribute("initial-scale", self.db.profile.groups[group].scale)
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "initial-width", self.db.profile.groups[group].width)
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "initial-height", self.db.profile.groups[group].height)
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "initial-scale", self.db.profile.groups[group].scale)
 	else
 		frame:SetWidth(self.db.profile.groups[group].width)
 		frame:SetHeight(self.db.profile.groups[group].height)
@@ -4372,12 +5551,20 @@ function PitBull:CreateUnitFrame(unit, secure)
 			frame:SetScript("OnMouseDown", configFrame_OnMouseDown)
 		end
 	else
-		frame:SetAttribute("initial-unitWatch", true)
+		PitBull:ScheduleLeaveCombatAction(frame, 'SetAttribute', "initial-unitWatch", true)
 	end
 	
 	framesByUnit_needsUpdate = true
 	
 	self:UpdateAllFrameStratas(frame)
+	
+	if WotLK and unit == "player" then
+		-- HACK
+		PitBull:ScheduleLeaveCombatAction(function()
+			RuneFrame:ClearAllPoints()
+			RuneFrame:SetPoint("BOTTOM", frame, "TOP")
+		end)
+	end
 	
 	return frame
 end
@@ -4456,7 +5643,6 @@ local function GetClusterGroupSuffixKind(name)
 	return name, group, suffix, tonumber(clusterKind) or (clusterKind ~= "" and clusterKind or nil)
 end
 
-local classes = {"WARRIOR", "HUNTER", "ROGUE", "PALADIN", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DRUID"}
 local function figureClusterLabel(baseGroup, clusterKind, suffix)
 	if suffix == "" then
 		suffix = nil
@@ -4487,6 +5673,8 @@ local function figureClusterLabel(baseGroup, clusterKind, suffix)
 			s = suffix and L["Warlock"] or L["Warlocks"]
 		elseif clusterKind == "DRUID" then
 			s = suffix and L["Druid"] or L["Druids"]
+		elseif clusterKind == "DEATHKNIGHT" then
+			s = suffix and L["Death Knight"] or L["Death Knights"]
 		else
 			s = ("%q"):format(clusterKind)
 		end
@@ -4518,6 +5706,9 @@ local function figureClusterLabel(baseGroup, clusterKind, suffix)
 end
 
 local classes = {"WARRIOR", "HUNTER", "ROGUE", "PALADIN", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DRUID"}
+if WotLK then
+	classes[#classes+1] = "DEATHKNIGHT"
+end
 function PitBull:CreateUnitCluster(cluster)
 	if not fullyInited or leftWorld then
 		return
@@ -4631,7 +5822,7 @@ function PitBull:CreateUnitCluster(cluster)
 			header:SetAttribute("groupingOrder", "1,2,3,4,5,6,7,8")
 		elseif raidGroupStyle == "flatClass" then
 			header:SetAttribute("groupBy", "CLASS")
-			header:SetAttribute("groupingOrder", "WARRIOR,PALADIN,HUNTER,PRIEST,ROGUE,SHAMAN,WARLOCK,DRUID,MAGE")
+			header:SetAttribute("groupingOrder", table.concat(classes, ','))
 		end
 		if clusterKind then
 			header:SetAttribute("strictFiltering", true)
@@ -4683,6 +5874,8 @@ function PitBull:CreateUnitCluster(cluster)
 			header:SetAttribute("groupFilter", table_concat(t, ','))
 			t = del(t)
 		end
+	else -- party
+		header:SetAttribute("groupFilter", table.concat(classes, ',') .. ",1,2,3,4,5,6,7,8")
 	end
 	self:ReorganizeCluster(cluster)
 	for i = 1, 40 do
@@ -4738,6 +5931,38 @@ function PitBull:DestroyUnitCluster(cluster)
 	header:SetAttribute("groupBy", nil)
 	header:SetAttribute("groupFilter", nil)
 	clusters[cluster] = nil
+end
+
+function PitBull:ChangePositionX(group, value)
+	if self.db.profile.units[group].x == value then
+		return
+	end
+	self.db.profile.units[group].x = value
+	local y = self.db.profile.units[group].y
+	
+	if allFramesByGroup[group] then
+		local uis = UIParent:GetScale()
+		for frame in pairs(allFramesByGroup[group]) do
+			local s = frame:GetEffectiveScale()
+			frame:SetPoint("CENTER", UIParent, "CENTER", value*uis/s, y*uis/s)
+		end
+	end
+end
+
+function PitBull:ChangePositionY(group, value)
+	if self.db.profile.units[group].y == value then
+		return
+	end
+	self.db.profile.units[group].y = value
+	local x = self.db.profile.units[group].x
+	
+	if allFramesByGroup[group] then
+		local uis = UIParent:GetScale()
+		for frame in pairs(allFramesByGroup[group]) do
+			local s = frame:GetEffectiveScale()
+			frame:SetPoint("CENTER", UIParent, "CENTER", x*uis/s, value*uis/s)
+		end
+	end
 end
 
 function PitBull:ChangeScale(group, value)
@@ -4828,8 +6053,7 @@ function PitBull:UpdateAllFonts()
 	self:AddTimer("PitBull-UpdateLayouts", 0, "_UpdateLayouts")
 end
 
-function PitBull.SharedMedia_Registered(kind, name)
-	local self = PitBull
+function PitBull:LibSharedMedia_Registered(event, kind, name)
 	if kind == "statusbar" then
 		if self.db.profile and name == self.db.profile.settings.texture then
 			self:UpdateAllStatusBarTextures()
@@ -4850,7 +6074,11 @@ local function iter(tmp)
 		return
 	end
 	tmp[n] = nil
-	return frame:GetUnit(), frame
+	if frame:IsShown() then
+		return frame:GetUnit(), frame
+	else
+		return iter(tmp)
+	end
 end
 function PitBull:IterateUnitFrames()
 	local tmp = newList()
@@ -4876,51 +6104,85 @@ function PitBull:IterateUnitFramesByGroup(group)
 	end
 end
 
-local extraFramesByUnit = {}
-local extraFramesByUnit_nextUpdate = 0
+do
+	local extraFramesByUnit = {}
+	local extraFramesByUnit_nextUpdate = 0
 
-function PitBull:IterateUnitFramesForUnit(unit, includeTargetFrames)
-	if not unit then
-		return blankIter
-	end
-	if framesByUnit_needsUpdate then
-		updateFramesByUnit()
-		for k,v in pairs(extraFramesByUnit) do
-			extraFramesByUnit[k] = del(v)
+	function PitBull:IterateUnitFramesForUnit(unit, includeTargetFrames)
+		if not unit then
+			return blankIter
 		end
-		extraFramesByUnit_nextUpdate = GetTime() + 0.15
+		if framesByUnit_needsUpdate then
+			updateFramesByUnit()
+			for k,v in pairs(extraFramesByUnit) do
+				extraFramesByUnit[k] = del(v)
+			end
+			extraFramesByUnit_nextUpdate = GetTime() + 0.15
+		end
+		local g = framesByUnit[unit]
+		if not includeTargetFrames then
+			if not g then
+				return blankIter
+			else
+			 	return pairs(g)
+			end
+		else
+			local now = GetTime()
+			if extraFramesByUnit_nextUpdate <= now then
+				for k,v in pairs(extraFramesByUnit) do
+					extraFramesByUnit[k] = del(v)
+				end
+				extraFramesByUnit_nextUpdate = now + 0.15
+			elseif extraFramesByUnit[unit] then
+				return pairs(extraFramesByUnit[unit])
+			end
+			local t = newList()
+			extraFramesByUnit[unit] = t
+			if g then
+				for k,v in pairs(g) do
+					t[k] = v
+				end
+			end
+			for frame in pairs(wackyFrames) do
+				local u = frame:GetUnit()
+				if u:match("target$") and UnitIsUnit(unit, u) then
+					t[frame] = true
+				end
+			end
+			return pairs(t)
+		end
 	end
-	local g = framesByUnit[unit]
-	if not includeTargetFrames then
+end
+
+do
+	local framesByUnitName = {}
+
+	function PitBull:IterateUnitFramesForUnitName(name)
+		if not name then
+			return blankIter
+		end
+		if framesByUnitName_needsUpdate then
+			framesByUnitName_needsUpdate = false
+			for k,v in pairs(framesByUnitName) do
+				framesByUnitName[k] = del(v)
+			end
+			for frame in pairs(frames) do
+				local name = frame:GetUnitName()
+				if name then
+					if not framesByUnitName[name] then
+						framesByUnitName[name] = newList()
+					end
+					framesByUnitName[name][frame] = true
+				end
+			end
+		end
+	
+		local g = framesByUnitName[name]
 		if not g then
 			return blankIter
 		else
 		 	return pairs(g)
 		end
-	else
-		local now = GetTime()
-		if extraFramesByUnit_nextUpdate <= now then
-			for k,v in pairs(extraFramesByUnit) do
-				extraFramesByUnit[k] = del(v)
-			end
-			extraFramesByUnit_nextUpdate = now + 0.15
-		elseif extraFramesByUnit[unit] then
-			return pairs(extraFramesByUnit[unit])
-		end
-		local t = newList()
-		extraFramesByUnit[unit] = t
-		if g then
-			for k,v in pairs(framesByUnit[unit]) do
-				t[k] = v
-			end
-		end
-		for frame in pairs(wackyFrames) do
-			local u = frame:GetUnit()
-			if u:match("target$") and UnitIsUnit(unit, u) then
-				t[frame] = true
-			end
-		end
-		return pairs(t)
 	end
 end
 
@@ -4942,14 +6204,60 @@ function PitBull:IterateWackyUnitFrames()
 	return iter, tmp
 end
 
+local function f()
+	for cluster in pairs(clusters) do
+		PitBull:DestroyUnitCluster(cluster)
+	end
+	for frame in pairs(allFrames) do
+		PitBull:DestroyUnitFrame(frame)
+	end
+	
+	if not PitBull.db.profile.groups.player.hidden then
+		PitBull:CreateUnitFrame("player")
+	end
+	if not PitBull.db.profile.groups.pet.hidden then
+		PitBull:CreateUnitFrame("pet")
+	end
+	if not PitBull.db.profile.groups.pettarget.hidden then
+		PitBull:CreateUnitFrame("pettarget")
+	end
+	if not PitBull.db.profile.groups.target.hidden then
+		PitBull:CreateUnitFrame("target")
+	end
+	if not PitBull.db.profile.groups.targettarget.hidden then
+		PitBull:CreateUnitFrame("targettarget")
+	end
+	if not PitBull.db.profile.groups.targettargettarget.hidden then
+		PitBull:CreateUnitFrame("targettargettarget")
+	end
+	if not PitBull.db.profile.groups.focus.hidden then
+		PitBull:CreateUnitFrame("focus")
+	end
+	if not PitBull.db.profile.groups.focustarget.hidden then
+		PitBull:CreateUnitFrame("focustarget")
+	end
+	if not PitBull.db.profile.groups.focustargettarget.hidden then
+		PitBull:CreateUnitFrame("focustargettarget")
+	end
+	if not PitBull.db.profile.groups.mouseover.hidden then
+		PitBull:CreateUnitFrame("mouseover")
+	end
+	if not PitBull.db.profile.groups.mouseovertarget.hidden then
+		PitBull:CreateUnitFrame("mouseovertarget")
+	end
+	PitBull:PARTY_MEMBERS_CHANGED()
+end
+
 function PitBull:OnProfileEnable()
 	self.colorConstants = self.db.profile.settings.colors
 	self:UpdateAllStatusBarTextures()
 	self:CallMethodOnAllModules(true, "OnPitBullProfileEnable")
 	
-	self:UpdateAll()
+	PitBull:ScheduleLeaveCombatAction(f)
 	
-	DogTag:SetColorConstantTable(self.colorConstants)
+--	if not WoW24 then
+--		DogTag:SetColorConstantTable(self.colorConstants)
+--	end
 end
 
 function PitBull:RegisterMetaLayout(data)
@@ -4982,10 +6290,14 @@ function PitBull:RegisterMetaLayout(data)
 end
 
 function PitBull:UpdateLayoutSettings(group)
+	UpdateLayoutSettings_todo[group] = true
+	if type(options.args) ~= "table" or type(options.args[group].args.icons.args) ~= "table" then
+		return
+	end
 	for k, v in pairs(metaLayout.options) do
 		if type(k) == "string" and type(v) == "function" then
 			local name = k
-			local baseOptions = self.options.args[group].args
+			local baseOptions = options.args[group].args
 			local results
 			local always = name == "always" or name == "alwaysText" or name == "alwaysIcon" or name == "alwaysBar" or name == "alwaysOther"
 			if name and not always then
@@ -5011,7 +6323,7 @@ function PitBull:UpdateLayoutSettings(group)
 					end
 					baseOptions = baseOptions[modname].args
 				elseif not baseOptions[name] then
-					results = newList(v(group))
+					results = newList(v(group, k))
 					if #results == 0 then
 						results = del(results)
 					elseif #results > 1 or results[1].type ~= "boolean" then
@@ -5057,7 +6369,7 @@ function PitBull:UpdateLayoutSettings(group)
 			end
 			if name and not baseOptions[name .. 1] then
 				if not results then
-					results = newList(v(group))
+					results = newList(v(group, k))
 				end
 				if #results == 1 and baseOptions[name] then
 					results = del(results)
@@ -5141,7 +6453,7 @@ function PitBull:ChangeHidden(group, value)
 	self.db.profile.groups[group].hidden = value
 	
 	local old_configMode = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 	
 	if value then
 		if allFramesByGroup[group] then
@@ -5166,8 +6478,8 @@ function PitBull:ChangeHidden(group, value)
 		end
 		
 		-- Hide the group and create a new toggle in disabledUnits
-		PitBull.options.args[group].hidden = true
-		PitBull.options.args.disabledUnits.args[group] = {
+		options.args[group].hidden = true
+		options.args.disabledUnits.args[group] = {
 			type = 'execute',
 			name = GroupToLocale[group],
 			desc = L["Enable %s."]:format(GroupToLocale[group]),
@@ -5177,8 +6489,8 @@ function PitBull:ChangeHidden(group, value)
 		}
 	else
 		-- Show the group and remove the toggle from disabledUnits
-		PitBull.options.args[group].hidden = nil
-		PitBull.options.args.disabledUnits.args[group] = nil
+		options.args[group].hidden = nil
+		options.args.disabledUnits.args[group] = nil
 
 		if ShouldShowUnit(group) then
 			if group:find("^party") then
@@ -5206,7 +6518,7 @@ function PitBull:ChangeGroupFreeform(group, value)
 	self.db.profile.groups[group].freeform = value
 	
 	for cluster in pairs(clusters) do
-		if cluster:find("^" .. group) then
+		if cluster:gsub("[0-9]", ""):find("^" .. group) then
 			self:ReorganizeCluster(cluster)
 		end
 	end
@@ -5220,7 +6532,7 @@ function PitBull:ChangeGroupDirection(group, value)
 	self.db.profile.groups[group].direction = value
 	
 	for cluster in pairs(clusters) do
-		if cluster:find("^" .. group) then
+		if cluster:gsub("[0-9]", ""):find("^" .. group) then
 			self:ReorganizeCluster(cluster)
 		end
 	end
@@ -5234,7 +6546,7 @@ function PitBull:ChangeGroupSpacing(group, value)
 	self.db.profile.groups[group].spacing = value
 	
 	for cluster in pairs(clusters) do
-		if cluster:find("^" .. group) then
+		if cluster:gsub("[0-9]", ""):find("^" .. group) then
 			self:ReorganizeCluster(cluster)
 		end
 	end
@@ -5248,7 +6560,7 @@ function PitBull:ChangeGroupHSpacing(group, value)
 	self.db.profile.groups[group].hspacing = value
 	
 	for cluster in pairs(clusters) do
-		if cluster:find("^" .. group) then
+		if cluster:gsub("[0-9]", ""):find("^" .. group) then
 			self:ReorganizeCluster(cluster)
 		end
 	end
@@ -5262,7 +6574,7 @@ function PitBull:ChangeSquareLayout(group, value)
 	self.db.profile.groups[group].square = value
 	
 	for cluster in pairs(clusters) do
-		if cluster:find("^" .. group) then
+		if cluster:gsub("[0-9]", ""):find("^" .. group) then
 			self:ReorganizeCluster(cluster)
 		end
 	end
@@ -5276,7 +6588,7 @@ function PitBull:ChangeHidePartyInRaid(value)
 	self.db.profile.groups.party.hidePartyInRaid = value
 	
 	local config = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 	
 	self:PARTY_MEMBERS_CHANGED()
 	
@@ -5318,7 +6630,7 @@ function PitBull:ChangeShow5manAsParty(value)
 	self.db.profile.groups.raid.show5manAsParty = value
 	
 	local config = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 	
 	self:PARTY_MEMBERS_CHANGED()
 
@@ -5356,7 +6668,7 @@ function PitBull:ChangeRaidGroupStyle(value)
 	end
 	
 	local old_configMode = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 	
 	for cluster in pairs(clusters) do
 		if cluster:find("^raid") then
@@ -5383,7 +6695,7 @@ function PitBull:ChangeRaidGroupFilter(key, value)
 	end
 	
 	local old_configMode = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 
 	for cluster in pairs(clusters) do
 		if cluster:find("^raid") then
@@ -5409,7 +6721,7 @@ function PitBull:ChangeRaidClassFilter(key, value)
 	end
 	
 	local old_configMode = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 
 	for cluster in pairs(clusters) do
 		if cluster:find("^raid") then
@@ -5455,7 +6767,7 @@ function PitBull:ChangeRaidShowInBattleground(key, value)
 	end
 	
 	local old_configMode = configMode
-	self:ChangeConfigMode(nil)
+	self:ChangeConfigMode(nil, true)
 	
 	self:PARTY_MEMBERS_CHANGED()
 	
@@ -5675,7 +6987,6 @@ do
 		return type, start, stop;
 	end
 	
-	local englishClasses = { "WARRIOR", "HUNTER", "ROGUE", "PALADIN", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DRUID" }
 	local englishRoles = { "MAINTANK", "MAINASSIST" }
 	local function GetGroupRosterInfo(type, index)
 		local _, unit, name, subgroup, className, role;
@@ -5691,7 +7002,7 @@ do
 					groupNums[i] = 0
 				end
 				local classNums = newList()
-				for _,v in ipairs(englishClasses) do
+				for _,v in ipairs(classes) do
 					classNums[v] = 0
 				end
 				local roleNums = newList()
@@ -5717,7 +7028,7 @@ do
 				end
 				num = 0
 				for j = 1, 5 do
-					for _,v in ipairs(englishClasses) do
+					for _,v in ipairs(classes) do
 						if j > classNums[v] then
 							num = num + 1
 							if index2 <= num then
@@ -5767,7 +7078,7 @@ do
 			else
 				-- my addition
 				name = unit
-				className = englishClasses[index]
+				className = classes[index]
 				-- end my addition
 			end
 			subgroup = 1;
@@ -5905,7 +7216,7 @@ do
 	end
 end
 
-function PitBull:ChangeConfigMode(value)
+function PitBull:ChangeConfigMode(value, resettingLater)
 	if InCombatLockdown() then
 		value = nil
 	end
@@ -6024,6 +7335,10 @@ function PitBull:ChangeConfigMode(value)
 	end
 	lazyLayout = lazyLayout - 1
 	self:_UpdateLayouts()
+	
+	if not configMode and not resettingLater then
+		self:PARTY_MEMBERS_CHANGED()
+	end
 end
 
 function PitBull.modulePrototype:RegisterPitBullModuleDependencies(...)
@@ -6078,6 +7393,28 @@ function PitBull.modulePrototype:RegisterPitBullOptionsMethod(method)
 	end
 	
 	moduleOptionsMethods[self] = method
+end
+
+function PitBull.modulePrototype:RegisterPitBullIconLayoutHandler(key, priority)
+	if type(key) ~= "string" then
+		error(("Bad argument #2 to `RegisterPitBullIconLayoutHandler'. Expected %q, got %q."):format("string", type(key)), 2)
+	elseif type(priority) ~= "number" then
+		error(("Bad argument #3 to `RegisterPitBullIconLayoutHandler'. Expected %q, got %q."):format("number", type(priority)), 2)
+	end
+	
+	return metaLayout:CreateIconHandler(key, priority)
+end
+
+function PitBull.modulePrototype:RegisterPitBullBarLayoutHandler(key, name, smallName, squareOnSide)
+	if type(key) ~= "string" then
+		error(("Bad argument #2 to `RegisterPitBullBarLayoutHandler'. Expected %q, got %q."):format("string", type(key)), 2)
+	elseif type(name) ~= "string" then
+		error(("Bad argument #3 to `RegisterPitBullBarLayoutHandler'. Expected %q, got %q."):format("string", type(name)), 2)
+	elseif type(smallName) ~= "string" then
+		error(("Bad argument #4 to `RegisterPitBullBarLayoutHandler'. Expected %q, got %q."):format("string", type(smallName)), 2)
+	end
+	
+	return metaLayout:CreateBarHandler(key, name, smallName, squareOnSide)
 end
 
 function PitBull:OnModuleEnable(module, first)

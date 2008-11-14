@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 
 <Script file="libs\LibStub\LibStub.lua"/>
-<Script file="libs\AceLibrary\AceLibrary.lua"/> <!-- for down below -->
+<Include file="libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 <Include file="libs\LibRock-1.0\lib.xml"/>
 <Include file="libs\LibRockComm-1.0\lib.xml"/>
 <Include file="libs\LibRockConfig-1.0\lib.xml"/>
@@ -12,26 +12,12 @@
 <Include file="libs\LibRockHook-1.0\lib.xml"/>
 <Include file="libs\LibRockModuleCore-1.0\lib.xml"/>
 <Include file="libs\LibRockTimer-1.0\lib.xml"/>
-<Include file="libs\LibBabble-Spell-3.0\lib.xml"/>
 <Include file="libs\LibBabble-Zone-3.0\lib.xml"/>
-<Include file="libs\LibDogTag-2.0\lib.xml"/>
-<Include file="libs\LibGratuity-3.0\lib.xml"/>
-<Include file="libs\LibParser-4.0\lib.xml"/>
-<Include file="libs\LibSharedMedia-2.0\lib.xml"/>
-<Include file="libs\LibSpecialEvents-Aura-3.0\lib.xml"/>
-<!-- rest is for Threat-1.0 + Banzai-1.1, not upgraded to Rock yet -->
-<Script file="libs\AceLocale-2.2\AceLocale-2.2.lua"/>
-<Script file="libs\AceOO-2.0\AceOO-2.0.lua"/>
-<Script file="libs\AceEvent-2.0\AceEvent-2.0.lua"/>
-<Script file="libs\AceComm-2.0\AceComm-2.0.lua"/>
-<Script file="libs\Gratuity-2.0\Gratuity-2.0.lua"/>
-<Script file="libs\Babble-Spell-2.2\Babble-Spell-2.2.lua"/>
-<Script file="libs\Babble-Boss-2.2\Babble-Boss-2.2.lua"/>
-<Script file="libs\Babble-Zone-2.2\Babble-Zone-2.2.lua"/>
-<Script file="libs\Babble-Race-2.2\Babble-Race-2.2.lua"/>
-<Script file="libs\SpecialEvents-Aura-2.0\SpecialEvents-Aura-2.0.lua"/>
-<Script file="libs\Roster-2.1\Roster-2.1.lua"/>
-<Script file="libs\Banzai-1.1\Banzai-1.1.lua"/>
-<Include file="libs\Threat-1.0\Threat-1.0.xml"/>
-
+<Include file="libs\LibTalentQuery-1.0\lib.xml"/>
+<Include file="libs\LibDogTag-3.0\lib.xml"/>
+<Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
+<Include file="libs\LibDruidMana-1.0\lib.xml"/>
+<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
+<Include file="libs\LibBanzai-2.0\lib.xml"/>
+<Include file="libs\LibHealComm-3.0\lib.xml"/>
 </Ui>

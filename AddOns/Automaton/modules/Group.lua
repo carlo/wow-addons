@@ -66,6 +66,21 @@ L:RegisterTranslations("zhTW", function() return {
 	["Declining invite in 55..."] = "55秒後拒絕邀請",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Options for accepting or declining group invites."] = "允许自动接受或者拒绝组队邀请",
+	["Enabled"] = "启用",
+    ["Accepts party invites from your friends or guild members automatically."] = "自动接受好友或者公会会员组队邀请",
+    ["Who"] = "自动查询",
+    ["Perform a /who on incoming party invites from unknown sources."] = "使用/who命令自动查询是谁在邀请你组队",
+    ["Decline"] = "拒绝",
+    ["Decline party invites from unknown sources."] = "拒绝未知人员的组队邀请",
+	["Delay"] = "延迟",
+	["With this option enabled, automatic joining or declining is delayed for 55 seconds."] = "当开启这个选项，55秒后自动接受或者拒绝组队邀请。",
+    ["Declining party invitation..."] = "组队邀请已拒绝……",
+	["Accepting invite in 55..."] = "55秒后接受组队邀请……",
+	["Declining invite in 55..."] = "55秒后拒绝组队邀请……",
+} end)
+
 Automaton_Group.description = L["Options for accepting or declining group invites."]
 Automaton_Group.options = {
 	who = {

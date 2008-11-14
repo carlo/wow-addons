@@ -1,4 +1,4 @@
-RatingBuster - A tool for item comparation
+RatingBuster - A tool for item comparison
 
 ************************
 ** About RatingBuster **
@@ -6,7 +6,7 @@ RatingBuster - A tool for item comparation
 
 RatingBuster started out as an addon that converts combat ratings in your tooltips into percentages, so that you have more meaningful information when comparing different items.
 
-The design aim of RatingBuster is to provide detailed, meangingful and customizable information about items so you can eazily decide for yourself which item is better.
+The design aim of RatingBuster is to provide detailed, meaningful and customizable information about items so you can easily decide for yourself which item is better.
 
 
 **************
@@ -18,9 +18,9 @@ The design aim of RatingBuster is to provide detailed, meangingful and customiza
 
 - Stat Breakdown:
   Breakdown Strength, Agility, Stamina, Intellect and Spirit into base stats.
-  Supports talants, buffs and racials that give you extra bonuses.
-  Ex talant: Lunar Guidance - "Increases your spell damage and healing by 8%/16%/25% of your total Intellect."
-  Ex talant: Heart of the Wild - "Increases your Intellect by 4%/8%/12%/16%/20%. In addition, ......etc"
+  Supports talents, buffs and racials that give you extra bonuses.
+  Ex talent: Lunar Guidance - "Increases your spell damage and healing by 8%/16%/25% of your total Intellect."
+  Ex talent: Heart of the Wild - "Increases your Intellect by 4%/8%/12%/16%/20%. In addition, ......etc"
   Ex: +13 Intellect (+234 Mana, +0.18% Spell Crit, +3.9 Dmg)
 
 - Stat Summary:
@@ -31,27 +31,46 @@ The design aim of RatingBuster is to provide detailed, meangingful and customiza
   Item Level is obtained from the WoW API, not a calculated value.
   Item ID is useful for advanced users.
 
-- Supports talants, buffs and racials that modify your stats for all classes.
+- Supports talents, buffs and racials that modify your stats for all classes.
 
 - Fully customizable, decide what you need to see and what you don't want.
+
+
+*************************************
+** Auto fill gems in empty sockets **
+*************************************
+
+1. You can set the default gems for each type of empty socket using "/rb sum gem <red|yellow|blue|meta> <ItemID|Link>" or using the options window.
+2. To specify the gem of your choice, you will need to give RatingBuster the ItemLink or the ItemID of the gem.
+3. ItemLink example: type "/rb sum gem blue " (last char is a space) and link the gem (from your bags, AH, ItemSync or whatever), then press <enter>.
+4. What if you can't link the gem? Well thats what ItemID is for. Find your gem on http://www.wowhead.com/ and look at the URL,
+   for example "http://www.wowhead.com/?item=32193", 32193 is the ItemID for that gem.
+   Go back in wow, type "/rb sum gem red 32193" and press <enter>.
+
+Note1: If you have "/rb sum ignore gem" on, the auto fill gems won't work.
+Note2: Meta gem conditions and SetBonuses work, so if you don't meet the conditions, StatSummary won't count them.
+Note3: RatingBuster will only auto fill empty sockets, if the item already has some gems on it, it will remain.
+Note4: Empty sockets filled by RatingBuster will keep the "Empty Socket Icon" so you can still easily tell what color socket it is.
+Note5: Gem text filled by RatingBuster will be shown in gray color to differentiate from real gems.
 
 
 **********************
 ** Supported Addons **
 **********************
 
-EquipCompare, EQCompare, tekKompare.
-LinkWrangler, MultiTips, Links.
-AtlasLoot, ItemMagic, Sniff.
+EquipCompare, EQCompare, tekKompare,
+LinkWrangler, MultiTips, Links,
+AtlasLoot, ItemMagic, Sniff,
+LinkHeaven, Mirror, TooltipExchange, AtlasQuest.
 
-will work with all bag mods too!
+Also works with all bag mods!
 
 
-***********************
-** GUI Options Panal **
-***********************
+************************
+** GUI Options Window **
+************************
 
-Type /rb optionswin
+Type /rb win
 
 
 ********************
@@ -62,11 +81,12 @@ Use: /rb or /ratingbuster
 
 /rb : Display command help
 /rb standby : Toggle disable/enable RatingBuster in game, defaults Enable
-/rb level (0-73) : Set the level used in calculations, defaults 0 (0 = your level)
+/rb level (0-83) : Set the level used in calculations, defaults 0 (0 = your level)
 /rb itemlevel : Toggle show/hide ItemLevel, defaults Show
 /rb itemid : Toggle show/hide ItemID, defaults Hide
 /rb usereqlv : Toggle calculate using the required level if you are below the required level, defaults Off
-/rb statmod : Toggle support for talant and buff mods, defaults On
+/rb statmod : Toggle support for talent and buff mods, defaults On
+/rb avoidancedr : Dodge, Parry, Hit Avoidance values will be calculated using the avoidance deminishing return formula with your current stats, defaults On
 
 /rb rating : Options for Rating Conversion
 /rb rating show : Toggle show/hide Rating Conversion in tooltips, defaults Show
@@ -74,14 +94,18 @@ Use: /rb or /ratingbuster
 /rb rating wpn : Toggle Weapon Skill breakdown, Convert Weapon Skill into Crit, Hit, Dodge Neglect, Parry Neglect and Block Neglect, defaults Off
 /rb rating color enable : Toggle enable/disable colored text, defaults On
 /rb rating color pick : Choose a color for the added text, defaults Light Yellow
+/rb rating spell : Show Spell Hit from Hit Rating
+/rb rating physical : Show Physical Hit from Hit Rating
+/rb rating detail : Show detailed text for Resiliance and Expertise conversions
+/rb rating exp : Convert Expertise into Dodge Neglect and Parry Neglect
 
 /rb stat : Options for Stat Breakdown
 /rb stat show : Toggle show/hide Stat Breakdown in tooltips, defaults Show
-/rb stat str : Options for Strength breakdown -> AP, Block, Healing(Talant)
+/rb stat str : Options for Strength breakdown -> AP, Block, Healing(Talent)
 /rb stat agi : Options for Agility breakdown -> Crit, Dodge, AP, RAP, Armor
-/rb stat sta : Options for Stamina breakdown -> Health, SpellDmg(Talant)
-/rb stat int : Options for Intellect breakdown -> Mana, SpellCrit, SpellDmg(Talant), Healing(Talant), MP5(Talant), RAP(Talant), Armor(Talant)
-/rb stat spi : Options for Spirit breakdown -> MP5(Talant), MP5NC, HP5, SpellDmg(Talant), Healing(Talant)
+/rb stat sta : Options for Stamina breakdown -> Health, SpellDmg(Talent)
+/rb stat int : Options for Intellect breakdown -> Mana, SpellCrit, SpellDmg(Talent), Healing(Talent), MP5(Talent), RAP(Talent), Armor(Talent)
+/rb stat spi : Options for Spirit breakdown -> MP5(Talent), MP5NC, HP5, SpellDmg(Talent), Healing(Talent)
 
 /rb sum : Options for Stat Summary
 /rb sum show : Toggle show/hide Stat Summary in tooltips, defaults Show
@@ -90,56 +114,69 @@ Use: /rb or /ratingbuster
 /rb sum ignore enchant : Ignore enchants on items when calculating the stat summary, defaults Off
 /rb sum ignore gem : Ignore gems on items when calculating the stat summary, defaults Off
 /rb sum diffstyle : Display diff values in the main tooltip or only in compare tooltips, defaults Main
-/rb sum space : Add a blank line before stat summary for readability, defaults On
-/rb sum showzerostat : Show zero value stats in summary for consistancy, defaults Off
+/rb sum space before : Add a blank line before stat summary for readability, defaults On
+/rb sum space after : Add a blank line after stat summary, defaults Off
+/rb sum icon : Show the sigma icon before summary listing, defaults On
+/rb sum title : Show the title text before summary listing, defaults On
+/rb sum showzerostat : Show zero value stats in summary for consistency, defaults Off
 /rb sum calcsum : Calculate the total stats for the item, defaults On
 /rb sum calcdiff : Calculate the stat difference for the item and equipped items, defaults On
-/rb sum stat : Choose which base stats you'd like to see in the summary
-	- Health - HEALTH, STA
-	- Mana - MANA, INT
-	- Attack Power - AP, STR, AGI
-	- Ranged Attack Power - RANGED_AP, INT, AP, STR, AGI
-	- Feral Attack Power - FERAL_AP, AP, STR, AGI (Note: Shows Cat AP when in Cat form, and Bear AP in other forms)
-	- Spell Damage - SPELL_DMG, STA, INT, SPI
-	- Holy Damage - HOLY_SPELL_DMG, SPELL_DMG, INT, SPI
-	- Arcane Damage - ARCANE_SPELL_DMG, SPELL_DMG, INT
-	- Fire Damage - FIRE_SPELL_DMG, SPELL_DMG, STA, INT
-	- Nature Damage - NATURE_SPELL_DMG, SPELL_DMG, INT
-	- Frost Damage - FROST_SPELL_DMG, SPELL_DMG, INT
-	- Shadow Damage - SHADOW_SPELL_DMG, SPELL_DMG, STA, INT, SPI
-	- Healing - HEAL, STR, INT, SPI
-	- Hit Chance - MELEE_HIT_RATING, WEAPON_RATING
-	- Crit Chance - MELEE_CRIT_RATING, WEAPON_RATING, AGI
-	- Spell Hit Chance - SPELL_HIT_RATING
-	- Spell Crit Chance - SPELL_CRIT_RATING, INT
-	- Mana Regen - MANA_REG, SPI
-	- Health Regen - HEALTH_REG
-	- Mana Regen Not Casting - MANA_REG, SPI
-	- Health Regen While Casting - HEALTH_REG, SPI
-	- Armor - ARMOR, ARMOR_BONUS, AGI, INT
-	- Block Value - BLOCK_VALUE, STR
-	- Dodge Chance - DODGE_RATING, DEFENSE_RATING, AGI
-	- Parry Chance - PARRY_RATING, DEFENSE_RATING
-	- Block Chance - BLOCK_RATING, DEFENSE_RATING
-	- Hit Avoidance - DEFENSE_RATING, MELEE_HIT_AVOID_RATING
-	- Crit Avoidance - DEFENSE_RATING, RESILIENCE_RATING, MELEE_CRIT_AVOID_RATING
-	- Dodge Neglect - WEAPON_RATING
-	- Parry Neglect - WEAPON_RATING
-	- Block Neglect - WEAPON_RATING
-	- Arcane Resistance - ARCANE_RES
-	- Fire Resistance - FIRE_RES
-	- Nature Resistance - NATURE_RES
-	- Frost Resistance - FROST_RES
-	- Shadow Resistance - SHADOW_RES
-	- Weapon Max Damage - MAX_DAMAGE
-/rb sum statcomp : Choose which composite stats you'd like to see in the summary
-	- Strength - STR
-	- Agility - AGI
-	- Stamina - STA
-	- Intellect - INT
-	- Spirit - SPI
-	- Defense - DEFENSE_RATING
-	- Weapon Skill - WEAPON_RATING
+/rb sum sort : Enable to sort StatSummary alphabetically, disable to sort according to stat type(basic, physical, spell, tank)
+/rb sum avoidhasblock : Enable to include block chance in Avoidance summary, Disable for only dodge, parry, miss
+/rb sum basic : Choose basic stats for summary
+/rb sum physical : Choose physical stats for summary
+/rb sum spell : Choose spell stats for summary
+/rb sum tank : Choose tank stats for summary
+/rb sum gem : Auto fill gems in empty sockets
+
+
+***********************************
+** Avoidance diminishing returns **
+***********************************
+
+This includes:
+1. Dodge from Dodge Rating, Defense, Agility.
+2. Parry from Parry Rating, Defense.
+3. Chance to be missed from Defense.
+
+The following is the result of hours of work gathering data from beta servers and then spending even more time running multiple regression analysis on the data.
+1. DR for Dodge, Parry, Missed are calculated separately.
+2. Base avoidances are not affected by DR, (Ex: Dodge from base Agility)
+3. Death Knight's Parry from base Strength is affected by DR, base for parry is 5%.
+4. Direct avoidance gains from talents and spells(ex: Evasion) are not affected by DR.
+5. Indirect avoidance gains from talents and spells(ex: +Agility from Kings) are affected by DR
+6. c and k values depend on class but does not change with level.
+
+Avoidance DR formula and k, C_p, C_d constants derived by Whitetooth (hotdogee [at] gmail [dot] com)
+7. The DR formula: 1 / x' = 1 / c + k / x
+   x' is the diminished stat before converting to IEEE754.
+   x is the stat before diminishing returns.
+   c is the cap of the stat, and changes with class.
+   k is is a value that changes with class.
+
+             k       C_p      1/C_p      C_d      1/C_d
+Warrior     0.9560  47.003525 0.021275  88.129021 0.011347
+Paladin     0.9560  47.003525 0.021275  88.129021 0.011347
+Hunter      0.9880 145.560408 0.006870 145.560408 0.006870
+Rogue       0.9880 145.560408 0.006870 145.560408 0.006870
+Priest      0.9530   0        0        150.375940 0.006650
+Deathknight 0.9560  47.003525 0.021275  88.129021 0.011347
+Shaman      0.9880 145.560408 0.006870 145.560408 0.006870
+Mage        0.9530   0        0        150.375940 0.006650
+Warlock     0.9530   0        0        150.375940 0.006650
+Druid       0.9720   0        0        116.890707 0.008555
+
+            Lv80 Dodge/Agi Lv80 Agi/1%Dodge Base Agi
+Warrior       0.013600       73.52941176    3.463600
+Paladin       0.019200       52.08333333    3.268500
+Hunter        0.013300       75.18796992   -5.450000
+Rogue         0.024100       41.49377593   -0.590000
+Priest        0.019200       52.08333333    3.183000
+Deathknight   0.013600       73.52941176    0.758000
+Shaman        0.019200       52.08333333    1.675000
+Mage          0.019500       51.28205128    3.457500
+Warlock       0.019200       52.08333333    2.035000
+Druid         0.024000       41.66666667    4.951000
 
 
 **************************************
@@ -147,7 +184,7 @@ Use: /rb or /ratingbuster
 **************************************
 
 As soon as I saw the blue post on combat ratings system, I began to think about coding this addon.
-But Blizzard only gave us level 60 and 70 data about this system, and for an addon like this to work you need exact fomula that will work for all levels.
+But Blizzard only gave us level 60 and 70 data about this system, and for an addon like this to work you need exact formula that will work for all levels.
 So I need to reverse engineer the Combat Rating formula, and the process of obtaining this formula can be broken up into two simple steps.
 
 1. Get more data
@@ -155,7 +192,7 @@ In order to obtain the exact formula, I will need more data points then just lev
 
 So I started to dig in the DefaultUI lua files in search for a new API that will give a more precise crit% and I came up with this script /script DEFAULT_CHAT_FRAME:AddMessage(GetCombatRatingBonus(9)).
 
-Now I need to log on again and ask random people to type that script and tell me that 13 decimal place crit% that it shows. This was not an eazy task, as most people are unfamilier with lua script, there are even people that immediately put me on ignore after I sent him this script lol.
+Now I need to log on again and ask random people to type that script and tell me that 13 decimal place crit% that it shows. This was not an easy task, as most people are unfamiliar with lua script, there are even people that immediately put me on ignore after I sent him this script lol.
 
 After hours of work, this is what I got:
 A   B    C      D               E               F   G           H
@@ -185,21 +222,23 @@ After some creative thinking, this is what I got:
 
 Percentage = Rating / F * H
 Lv 8 to 60: 1/H = 1/52 * Level - 8/52
-Lv 60 to 70: H = - 3/82 * Level + 131/41
+Lv 60 to 70: H = -3/82 * Level + 131/41
+Lv 70 to 80: H = 82/52 * (131/63)^((Level - 70) / 10)
 
                     F=
-Weapon Skill        2.5
+Expertise           2.5
 Defense             1.5
 Dodge              12.0
 Parry              15.0
 Block               5.0
 Hit                10.0
 Crit               14.0
-Haste               6.7
+Haste              10.0
 Spell Hit           8.0
 Spell Crit         14.0
-Spell Haste        13.3
+Spell Haste        10.0
 Resilience         25.0
+Armor Penetration  4.69512177
 
 This formula is correct to the 13th decimal place, so I'm 100% sure this is what blizzard uses.
 
@@ -208,231 +247,304 @@ This formula is correct to the 13th decimal place, so I'm 100% sure this is what
 ** Stat Conversion Data for Reference **
 ****************************************
 
-              Combat rating needed for 1 point of stat
-   WepS Defe Dodge Parry Bloc M-Hit M-Crit M-Hst S-Hit S-Crit S-Hst Resil
-70 3.94 2.37 18.92 31.54 7.88 15.77 22.08  15.77 12.62 22.08  15.77 39.42
-69 3.73 2.24 17.89 29.82 7.45 14.91 20.87  14.91 11.93 20.87  14.91 37.27
-68 3.53 2.12 16.97 28.28 7.07 14.14 19.79  14.14 11.31 19.79  14.14 35.34
-67 3.36 2.02 16.13 26.89 6.72 13.44 18.82  13.44 10.75 18.82  13.44 33.61
-66 3.20 1.92 15.38 25.63 6.41 12.81 17.94  12.81 10.25 17.94  12.81 32.03
-65 3.06 1.84 14.69 24.48 6.12 12.24 17.13  12.24  9.79 17.13  12.24 30.60
-64 2.93 1.76 14.06 23.43 5.86 11.71 16.40  11.71  9.37 16.40  11.71 29.29
-63 2.81 1.68 13.48 22.47 5.62 11.23 15.73  11.23  8.99 15.73  11.23 28.08
-62 2.70 1.62 12.95 21.58 5.39 10.79 15.11  10.79  8.63 15.11  10.79 26.97
-61 2.59 1.56 12.46 20.76 5.19 10.38 14.53  10.38  8.30 14.53  10.38 25.95
-60 2.50 1.50 12.00 20.00 5.00 10.00 14.00  10.00  8.00 14.00  10.00 25.00
-59 2.45 1.47 11.77 19.62 4.90  9.81 13.73   9.81  7.85 13.73   9.81 24.52
-58 2.40 1.44 11.54 19.23 4.81  9.62 13.46   9.62  7.69 13.46   9.62 24.04
-57 2.36 1.41 11.31 18.85 4.71  9.42 13.19   9.42  7.54 13.19   9.42 23.56
-56 2.31 1.38 11.08 18.46 4.62  9.23 12.92   9.23  7.38 12.92   9.23 23.08
-55 2.26 1.36 10.85 18.08 4.52  9.04 12.65   9.04  7.23 12.65   9.04 22.60
-54 2.21 1.33 10.62 17.69 4.42  8.85 12.38   8.85  7.08 12.38   8.85 22.12
-53 2.16 1.30 10.38 17.31 4.33  8.65 12.12   8.65  6.92 12.12   8.65 21.63
-52 2.12 1.27 10.15 16.92 4.23  8.46 11.85   8.46  6.77 11.85   8.46 21.15
-51 2.07 1.24  9.92 16.54 4.13  8.27 11.58   8.27  6.62 11.58   8.27 20.67
-50 2.02 1.21  9.69 16.15 4.04  8.08 11.31   8.08  6.46 11.31   8.08 20.19
-49 1.97 1.18  9.46 15.77 3.94  7.88 11.04   7.88  6.31 11.04   7.88 19.71
-48 1.92 1.15  9.23 15.38 3.85  7.69 10.77   7.69  6.15 10.77   7.69 19.23
-47 1.88 1.13  9.00 15.00 3.75  7.50 10.50   7.50  6.00 10.50   7.50 18.75
-46 1.83 1.10  8.77 14.62 3.65  7.31 10.23   7.31  5.85 10.23   7.31 18.27
-45 1.78 1.07  8.54 14.23 3.56  7.12  9.96   7.12  5.69  9.96   7.12 17.79
-44 1.73 1.04  8.31 13.85 3.46  6.92  9.69   6.92  5.54  9.69   6.92 17.31
-43 1.68 1.01  8.08 13.46 3.37  6.73  9.42   6.73  5.38  9.42   6.73 16.83
-42 1.63 0.98  7.85 13.08 3.27  6.54  9.15   6.54  5.23  9.15   6.54 16.35
-41 1.59 0.95  7.62 12.69 3.17  6.35  8.88   6.35  5.08  8.88   6.35 15.87
-40 1.54 0.92  7.38 12.31 3.08  6.15  8.62   6.15  4.92  8.62   6.15 15.38
-39 1.49 0.89  7.15 11.92 2.98  5.96  8.35   5.96  4.77  8.35   5.96 14.90
-38 1.44 0.87  6.92 11.54 2.88  5.77  8.08   5.77  4.62  8.08   5.77 14.42
-37 1.39 0.84  6.69 11.15 2.79  5.58  7.81   5.58  4.46  7.81   5.58 13.94
-36 1.35 0.81  6.46 10.77 2.69  5.38  7.54   5.38  4.31  7.54   5.38 13.46
-35 1.30 0.78  6.23 10.38 2.60  5.19  7.27   5.19  4.15  7.27   5.19 12.98
-34 1.25 0.75  6.00 10.00 2.50  5.00  7.00   5.00  4.00  7.00   5.00 12.50
-33 1.20 0.72  5.77  9.62 2.40  4.81  6.73   4.81  3.85  6.73   4.81 12.02
-32 1.15 0.69  5.54  9.23 2.31  4.62  6.46   4.62  3.69  6.46   4.62 11.54
-31 1.11 0.66  5.31  8.85 2.21  4.42  6.19   4.42  3.54  6.19   4.42 11.06
-30 1.06 0.63  5.08  8.46 2.12  4.23  5.92   4.23  3.38  5.92   4.23 10.58
-29 1.01 0.61  4.85  8.08 2.02  4.04  5.65   4.04  3.23  5.65   4.04 10.10
-28 0.96 0.58  4.62  7.69 1.92  3.85  5.38   3.85  3.08  5.38   3.85  9.62
-27 0.91 0.55  4.38  7.31 1.83  3.65  5.12   3.65  2.92  5.12   3.65  9.13
-26 0.87 0.52  4.15  6.92 1.73  3.46  4.85   3.46  2.77  4.85   3.46  8.65
-25 0.82 0.49  3.92  6.54 1.63  3.27  4.58   3.27  2.62  4.58   3.27  8.17
-24 0.77 0.46  3.69  6.15 1.54  3.08  4.31   3.08  2.46  4.31   3.08  7.69
-23 0.72 0.43  3.46  5.77 1.44  2.88  4.04   2.88  2.31  4.04   2.88  7.21
-22 0.67 0.40  3.23  5.38 1.35  2.69  3.77   2.69  2.15  3.77   2.69  6.73
-21 0.63 0.38  3.00  5.00 1.25  2.50  3.50   2.50  2.00  3.50   2.50  6.25
-20 0.58 0.35  2.77  4.62 1.15  2.31  3.23   2.31  1.85  3.23   2.31  5.77
-19 0.53 0.32  2.54  4.23 1.06  2.12  2.96   2.12  1.69  2.96   2.12  5.29
-18 0.48 0.29  2.31  3.85 0.96  1.92  2.69   1.92  1.54  2.69   1.92  4.81
-17 0.43 0.26  2.08  3.46 0.87  1.73  2.42   1.73  1.38  2.42   1.73  4.33
-16 0.38 0.23  1.85  3.08 0.77  1.54  2.15   1.54  1.23  2.15   1.54  3.85
-15 0.34 0.20  1.62  2.69 0.67  1.35  1.88   1.35  1.08  1.88   1.35  3.37
-14 0.29 0.17  1.38  2.31 0.58  1.15  1.62   1.15  0.92  1.62   1.15  2.88
-13 0.24 0.14  1.15  1.92 0.48  0.96  1.35   0.96  0.77  1.35   0.96  2.40
-12 0.19 0.12  0.92  1.54 0.38  0.77  1.08   0.77  0.62  1.08   0.77  1.92
-11 0.14 0.09  0.69  1.15 0.29  0.58  0.81   0.58  0.46  0.81   0.58  1.44
-10 0.10 0.06  0.46  0.77 0.19  0.38  0.54   0.38  0.31  0.54   0.38  0.96
- 9 0.05 0.03  0.23  0.38 0.10  0.19  0.27   0.19  0.15  0.27   0.19  0.48
- 8 0.00 0.00  0.00  0.00 0.00  0.00  0.00   0.00  0.00  0.00   0.00  0.00
-   WepS Defe Dodge Parry Bloc M-Hit M-Crit M-Hst S-Hit S-Crit S-Hst Resil
+            Combat rating needed for 1 point of stat
+   Expt Def  Dodge Parry Block M-Hit S-Hit  Crit Resil Haste  ArP
+1  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+2  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+3  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+4  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+5  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+6  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+7  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+8  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+9  0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+10 0.10 0.75  6.00  7.50  2.50  0.38  0.31  0.54 12.50  0.38  0.18
+11 0.14 0.75  6.00  7.50  2.50  0.58  0.46  0.81 12.50  0.58  0.27
+12 0.19 0.75  6.00  7.50  2.50  0.77  0.62  1.08 12.50  0.77  0.36
+13 0.24 0.75  6.00  7.50  2.50  0.96  0.77  1.35 12.50  0.96  0.45
+14 0.29 0.75  6.00  7.50  2.50  1.15  0.92  1.62 12.50  1.15  0.54
+15 0.34 0.75  6.00  7.50  2.50  1.35  1.08  1.88 12.50  1.35  0.63
+16 0.38 0.75  6.00  7.50  2.50  1.54  1.23  2.15 12.50  1.54  0.72
+17 0.43 0.75  6.00  7.50  2.50  1.73  1.38  2.42 12.50  1.73  0.81
+18 0.48 0.75  6.00  7.50  2.50  1.92  1.54  2.69 12.50  1.92  0.90
+19 0.53 0.75  6.00  7.50  2.50  2.12  1.69  2.96 12.50  2.12  0.99
+20 0.58 0.75  6.00  7.50  2.50  2.31  1.85  3.23 12.50  2.31  1.08
+21 0.63 0.75  6.00  7.50  2.50  2.50  2.00  3.50 12.50  2.50  1.17
+22 0.67 0.75  6.00  7.50  2.50  2.69  2.15  3.77 12.50  2.69  1.26
+23 0.72 0.75  6.00  7.50  2.50  2.88  2.31  4.04 12.50  2.88  1.35
+24 0.77 0.75  6.00  7.50  2.50  3.08  2.46  4.31 12.50  3.08  1.44
+25 0.82 0.75  6.00  7.50  2.50  3.27  2.62  4.58 12.50  3.27  1.53
+26 0.87 0.75  6.00  7.50  2.50  3.46  2.77  4.85 12.50  3.46  1.63
+27 0.91 0.75  6.00  7.50  2.50  3.65  2.92  5.12 12.50  3.65  1.72
+28 0.96 0.75  6.00  7.50  2.50  3.85  3.08  5.38 12.50  3.85  1.81
+29 1.01 0.75  6.00  7.50  2.50  4.04  3.23  5.65 12.50  4.04  1.90
+30 1.06 0.75  6.00  7.50  2.50  4.23  3.38  5.92 12.50  4.23  1.99
+31 1.11 0.75  6.00  7.50  2.50  4.42  3.54  6.19 12.50  4.42  2.08
+32 1.15 0.75  6.00  7.50  2.50  4.62  3.69  6.46 12.50  4.62  2.17
+33 1.20 0.75  6.00  7.50  2.50  4.81  3.85  6.73 12.50  4.81  2.26
+34 1.25 0.75  6.00  7.50  2.50  5.00  4.00  7.00 12.50  5.00  2.35
+35 1.30 0.78  6.23  7.79  2.60  5.19  4.15  7.27 12.98  5.19  2.44
+36 1.35 0.81  6.46  8.08  2.69  5.38  4.31  7.54 13.46  5.38  2.53
+37 1.39 0.84  6.69  8.37  2.79  5.58  4.46  7.81 13.94  5.58  2.62
+38 1.44 0.87  6.92  8.65  2.88  5.77  4.62  8.08 14.42  5.77  2.71
+39 1.49 0.89  7.15  8.94  2.98  5.96  4.77  8.35 14.90  5.96  2.80
+40 1.54 0.92  7.38  9.23  3.08  6.15  4.92  8.62 15.38  6.15  2.89
+41 1.59 0.95  7.62  9.52  3.17  6.35  5.08  8.88 15.87  6.35  2.98
+42 1.63 0.98  7.85  9.81  3.27  6.54  5.23  9.15 16.35  6.54  3.07
+43 1.68 1.01  8.08 10.10  3.37  6.73  5.38  9.42 16.83  6.73  3.16
+44 1.73 1.04  8.31 10.38  3.46  6.92  5.54  9.69 17.31  6.92  3.25
+45 1.78 1.07  8.54 10.67  3.56  7.12  5.69  9.96 17.79  7.12  3.34
+46 1.83 1.10  8.77 10.96  3.65  7.31  5.85 10.23 18.27  7.31  3.43
+47 1.88 1.13  9.00 11.25  3.75  7.50  6.00 10.50 18.75  7.50  3.52
+48 1.92 1.15  9.23 11.54  3.85  7.69  6.15 10.77 19.23  7.69  3.61
+49 1.97 1.18  9.46 11.83  3.94  7.88  6.31 11.04 19.71  7.88  3.70
+50 2.02 1.21  9.69 12.12  4.04  8.08  6.46 11.31 20.19  8.08  3.79
+51 2.07 1.24  9.92 12.40  4.13  8.27  6.62 11.58 20.67  8.27  3.88
+52 2.12 1.27 10.15 12.69  4.23  8.46  6.77 11.85 21.15  8.46  3.97
+53 2.16 1.30 10.38 12.98  4.33  8.65  6.92 12.12 21.63  8.65  4.06
+54 2.21 1.33 10.62 13.27  4.42  8.85  7.08 12.38 22.12  8.85  4.15
+55 2.26 1.36 10.85 13.56  4.52  9.04  7.23 12.65 22.60  9.04  4.24
+56 2.31 1.38 11.08 13.85  4.62  9.23  7.38 12.92 23.08  9.23  4.33
+57 2.36 1.41 11.31 14.13  4.71  9.42  7.54 13.19 23.56  9.42  4.42
+58 2.40 1.44 11.54 14.42  4.81  9.62  7.69 13.46 24.04  9.62  4.51
+59 2.45 1.47 11.77 14.71  4.90  9.81  7.85 13.73 24.52  9.81  4.60
+60 2.50 1.50 12.00 15.00  5.00 10.00  8.00 14.00 25.00 10.00  4.70
+61 2.59 1.56 12.46 15.57  5.19 10.38  8.30 14.53 25.95 10.38  4.87
+62 2.70 1.62 12.95 16.18  5.39 10.79  8.63 15.11 26.97 10.79  5.07
+63 2.81 1.68 13.48 16.85  5.62 11.23  8.99 15.73 28.08 11.23  5.27
+64 2.93 1.76 14.06 17.57  5.86 11.71  9.37 16.40 29.29 11.71  5.50
+65 3.06 1.84 14.69 18.36  6.12 12.24  9.79 17.13 30.60 12.24  5.75
+66 3.20 1.92 15.38 19.22  6.41 12.81 10.25 17.94 32.03 12.81  6.02
+67 3.36 2.02 16.13 20.16  6.72 13.44 10.75 18.82 33.61 13.44  6.31
+68 3.53 2.12 16.97 21.21  7.07 14.14 11.31 19.79 35.34 14.14  6.64
+69 3.73 2.24 17.89 22.36  7.45 14.91 11.93 20.87 37.27 14.91  7.00
+70 3.94 2.37 18.92 23.65  7.88 15.77 12.62 22.08 39.42 15.77  7.40
+71 4.24 2.55 20.36 25.45  8.48 16.97 13.57 23.75 42.42 16.97  7.97
+72 4.56 2.74 21.91 27.38  9.13 18.26 14.60 25.56 45.64 18.26  8.57
+73 4.91 2.95 23.57 29.46  9.82 19.64 15.71 27.50 49.11 19.64  9.22
+74 5.28 3.17 25.36 31.70 10.57 21.13 16.91 29.59 52.84 21.13  9.92
+75 5.68 3.41 27.29 34.11 11.37 22.74 18.19 31.83 56.85 22.74 10.68
+76 6.12 3.67 29.36 36.70 12.23 24.47 19.57 34.25 61.17 24.47 11.49
+77 6.58 3.95 31.59 39.49 13.16 26.32 21.06 36.85 65.81 26.32 12.36
+78 7.08 4.25 33.99 42.49 14.16 28.32 22.66 39.65 70.81 28.32 13.30
+79 7.62 4.57 36.57 45.71 15.24 30.48 24.38 42.67 76.19 30.48 14.31
+80 8.20 4.92 39.35 49.18 16.39 32.79 26.23 45.91 81.97 32.79 15.40
+   Expt Def  Dodge Parry Block M-Hit S-Hit  Crit Resil Haste  ArP
 
-              Agility needed for 1% Crit
-    War   Pal   Hun   Rog   Pri   Sha  Mage   Lock  Dru
- 1  4.00  4.60  3.52  2.23 11.00  6.01 12.97  6.67  4.95
- 2  4.20  4.83  3.53  2.33 11.00  6.01 12.97  6.67  4.95
- 3  4.20  4.83  3.69  2.43 11.00  6.32 12.97  7.00  5.20
- 4  4.40  5.06  3.95  2.62 11.56  6.32 13.61  7.00  5.20
- 5  4.60  5.06  4.12  2.72 11.56  6.62 13.61  7.00  5.45
- 6  4.80  5.29  4.28  2.82 11.56  6.62 13.61  7.33  5.45
- 7  4.80  5.29  4.44  3.01 11.56  6.62 13.61  7.33  5.69
- 8  5.00  5.52  4.61  3.11 12.11  6.92 13.61  7.33  5.69
- 9  5.20  5.52  4.88  3.21 12.11  6.92 13.61  7.67  5.94
-10  5.20  5.75  5.04  3.40 12.11  7.22 14.27  7.67  6.44
-11  5.40  5.75  5.41  3.79 12.11  7.22 14.27  8.00  6.68
-12  5.60  5.98  5.99  4.18 12.66  7.52 14.27  8.00  6.68
-13  6.00  6.44  6.46  4.66 12.66  7.52 14.27  8.00  6.93
-14  6.20  6.44  6.94  5.05 12.66  7.82 14.27  8.33  6.93
-15  6.40  6.90  7.52  5.63 12.66  8.12 14.90  8.67  7.43
-16  6.60  6.90  7.89  6.02 13.21  8.42 14.90  9.00  7.43
-17  6.80  7.13  8.38  6.41 13.21  8.42 14.90  9.00  7.67
-18  7.20  7.59  8.95  6.90 13.21  8.72 14.90  9.00  7.92
-19  7.40  7.59  9.43  7.38 13.76  8.72 14.90  9.34  7.92
-20  7.80  8.05 10.02  7.87 13.76  9.32 15.55  9.67  8.91
-21  7.80  8.28 10.40  8.35 13.76  9.32 15.55 10.00  8.91
-22  8.00  8.28 10.99  8.74 13.76  9.62 15.55 10.00  9.16
-23  8.40  8.74 11.47  9.23 14.31  9.62 15.55 10.33  9.41
-24  8.60  8.97 12.06  9.62 14.31  9.92 16.21 10.33  9.41
-25  9.00  9.20 12.55 10.20 14.31 10.22 16.21 11.00  9.90
-26  9.20  9.43 13.04 10.68 14.86 10.53 16.21 11.00  9.90
-27  9.40  9.66 13.62 11.07 14.86 10.53 16.21 11.00 10.15
-28  9.80  9.89 14.10 11.56 14.86 10.82 16.21 11.34 10.40
-29 10.00 10.12 14.71 12.05 15.41 10.82 16.86 11.34 10.40
-30 10.40 10.58 15.29 12.63 15.41 11.43 16.86 12.00 11.39
-31 10.60 10.81 15.70 13.02 15.41 11.43 16.86 12.00 11.64
-32 10.80 10.81 16.29 13.50 15.95 11.72 16.86 12.33 11.64
-33 11.20 11.27 16.89 13.99 15.95 12.03 17.51 12.33 11.89
-34 11.40 11.49 17.39 14.47 15.95 12.03 17.51 12.67 12.14
-35 11.81 11.96 17.99 15.06 16.50 12.63 17.51 13.00 12.38
-36 12.00 12.20 18.48 15.55 16.50 12.94 18.15 13.33 12.63
-37 12.20 12.20 19.08 15.92 16.50 12.94 18.15 13.66 12.87
-38 12.59 12.64 19.69 16.42 17.06 13.23 18.15 13.66 12.87
-39 12.80 12.89 20.28 16.89 17.06 13.23 18.15 14.01 13.12
-40 13.19 13.33 20.79 17.48 17.06 13.83 18.80 14.33 14.10
-41 13.61 13.57 21.28 17.99 17.61 14.14 18.80 14.66 14.37
-42 13.79 13.57 21.88 18.45 17.61 14.14 18.80 14.66 14.37
-43 14.20 14.03 22.52 18.94 18.15 14.43 18.80 14.99 14.60
-44 14.41 14.27 23.09 19.53 18.15 14.73 19.46 14.99 14.86
-45 14.79 14.73 23.75 20.12 18.15 15.04 19.46 15.67 15.36
-46 14.99 14.95 24.21 20.58 18.73 15.34 19.46 16.00 15.60
-47 15.41 15.17 24.88 21.10 18.73 15.65 20.08 16.00 15.60
-48 15.80 15.65 25.58 21.55 19.27 15.95 20.08 16.34 15.85
-49 16.00 15.87 26.18 22.03 19.27 15.95 20.08 16.67 16.10
-50 16.39 16.34 26.81 22.73 19.27 16.53 20.75 17.01 17.09
-51 16.81 16.56 27.32 23.20 19.80 16.84 20.75 17.33 17.33
-52 17.01 16.78 27.93 23.70 19.80 17.15 20.75 17.33 17.57
-53 17.39 17.24 28.57 24.27 20.37 17.15 21.41 17.67 17.83
-54 17.79 17.48 29.33 24.75 20.37 17.45 21.41 17.99 17.83
-55 18.21 17.95 29.94 25.38 20.92 18.05 21.41 18.35 18.32
-56 18.42 18.18 30.49 25.91 20.92 18.35 22.03 18.66 18.55
-57 18.80 18.38 31.15 26.46 21.46 18.66 22.03 19.01 18.83
-58 19.19 18.87 31.85 27.03 21.46 18.66 22.03 19.34 19.05
-59 19.61 19.08 32.57 27.47 22.03 18.94 22.68 19.34 19.31
-60 20.00 19.53 33.22 28.17 22.03 19.53 22.68 20.00 20.28
-61 21.32 20.37 33.67 29.94 22.57 20.16 22.99 20.66 20.92
-62 22.62 20.70 34.48 31.06 22.52 20.58 23.15 20.79 21.19
-63 23.92 21.19 35.21 32.57 22.68 21.28 23.58 21.28 21.93
-64 25.19 21.93 35.84 33.78 23.09 21.93 23.64 21.98 22.37
-65 26.53 22.42 36.63 34.97 23.47 22.27 23.70 22.32 22.83
-66 27.78 22.88 37.04 36.23 23.87 22.88 24.33 22.99 23.26
-67 29.07 23.53 37.88 37.31 24.15 23.42 24.27 22.94 23.58
-68 30.40 24.04 38.61 38.17 24.27 23.98 24.51 23.58 24.27
-69 31.75 24.51 39.37 39.06 24.39 24.51 24.75 24.15 24.63
-70 33.00 25.00 40.00 40.00 25.00 25.00 25.00 24.69 25.00
-    War   Pal   Hun   Rog   Pri   Sha  Mage   Lock  Dru
+                  Agility needed for 1% Crit
+    War   Pal   Hun   Rog   Pri   DK    Sha  Mage  Lock   Dru
+1   3.87  4.62  3.52  2.23 10.96  3.87  9.62 12.94  8.41  7.92
+2   4.42  4.62  3.53  2.33 10.96  4.42  9.62 12.94  8.41  7.92
+3   4.42  4.62  3.69  2.43 10.96  4.42 10.10 12.94  8.83  8.32
+4   4.42  5.20  3.95  2.62 11.52  4.42 10.10 13.59  8.83  8.32
+5   4.42  5.20  4.12  2.72 11.52  4.42 10.58 13.59  8.83  8.71
+6   4.97  5.20  4.28  2.82 11.52  4.97 10.58 13.59  9.25  8.71
+7   4.97  5.20  4.44  3.01 11.52  4.97 10.58 13.59  9.25  9.11
+8   4.97  5.77  4.61  3.11 12.06  4.97 11.07 13.59  9.25  9.11
+9   4.97  5.77  4.88  3.21 12.06  4.97 11.07 13.59  9.67  9.51
+10  4.97  5.77  5.04  3.40 12.06  4.97 11.55 14.22  9.67 10.30
+11  5.52  5.77  5.41  3.79 12.06  5.52 11.55 14.22 10.09 10.70
+12  5.52  5.77  5.99  4.18 12.61  5.52 12.03 14.22 10.09 10.70
+13  6.08  6.35  6.46  4.66 12.61  6.08 12.03 14.22 10.09 11.09
+14  6.08  6.35  6.94  5.05 12.61  6.08 12.52 14.22 10.43 11.09
+15  6.63  6.93  7.52  5.63 12.61  6.63 12.99 14.88 10.59 11.88
+16  6.63  6.93  7.89  6.02 13.16  6.63 13.48 14.88 10.78 11.88
+17  6.63  6.93  8.38  6.41 13.16  6.63 13.48 14.88 10.94 12.29
+18  7.18  7.51  8.95  6.90 13.16  7.18 13.95 14.88 11.12 12.67
+19  7.18  7.51  9.43  7.38 13.72  7.18 13.95 14.88 11.30 12.67
+20  7.73  8.08 10.02  7.87 13.72  7.73 14.93 15.53 11.48 14.27
+21  7.73  8.08 10.40  8.35 13.72  7.73 14.93 15.53 11.67 14.27
+22  7.73  8.08 10.99  8.74 13.72  7.73 15.41 15.53 11.85 14.66
+23  8.29  8.67 11.47  9.23 14.27  8.29 15.41 15.53 12.03 15.06
+24  8.83  9.24 12.06  9.62 14.27  8.83 15.87 16.18 12.22 15.06
+25  8.83  9.24 12.55 10.20 14.27  8.83 16.37 16.18 12.42 15.85
+26  9.39  9.24 13.04 10.68 14.81  9.39 16.84 16.18 12.63 15.85
+27  9.39  9.81 13.62 11.07 14.81  9.39 16.84 16.18 12.82 16.23
+28  9.94  9.81 14.10 11.56 14.81  9.94 17.33 16.18 13.02 16.64
+29  9.94 10.40 14.71 12.05 15.36  9.94 17.33 16.81 13.23 16.64
+30 10.49 10.40 15.29 12.63 15.36 10.49 18.28 16.81 13.42 18.21
+31 10.49 10.98 15.70 13.02 15.36 10.49 18.28 16.81 13.64 18.62
+32 11.05 10.98 16.29 13.50 15.90 11.05 18.76 16.81 13.85 18.62
+33 11.05 11.55 16.89 13.99 15.90 11.05 19.23 17.45 14.06 19.01
+34 11.60 11.55 17.39 14.47 15.90 11.60 19.23 17.45 14.29 19.42
+35 11.60 12.12 17.99 15.06 16.45 11.60 20.20 17.45 14.49 19.80
+36 12.15 12.12 18.48 15.55 16.45 12.15 20.70 18.12 14.73 20.20
+37 12.15 12.12 19.08 15.92 16.45 12.15 20.70 18.12 14.95 20.62
+38 12.71 12.71 19.69 16.42 17.01 12.71 21.19 18.12 15.17 20.62
+39 12.71 12.71 20.28 16.89 17.01 12.71 21.19 18.12 15.41 21.01
+40 13.25 13.28 20.79 17.48 17.01 13.25 22.12 18.76 15.65 22.57
+41 13.81 13.28 21.28 17.99 17.54 13.81 22.62 18.76 15.87 22.99
+42 13.81 13.28 21.88 18.45 17.54 13.81 22.62 18.76 16.13 22.99
+43 14.37 13.87 22.52 18.94 18.08 14.37 23.09 18.76 16.37 23.36
+44 14.37 14.43 23.09 19.53 18.08 14.37 23.58 19.42 16.61 23.75
+45 14.90 14.43 23.75 20.12 18.08 14.90 24.04 19.42 16.86 24.57
+46 14.90 15.02 24.21 20.58 18.66 14.90 24.57 19.42 17.12 24.94
+47 15.46 15.02 24.88 21.10 18.66 15.46 25.00 20.04 17.36 24.94
+48 16.03 15.60 25.58 21.55 19.19 16.03 25.51 20.04 17.64 25.38
+49 16.03 15.60 26.18 22.03 19.19 16.03 25.51 20.04 17.89 25.77
+50 16.56 16.18 26.81 22.73 19.19 16.56 26.46 20.70 18.15 27.32
+51 16.56 16.75 27.32 23.20 19.72 16.56 26.95 20.70 18.42 27.70
+52 17.12 16.75 27.93 23.70 19.72 17.12 27.40 20.70 18.69 28.09
+53 17.67 17.33 28.57 24.27 20.28 17.67 27.40 21.37 18.98 28.49
+54 17.67 17.33 29.33 24.75 20.28 17.67 27.93 21.37 19.27 28.49
+55 18.21 17.89 29.94 25.38 20.83 18.21 28.90 21.37 19.53 29.33
+56 18.21 17.89 30.49 25.91 20.83 18.21 29.33 21.98 19.84 29.67
+57 18.76 18.48 31.15 26.46 21.37 18.76 29.85 21.98 20.12 30.12
+58 19.34 19.05 31.85 27.03 21.37 19.34 29.85 21.98 20.41 30.49
+59 19.34 19.05 32.57 27.47 21.93 19.34 30.30 22.62 20.70 30.86
+60 19.88 19.65 33.22 28.17 21.93 19.88 31.25 22.62 21.01 32.47
+61 20.96 20.20 33.67 29.94 22.47 20.96 32.26 22.62 21.32 33.44
+62 22.08 20.79 34.48 31.06 22.42 22.08 32.89 22.62 21.65 33.90
+63 23.20 21.37 35.21 32.57 22.57 23.20 34.01 23.31 21.98 35.09
+64 23.75 21.93 35.84 33.78 23.04 23.75 35.09 23.31 22.27 35.84
+65 24.88 22.52 36.63 34.97 23.42 24.88 35.59 23.31 22.62 36.50
+66 25.97 22.52 37.04 36.23 23.75 25.97 36.63 23.92 22.94 37.17
+67 27.03 23.70 37.88 37.31 24.10 27.03 37.45 23.92 23.26 37.74
+68 28.17 23.70 38.61 38.17 24.21 28.17 38.31 23.92 23.58 38.76
+69 29.24 24.27 39.37 39.06 24.27 29.24 39.22 24.57 23.92 39.37
+70 29.85 24.81 40.00 40.00 24.94 29.85 40.00 24.57 24.27 40.00
+71 32.05 27.17 43.10 43.10 26.88 32.05 43.10 26.53 26.04 43.10
+72 34.84 28.90 46.30 46.30 29.07 34.84 46.30 28.49 28.17 46.30
+73 37.59 31.15 49.75 49.75 31.25 37.59 49.75 30.40 30.30 49.75
+74 40.32 33.44 53.48 53.48 33.44 40.32 53.48 33.00 32.36 53.48
+75 43.10 36.36 57.80 57.80 36.23 43.10 57.80 35.59 34.84 57.80
+76 46.30 38.76 62.11 62.11 38.91 46.30 62.11 38.17 37.88 62.11
+77 50.25 41.67 66.67 66.67 41.67 50.25 66.67 41.32 40.82 66.67
+78 54.05 45.05 71.94 71.94 45.05 54.05 71.94 44.05 43.67 71.94
+79 58.14 48.54 77.52 77.52 48.31 58.14 77.52 47.85 47.17 77.52
+80 62.50 52.08 83.33 83.33 52.08 62.50 83.33 51.02 50.51 83.33
+    War   Pal   Hun   Rog   Pri   DK    Sha  Mage  Lock   Dru
 
-     Intellect needed for 1% Spell Crit
-    Pal   Hun   Pri   Sha   Mage  Lock  Dru
- 1 12.02 14.31  5.85  7.50  6.11  6.67  6.99
- 2 12.61 15.02  6.11  7.86  6.35  6.97  7.30
- 3 12.61 15.02  6.38  8.22  6.60  7.27  7.62
- 4 13.21 15.75  6.64  8.22  7.09  7.58  7.94
- 5 13.21 15.75  7.17  8.58  7.33  7.88  8.26
- 6 13.81 16.45  7.44  8.93  7.58  8.18  8.58
- 7 14.41 16.45  7.71  9.29  7.82  8.48  8.90
- 8 14.41 17.15  7.97  9.64  8.06  8.79  8.90
- 9 15.02 17.15  8.24 10.00  8.55  9.09  9.21
-10 15.02 17.89  8.77 10.00  8.80  9.39 10.16
-11 15.63 17.89  9.57 10.72  9.53 10.30 10.80
-12 16.23 18.59 10.63 11.43 10.75 11.21 11.75
-13 16.84 20.04 11.43 12.50 11.48 12.12 12.39
-14 17.42 20.04 12.76 13.23 13.68 13.04 13.33
-15 18.62 21.46 13.81 14.29 14.90 13.95 14.62
-16 18.62 21.46 14.62 15.02 15.65 14.53 15.24
-17 19.23 22.17 15.95 15.72 16.61 15.75 16.21
-18 20.41 23.58 16.75 16.78 17.61 16.67 16.84
-19 20.41 23.58 17.79 17.51 18.59 17.57 17.79
-20 21.65 25.06 19.12 18.59 19.80 18.48 19.38
-21 22.22 25.77 19.92 19.31 20.53 19.38 20.00
-22 22.83 25.77 21.28 20.00 21.74 20.28 20.96
-23 23.42 27.17 22.08 21.10 22.47 21.23 21.60
-24 24.04 27.93 23.36 21.79 23.70 22.42 22.88
-25 25.25 28.57 24.45 22.88 24.69 23.31 23.81
-26 25.84 29.33 25.51 23.58 25.64 23.92 24.45
-27 25.84 30.03 26.60 24.27 26.88 25.13 25.38
-28 27.03 30.77 27.62 25.38 29.59 26.04 26.04
-29 27.62 31.45 28.74 26.11 30.77 27.25 27.32
-30 28.82 32.89 30.03 27.17 32.05 28.17 28.90
-31 29.41 33.67 31.06 28.25 32.79 28.82 29.50
-32 30.03 33.67 32.15 28.90 34.01 30.03 30.77
-33 30.67 35.09 33.22 30.03 34.97 30.86 31.45
-34 31.25 35.71 34.60 30.77 35.97 32.15 32.36
-35 32.47 37.17 35.59 31.85 37.17 33.00 33.67
-36 33.00 37.88 36.63 32.89 38.17 33.90 34.25
-37 33.67 37.88 38.02 33.56 39.37 35.21 35.21
-38 34.84 39.37 39.06 34.60 40.32 36.10 36.23
-39 35.46 40.00 40.16 35.34 41.49 37.31 37.17
-40 36.63 41.49 41.49 36.76 42.55 38.17 39.06
-41 37.31 42.19 42.55 37.45 43.48 39.06 39.68
-42 37.88 42.19 43.86 38.17 46.51 40.32 40.98
-43 39.06 43.67 44.84 39.37 47.39 41.15 41.67
-44 39.06 44.44 46.30 40.32 48.54 42.37 42.92
-45 40.32 45.87 47.62 41.49 49.75 43.67 43.86
-46 40.82 46.51 48.54 42.55 50.76 44.64 44.84
-47 42.02 47.17 50.00 43.29 52.08 45.45 45.66
-48 43.29 48.54 51.02 44.25 53.19 46.73 46.73
-49 43.86 49.26 52.36 45.45 54.35 47.85 47.85
-50 45.05 50.76 53.76 46.51 55.87 49.02 49.50
-51 45.66 51.55 54.64 47.62 56.82 50.00 50.51
-52 46.30 52.08 56.18 48.31 57.80 51.28 51.81
-53 47.39 53.76 57.14 49.75 58.82 52.36 52.36
-54 48.08 54.35 58.48 50.25 60.24 53.76 53.76
-55 49.26 55.87 60.24 51.81 61.73 54.95 54.95
-56 49.75 56.50 60.98 52.63 64.94 55.87 55.87
-57 50.51 57.14 62.50 53.48 66.23 56.82 56.82
-58 52.36 58.82 63.69 54.95 67.11 58.14 57.80
-59 52.91 59.52 64.94 55.87 68.49 59.52 59.17
-60 54.05 60.98 66.23 57.14 69.93 60.61 60.98
-61 63.69 63.69 67.57 60.98 69.93 62.89 61.73
-62 65.36 64.94 68.97 62.89 69.93 64.94 63.69
-63 67.57 66.67 69.93 65.79 69.93 67.57 66.67
-64 69.93 69.44 71.94 68.03 70.42 69.93 68.49
-65 71.43 70.92 72.99 70.42 70.42 72.46 70.42
-66 73.53 72.99 74.63 72.46 72.46 74.07 72.99
-67 75.19 75.19 75.76 74.63 75.19 76.92 75.19
-68 76.34 76.92 76.92 76.34 76.34 78.74 76.34
-69 78.13 78.13 78.74 78.13 78.13 80.00 78.13
-70 80.00 80.00 80.00 80.00 80.00 81.97 80.00
-    Pal   Hun   Pri   Sha   Mage  Lock  Dru
+        Intellect needed for 1% Spell Crit
+     Pal    Hun    Pri    Sha   Mage   Lock    Dru
+1   12.02  14.31   5.85   7.50   6.11   6.67   6.99
+2   12.61  15.02   6.11   7.86   6.35   6.97   7.30
+3   12.61  15.02   6.38   8.22   6.60   7.27   7.62
+4   13.21  15.75   6.64   8.22   7.09   7.58   7.94
+5   13.21  15.75   7.17   8.58   7.33   7.88   8.26
+6   13.81  16.45   7.44   8.93   7.58   8.18   8.58
+7   14.41  16.45   7.71   9.29   7.82   8.48   8.90
+8   14.41  17.15   7.97   9.64   8.06   8.79   8.90
+9   15.02  17.15   8.24  10.00   8.55   9.09   9.21
+10  15.02  17.89   8.77  10.00   8.80   9.39  10.16
+11  15.63  17.89   9.57  10.72   9.53  10.30  10.80
+12  16.23  18.59  10.63  11.43  10.75  11.21  11.75
+13  16.84  20.04  11.43  12.50  11.48  12.12  12.39
+14  17.42  20.04  12.76  13.23  13.68  13.04  13.33
+15  18.62  21.46  13.81  14.29  14.90  13.95  14.62
+16  18.62  21.46  14.62  15.02  15.65  14.53  15.24
+17  19.23  22.17  15.95  15.72  16.61  15.75  16.21
+18  20.41  23.58  16.75  16.78  17.61  16.67  16.84
+19  20.41  23.58  17.79  17.51  18.59  17.57  17.79
+20  21.65  25.06  19.12  18.59  19.80  18.48  19.38
+21  22.22  25.77  19.92  19.31  20.53  19.38  20.00
+22  22.83  25.77  21.28  20.00  21.74  20.28  20.96
+23  23.42  27.17  22.08  21.10  22.47  21.23  21.60
+24  24.04  27.93  23.36  21.79  23.70  22.42  22.88
+25  25.25  28.57  24.45  22.88  24.69  23.31  23.81
+26  25.84  29.33  25.51  23.58  25.64  23.92  24.45
+27  25.84  30.03  26.60  24.27  26.88  25.13  25.38
+28  27.03  30.77  27.62  25.38  29.59  26.04  26.04
+29  27.62  31.45  28.74  26.11  30.77  27.25  27.32
+30  28.82  32.89  30.03  27.17  32.05  28.17  28.90
+31  29.41  33.67  31.06  28.25  32.79  28.82  29.50
+32  30.03  33.67  32.15  28.90  34.01  30.03  30.77
+33  30.67  35.09  33.22  30.03  34.97  30.86  31.45
+34  31.25  35.71  34.60  30.77  35.97  32.15  32.36
+35  32.47  37.17  35.59  31.85  37.17  33.00  33.67
+36  33.00  37.88  36.63  32.89  38.17  33.90  34.25
+37  33.67  37.88  38.02  33.56  39.37  35.21  35.21
+38  34.84  39.37  39.06  34.60  40.32  36.10  36.23
+39  35.46  40.00  40.16  35.34  41.49  37.31  37.17
+40  36.63  41.49  41.49  36.76  42.55  38.17  39.06
+41  37.31  42.19  42.55  37.45  43.48  39.06  39.68
+42  37.88  42.19  43.86  38.17  46.51  40.32  40.98
+43  39.06  43.67  44.84  39.37  47.39  41.15  41.67
+44  39.06  44.44  46.30  40.32  48.54  42.37  42.92
+45  40.32  45.87  47.62  41.49  49.75  43.67  43.86
+46  40.82  46.51  48.54  42.55  50.76  44.64  44.84
+47  42.02  47.17  50.00  43.29  52.08  45.45  45.66
+48  43.29  48.54  51.02  44.25  53.19  46.73  46.73
+49  43.86  49.26  52.36  45.45  54.35  47.85  47.85
+50  45.05  50.76  53.76  46.51  55.87  49.02  49.50
+51  45.66  51.55  54.64  47.62  56.82  50.00  50.51
+52  46.30  52.08  56.18  48.31  57.80  51.28  51.81
+53  47.39  53.76  57.14  49.75  58.82  52.36  52.36
+54  48.08  54.35  58.48  50.25  60.24  53.76  53.76
+55  49.26  55.87  60.24  51.81  61.73  54.95  54.95
+56  49.75  56.50  60.98  52.63  64.94  55.87  55.87
+57  50.51  57.14  62.50  53.48  66.23  56.82  56.82
+58  52.36  58.82  63.69  54.95  67.11  58.14  57.80
+59  52.91  59.52  64.94  55.87  68.49  59.52  59.17
+60  54.05  60.98  66.23  57.14  69.93  60.61  60.98
+61  62.89  63.69  67.57  60.98  69.93  62.89  61.73
+62  64.94  64.94  68.97  62.89  69.93  64.94  63.69
+63  67.11  66.67  69.93  65.79  69.93  67.57  66.67
+64  68.97  69.44  71.94  68.03  69.93  69.93  68.49
+65  71.43  70.92  72.99  70.42  70.42  72.46  70.42
+66  73.53  72.99  74.63  72.46  72.46  74.07  72.99
+67  74.63  75.19  75.76  74.63  74.63  76.92  75.19
+68  76.34  76.92  76.92  76.34  76.34  78.74  76.34
+69  78.13  78.13  78.74  78.13  78.13  79.37  78.13
+70  80.00  80.00  80.00  80.00  80.00  80.00  80.00
+71  86.21  86.21  86.21  86.21  86.21  86.21  86.21
+72  92.59  92.59  92.59  92.59  92.59  92.59  92.59
+73  99.01  99.01  99.01  99.01  99.01  99.01  99.01
+74 107.53 107.53 107.53 107.53 107.53 107.53 107.53
+75 114.94 114.94 114.94 114.94 114.94 114.94 114.94
+76 123.46 123.46 123.46 123.46 123.46 123.46 123.46
+77 133.33 133.33 133.33 133.33 133.33 133.33 133.33
+78 142.86 142.86 142.86 142.86 142.86 142.86 142.86
+79 153.85 153.85 153.85 153.85 153.85 153.85 153.85
+80 166.67 166.67 166.67 166.67 166.67 166.67 166.67
+     Pal    Hun    Pri    Sha   Mage   Lock    Dru
+
+********************************************
+** Spirit-Based Mana Regeneration Formula **
+********************************************
+The new formula formula in 2.4:
+
+ManaRegen(SPI, INT, LEVEL) = (0.001 + SPI * BASE_REGEN[LEVEL] * (INT^0.5)) * 5
+
+BASE_REGEN[LEVEL]=
+1  0.034965  21 0.019733  41 0.013724  61 0.010701
+2  0.034191  22 0.019156  42 0.013522  62 0.010523
+3  0.033465  23 0.018819  43 0.013363  63 0.010291
+4  0.032527  24 0.018317  44 0.013176  64 0.010120
+5  0.031661  25 0.017936  45 0.012996  65 0.009969
+6  0.031077  26 0.017577  46 0.012854  66 0.009808
+7  0.030523  27 0.017201  47 0.012687  67 0.009652
+8  0.029995  28 0.016919  48 0.012540  68 0.009553
+9  0.029307  29 0.016581  49 0.012384  69 0.009446
+10 0.028662  30 0.016234  50 0.012233  70 0.009327
+11 0.027585  31 0.015995  51 0.012114  71 0.008859
+12 0.026215  32 0.015708  52 0.011973  72 0.008415
+13 0.025381  33 0.015464  53 0.011860  73 0.007993
+14 0.024301  34 0.015204  54 0.011715  74 0.007592
+15 0.023346  35 0.014957  55 0.011576  75 0.007211
+16 0.022749  36 0.014745  56 0.011473  76 0.006849
+17 0.021959  37 0.014496  57 0.011342  77 0.006506
+18 0.021387  38 0.014302  58 0.011245  78 0.006179
+19 0.020791  39 0.014095  59 0.011111  79 0.005869
+20 0.020121  40 0.013896  60 0.011000  80 0.005575
 
 
 **********
 ** TODO **
 **********
+Readme:
+Combat rating needed for 1 point of stat: parry needs to be updated
 
+Long term:
 - Support for sets
 - Option: Hide default stats
 - Option: Show only in city
-- Check for equipped weapon type when calculating weapon skill ratings
 
+- Support for "+2% Spirit" type
+
+Doing:
+
+Note:
 "Intelligently compare Crit Immunity in the StatSummary?" 
 [ ] Tick Box. 
 Ticked -- Tooltip: StatSummary will now show '% to be critted' comparisons while AWARE of your opponent's level as defined below. 
@@ -440,42 +552,209 @@ Unticked (Default) -- Tooltip: StatSummary will now show '% to be critted' compa
 [ ] Number Field. 
 Illuminates when Ticked and Dims when Unticked (Default value, but Dimmed, is 73) -- Tooltip: Type the opponent's level you'd like StatSummary to stop comparing 'crit immunity' for. 
 
-Try to fix mana oil enchants
+-- Failed --
+Try to fix mana oil enchants: was unable to find a way to scan the oil text
 
--- Transition to 2.3.0
-if select(2, GetBuildInfo()) >= "7382" then
+-- Transition to 3.0.2
+if select(2, GetBuildInfo()) >= "9061" then
 
-Shamanistic Rage (Enhancement) now also reduces all damage taken by 30% for the duration. 
-Elune's Grace (Night Elf) effect changed to reduce chance to be hit by melee and ranged attacks by 20% for 15 seconds. There is now only 1 rank of the spell. 
-Pain Suppression (Discipline Talent) is now usable on friendly targets, instantly reduces the target's threat by 5%, reduces damage taken by 40% and its cooldown has been reduced to 2 minutes. 
-Pursuit of Justice (Retribution) is now 3 ranks and increases movement speed by 5/10/15% and also reduces the chance you'll be hit by spells by 1/2/3%. 
 
 *********************
 ** Version History **
 *********************
+1.4.0
+- Updated toc to 30000, this versions is compatible with both TBC and WotLK
+- Fixed: when removing gems it will continue to show the gem text in empty sockets
+- Added Russian localizations by Orsana
+- Updated localizations: Korean, French, German
+- Minor bug fixes
+- ***********************WotLK Support***********************
+- WotLK support with version checking, up to date with build 9061
+- Formulas updated for Death Knights and level 80
+- Support for Spell Power stat
+- Support for Armor Penetration Rating
+- Avoidance diminishing returns implemented for StatSummary Dodge% and Parry% diff values, because I think thats where its most needed and makes most sense.
+- (Dodge% and Parry% in Rating/Stat conversion and StatSummary totals are before dminishing returns)
+- Option to show physical hit, spell hit or both from hit rating(crit and haste are the same for physical and spell)
+- StatSummery: Added Ranged Hit Chance, Ranged Hit Rating, Ranged Haste, Ranged Haste Rating, Ranged Crit Chance, and Ranged Crit Rating
+- StatSummery: Hit Rating, Critical Strike Rating, and Haste Rating now modify both melee attacks and spells.
+
+- Support for WotLK talent and buff stat mods, detailed change log for each class:
+Warrior
+- Added Talent: Armored to the Teeth: 1/2/3 for every 180 armor
+- Added Talent: Strength of Arms: Increases Strength and Stamina by 2%/4%.
+- Added Buff(TBC): Last Stand: +30% of your maximum health
+- Updated Talent: Vitality: Increases your total Strength and Stamina by 2%/4%/6%
+- Updated Talent: Shield Mastery: 10%/20%/30% -> 15%/30%
+
+Warlock
+- Added options: Show Spell Damage from Spirit (Fel Armor)
+- Added options: Show Healing from Spirit (Fel Armor)
+- Added Talent: Demonic Aegis: Increases the effectiveness of your Demon Armor and Fel Armor spells by 10%/20%/30%.
+- Added Talent: Fel Synergy: Your Summoned Demons share an additional 5%/10% of your Armor, Intellect and Stamina
+- Added Talent: Fel Vitality: Increases your maximum health and mana by 1%/2%/3%.
+- Added Buff: Fel Armor: Increases spell power equal to 30% of your Spirit.
+- Added Buff: Demonic Pact: Your pet's criticals apply the Demonic Pact effect to your party or raid members. Demonic Pact increases spell power by 2%/4%/6%/8%/10% of your Spell Damage for 12 sec.
+- Added Buff: Metamorphosis: You gain Demon Form, increasing your armor by 360%.
+- Removed Talent: Fel Stamina
+- Removed Talent: Fel Intellect
+- Updated Talent: Demonic Embrace: No longer reduces spirit. Stamina 3%/6%/9%/12%/15% -> 2%/4%/6%/8%/10%
+
+Shaman
+- Added options: Show Attack Power from Intellect (Mental Dexterity)
+- Updated Formula: 1 AP from 1 Agi, 1AP from 1 Str
+- Added Talent: Mental Dexterity: Increases your Attack Power by 33%/66%/100% of your Intellect.
+- Added Buff: Astral Shift: When stunned, feared or silenced you shift into the Astral Plane reducing all damage taken by 30%
+- Added Buff: Unleashed Rage: Melee attack power increased by 10%.
+- Removed Talent: Shield Specialization
+- Updated Talent: Nature's Blessing: spell damage and healing -> healing, 10%/20%/30% -> 5%/10%/15%
+- Updated Talent: Anticipation: 1%/2%/3%/4%/5% -> 1%/2%/3%
+- Updated Talent: Ancestral Knowledge: maximum Mana -> intellect. 1%/2%/3%/4%/5% -> 2%/4%/6%/8%/10%.
+
+Rogue
+- Removed Talent: Vitality
+
+Priest
+- Added Talent: Focused Power: Increases your total spell damage and healing done by 2%/4%.
+- Added Talent: Twisted Faith: Increases your spell power by 2%/4%/6%/8%/10% of your total Spirit
+- Updated Talent: Improved Divine Spirit: No longer increases spell power by spirit
+- Updated Talent: Mental Strength: Increases your maximum Mana -> total Intellect
+- Updated Talent: Enlightenment: Stamina, Intellect and Spirit -> Stamina, Spirit and Spell Haste
+
+Paladin
+- Added options: Show Spell Damage from Stamina (Touched by the Light)
+- Added options: Show Healing from Stamina (Touched by the Light)
+- Added options: Show Spell Damage from Strength (Sheath of Light)
+- Added options: Show Healing from Strength (Sheath of Light)
+- Added Talent: Touched by the Light: Increases your spell power by an amount equal to 10%/20%/30% of your Stamina
+- Added Talent: Sheath of Light: Increases your spell power by an amount equal to 10%/20%/30% of your attack power
+- Updated Talent: Holy Guidance: 35% -> 20%
+- Updated Talent: Divine Strength: Increases your total Strength by 3%/6%/9%/12%/15%
+- Updated Talent: Combat Expertise: Changed to 3 ranks
+- Removed Talent: Shield Specialization
+
+Mage
+- Added Talent: Student of the Mind: Increases your total Spirit by 4%/7%/10%.
+- Added Talent(WotLK & TBC): Arcane Instability: Increases your spell damage and critical strike chance by 1%/2%/3%.
+- Updated Talent: Arcane Fortitude: Increases your armor by an amount equal to 50%/100%/150% of your Intellect.
+- Updated Talent: Mind Mastery: Increases spell damage by up to 3%/6%/9%/12%/15% of your total Intellect.
+
+Hunter
+- Added options: Show Spell Damage from Stamina
+- Added options: Show Attack Power from Stamina (Hunter vs. Wild)
+- Added Talent: Hunter vs. Wild: Increases you and your pet's attack power and ranged attack power equal to 10%/20%/30% of your total Stamina.
+- Updated Buff: Aspect of the Viper: no longer gives MP5 from Int
+- Updated Talent: Careful Aim: now adds 33%/66%/100% RAP from Int
+- Updated Talent: Survivalist: Increases your Stamina by 2%/4%/6%/8%/10%.
+- Updated Talent: Combat Experience: Increases your total Agility and Intellect by 2%/4%.
+- Updated Talent: Survival Instincts - No longer increases AP
+
+DeathKnight
+- Added options: Show Parry from Strength (Forceful Deflection)
+- Added Pasive: Forceful Deflection: Increases your Parry Rating by 25% of your total Strength.
+- Added Talent: Bladed Armor: 1/2/3/4/5 AP every 180 Armor.
+- Added Talent: Veteran of the Third War: Increases your total Strength by 2%/4%/6% and your total Stamina by 1%/2%/3%.
+- Added Talent: Will of the Necropolis: When you have less than 35% health, your total armor increases by 10%/20%/30%.
+- Added Talent: Toughness: Increases your armor value from items by 3%/6%/9%/12%/15%
+- Added Talent: Ravenous Dead: Increases the total Strength of you by 1%/2%/3%
+- Added Talent: Shadow of Death: Increases your total Strength and Stamina by 2%.
+- Added Talent: Abomination's Might: Increases your total Strength by 1%/2%.
+- Added Buff: Abominable Might: Attack power increased by 10%.
+- Added Buff: Unbreakable Armor: Increases your armor by 25%, your total Strength by 10%.
+- Added Buff: Frost Presence: Increases armor by 60%, health by 10%
+
+Druid
+- Added options: Show Spell Damage from Spirit (Improved Moonkin Form)
+- Added options: Show Healing from Spirit (Improved Tree of Life)
+- Added Talent: Predatory Strikes: Increases 20% of any attack power on your equipped weapon.
+- Added Talent: Furor: Increases your total Intellect while in Moonkin form by 2%/4%/6%/8%/10%.
+- Added Talent: Improved Tree of Life: Increases your Armor while in Tree of Life Form by 33%/66%/100%, increases healing by 5%/10%/15% of spirit.
+- Added Talent: Protector of the Pack: Increases your attack power in Bear Form and Dire Bear Form by 2%/4%/6%.
+- Added Buff: Survival Instincts: +30% of your maximum health
+- Updated Talent: Lunar Guidance: 8%/16%/25% -> 4%/8%/12%
+- Updated Talent: Nurturing Instinct: 50%/100% -> 35%/70% of your Agility
+- Updated Talent: Survival of the Fittest: 1%/2%/3% -> 2%/4%/6%
+- Updated Buff: Dire Bear Form, Moonkin Form: Armor +400% -> +370%
+- Master Shapeshifter doesn't affect char window stats
+
+1.3.8
+- NEW: Support for negative stats
+- Update for 2.4.3: Parry Rating, Defense Rating, and Block Rating: Low-level players will now convert these ratings into their corresponding defensive stats at the same rate as level 34 players
+- Fixed: Better JewelTips support
+- Fixed: Druid - Nurturing Instinct (Str->Agi)
+- Fixed: Mage - Arcane Fortitude (50% -> 100% Armor from Int)
+- Optimized library usage
+- Updated localizations 
+1.3.7a
+- Fixed: Loading error
+1.3.7
+- Changed: Will only show stat breakdown options your class can use
+- Changed: Class specific stat breakdown options will show the talents required
+- Added: Stat breakdown support for Mental Quickness (Shaman)
+- Fixed: Support for new Demonic Knowledge(Warlock) and Nurturing Instinct(Druid)
+- Fixed: Library errors
+1.3.6
+- Updated toc to 20400
+- Fixed: Able to clear default gem settings
+- Fixed: Deadly Fire Opal now shows rating conversion
+1.3.5
+- NEW: Default gems for empty sockets! Set the gems to use for each socket using /rb sum gem
+- In 2.4.0: Spirit-Based Mana Regeneration: This system has been adjusted so that as your intellect rises, you will regenerate more mana per point of spirit.
+- Fixed: Will now work with [Insightful Earthstorm Diamond]
+- Fixed: Profiles should now work
+- Changed: Use "/rb win" to open the options window instead of "/rb optionswin"
+1.3.1
+- Fixed: Spell Haste summary works now
+- Fixed: Doesn't match percentages anymore (ex: Increases healing by up to 10% of your total Intellect)
+- Fixed: Error when sorting StatSummary alphabetically
+- Updated localizations: Taiwan, French, China, German, Spanish
+1.3.0
+- Updated: TOC to 20300
+- Updated localizations: Taiwan, Korean, China, German
+- Fixed: Socketed gem stat text color after percentage conversion is no longer yellow
+- Fixed: "+X healing and +X spell damage" type gems and enchants now gives correct healing summary
+- NEW: Categorized StatSummery Options in to Basic, Physical damage, Spell damage and healing, Tank
+- NEW: StatSummary is sorted(basic, physical damage, spell damage and healing, tank in that order)
+- NEW: Option to sort StatSummary alphabetically instead of the above
+- NEW: Option to include block chance in Avoidance summary
+- StatSummary Added:
+	Resilience
+	Haste
+	Haste Rating
+	Spell Haste
+	Spell Haste Rating
+	Penetration
+	IgnoreArmor
+	HitRating
+	CritRating
+	SpellHitRating
+	SpellCritRating
+	DodgeRating
+	ParryRating
+	BlockRating
 1.2.8
 - Fixed: +X Spell Power gives healing too
 - In 2.3.0: Support for Spell Damage bonus in +Healing stats
 1.2.7
-- NEW: Option to Show detail text for Resiliance and Experise conversions
+- NEW: Option to Show detail text for Resilience and Expertise conversions
 - NEW: Option to Show Avoidance Summary <- Dodge, Parry, MobMiss
 - NEW: TankPoints support, if you have TankPoints loaded you get 2 new summary options: TankPoints and Total Reduction
 - In 2.3.0: Added Expertise stat support
-- In 2.3.0: Heart of the Wild (Druid Feral Combat talant) provides 2/4/6/8/10% bonus attack power in Cat form instead
-- In 2.3.0: Intensity (Druid Restoration talant) increased to 10/20/30% mana regeneration
-- In 2.3.0: Arcane Meditation (Mage Arcane talant) increased to 10/20/30% mana regeneratio
-- In 2.3.0: Meditation (Priest Discipline talant) increased to 10/20/30% mana regeneration
-- In 2.3.0: Weapon Expertise (Paladin Protection talant) renamed Combat Expertise, now increases expertise by 1/2/3/4/5 and total Stamina by 2/4/6/8/10%
-- In 2.3.0: Mental Quickness (Shaman Enhancement talant) now also increases spell damage and healing equal to 10/20/30% of your attack power
+- In 2.3.0: Heart of the Wild (Druid Feral Combat talent) provides 2/4/6/8/10% bonus attack power in Cat form instead
+- In 2.3.0: Intensity (Druid Restoration talent) increased to 10/20/30% mana regeneration
+- In 2.3.0: Arcane Meditation (Mage Arcane talent) increased to 10/20/30% mana regeneration
+- In 2.3.0: Meditation (Priest Discipline talent) increased to 10/20/30% mana regeneration
+- In 2.3.0: Weapon Expertise (Paladin Protection talent) renamed Combat Expertise, now increases expertise by 1/2/3/4/5 and total Stamina by 2/4/6/8/10%
+- In 2.3.0: Mental Quickness (Shaman Enhancement talent) now also increases spell damage and healing equal to 10/20/30% of your attack power
 - All 2.3.0 Changes will only take affect when using a 2.3.0 client.
-- Updated German localization
+- Updated: German localization
 1.2.6
 - Fixed: Ranged AP Calculations
 1.2.5
 - Updated: toc to 20200
 - Fixed: Haste rating change in 2.2.0
-- Fixed: Hunter Survival Instincts talant support
-- Fixed: Armor multiplier no longer applys to Armor from enchants
+- Fixed: Hunter Survival Instincts talent support
+- Fixed: Armor multiplier no longer apply to Armor from enchants
 - NEW: Added China localization by iceburn(candykiss)
 - Updated: Taiwan localization
 - Updated: Korean localization by fenlis
@@ -555,8 +834,8 @@ Pursuit of Justice (Retribution) is now 3 ranks and increases movement speed by 
 1.1.0
 - NEW: Stat Summary - Display the sum of stats of the item and/or the stat difference of the item and your equipped items
 - Choose the stats you really care about to be show in the summary
-- Composite stats are broken down and added into base stats, and supports talant/buff mods, Ex: "Spell Crit Chance" is calculated from "Spell Crit Rating" and "Intellect"
-- Option discriptions now show class names for class specific stat conversions
+- Composite stats are broken down and added into base stats, and supports talent/buff mods, Ex: "Spell Crit Chance" is calculated from "Spell Crit Rating" and "Intellect"
+- Option descriptions now show class names for class specific stat conversions
 - Added support for Aspect of the Viper
 - Option to hide rating conversions
 - Option to hide all base stat conversions
@@ -569,11 +848,11 @@ Pursuit of Justice (Retribution) is now 3 ranks and increases movement speed by 
 1.0.0
 - Support for talents and buffs that modify your stats
 - Supports the following stat conversions
-- Str -> AP, Block, Healing(Talant)
+- Str -> AP, Block, Healing(Talent)
 - Agi -> Crit, Dodge, AP, RAP, Armor
-- Sta -> Health, SpellDmg(Talant)
-- Int -> Mana, SpellCrit, SpellDmg(Talant), Healing(Talant), MP5(Talant), RAP(Talant), Armor(Talant)
-- Spi -> MP5(Talant), MP5NC, HP5, SpellDmg(Talant), Healing(Talant)
+- Sta -> Health, SpellDmg(Talent)
+- Int -> Mana, SpellCrit, SpellDmg(Talent), Healing(Talent), MP5(Talent), RAP(Talent), Armor(Talent)
+- Spi -> MP5(Talent), MP5NC, HP5, SpellDmg(Talent), Healing(Talent)
 - If you need a GUI config window for RatingBuster, use Niagara (Download at: http://files.wowace.com/)
 0.9.5
 - Fixed library error
@@ -619,7 +898,7 @@ Pursuit of Justice (Retribution) is now 3 ranks and increases movement speed by 
 - Option to show Spell Crit from Intellect, Ex: "+23 Intellect (+0.35% Spell Crit)"
 - Support for "grant you xx stat" type pattern, ex: Quel'Serrar, Assassination Armor set
 - "+14 (1.21%) Rating" type strings changed to "+14 Rating (+1.21%)"
-- Recoded tooltip scanner is now more eazily extendable and has support for multiple separators for better accuracy.
+- Recoded tooltip scanner is now more easily extendable and has support for multiple separators for better accuracy.
 0.7.6
 - The amount of haste granted by a point of haste rating has been increased by 50% (Patch 2.0.7)
 - Fixed Mutltitips support
@@ -651,7 +930,7 @@ Pursuit of Justice (Retribution) is now 3 ranks and increases movement speed by 
 - Added French localization by Tixu
 0.6
 - Added option to calculate using the required level if you are below the required level
-- Redesigned the tooltip scanner to be more locale friendly, should be eazier to do translations now.
+- Redesigned the tooltip scanner to be more locale friendly, should be easier to do translations now.
 0.5.1
 - Fixed line 457 error
 0.5
@@ -680,9 +959,9 @@ Pursuit of Justice (Retribution) is now 3 ranks and increases movement speed by 
 0.2.1
 - Fixed AceConsole error
 0.2
-- Simplified the localization file for eazier localization
+- Simplified the localization file for easier localization
 - Added keyword "spell crit"
-- Added Item Level, Item ID support for proffession trainer items
+- Added Item Level, Item ID support for profession trainer items
 - Set Debugging to false
 0.1.1
 - Removed AceHook2.1 cause it was causing problems with other Ace2 addons

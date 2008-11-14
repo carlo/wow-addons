@@ -2,14 +2,14 @@
 -- FlightMap - AddOn to show inbound and outbound flightpaths from a given
 --             zone on the World Map.  Additionally shows flight costs and
 --             zone level ranges.
--- Copyright (c) 2005-2007 Byron Ellacott (Dhask of Uther)
+-- Copyright (c) 2005-2008 Byron Ellacott (Dhask of Uther)
 --
 -- An unlimited license to use, reproduce and copy this work is granted, on
 -- the condition that the licensee accepts all responsibility and liability
 -- for any damage that may arise from the use of this AddOn.
 
 -- Version number
-FLIGHTMAP_VERSION   = "2.2-1";
+FLIGHTMAP_VERSION   = "3.0-1";
 
 -- Maximum lines to draw at once
 FLIGHTMAP_MAX_PATHS = 15;
@@ -33,6 +33,7 @@ local lTYPE_HORDE     = FLIGHTMAP_HORDE;
 local lTYPE_ALLIANCE  = FLIGHTMAP_ALLIANCE;
 local lTYPE_CONTESTED = FLIGHTMAP_CONTESTED;
 local lTYPE_NEUTRAL   = FLIGHTMAP_NEUTRAL;
+local lTYPE_COMBAT		= FLIGHTMAP_COMBAT;
 
 -- According to http://www.worldofwarcraft.com/ at any rate...
 FLIGHTMAP_RANGES   = {
@@ -81,6 +82,7 @@ FLIGHTMAP_RANGES   = {
     [FLIGHTMAP_BLOODMYST]     = {10, 20, lTYPE_ALLIANCE},
     [FLIGHTMAP_EVERSONG]      = { 1, 10, lTYPE_HORDE},
     [FLIGHTMAP_GHOSTLANDS]    = {10, 20, lTYPE_HORDE},
+    [FLIGHTMAP_ISLEOFQUEL]		= {70, 70, lTYPE_CONTESTED}, 
 
     [FLIGHTMAP_HELLFIRE]      = {58, 63, lTYPE_CONTESTED},
     [FLIGHTMAP_ZANGARMARSH]   = {60, 64, lTYPE_CONTESTED},
@@ -89,6 +91,17 @@ FLIGHTMAP_RANGES   = {
     [FLIGHTMAP_BLADESEDGE]    = {65, 68, lTYPE_CONTESTED},
     [FLIGHTMAP_NETHERSTORM]   = {67, 70, lTYPE_NEUTRAL},
     [FLIGHTMAP_SHADOWMOON]    = {67, 70, lTYPE_CONTESTED},
+    
+    [FLIGHTMAP_BOREANTUNDRA] 	= {68, 72, lTYPE_CONTESTED},
+		[FLIGHTMAP_HOWLINGFJORD] 	= {68, 72, lTYPE_CONTESTED},
+		[FLIGHTMAP_DRAGONBLIGHT] 	= {71, 74, lTYPE_CONTESTED},
+		[FLIGHTMAP_GRIZZLYHILLS] 	= {73, 75, lTYPE_CONTESTED},
+		[FLIGHTMAP_ZULDRAK] 			= {74, 77, lTYPE_CONTESTED},
+		[FLIGHTMAP_SHOLAZARBASIN]	= {76, 78, lTYPE_CONTESTED},
+		[FLIGHTMAP_CRYSTALSONGF] 	= {77, 80, lTYPE_CONTESTED},
+		[FLIGHTMAP_STORMPEAKS] 		= {77, 80, lTYPE_CONTESTED},
+		[FLIGHTMAP_ICECROWN] 			= {77, 80, lTYPE_CONTESTED},
+		[FLIGHTMAP_WINTERGRASP] 	= {77, 80, lTYPE_COMBAT},
 };
 
 -- Colours for zones
@@ -98,6 +111,7 @@ FLIGHTMAP_COLORS = {
     Friendly  = { r = 0.2, g = 0.9, b = 0.2 },
     Contested = { r = 0.8, g = 0.6, b = 0.4 },
     Neutral   = { r = 0.9, g = 0.8, b = 0.2 },
+    Combat		= { r = 1.0, g = 0.0, b = 0.0 },
 };
 
 ------------------ Data access functions ------------------
@@ -148,51 +162,6 @@ local function lRelocateNode(newkey, name)
     end
 end
 
--- In WoW 2.0, the Eastern Kingdoms changed shape.  Patch up all known
--- data!
-local function lBurningCrusade()
-    if FlightMap.Upgraded then return; end
-
-    -- Constants for how the taxi map coordinate space changed
-    local Atx = 0.90809190809190809191;
-    local Btx = 0.05345362937062937063;
-    local Aty = 0.90820800868926535510;
-    local Bty = -0.02124971693589301808;
-
-    -- Constants for how the continent map coordinate space changed
-    local Acx = 0.93909818420052700922;
-    local Bcx = 0.02596032938397401054;
-    local Acy = 0.93457346712702742189;
-    local Bcy = 0.06901729869906588976;
-
-    local function switchup(map)
-        -- Relocate on continent map only
-        local movers = {}
-        for k, v in pairs(map) do
-            if v.Continent == 2 then
-                local newcx = v.Location.Continent.x * Acx + Bcx;
-                local newcy = v.Location.Continent.y * Acy + Bcy;
-                v.Location.Continent = {x = newcx, y = newcy};
-                movers[k] = v;
-            end
-        end
-        for k, v in pairs(movers) do
-            local newcx = v.Location.Taxi.x * Atx + Btx;
-            local newcy = v.Location.Taxi.y * Aty + Bty;
-            v.Location.Taxi = {x = newcx, y = newcy};
-            local newkey = FlightMapUtil.makeNodeName(2, newcx, newcy);
-            lRelocateNode(newkey, v.Name);
-        end
-    end
-
-    -- Process both Horde and Alliance
-    switchup(FlightMap[FLIGHTMAP_HORDE] or {});
-    switchup(FlightMap[FLIGHTMAP_ALLIANCE] or {});
-
-    -- And never do this again!
-    FlightMap.Upgraded = true;
-end
-
 local function lSetDefaultData()
     -- Create an empty knowledge record
     if not FlightMap["Knowledge"] then
@@ -215,16 +184,6 @@ local function lSetDefaultData()
     if not FlightMap["GossipFlights"] then
         FlightMap["GossipFlights"] = {};
     end
-
-    -- Patch 1.8: Remove any references to Valor's Rest
-    lStripPoint(FlightMap[FLIGHTMAP_HORDE] or {}, "1:461:226");
-    lStripPoint(FlightMap[FLIGHTMAP_ALLIANCE] or {}, "1:463:223");
-
-    -- Patch 1.12: Remove any references to Alliance's misplaced Moonglade
-    lStripPoint(FlightMap[FLIGHTMAP_ALLIANCE] or {}, "1:552:793");
-
-    -- Patch 2.0: Remove any references to the Horde Druid Moonglade
-    lStripPoint(FlightMap[FLIGHTMAP_HORDE] or {}, "1:549:807");
 
     -- Revision 1.8-2: Delete pre-1.7 data
     FlightMap.Locs = nil;
@@ -507,7 +466,7 @@ end
 FlightMapUtil.addFlightsForNode = lAddFlightsForNode;
 
 -- Update the flight tooltip for a zone
-local function lUpdateTooltip(zoneName)
+local function lUpdateTooltip(zoneName, self)
     -- No zone name, no tooltip!
     if not zoneName or zoneName == "" then
         FlightMapTooltip:Hide();
@@ -516,7 +475,7 @@ local function lUpdateTooltip(zoneName)
 
     -- Doesn't matter which anchor point we use, none of them are
     -- useful for what FlightMap needs...
-    FlightMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+    FlightMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 
     -- Determine colour and level range
     local title = FLIGHTMAP_COLORS.Unknown;
@@ -530,6 +489,8 @@ local function lUpdateTooltip(zoneName)
             title = FLIGHTMAP_COLORS.Neutral;
         elseif (side == lTYPE_CONTESTED) then
             title = FLIGHTMAP_COLORS.Contested;
+        elseif (side == lTYPE_COMBAT) then
+        		title = FLIGHTMAP_COLORS.Combat;
         else
             if (faction == side) then
                 title = FLIGHTMAP_COLORS.Friendly;
@@ -583,7 +544,7 @@ local function lCloseToExistingPOI(x, y)
     for i = 1, NUM_WORLDMAP_POIS, 1 do
         local button = getglobal("WorldMapFramePOI" .. i);
         if button:IsShown() then
-            local _, _, index, _, _ = GetMapLandmarkInfo(i);
+            local _, _, index, _, _, _ = GetMapLandmarkInfo(i);
             -- Index 15 is an invisible POI
             if index ~= 15 then
                 local px, py = button:GetCenter();
@@ -619,14 +580,14 @@ local function lShowNodePOI(node, data, space, num)
     y = (1 - y) * WorldMapDetailFrame:GetHeight();
 
     -- Ensure the point isn't close to an existing POI icon
-    if lCloseToExistingPOI(x, y) then return false; end
+    if lCloseToExistingPOI(x, y) then return false; end --- Disable the button instead.
 
     -- Get the node name
     local name, _ = FlightMapUtil.getNameAndZone(data.Name);
 
     -- Get the button
     local button = getglobal("FlightMapPOI" .. num);
-
+		
     -- Does the user know this flight node?
     if not FlightMapUtil.knownNode(node) then
         if not FlightMap.Opts.showAllInfo then
@@ -750,8 +711,8 @@ lFM_CurrentArea = nil;
 local lFM_OldUpdate = function() end;
 
 -- Replacement function to draw all the extra goodies of FlightMap
-function FlightMap_WorldMapButton_OnUpdate(arg1)
-    lFM_OldUpdate(arg1);
+function FlightMap_WorldMapButton_OnUpdate(self, elapsed)
+    lFM_OldUpdate(self, elapsed);
     local areaName = WorldMapFrame.areaName;
     local zoneNum = GetCurrentMapZone();
 
@@ -767,25 +728,25 @@ function FlightMap_WorldMapButton_OnUpdate(arg1)
 
     -- Continent or zone map?
     if zoneNum == 0 then
-        lUpdateTooltip(areaName);
+        lUpdateTooltip(areaName, self);
         lUpdateFlightPOIs(areaName);
         lDrawFlightLines(areaName);
     else
         lUpdateFlightPOIs(FlightMapUtil.getZoneName());
-        lUpdateTooltip(nil);            -- hide it
+        lUpdateTooltip(nil, self);            -- hide it
         lDrawFlightLines(nil);          -- hide them
     end
 end
 
-function FlightMapPOIButton_OnEnter()
-    local x, y = this:GetCenter();
+function FlightMapPOIButton_OnEnter(self)
+    local x, y = self:GetCenter();
     local parentX, parentY = WorldMapDetailFrame:GetCenter();
     if (x > parentX) then
-        WorldMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+        WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
     else
-        WorldMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+        WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
     end
-    lAddFlightsForNode(WorldMapTooltip, this.node, "");
+    lAddFlightsForNode(WorldMapTooltip, self.node, "");
     WorldMapTooltip:Show();
 end
 
@@ -816,9 +777,9 @@ function FlightMap_OnSlashCmd(args)
     end
 end
 
-function FlightMap_OnLoad()
+function FlightMap_OnLoad(self)
     -- Hook TAXIMAP_OPENED to learn flight paths
-    this:RegisterEvent("TAXIMAP_OPENED");
+    self:RegisterEvent("TAXIMAP_OPENED");
 
     -- Override the world map function
     if Sea and Sea.util and Sea.util.hook then
@@ -836,7 +797,7 @@ function FlightMap_OnLoad()
     SlashCmdList["FLIGHTMAP"] = FlightMap_OnSlashCmd;
 
     -- Register for VARIABLES_LOADED to talk to myAddOns
-    this:RegisterEvent("VARIABLES_LOADED");
+    self:RegisterEvent("VARIABLES_LOADED");
 
     -- Register the options frame
     UIPanelWindows["FlightMapOptionsFrame"] = {
@@ -845,7 +806,7 @@ function FlightMap_OnLoad()
     };
 end
 
-function FlightMap_OnEvent(event)
+function FlightMap_OnEvent(self, event, ...)
     if (event == "TAXIMAP_OPENED") then
         lAutoDismount();
         lLearnTaxiNode();
@@ -853,7 +814,7 @@ function FlightMap_OnEvent(event)
         lSetDefaultData();
 
         -- Upgrade data to burning crusade
-        lBurningCrusade();
+---        lBurningCrusade();
 
         -- Register with myAddOns
         if (myAddOnsFrame_Register) then
@@ -871,7 +832,7 @@ end
 
 ----------------- Options panel functions -----------------
 
-function FlightMapOptionsFrame_OnShow()
+function FlightMapOptionsFrame_OnShow(self)
     -- Set localised strings
     FlightMapOptionsFrameClose:SetText(FLIGHTMAP_OPTIONS_CLOSE);
     FlightMapOptionsFrameTitle:SetText(FLIGHTMAP_OPTIONS_TITLE);
@@ -882,13 +843,14 @@ function FlightMapOptionsFrame_OnShow()
         local name = base .. "Opt" .. optid;
         local button = getglobal(name);
         local label = getglobal(name .. "Text");
-        OptionsFrame_EnableCheckBox(button, 1, FlightMap.Opts[option.option]);
+        BlizzardOptionsPanel_CheckButton_Enable(button, 1, FlightMap.Opts[option.option]);
 
         -- Simple stuff
         label:SetText(option.label);
         button.tooltipText = option.tooltip;
         button.option = option.option;
         button.children = option.children or {};
+        button:SetChecked(FlightMap.Opts[option.option]);
     end
 
     for optid, option in pairs(FLIGHTMAP_OPTIONS) do
@@ -897,38 +859,38 @@ function FlightMapOptionsFrame_OnShow()
             local other = getglobal(base .. "Opt" .. child);
             if other then
                 if FlightMap.Opts[option.option] then
-                    OptionsFrame_EnableCheckBox(other, 1,
+                    BlizzardOptionsPanel_CheckButton_Enable(other, 1,
                         FlightMap.Opts[FLIGHTMAP_OPTIONS[child].option]);
                 else
-                    OptionsFrame_DisableCheckBox(other);
+                    BlizzardOptionsPanel_CheckButton_Disable(other);
                 end
             end
         end
     end
 end
 
-function FlightMapOptionsFrame_OnHide()
-    if (MYADDONS_ACTIVE_OPTIONSFRAME == this) then
+function FlightMapOptionsFrame_OnHide(self)
+    if (MYADDONS_ACTIVE_OPTIONSFRAME == self) then
         ShowUIPanel(myAddOnsFrame);
     end
 end
 
-function FlightMapOptionsCheckButton_OnClick()
-    if (this:GetChecked()) then
-        FlightMap.Opts[this.option] = true;
+function FlightMapOptionsCheckButton_OnClick(self, button)
+    if (self:GetChecked()) then
+        FlightMap.Opts[self.option] = true;
     else
-        FlightMap.Opts[this.option] = false;
+        FlightMap.Opts[self.option] = false;
     end
 
     local base = "FlightMapOptionsFrame";
-    for _, child in pairs(this.children) do
+    for _, child in pairs(self.children) do
         local other = getglobal(base .. "Opt" .. child);
         if other then
-            if FlightMap.Opts[this.option] then
-                OptionsFrame_EnableCheckBox(other, 1,
+            if FlightMap.Opts[self.option] then
+                BlizzardOptionsPanel_CheckButton_Enable(other, 1,
                     FlightMap.Opts[FLIGHTMAP_OPTIONS[child].option]);
             else
-                OptionsFrame_DisableCheckBox(other);
+                BlizzardOptionsPanel_CheckButton_Disable(other);
             end
         end
     end

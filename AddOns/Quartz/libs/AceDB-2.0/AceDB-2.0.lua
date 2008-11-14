@@ -1,11 +1,11 @@
 ﻿--[[
 Name: AceDB-2.0
-Revision: $Rev: 46764 $
+Revision: $Rev: 1091 $
 Developed by: The Ace Development Team (http://www.wowace.com/index.php/The_Ace_Development_Team)
 Inspired By: Ace 1.x by Turan (turan@gryphon.com)
 Website: http://www.wowace.com/
 Documentation: http://www.wowace.com/index.php/AceDB-2.0
-SVN: http://svn.wowace.com/root/trunk/Ace2/AceDB-2.0
+SVN: http://svn.wowace.com/wowace/trunk/Ace2/AceDB-2.0
 Description: Mixin to allow for fast, clean, and featureful saved variable
              access.
 Dependencies: AceLibrary, AceOO-2.0, AceEvent-2.0
@@ -13,7 +13,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "AceDB-2.0"
-local MINOR_VERSION = "$Revision: 46764 $"
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 1091 $"):match("(%d+)"))
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -33,6 +33,10 @@ local DELETE_PROFILE_DESC = "Deletes a profile. Note that no check is made wheth
 local DELETE_PROFILE_USAGE = "<profile name>"
 
 if GetLocale() == "deDE" then
+	DELETE_PROFILE = "L\195\182schen"
+	DELETE_PROFILE_DESC = "L\195\182scht ein Profil. Beachte das nicht \195\188berpr\195\188ft wird ob das zu l\195\182schende Profil von anderen Charakteren genutzt wird oder nicht."
+	DELETE_PROFILE_USAGE = "<profil name>"
+
 	ACTIVE = "Aktiv"
 	ENABLED = "Aktiviert"
 	STATE = "Status"
@@ -49,15 +53,15 @@ if GetLocale() == "deDE" then
 	OTHER_PROFILE_DESC = "W\195\164hle ein anderes Profil."
 	OTHER_PROFILE_GUI = "Anderes"
 	OTHER_PROFILE_USAGE = "<Profilname>"
-	RESET_PROFILE = "Reset profile" -- fix
-	RESET_PROFILE_DESC = "Clear all settings of the current profile." -- fix
+	RESET_PROFILE = "Resette das Profil"
+	RESET_PROFILE_DESC = "Entfernt alle Einstellungen des gegenw\195\164rtigen Profils."
 
 	CHARACTER_COLON = "Charakter: "
 	REALM_COLON = "Realm: "
 	CLASS_COLON = "Klasse: "
 
-	DEFAULT = "Default" -- fix
-	ALTERNATIVE = "Alternative" -- fix
+	DEFAULT = "Vorgabe"
+	ALTERNATIVE = "Alternativ"
 elseif GetLocale() == "frFR" then
 	ACTIVE = "Actif"
 	ENABLED = "Activ\195\169"
@@ -196,6 +200,36 @@ elseif GetLocale() == "esES" then
 
 	DEFAULT = "Por defecto"
 	ALTERNATIVE = "Alternativo"
+elseif GetLocale() == "ruRU" then
+	DELETE_PROFILE = "Удалить"
+	DELETE_PROFILE_DESC = "Удалить профиль. Изначально проверьте не используется ли этот профиль другими персонажами, чтобы не натворить себе неудобств."
+	DELETE_PROFILE_USAGE = "<название профиляe>"
+
+	ACTIVE = "Активный"
+	ENABLED = "Включён"
+	STATE = "Состояние"
+	TOGGLE_ACTIVE = "Отключить/Запустить аддон."
+	MAP_ACTIVESUSPENDED = { [true] = "|cff00ff00Активный|r", [false] = "|cffff0000Suspended|r" }
+	SET_PROFILE = "Установить профиль для этого аддона."
+	SET_PROFILE_USAGE = "{чар || класс || сервер || <название профиля>}"
+	PROFILE = "Профиль"
+	PLAYER_OF_REALM = "%s из %s"
+	CHOOSE_PROFILE_DESC = "Выберите профиль."
+	CHOOSE_PROFILE_GUI = "Выбор"
+	COPY_PROFILE_DESC = "Скопировать настройки с другого профиля."
+	COPY_PROFILE_GUI = "Скопировать с"
+	OTHER_PROFILE_DESC = "Выбрать другой профиль."
+	OTHER_PROFILE_GUI = "Другое"
+	OTHER_PROFILE_USAGE = "<название профиля>"
+	RESET_PROFILE = "Сброс профиля"
+	RESET_PROFILE_DESC = "Очистить все настройки для текущего профиля."
+
+	CHARACTER_COLON = "Персонаж: "
+	REALM_COLON = "Сервер: "
+	CLASS_COLON = "Класс: "
+
+	DEFAULT = "По умолчанию"
+	ALTERNATIVE = "Альтернатива"
 else -- enUS
 	ACTIVE = "Active"
 	ENABLED = "Enabled"

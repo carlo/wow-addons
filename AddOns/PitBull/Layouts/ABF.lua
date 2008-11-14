@@ -1,10 +1,10 @@
-local VERSION = tonumber(("$Revision: 40790 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 1184 $"):match("%d+"))
 
 local PitBull = PitBull
 if PitBull.revision < VERSION then
 	PitBull.version = "r" .. VERSION
 	PitBull.revision = VERSION
-	PitBull.date = ("$Date: 2007-06-19 22:06:49 -0400 (Tue, 19 Jun 2007) $"):match("%d%d%d%d%-%d%d%-%d%d")
+	PitBull.date = ("$Date: 2007-06-20 02:06:49 +0000 (Wed, 20 Jun 2007) $"):match("%d%d%d%d%-%d%d%-%d%d")
 end
 
 PitBull:RegisterLayout({

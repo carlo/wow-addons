@@ -9,7 +9,7 @@
          hidden="true">
     <Scripts>
       <OnUpdate>
-        FlightMapTimesRecorderFrame_OnUpdate();
+        FlightMapTimesRecorderFrame_OnUpdate(self, elapsed);
       </OnUpdate>
     </Scripts>
   </Frame>
@@ -103,22 +103,22 @@
     <!-- Make it dance! -->
     <Scripts>
       <OnLoad>
-        FlightMapTimes_OnLoad();
+        FlightMapTimes_OnLoad(self);
       </OnLoad>
       <OnUpdate>
-        FlightMapTimes_OnUpdate();
+        FlightMapTimes_OnUpdate(self, elapsed);
       </OnUpdate>
       <OnDragStart>
-        FlightMapTimes_OnDragStart();
+        FlightMapTimes_OnDragStart(self);
       </OnDragStart>
       <OnDragStop>
-        FlightMapTimes_OnDragStop();
+        FlightMapTimes_OnDragStop(self);
       </OnDragStop>
       <OnMouseUp>
-        FlightMapTimes_OnDragStop();
+        FlightMapTimes_OnDragStop(self);
       </OnMouseUp>
       <OnEnter>
-        GameTooltip_AddNewbieTip(FLIGHTMAP_NAME, 1.0, 1.0, 1.0,
+        GameTooltip_AddNewbieTip(self, FLIGHTMAP_NAME, 1.0, 1.0, 1.0,
             FLIGHTMAP_TIMER_HELP, 1);
       </OnEnter>
       <OnLeave>

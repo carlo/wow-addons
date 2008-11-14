@@ -1,4 +1,4 @@
-﻿-- Chinese simp Translation: ela, valkyrie@CWDG
+-- Chinese simp Translation: ela, valkyrie@CWDG
 -- CWDG site: http://cwowaddon.com
 
 local L = AceLibrary("AceLocale-2.2"):new("Quartz")
@@ -10,7 +10,8 @@ L:RegisterTranslations("zhCN", function()
 		["Global Cooldown"] = "公共CD",
 		["Buff"] = "增益效果",
 		["Target"] = "目标",
-		["Focus"] = "关注目标",
+		["Pet"] = "宠物",
+		["Focus"] = "焦点目标",
 		["Player"] = "玩家",
 		["Mirror"] = "镜像",
 		["Timer"] = "计时器",
@@ -77,6 +78,8 @@ L:RegisterTranslations("zhCN", function()
 		["Spell Rank Style"] = "法术等级类型",
 		["Hide Name Text"] = "隐藏名称文本",
 		["Hide Time Text"] = "隐藏时间文本",
+		["Hide Cast Time"] = "隐藏施法时间",
+		["Cast Time Precision"] = "施法时间精度",
 		["Time Font Size"] = "时间字体尺寸",
 		["Time Text Position"] = "时间文本位置",
 		["Spell Text"] = "法术文本",
@@ -103,6 +106,9 @@ L:RegisterTranslations("zhCN", function()
 		["Hide Samwise Icon"] = "隐藏无用图标",
 		["Show for Friends"] = "显示给朋友",
 		["Show for Enemies"] = "显示给敌人",
+		["Show if Target"] = "目标则显示",
+		["Target Name"] = "目标名称",
+		["Display target name of spellcasts after spell name"] = "在法术名称后显示施法目标名字",
 		
 		["Roman"] = "罗马字体",
 		["Roman Full Text"] = "罗马字体全文本",
@@ -113,7 +119,7 @@ L:RegisterTranslations("zhCN", function()
 			["Show Text"] = "显示文本",
 			--GCD
 			["Primary"] = "主要",
-		    ["Backup"] = "后备",
+			["Backup"] = "后备",
 			["%s Spell"] = "%s法术",
 			["Bar Position"] = "位置",
 			["Deplete"] = "衰竭",
@@ -181,6 +187,8 @@ L:RegisterTranslations("zhCN", function()
 		["Set the alignment of the spell name text"] = "设定法术名称文本队列",
 		["Set the size of the spell name text"] = "设定法术名称文本尺寸",
 		["Disable the text that displays the time remaining on your cast"] = "关闭正在施放法术剩余时间文本",
+		["Disable the text that displays the total cast time"] = "关闭施放法术总时间文本",
+		["Set the precision (i.e. number of decimal places) for the cast time text"] = "设置施法时间精度(十进制小数)",
 		["Disable the text that displays the spell name/rank"] = "关闭法术名称/等级文本",
 		["Display the rank of spellcasts alongside their name"] = "在法术名称旁边显示等级",
 		["Set the display style of the spell rank"] = "设定显示法术等级类型",
@@ -204,6 +212,7 @@ L:RegisterTranslations("zhCN", function()
 		["Hide the icon for spells with no icon"] = "隐藏法术图标",
 		["Show this castbar for friendly units"] = "为友好单位显示此施法条",
 		["Show this castbar for hostile units"] = "为敌对单位显示此施法条",
+		["Show this castbar if focus is also target"] = "如果锁定与目标相同，则显示此施法条",
 		["Set an exact X value for this bar's position."] = "为施法条设置一个精确的X值",
 		["Set an exact Y value for this bar's position."] = "为施法条设置一个精确的Y值",
 		
@@ -341,5 +350,7 @@ L:RegisterTranslations("zhCN", function()
 			["INTERRUPTED (%s)"] = "打断 (%s)",
 			--Range
 			--Flight
+			--FeatureFrame
+			["Modular casting bar"] = "模块化施法条",
 	}
 end)

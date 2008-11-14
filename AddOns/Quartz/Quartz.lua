@@ -21,10 +21,10 @@ Quartz = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent
 Quartz:SetModuleMixins("AceEvent-2.0")
 Quartz:RegisterDB("QuartzDB")
 local self = Quartz
-Quartz.revision = tonumber(("$Rev: 54971 $"):match("%d+"))
+Quartz.revision = tonumber(("$Rev: 70806 $"):match("%d+"))
 Quartz.version = "0.1." .. (revision or 0)
 
-local media = LibStub("LibSharedMedia-2.0")
+local media = LibStub("LibSharedMedia-3.0")
 media:Register("statusbar", "Frost", "Interface\\AddOns\\Quartz\\textures\\Frost")
 media:Register("statusbar", "Healbot", "Interface\\AddOns\\Quartz\\textures\\Healbot")
 media:Register("statusbar", "LiteStep", "Interface\\AddOns\\Quartz\\textures\\LiteStep")
@@ -62,22 +62,6 @@ local options
 local function applySettings()
 	if not IsLoggedIn() then
 		return
-	end
-	if self.db.profile.hideblizz then
-		CastingBarFrame.RegisterEvent = nothing
-		CastingBarFrame:UnregisterAllEvents()
-		CastingBarFrame:Hide()
-	else
-		CastingBarFrame.RegisterEvent = nil
-		CastingBarFrame:UnregisterAllEvents()
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_START")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_FAILED")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 	end
 	for name, module in self:IterateModules() do
 		if module.ApplySettings then
@@ -120,7 +104,6 @@ function Quartz:OnInitialize()
 	end
 
 	self:RegisterDefaults("profile", {
-		hideblizz = true,
 		hidesamwise = true,
 		
 		sparkcolor = {1,1,1,0.5},
@@ -136,6 +119,20 @@ function Quartz:OnInitialize()
 		backgroundalpha = 1,
 		borderalpha = 1,
 	})
+	if ( EarthFeature_AddButton ) then
+		EarthFeature_AddButton(
+			{
+				id= "Quartz";
+				name= L["Modular casting bar"];
+				subtext= "Quartz";
+				tooltip = L["Modular casting bar"];
+				icon= "Interface\\Icons\\Spell_Nature_ElementalAbsorption";
+				callback= function()
+					AceLibrary("Waterfall-1.0"):Open('Quartz')
+					end;
+			}
+		);
+	end
 end
 
 function Quartz:OnEnable(first)
@@ -243,14 +240,6 @@ do
 		name = L["Quartz"],
 		desc = L["Quartz"],
 		args = {
-			hideblizz = {
-				type = 'toggle',
-				name = L["Disable Blizzard Cast Bar"],
-				desc = L["Disable and hide the default UI's casting bar"],
-				get = get,
-				set = set,
-				passValue = 'hideblizz',
-			},
 			hidesamwise = {
 				type = 'toggle',
 				name = L["Hide Samwise Icon"],

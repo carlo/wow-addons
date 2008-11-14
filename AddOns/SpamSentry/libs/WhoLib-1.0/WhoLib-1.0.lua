@@ -1,6 +1,6 @@
---[[
+﻿--[[
 Name: WhoLib-1.0
-Revision: $Revision: 53004 $
+Revision: $Revision: 55 $
 Author(s): ALeX Kazik (alx@kazik.de)
 Website: http://wowace.com/wiki/WhoLib-1.0
 Documentation: http://wowace.com/wiki/WhoLib-1.0
@@ -13,7 +13,7 @@ Dependencies: AceLibrary, AceEvent-2.0, AceHook-2.1, AceOO-2.0, AceLocale-2.2, D
 -- VISIT: http://wowace.com/wiki/WhoLib-1.0
 
 local MAJOR_VERSION = 'WhoLib-1.0'
-local MINOR_VERSION = '$Revision: 53004 $'
+local MINOR_VERSION = 90000 + tonumber(('$Revision: 55 $'):match("(%d+)"))
 
 if not AceLibrary then error(MAJOR_VERSION .. ' requires AceLibrary') end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -34,6 +34,10 @@ local lib = AceOO.Mixin {
 				'WHOLIB_FLAG_ALLWAYS_CALLBACK',
 				'SetWhoLibDebug',
 			}
+
+local _G = getfenv(0)
+
+local WHOS_TO_DISPLAY = _G.WHOS_TO_DISPLAY
 
 -- externals
 
@@ -58,7 +62,7 @@ function lib.Who(handler, query, opts)
 		args.flags = opts.flags
 	end
 	if(opts.queue == nil)then
-		args.queue = self.WHOLIB_QUEUE_QUIET
+		args.queue = self.WHOLIB_QUEUE_SCANNING
 	elseif(opts.queue ~= self.WHOLIB_QUEUE_USER and opts.queue ~= self.WHOLIB_QUEUE_QUIET and opts.queue ~= self.WHOLIB_QUEUE_SCANNING)then
 		self:error('opts.queue is not a valid queue')
 	else
@@ -86,7 +90,7 @@ function lib.Who(handler, query, opts)
 	-- now args - copied and verified from opts
 	
 	if(opts.queue == self.WHOLIB_QUEUE_USER)then
-		if(WhoFrame:IsVisible())then
+		if(WhoFrame:IsShown())then
 			self:GuiWho(opts.query)
 		else
 			self:ConsoleWho(opts.query)
@@ -117,7 +121,7 @@ function lib.UserInfo(handler, name, opts)
 		self:error('opts must be a string or a table')
 	end
 	if(opts.queue == nil)then
-		args.queue = self.WHOLIB_QUEUE_QUIET
+		args.queue = self.WHOLIB_QUEUE_SCANNING
 	elseif(opts.queue ~= self.WHOLIB_QUEUE_QUIET and opts.queue ~= self.WHOLIB_QUEUE_SCANNING)then
 		self:error('opts.queue is not a valid queue')
 	else
@@ -166,9 +170,9 @@ function lib.UserInfo(handler, name, opts)
 				DEFAULT_CHAT_FRAME:AddMessage('WhoLib: Info(' .. args.name ..') returned immedeatly')
 			end
 			if(bit.band(args.flags, self.WHOLIB_FLAG_ALLWAYS_CALLBACK) ~= 0)then
-				if(args.callback == 'function')then
+				if(type(args.callback) == 'function')then
 					args.callback(self.Cache[args.name].data)
-				elseif(args.callback == 'string')then
+				elseif(type(args.callback) == 'string')then
 					args.handler[args.callback](args.handler, self.Cache[args.name].data)
 				end
 				return false
@@ -242,7 +246,7 @@ end
 function lib:AskWhoNext()
 	local args = nil
 	for k,v in ipairs(self.Queue) do
-		if(WhoFrame:IsVisible() and k > self.WHOLIB_QUEUE_QUIET)then
+		if(WhoFrame:IsShown() and k > self.WHOLIB_QUEUE_QUIET)then
 			break
 		end
 		if(#v > 0)then
@@ -392,6 +396,7 @@ function lib:GuiWho(msg)
 	if(self.WhoInProgress)then
 		WhoFrameEditBox:SetText(self.L['gui_wait'])
 	end
+	self.savedText = msg
 	self:AskWho({query = msg, queue = self.WHOLIB_QUEUE_USER, flags = 0, gui = true})
 	WhoFrameEditBox:ClearFocus();
 end
@@ -415,7 +420,7 @@ function lib:ConsoleWho(msg)
 end
 
 function lib:ReturnUserInfo(name)
-	if(name ~= nil) then
+	if(name ~= nil and self ~= nil and self.Cache ~= nil and self.Cache[name] ~= nil) then
 		return self:dup(self.Cache[name].data), (time() - self.Cache[name].last) / 60 
 	end
 end
@@ -443,9 +448,9 @@ function lib:WhoFrameEditBox_OnEnterPressed()
 	self:GuiWho(WhoFrameEditBox:GetText())
 end
 
-function lib:FriendsFrame_OnEvent()
+function lib:FriendsFrame_OnEvent(this, event, ...)
 	if(not (event == 'WHO_LIST_UPDATE' and self.Quiet))then
-		self.hooks.FriendsFrame_OnEvent(event)
+		self.hooks.FriendsFrame_OnEvent(this, event, ...)
 	end
 end
 
@@ -485,6 +490,8 @@ end
 -- events
 
 function lib:CHAT_MSG_SYSTEM(arg1)
+	if not arg1 then return end
+
 	local pla, _, lvl, rac, cla, gui, zon = self.Deformat:Deformat(arg1, WHO_LIST_GUILD_FORMAT)
 	if(pla ~= nil)then
 		tinsert(self.Result, {Name=pla, Guild=gui, Level=lvl, Race=rac, Class=cla, Zone=zon})
@@ -493,7 +500,7 @@ function lib:CHAT_MSG_SYSTEM(arg1)
 		if(pla ~= nil)then
 			tinsert(self.Result, {Name=pla, Guild='', Level=lvl, Race=rac, Class=cla, Zone=zon})
 		else
-			local numWhoResults = self.Deformat:Deformat(arg1, WHO_NUM_RESULTS) or self.Deformat:Deformat(arg1, WHO_NUM_RESULTS_P1)
+			local numWhoResults = self.Deformat:Deformat(arg1, WHO_NUM_RESULTS)
 			if(numWhoResults ~= nil)then
 				self.Total = numWhoResults
 				self:ReturnWho()
@@ -516,6 +523,8 @@ end
 -- init
 
 local function activate(self, oldLib, oldDeactivate)
+	WhoLibByALeX = self
+
 	self.Queue = oldLib and oldLib.Queue or {[1]={}, [2]={}, [3]={}}
 	self.SlashWho = oldLib and oldLib.SlashWho or SlashCmdList['WHO']
 	self.WhoInProgress = oldLib and oldLib.WhoInProgress or false
@@ -527,20 +536,27 @@ local function activate(self, oldLib, oldDeactivate)
 	self.Cache = oldLib and oldLib.Cache or {}
 	self.CacheQueue = oldLib and oldLib.CacheQueue or {}
 	self.SetWhoToUIState = oldLib and oldLib.SetWhoToUIState or 0
+	self.hooks = oldLib and oldLib.hooks or {} -- Copy hooks from the lib we're upgrading
 	
 	SlashCmdList['WHO'] = SlashWHO
 	
 	SlashCmdList['WHOLIB_DEBUG'] = SlashDebug
 	SLASH_WHOLIB_DEBUG1 = '/wholibdebug'
 	
-	WhoLibByALeX = self
+	--WhoLibByALeX = self
 	
-	self.L = AceLibrary('AceLocale-2.2'):new('WhoLib-1.0.$Revision: 53004 $')
+	self.L = AceLibrary('AceLocale-2.2'):new('WhoLib-1.0.$Revision: 55 $')
 	
 	self.L:RegisterTranslations('enUS', function() return {
 		['console_queued'] = 'Added "/who %s" to queue',
 		['console_query'] = 'Result of "/who %s"',
 		['gui_wait'] = '- Please Wait -',
+	} end )
+	
+	self.L:RegisterTranslations('ruRU', function() return {
+		['console_queued'] = 'Добавлено в очередь "/who %s"',
+		['console_query'] = 'Результат "/who %s"',
+		['gui_wait'] = '- Пожалуйста подождите -',
 	} end )
 	
 	-- queues
@@ -554,6 +570,8 @@ local function activate(self, oldLib, oldDeactivate)
 	if(oldDeactivate)then
 		oldDeactivate(oldLib)
 	end
+
+	_G.WhoLibByALeX = WhoLibByALeX
 end
 
 local function deactivate(oldLib)
@@ -570,11 +588,22 @@ local function external(self, major, instance)
 		self:RegisterEvent('WHO_LIST_UPDATE')
 	elseif(major == 'AceHook-2.1')then
 		instance:embed(self)
-		self:Hook('SendWho', true)
-		self:Hook('WhoFrameEditBox_OnEnterPressed', true)
-		self:Hook('FriendsFrame_OnEvent', true)
-		self:Hook('SetWhoToUI', true)
-		self:SecureHook(WhoFrame, 'Hide', 'CloseWhoFrame')
+		-- If we're upgrading we may have already hooked these so we check first
+		if not self:IsHooked('SendWho') then 			
+			self:Hook('SendWho', true) 
+		end
+		if not self:IsHooked('WhoFrameEditBox_OnEnterPressed') then
+			self:Hook('WhoFrameEditBox_OnEnterPressed', true)
+		end
+		if not self:IsHooked('FriendsFrame_OnEvent') then
+			self:Hook('FriendsFrame_OnEvent', true)
+		end
+		if not self:IsHooked('SetWhoToUI') then
+			self:Hook('SetWhoToUI', true)
+		end
+		if not self:IsHooked(WhoFrame, 'Hide') then
+			self:SecureHook(WhoFrame, 'Hide', 'CloseWhoFrame')
+		end
 	elseif(major == 'Deformat-2.0')then
 		self.Deformat = instance
 	end
@@ -583,3 +612,5 @@ end
 AceLibrary:Register(lib, MAJOR_VERSION, MINOR_VERSION, activate, deactivate, external)
 
 lib = nil
+
+

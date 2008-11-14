@@ -53,9 +53,9 @@ end
 function TitanPanelbeqlButton_OnClick(button)
 	if ( button == "LeftButton" ) then
 		if IsShiftKeyDown() then
-			beqlwaterfall:Open("bEQL")
+			InterfaceOptionsFrame_OpenToCategory(beql3.optionsFrames["main"])
 		else
-			ToggleQuestLog()
+		    ToggleFrame(QuestLogFrame);
 		end
 	elseif ( button == "RightButton" ) then
 		if not menuregistered then

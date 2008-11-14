@@ -9,6 +9,7 @@ FLIGHTMAP_ALLIANCE      = "Alliance";
 FLIGHTMAP_HORDE         = "Horde";
 FLIGHTMAP_CONTESTED     = "Contested";
 FLIGHTMAP_NEUTRAL       = "Neutral";
+FLIGHTMAP_COMBAT				= "Combat Zone";
 
 -- Zone names
 FLIGHTMAP_MOONGLADE     = "Moonglade";
@@ -68,12 +69,27 @@ FLIGHTMAP_SHATTRATH     = "Shattrath City";
 FLIGHTMAP_TEROKKAR      = "Terokkar Forest";
 FLIGHTMAP_ZANGARMARSH   = "Zangarmarsh";
 FLIGHTMAP_AZUREMYST     = "Azuremyst Isle";
-FLIGHTMAP_EVERSONG      = "Eversong Forest";
+FLIGHTMAP_EVERSONG      = "Eversong Woods";
 FLIGHTMAP_BLOODMYST     = "Bloodmyst Isle";
 FLIGHTMAP_GHOSTLANDS    = "Ghostlands";
+FLIGHTMAP_ISLEOFQUEL		= "Isle of Quel'Danas";
+FLIGHTMAP_EXODAR				= "The Exodar";
+
+-- Wrath of Lich King zones
+FLIGHTMAP_BOREANTUNDRA 	= "Borean Tundra";
+FLIGHTMAP_HOWLINGFJORD 	= "Howling Fjord";
+FLIGHTMAP_DRAGONBLIGHT 	= "Dragonblight";
+FLIGHTMAP_GRIZZLYHILLS 	= "Grizzly Hills";
+FLIGHTMAP_ZULDRAK 			= "Zul'Drak";
+FLIGHTMAP_SHOLAZARBASIN	= "Sholazar Basin";
+FLIGHTMAP_CRYSTALSONGF 	= "Crystalsong Forest";
+FLIGHTMAP_STORMPEAKS 		= "The Storm Peaks";
+FLIGHTMAP_ICECROWN 			= "Icecrown";
+FLIGHTMAP_WINTERGRASP 	= "Wintergrasp";
+FLIGHTMAP_DALARAN				= "Dalaran";
 
 -- General strings
-FLIGHTMAP_TIMING        = "(timing)";
+FLIGHTMAP_TIMING        = "(timing: %s)";
 FLIGHTMAP_LEVELS        = "Levels %d - %d";
 FLIGHTMAP_NOFLIGHTS     = "None known!";
 FLIGHTMAP_NOT_KNOWN     = "(Not known)";

@@ -1,40 +1,26 @@
-LayHideErrors_Version = "1.1"
-LayHideErrors_ErrorsAreShown = true
-LayHideErrors_ErrorSpeachWasEnable = GetCVar("EnableErrorSpeech")
+local LayHideErrors_Version = "1.2"
+local LayHideErrors_ErrorsAreShown = true
+local LayHideErrors_ErrorSpeachWasEnable = GetCVar("Sound_EnableSFX")
 
-function LayHideErrors_HideErrors()
+local function LayHideErrors_HideErrors()
 	LayHideErrors_ErrorsAreShown = false
-	LayHideErrors_ErrorSpeachWasEnable = GetCVar("EnableErrorSpeech")
-	SetCVar("EnableErrorSpeech", 0)
+	LayHideErrors_ErrorSpeachWasEnable = GetCVar("Sound_EnableSFX")
+	SetCVar("Sound_EnableSFX", 0)
 end
 
-function LayHideErrors_ShowErrors()
+local function LayHideErrors_ShowErrors()
 	LayHideErrors_ErrorsAreShown = true
-	SetCVar("EnableErrorSpeech",LayHideErrors_ErrorSpeachWasEnable)
+	SetCVar("Sound_EnableSFX",LayHideErrors_ErrorSpeachWasEnable)
 end
 
-function LayHideErrors_UIErrorsFrame_OnEvent(event, message)
+local LayHideErrors_old_UIErrorsFrame_OnEvent = UIErrorsFrame_OnEvent
+
+function UIErrorsFrame_OnEvent(event, message)
 	if LayHideErrors_ErrorsAreShown then
-		if ( event == "SYSMSG") then
-			this:AddMessage(message, arg2, arg3, arg4, 1.0);
-		elseif ( event == "UI_INFO_MESSAGE" ) then
-			this:AddMessage(message, 1.0, 1.0, 0.0, 1.0);
-		elseif ( event == "UI_ERROR_MESSAGE" ) then
-			this:AddMessage(message, 1.0, 0.1, 0.1, 1.0);
-		end
+		LayHideErrors_old_UIErrorsFrame_OnEvent(event, message)
 	end
 end
 
-function LayHideErrors_EventHandler()
-	if event == "VARIABLES_LOADED" then
-		LayHideErrors_OnLoad()
-		LayHideErrorsFrame:UnregisterEvent("VARIABLES_LOADED")
-	end
-end
-
-function LayHideErrors_OnLoad()
-	UIErrorsFrame_OnEvent = LayHideErrors_UIErrorsFrame_OnEvent
-end
 
 SLASH_LAYHIDEERRORS_SHOW1 = "/errshow"
 SLASH_LAYHIDEERRORS_SHOW2 = "/err1"

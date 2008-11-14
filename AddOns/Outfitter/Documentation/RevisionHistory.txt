@@ -1,21 +1,479 @@
--------------------------------------------
-Having an item on the cursor (ie, clicking a bag item) and then activating an outfit
-while the item is still being held will cause the outfit to fail to equip properly
--------------------------------------------
-Optimizing for +Healing appears to sometimes select gear which has lower damage+healing
-stats over gear which has healing only (Peacekeeper Leggings being selected over
-Judgement Legplates)
--------------------------------------------
-Need script setting for BOOLEAN (checkbox)
--------------------------------------------
-Disable warrior stance outfits when MC'd or forced into a stance
--------------------------------------------
-Add Script option to New Outfit
--------------------------------------------
-Modify Special Occasion outfits to use preset scripts
--------------------------------------------
-Rebuild For... menu to rebuild any type
--------------------------------------------
+Planned features and known bugs
+
+- FUTURE: Support two identical items where the one with the shortest cooldown is selected
+- FUTURE: Attempt to return unequipped items to their original location
+- FUTURE: "Equip on spellcast" script
+- FUTURE: QuickSlots open-on-hover
+- FUTURE: Add a label field to show on outfit bar buttons
+- FUTURE: Auto-detect new equipment which is better for an optimized outfit (possibly too expensive computationally)
+- FUTURE: Save outfit scripts to a global database where they can be instanced and used by other character
+- FUTURE: Add keybinding to enable/disable automatic changes
+- FUTURE: Item queueing
+- FUTURE: Script timers
+- FUTURE: Nurturing Instinct talent for druids adds +healing based on agility
+- FUTURE: LibDataBroker support
+
+- FUTURE: Rebuild For... menu to rebuild any type
+- FUTURE: Generate outfits to maximize TankPoints and HealPoints
+- FUTURE: Generate outfits which include a secondary stat
+- FUTURE: Effective Health optimization (http://www.theoryspot.com/forums/theory-articles-guides/1060-effective-health-theory.html)
+           will require dual-stat optimizations since armor and stamina are both factors
+- FUTURE: Equip/unequip delays generate queued operations!!
+- FUTURE: Add delay parameter to macro wear/unwear commands
+- FUTURE: Expertise stat generation
+- FUTURE: Shaman talents add +heal based on int, need to dynamically generate the coefficient tables to take these talent effects into account
+
+- FUTURE: Numeric readout on outfit bar scaling slider
+- FUTURE: Show key binding on outfit bar
+- FUTURE: Change highlight color for incomplete outfits to red
+- FUTURE: Change highlight color for banked outfits to blue
+- FUTURE: Change highlight color for partially-obscured outfits to yellow
+- FUTURE: Option to hide an outfit from the outfit bar if it's incomplete
+- FUTURE: Copy of the minimap menu in the outfit bar (icon button in a corner of the bar possibly)
+
+- BUG: End -> Shift-Home selects all but doesn't highlight properly
+- BUG: Script settings/source dialog doesn't close on <esc>
+- BUG: Trinket Queue fails when a trinket is already equipped or not found
+
+Version 4.3 Changes
+
+- FEATURE: Compatible with WotLK
+- FEATURE: Quick slots and Odds 'n Ends list now support item comparisons (shift key)
+- FEATURE: Russian translation provided courtesy of Delika
+- FEATURE: Chnaged Fishing script to use WoW 3.0 API for controlling auto-loot behavior
+- FEATURE: Added Deathknight presence scripts
+- FEATURE: Shapeshift detection (stance, stealth, presence, form, etc.) works without localization
+- FEATURE: Changed outfit bar icon picker to say "Suggested/equipped icons" to make it clearer which icons you'll get
+- FEATURE: Support for Titan's Grip
+- FEATURE: Updated Titan plugin for WoW 3.0
+- FEATURE: Outfits can be set to display a specific title when worn
+- FEATURE: Added event parameters for scripts using the '...' parameter
+- FEATURE: Titan Bar support is now integrated (disable the TitanOutfitter plugin if you're using it)
+- FEATURE: FuBar support is now integrated (disable the OutfitterFu plugin if you're using it)
+- BUGFIX/FEATURE: UniqueID for items is used for matching equipment
+- BUGFIX/FEATURE: Updated unique-equipped gem list for patch 3.0 (thanks regecks)
+- BUGFIX: Fixed fishing script to detect track fish in patch 3.0
+- BUGFIX: Fixed "player has buff" script for patch 3.0
+- BUGFIX: Unequipping items now works in all locales
+
+Version 4.3b13 Changes
+
+- FEATURE: Titan Bar support is built-in (disable the TitanOutfitter plugin if you're using it)
+- FEATURE: FuBar support is built-in (disable the FuBar_OutfitterFu plugin if you're using it)
+- FEATURE: LibDataBroker support
+
+Version 4.3b12 Changes
+
+- BUGFIX: Removed erroneous debug code
+- BUGFIX: Modified zone detection (should fix WSG-related outfit issues)
+- BUGFIX/FEATURE: Moved ammo link cache to saved variables file (may help those having ammo problems)
+- BUGFIX: Unequipping items now works in all locales
+- BUGFIX: Mount/dismount detection fixed
+
+Version 4.3b11 Changes
+
+- BUGFIX: Removed uses of PLAYER_AURAS_CHANGED for patch 3.0 compatibility
+- BUGFIX: Fixed nil pItem error when restoring the outfit stack upon login
+- BUGFIX: Fixed spellcast detection to detect item-based mounts (flying broom) correctly
+
+Version 4.3b10 Changes
+
+- BUGFIX: Corrected spelling of Berserker in French localization (reported by DeathboyRG)
+- BUGFIX: Added short delay to initialization to allow time for talent trees to load (Titan's Grip fix)
+- BUGFIX/FEATURE: Updated unique-equipped gem list for patch 3.0 (thanks regecks)
+- FEATURE: Added event parameters for scripts using the '...' parameter
+- BUGFIX: Fixed fishing script to detect track fish in patch 3.0
+- BUGFIX: Fixed "player has buff" script for patch 3.0
+- BUGFIX: Removed OnEditFocusGained/Lost test messages (reported by ljudsnubbe)
+- BUGFIX/HACK: Spell hit optimization should work now (still separate from melee hit, even though they're identical)
+- BUGFIX/HACK: Healing optimization recognizes spell power (still separate from spell damage, even though they're now identical)
+
+Version 4.3b9 Changes
+
+- FEATURE: Outfits can be set to display a specific title when worn
+- BUGFIX: Fixed menu item colors for patch 3.0
+- BUGFIX: More attempts to get Titan's Grip working correctly
+
+Version 4.3b8 Changes
+
+- FEATURE: Changed outfit bar icon picker to say "Suggested/equipped icons" to make it clearer which icons you'll get
+- FEATURE: Quick slots and Odds 'n Ends list now support item comparisons (shift key)
+- BUGFIX: Fixed bug with dual-wielding 2H weapons courtesy of Dussander
+- BUGFIX: Reverted Complete outfit scripting behavior to allow unequipping
+- BUGFIX: Fixed error when scrolling the outfit list
+
+Version 4.3b7 Changes
+
+- FEATURE: Updated Titan plugin for WoW 3.0
+- BUGFIX: Added /reloadui detection for people trying to update to 4.3 while WoW is running
+- BUGFIX: Fixed Titan's Grip detection
+- BUGFIX: Translated 2H sword/mace/axe names for English, German, French and Russian
+- BUGFIX: Fixed bug causing inventory updates to go unnoticed after zoning
+
+Version 4.3b6 Changes
+
+- FEATURE: Chnaged Fishing script to use WoW 3.0 API for controlling auto-loot behavior
+- FEATURE: Added Deathknight presence scripts
+- FEATURE: Shapeshift detection (stance, stealth, presence, form, etc.) works without localization
+
+Version 4.3b5 Changes
+
+- FEATURE: Russian translation provided courtesy of Delika
+- BUGFIX: Fixed script editor on live servers
+
+Version 4.3b4 Changes
+
+- FEATURE: Added support for dual-wielding 2H weapons (Titan's Grip)
+- BUGFIX/FEATURE: Fixed script editor for WotLK changes
+
+Version 4.3b3 Changes
+
+- BUGFIX/FEATURE: Updated Dodge calculation for patch 2.1 formula changes
+- BUGFIX/FEATURE: Added new patch 3.0 (level 71+) ratings formulas (thank you to Tayedaen for the research/fix)
+- BUGFIX/FEATURE: Update All/None buttons now display correctly in WotLK
+- BUGFIX/FEATURE: Fixed shapeshift detection in WotLK
+
+Version 4.3b2 Changes
+
+- BUGFIX: Deathknight initializes correctly
+- BUGFIX: Works correctly on the live servers
+- BUGFIX: Fixed numerous menu bugs
+- BUGFIX: Fixed numerous scrolling bugs
+
+Version 4.2.6 Changes
+
+- BUGFIX/FEATURE: Outfit changes will no longer occur during a spellcast.  Once the cast is complete the equipment change will complete (within the restrictions of combat status)
+- FEATURE: Riding outfit no longer has "Unequip on spellcast option" since this option is no longer useful with the new patch
+
+Version 4.2.6b3 Changes
+
+- BUGFIX: Fixed spellcast detection when conjuring an item that you have too many of already
+- BUGFIX: Fixed spellcast detection when in a party/raid
+
+Version 4.2.6b2 Changes
+
+- BUGFIX: Removed spellcast detection diagnostic messages
+
+Version 4.2.6b1 Changes
+
+- BUGFIX/FEATURE: Outfit changes will no longer occur during a spellcast.  Once the cast is complete the equipment change will complete (within the restrictions of combat status)
+- FEATURE: Riding outfit no longer has "Unequip on spellcast option" since this option is no longer useful with the new patch
+
+Version 4.2.5 Changes
+
+- BUGFIX: Corrected typo causing error when using the Trinket Queue script (EN/DE)
+
+Version 4.2.4 Changes
+
+- BUGFIX: Corrected typo causing error when updating the minimap menu
+
+Version 4.2.3 Changes
+
+- FEATURE/BUGFIX: Banking operations are in a submenu (reduces outfit menu to 16 items which avoids Blizzard menu taint bug)
+- BUGFIX: Added support for trinkets using the phrase "Lasts nn sec." in the trinket queue script (EN/FR/DE)
+- BUGFIX: Minimap menu no longer gets called an increasing number of times each time it's accessed
+- BUGFIX: Fixed bug causing tooltip to sometimes stay visible when using the trinket queue script
+- BUGFIX: Changes made to scripts take effect properly
+
+Version 4.2.2 Changes
+
+- BUGFIX: Outfit Bar no longer generates errors after using '/outfitter reset'
+- BUGFIX: Low Health or Mana script updates properly on mana changes
+- BUGFIX: Added '/outfitter enable' and '/outfitter disable' macro commands to control automatic changes
+- BUGFIX: Outfit Bar is off by default
+- BUGFIX: Added patterns to parse "+n Spell Damage and Healing" and "+n Spell Power" tooltip stat rows
+- BUGFIX: Eye of the Sea is processed correctly for avoiding unique-equipped conflicts
+- BUGFIX: Opening the Outfitter UI no longer causes menu taint (accessing an outfit menu will though)
+
+Version 4.2.1 Changes
+
+- FEATURE: Riding outfit has new "stay equipped while falling" option for Parachute Cloak users (off by default)
+- FEATURE/BUGFIX: Scripts are in sub-menus by category (also avoids problems with large menus going off the screen)
+- FEATURE: $SETTING type fields are no longer case-sensitive, allowing "string" and "number" to be the same as the standard Lua typenames
+- BUGFIX: Solo/Party/Raid script fixed
+- BUGFIX: Corrected German localization of Moonkin
+- BUGFIX: Corrected default icon for Berserker Stance outfit
+- BUGFIX: Default icon for single-item outfits shows correctly even if the item is banked or missing
+- BUGFIX: Escape key correctly removes keyboard focus from script editbox fields
+- BUGFIX: /outfitter commands which use item links work correctly (iteminfo for example)
+
+Version 4.2 Changes
+
+- FEATURE: New '/outfitter missing' command assists with recovering stolen/vendored items by generating a list of links for missing items
+- BUGFIX: Exponential lag when using QuickSlots is fixed
+- BUGFIX: Trinket Queue works. Again.
+
+Version 4.1.6 Changes
+
+- BUGFIX: Turned off ammo slot diagnostics
+
+Version 4.1.5 Changes
+
+- BUGFIX: Ammo slot contents should identify correctly
+- BUGFIX: Fixed typo in ammo slot diagnostic message causing errors
+ 
+Version 4.1.4 Changes
+
+- FEATURE: /outfitter macro commands now support [conditionals]
+- FEATURE: Added internal error checking on the ammo slot handlers, please let me know of any errors that get detected
+- BUGFIX: Ammo slot should identify its contents correctly again (broken in 4.1.2)
+- BUGFIX: Default icon for Aspect of the Hawk now appears correctly
+
+Version 4.1.3 Changes
+
+- BUGFIX: Removed unintentional notes being interpreted as code, causing numerous errors
+
+Version 4.1.2 Changes
+
+- FEATURE: Updated gems which are no longer unique-equipped in patch 2.4 (Chrysoprase, Fire Opal and Tanzanite families)
+- FEATURE: Added support for new Eye of the Sea gem
+- FEATURE: Solo script is now Solo/Party/Raid and can handle any combination of those
+
+Version 4.1.1 Changes
+
+- FEATURE: Updated .toc for patch 2.4
+- FEATURE: Added Skinning Knife and Arclight Spanner to ignored quickslot items
+- BUGFIX: Tooltip should no longer stay up when using the Trinket Queue script
+- BUGFIX: Druid shapeshift should no longer sometimes give an error message
+
+Version 4.1 Changes
+
+- FEATURE: New outfit bar for quick access to outfits using a row or column of icons
+- FEATURE: Unique-equipped gems are handled through smart ordering of equipment changes
+- FEATURE: Reduced download size and texture memory usage
+- FEATURE: Complete outfits can have scripts attached
+- FEATURE: Unequipping a Complete outfit is now allowed (the previously-worn Complete outfit will equip instead)
+- FEATURE: QuickSlots can now accomodate any number of items
+- FEATURE: Quickslots now ignore Blacksmithing Hammer and Mining Pick
+- FEATURE: Outfitter detects if you attempt to do a major upgrade using reloadui and warns you
+- FEATURE: Right-clicking on an outfit in the list now brings up the outfit's menu
+- FEATURE: Scripts are now categorized for easier browsing
+- FEATURE: New Falling script equips when you are free-falling
+- FEATURE: New setting to enable auto-loot whenever the Fishing outfit is equipped
+- FEATURE: New setting to equip the Fishing outfit when "Track Fish" is selected
+- FEATURE: New setting to disable Riding in any instance instead of just AQ40
+- FEATURE: New setting to unequip Riding outfit when casting spells while mounted
+- FEATURE: New setting to disable Shapeshift/stance/aspect outfits when PvP flagged or in BGs
+- FEATURE: Trinket Queue supports both trinket slots simultaneously
+- FEATURE: Trinket Queue detects when the current trinket's effect is still active and won't swap until it's over
+- FEATURE: Settings menu item is enabled for scripts with no settings so player can see message about having no settings
+- FEATURE: /outfitter sound on|off command to disable equipment sounds during gear swaps
+- FEATURE: Scripts can now include a default value for a $SETTING (see the Riding script for an example)
+- FEATURE: New INITIALIZE and TERMINATE events for scripts when they're loaded or unloaded
+- FEATURE: Scripts can set an outfit layer using 'layer=xxx' even when an equip isn't being specified
+- FEATURE: Outfitter:RemoveOutfitByName(outfitName) API added for scripting convenience
+
+- BUGFIX: Hiding the UI during combat is no longer affected by Outfitter's presence
+- BUGFIX: Free-dragging the minimap button no longer requires the ALT key to be held down the whole time
+- BUGFIX: Fixed descriptions for AV, AB, and WSG scripts
+- BUGFIX: Fixed parsing of strength attribute when building optimized outfits
+- BUGFIX: Disable in Combat feature fixed (Tyrindor)
+- BUGFIX: Edit fields in script settings now clear focus when escape is pressed
+- BUGFIX: Arena detection should now work properly for Battleground outfits
+- BUGFIX: Spirit Regen (five second rule) detection improved
+- BUGFIX: Trinket Queue works properly when covered up by another outfit
+
+Version 4.1b9 Changes
+
+- FEATURE: Falling outfit
+- FEATURE: Riding outfit only runs the timer when needed
+
+- BUGFIX: Fishing script correctly equips when Fish tracking is enabled
+- BUGFIX: Fishing script correctly sets auto-loot mode when equipped
+- BUGFIX: Druid shapeshift outfits now unequip correctly when you die
+- BUGFIX: Trinket Queue works properly when covered up by another outfit
+
+Version 4.1b8 Changes
+
+- BUGFIX: Fixed problem with UI not showing up under 2.4 on the PTR
+- BUGFIX: Unqiue-equipped gems should now work correctly when you have more than one of them same kind
+- BUGFIX: Gathering scripts no longer give an error when hovering over a node
+
+Version 4.1b7 Changes
+
+- BUGFIX: Fixed outfit bar initialization
+
+Version 4.1b6 Changes
+
+- FEATURE: Trinket Queue supports both trinket slots simultaneously
+- FEATURE: Trinket Queue detects when the current trinket's effect is still active and won't swap until it's over
+- FEATURE: Outfitter:RemoveOutfitByName(outfitName) API added for scripting convenience
+- FEATURE: Outfit bar glow moved farther out for better visibility
+- FEATURE: Outfit bar can be scaled, flipped vertical, made transparent, have its background hidden, and be locked in place
+- FEATURE: Outfit bar remembers its position based on the nearest corner so that scaling and adding new outfits will grow the bar outward from that corner
+- FEATURE: Outfit bar has two drag tabs so that it can be pushed all the way into a corner of the screen, if desired
+- FEATURE: Spirit Regen script now has a small delay before it unequips to avoid hitting the GCD during chain casting
+- FEATURE: Outfit bar has default icons for all scripts
+
+- BUGFIX: Spirit regen is detected using spellcast events instead of mana level changes
+- BUGFIX: Edit Script dialog cancel button fixed
+
+Version 4.1b5 Changes
+
+- FEATURE: /outfitter sound on|off command to disable equipment sounds during gear swaps
+
+- BUGFIX: Riding no longer gets equipped after a spellcast in battlegrounds
+- BUGFIX: Shapeshift and aspect outfits should equip correctly again
+- BUGFIX: Fixed default icon for Druid: Bear Form
+
+Version 4.1b4 Changes
+
+- FEATURE: New Rogue:Lockpicking script to equip items when presented with a difficult lock
+- FEATURE: Remaining unique-equipped gems added (big thanks to Dridzt and gtmsece for looking up the enchant IDs for those gems)
+
+- BUGFIX: Tooltip-based scripts like mining, herbalism, etc. should now work properly
+- BUGFIX: Dining outfit should now unequip properly
+- BUGFIX: Added Resilience, Spell Haste and Melee Haste to stat optimizations
+- BUGFIX: Fixed parsing of stats which begin with "Improves your ..."
+
+Version 4.1b3 Changes
+
+- FEATURE: Reduced download size and texture memory usage
+- FEATURE: Unique-equipped gem handling should now work
+    NOT SUPPORTED YET:
+        Don Julio's Heart, Great Bladestone, Kailee's Rose, Mystic Bladestone, Sovereign Tanzanite, Stone of Blades, Sublime Mystic Dawnstone,
+	    Sundered Chrysoprase, Don Amancio's Heart, Don Rodrigo's Heart, Mighty Blood Garnet, Mighty Blood Garnet, Unstable Amethyst,
+	    Unstable Citrine, Unstable Peridot, Unstable Sapphire, Unstable Talasite, Unstable Topaz
+    If you have one of these gems, use the command '/outfitter iteminfo [itemlink]' and tell me the JewelCode that
+    corresponds to that gem.  All other unique-equipped gems should be entered correctly, if yours doesn't work then
+    do the same thing wth the iteminfo command and let me know.
+
+- BUGFIX: Fixed bug causing German version to give an error message on startup
+- BUGFIX: didEquip and didUnequip flags now update correctly
+- BUGFIX: Fixed strata of Outfitter UI so that it doesn't appear in front of the Quickslots
+
+Version 4.1b2 Changes
+
+- FEATURE: Quickslots now ignore Blacksmithing Hammer and Mining Pick
+- FEATURE: Scripts can set an outfit layer using 'layer=xxx' even when an equip isn't being specified
+- FEATURE: Outfitter detects when a player is attempting to upgrade using reloadui and warns them when it matters
+- FEATURE: Added default icons for resist and naked outfits
+- FEATURE: Riding script has option to disable in instances instead of just AQ40
+
+- BUGFIX: Error in DE and FR localization files corrected
+- BUGFIX: RecentCompleteOutfits table should initialize correctly
+- BUGFIX: Icon picker for Outfit Bar appears in front of other windows now
+- BUGFIX: A manually equipped Battleground outfit should no longer unequp when leaving the BG
+- BUGFIX: Choose icon no longer crashes when the outfit bar isn't shown
+- BUGFIX: QuickSlots should now appear in the correct strata and not show on top of dialogs
+- BUGFIX: "Update to current items" works again
+- BUGFIX: Icon picker now includes equipped items when viewing icons in your bags
+- BUGFIX: Zone name is now used to identify arenas instead of the WoW APIs
+- BUGFIX: Icon picker closes when the escape key is pressed
+- BUGFIX: Converted unique-equipped gem codes to their equivalent enchant codes
+
+Version 4.0.1 Changes
+
+- Disabling Riding outfit for battlegrounds now correctly includes arenas
+- Added "Unequip delay" setting to Riding outfit for parachute cloak users
+- Added "Disable while PvP flagged" option to standard Riding script
+- Fixed bug in outfit script error reporting
+- Fixed bug which caused switching from 2H weapon to a 1H/OH combo to sometimes fail to equip the OH
+
+Version 4.0 Changes
+
+- Eliminated Special Occasion category.  Special Occasion outfits can now be created, renamed
+  or deleted just like any other outfit
+- Preset scripts are provided for all prior Special Occasion outfits
+- Eliminated Mix-n-match category.  Now Accessory outfits have an option to "On equip, unequip
+  all other Accessory outfits".  This provides the same functionality with an easier-to-understand interface
+- New Druid: Caster outfit, worn when not in any shapeshift form
+- Improved compatibility with Burning Crusade
+- Stance/shapeshift outfits no longer automatically change if the player is mind-controlled
+
+Version 4.0b11 Changes
+
+- Fixed bug in Shadowform outfit (reported by Alianza)
+- Fixed bug causing banking features to fail
+- Complete outfits no longer show "on unequip" menu option
+
+Version 4.0b10 Changes
+
+- New "/outfitter reset" command resets Outfitter on the current character
+- Arenas are now treated as a Battleground zone (reported by XMinioNX)
+- Initialization of charcters below level 60 fixed (reported by Waxie)
+- Free-drag minimap button saves correctly (reported by XMinioNX)
+- Pending equipment changes once again get processed once the player is alive (reported by XMinioNX)
+- Added translatable descriptions and titles for more scripts (reported by Dessa)
+- Fixed bug with helm/cloak visibility not updating sometimes when returning to cities from instances and battlegrounds
+
+Version 4.0b9 Changes
+
+- Minimap button can now be freely dragged by holding the alt key
+- Fixed script generation bugs affecting numerous scripts
+
+Version 4.0b8 Changes
+
+- Fixed script errors in Dining, Battleground (all) and Spirit Regen scripts
+- Stance/shapeshift/aspect outfits no longer automatically change if the player is mind-controlled
+- Stance/shapeshift/aspect outfits now swap in-place so that you can equip outfits over them and not
+  have those outfits later obscured by a shapeshift/stance/aspect change
+- Fixed Riding script so that disable in battlegrounds works properly
+- Scripts can now specify a layer tag when equipping an outfit.  If an outfit was previously equipped
+  with the same layer tag, the new outfit will be equipped into the same stack position as the previous outfit.
+  This is currently used to cause shapeshift/stance/aspect outfit changes to occur in-place
+- Added comments to most built-in scripts to make them easier to learn from
+- Fixed bug with boolean settings in scripts being cleared after relogging
+
+Version 4.0b7 Changes
+
+- Fixed bug with old battleground-disable flag still being used to prevent
+  outfits from equipping (reported by we7)
+- Fixed display of the outfit Key Binding menu
+- Fixed checkboxes in Riding outfit so that enable/disable work properly
+- Default for New Outfit dialog is empty outfit instead of current outfit
+- Fixed bug which would cause outfit changes to fail if an item was being held on the cursor
+- Added compatibility APIs for OutfitterFu and ArkInventory
+- Fixed bug with initializing or generating outfits for characters at or below level 60
+
+Version 4.0b6 Changes
+
+- Automated outfits are no longer treated as "complete outfits", even
+  if they have all slots enabled.  This will fix problems with gear not
+  seeming to unequip like it should (ie, Riding outfits which are complete
+  outfits would not unequip properly)
+- Fixed MCDebugLib version error
+- Removed debugging code (stack trace) from MCEventLib
+
+Version 4.0b5 Changes
+
+- Fixed tooltip title for "used by" option (reported by Spyroware)
+- Fixed "used by" option so it can be turned on/off again (reported by Spyroware)
+- Added glue code for backward compatibility with TitanOutfitter, FishingBuddy and OutfitterFu (reported by Maischter et al)
+- Removed "Unknown form" diagnostic message when playing a Palladin (reported by heyallo)
+
+Version 4.0b4 Changes
+
+- Minimap menu "disable" option now works properly (reported by we7)
+- Fixed error when using key bindings on outfits
+- Added corrected ratings formulas (from WoWWiki)
+- When creating "Total Stats" outfits, priests mages and warlocks no longer count strength
+  or agility and rogues and warriors no longer count intellect towards the total
+- Outfit stat optimization now works with secondary gem colors and healing stats
+- Added dodge and parry stat outfits
+- Significantly reduced the number of global variables being created by Outfitter.  I doubt this
+  will have a noticable effect on performance, but it's being a good lua citizen and will make reading
+  taint logs a lot easier
+
+Version 4.0b3 Changes
+
+- Fixed bugs with swimming, riding, dining script events
+- Removed hard-coded delays in unequipping druid form outfits
+- Added Druid: Caster form
+- Shapeshift/stance/aspect outfits equip and unequip properly
+- Global disable now works for all automated outfits
+- Scripts for new outfits are now activated properly
+
+Version 4.0b2 Changes
+
+- Fixed bug with show/hide cloak (reported by Shalyna)
+- Fixed bug with druid swift flight (reported by Kargul)
+- Fixed Fishing Buddy compatibility issue (reported by Maischter)
+- Fixed first-time initialization (reported by NoMoreFear)
+
+Version 3.0 Changes
+
+- Version 3.0 revisions were performed under a separate project "Outfitter Updated"
 
 Version 2.1.1 Changes
 

@@ -7,6 +7,7 @@ L:RegisterTranslations("deDE", function()
 		["Global Cooldown"] = "Globaler Cooldown",
 		["Buff"] = "Buffs",
 		["Target"] = "Ziel-Zauberleiste",
+		--["Pet"] = "",
 		["Focus"] = "Fokus",
 		["Player"] = "Spieler-Zauberleiste",
 		["Mirror"] = "Spiegel-Leiste",
@@ -74,6 +75,8 @@ L:RegisterTranslations("deDE", function()
 		["Spell Rank Style"] = "Style Zauberrang",
 		["Hide Name Text"] = "Verstecke Namenstext",
 		["Hide Time Text"] = "Verstecke Zeitext",
+		["Hide Cast Time"] = "Verstecke Zauberzeit",
+		--["Cast Time Precision"] = true,
 		["Time Font Size"] = "Zeit Schriftgr\195\182\195\159e",
 		["Time Text Position"] = "Zeit Textposition",
 		["Spell Text"] = "Zaubertext",
@@ -100,6 +103,7 @@ L:RegisterTranslations("deDE", function()
 		["Hide Samwise Icon"] = "Verstecke Samwise Symbol",
 		["Show for Friends"] = "Von Freunden zeigen",
 		["Show for Enemies"] = "Von Feinden zeigen",
+		--["Show if Target"] = true,
 		["Target Name"] = "Name des Ziels",
 		["Display target name of spellcasts after spell name"] = "Zielname eines Zaubers nach Zaubernamen anzeigen",
 		
@@ -180,10 +184,12 @@ L:RegisterTranslations("deDE", function()
 		["Set the alignment of the spell name text"] = "Justiert die Grundposition des Zaubernamen Textes",
 		["Set the size of the spell name text"] = "Justiert die Schriftgr\195\182\195\159e des Zaubernamne Textes.",
 		["Disable the text that displays the time remaining on your cast"] = "Deaktiviert den Text welcher die verbleibende Zauberzeit anzeigt.",
+		["Disable the text that displays the total cast time"] = "Deaktiviert den Text welcher die insgesamte Zauberzeit anzeigt.",
+		--["Set the precision (i.e. number of decimal places) for the cast time text"] = true,
 		["Disable the text that displays the spell name/rank"] = "Deaktiviert den Text welcher den Zaubernamen/Rang anzeigt.",
 		["Display the rank of spellcasts alongside their name"] = "Zeige den Rang der Zauber neben den Zaubernamen an.",
 		["Set the display style of the spell rank"] = "Justiere die Art wie der Zauberrang angezeigt werden soll.",
-		["Set the size of the time text"] = "Justiere die Größe des Zeit Textes.",
+		["Set the size of the time text"] = "Justiere die GrÃ¶ÃŸe des Zeit Textes.",
 		["Set the alignment of the time text"] = "Justiere die Grundposition des Zeit Textes.",
 		["Set the border style"] = "Justiere die Rahmenart.",
 		["Set the color of the %s"] = "Justiere die Farbe vom %s",
@@ -203,6 +209,7 @@ L:RegisterTranslations("deDE", function()
 		["Hide the icon for spells with no icon"] = "Verstecke das Symbol von Zaubern die kein Symbol haben.",
 		["Show this castbar for friendly units"] = "Zeige diese Zauberleiste f\195\188r befreundete Ziele.",
 		["Show this castbar for hostile units"] = "Zeige diese Zauberleiste f\195\188r feindliche Ziele.",
+		--["Show this castbar if focus is also target"] = true,
 		["Set an exact X value for this bar's position."] = "Bestimme einen exakten X Achsen Wert f\195\188r diese Leistenposition.",
 		["Set an exact Y value for this bar's position."] = "Bestimme einen exakten Y Achsen Wert f\195\188r diese Leistenposition.",
 		
@@ -265,7 +272,7 @@ L:RegisterTranslations("deDE", function()
 			["Set the side of the mirror bar that the icon appears on"] = "Justiere die Seite der Spiegel Leiste auf der das Symbol erscheinen wird.",
 			["Set the mirror bar Texture"] = "Justiere die Textur der Spiegel Leiste.",
 			["Set the width of the mirror bars"] = "Justiere die Breite der Spiegel Leisten.",
-			["Set the height of the mirror bars"] = "Justiere die Höhe der Spiegel Leisten.",
+			["Set the height of the mirror bars"] = "Justiere die HÃ¶he der Spiegel Leisten.",
 			["Display the names of Mirror Bar Types on their bars"] = "Zeige die Namen der Spiegel Leisten Typen auf ihren Leisten an.",
 			["Display the time remaining on mirror bars"] = "Zeige die verbleibende Dauer der Spiegel Leisten an.",
 			["Set the font used in the mirror bars"] = "Justiere die schriftart die in den Spiegel Leisten benutzt wird.",
@@ -281,7 +288,7 @@ L:RegisterTranslations("deDE", function()
 			["Toggle mirror bar lock"] = "Schaltet die Spiegel Leisten Sperre an/aus.",
 			["Set the grow direction of the mirror bars"] = "Justiere die Ausdehnungs Richtung der Spiegel Leisten.",
 			--Timer
-			["Make a new timer using the above settings.  NOTE: it may be easier for you to simply use the command line to make timers, /qt"] = "Erstelle einen neuen Timer unter zuhilfename der Einstellungen oben. HINWEIS: Es könnte leichter für dich sein einfach die Chatkommandos zu benutzen um neue Timer zu erstellen, /qt.",
+			["Make a new timer using the above settings.  NOTE: it may be easier for you to simply use the command line to make timers, /qt"] = "Erstelle einen neuen Timer unter zuhilfename der Einstellungen oben. HINWEIS: Es kÃ¶nnte leichter fÃ¼r dich sein einfach die Chatkommandos zu benutzen um neue Timer zu erstellen, /qt.",
 			["Select a timer to stop"] = "W\195\164hle einen Timer aus um ihn zu stoppen.",
 			["Set a name for the new timer"] = "Erstelle einen Namen f\195\188r den neuen Timer.",
 			["Length of the new timer, in seconds"] = "L\195\164nge des Timers, in Sekunden.",
@@ -308,7 +315,7 @@ L:RegisterTranslations("deDE", function()
 			--GCD
 			["<Spell Name>"] = "<Zaubername>",
 			["Invalid Spell"] = "Ung\195\188ltiger Zauber",
---			["Spell_Warning"] = "|cffff3333Warnung: Du hast noch keinen Zauber für das Quartz Glaobal Cooldown Modul ausgew\195\164hlt.  Bitte gibt einen Zaubernamen in das Men\195\188 ein (/quartz, dann klick auf Globaler Cooldown). Hinweis, es ist empfehlenswert einen Zauber zu benutzen der keinen anderen Colldown hat als den Globalen Cooldown und der nicht unterbrochen werden kann, so wie Suche Kräuter/Erze.",
+--			["Spell_Warning"] = "|cffff3333Warnung: Du hast noch keinen Zauber fÃ¼r das Quartz Glaobal Cooldown Modul ausgew\195\164hlt.  Bitte gibt einen Zaubernamen in das Men\195\188 ein (/quartz, dann klick auf Globaler Cooldown). Hinweis, es ist empfehlenswert einen Zauber zu benutzen der keinen anderen Colldown hat als den Globalen Cooldown und der nicht unterbrochen werden kann, so wie Suche KrÃ¤uter/Erze.",
 			--Buffs
 			["%dm"] = "%dm",
 			--Mirror

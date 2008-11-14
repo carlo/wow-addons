@@ -8,12 +8,15 @@ L:RegisterTranslations("esES", function() return {
   ["general"] = "comercio",
   ["trade"] = "general",
   ["guildrecruitment"] = "buscandohermandad",
-  
+  ["emote"] = "emote",
+  ["lookingforgroup"] = "b\195\186squedadegrupos",
+  ["localdefense"] = "defensalocal",
+
   -- Welcome message 
   ["SpamSentry v%s by Anea. Type |cffffffff/sentry|r or right-click the icon for options."] = "SpamSentry v%sde Anea. Escribe |cffffffff/sentry|r para las opciones.",
   
   -- Alerts
-  ["%s has been added to the feedback list"] = "%s a\195\177adido",
+  ["%s has been added to the SpamSentry feedback list"] = "SpamSentry: %s a\195\177adido",
   ["* Alert: %s tried to send you %s (%s). Click %s to report."] = "* Alerta: %s ha intentado enviarte %s (%s). Pulsa %s para informar de ello a un MJ.",
   ["this message"] = "este mensaje",
   ["One or more characters are on the reportlist. Click %s to report them to a GM."] = "Uno o m\195\161s spammers han sido bloqueados. Pulsa %s para informar de ello a un MJ.",

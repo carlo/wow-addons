@@ -1,3 +1,15 @@
+Changes in 2.13:
+* Patch 3.0
+
+Changes in 2.12:
+* Patch 2.4
+
+Changes in 2.11:
+* Patch 2.3
+
+Changes in 2.10.1 (Cosmos-only version):
+* Changed Khaos difficulty level of control key option
+
 Changes in 2.10:
 * Compatibility changes for 2.1. This is not a complete rewrite, just making sure EquipCompare works identically as before 2.1.
 * When EquipCompare is enabled, it disables the Blizzard UI's in-built comparison functionality (introduced in 2.1).

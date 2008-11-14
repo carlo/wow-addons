@@ -56,25 +56,25 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		<FontString inherits="ChatFontNormal"/>
 		<Scripts>
 			<OnEscapePressed>
-				this:ClearFocus();
+				self:ClearFocus();
 			</OnEscapePressed>
 			<OnEnterPressed>
-				CT_Viewport_ChangeViewportSide();
+				CT_Viewport_ChangeViewportSide(self);
 			</OnEnterPressed>
 			<OnTextChanged>
-				if ( ( not tonumber(this:GetText()) or ( this.limitation and tonumber(this:GetText()) > this.limitation ) ) and strlen(this:GetText()) > 0 ) then
-					if ( tonumber(this:GetText()) and this.limitation and tonumber(this:GetText()) >  this.limitation ) then
-						this:SetText(this.limitation);
+				if ( ( not tonumber(self:GetText()) or ( self.limitation and tonumber(self:GetText()) > self.limitation ) ) and strlen(self:GetText()) > 0 ) then
+					if ( tonumber(self:GetText()) and self.limitation and tonumber(self:GetText()) >  self.limitation ) then
+						self:SetText(self.limitation);
 					else
-						this:SetText(strsub(this:GetText(), 1, strlen(this:GetText())-1));
+						self:SetText(strsub(self:GetText(), 1, strlen(self:GetText())-1));
 					end
 				end
 			</OnTextChanged>
 			<OnEditFocusGained>
-				this:HighlightText();
+				self:HighlightText();
 			</OnEditFocusGained>
 			<OnEditFocusLost>
-				this:HighlightText(0, 0);
+				self:HighlightText(0, 0);
 			</OnEditFocusLost>
 		</Scripts>
 	</EditBox>
@@ -248,13 +248,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("TOPLEFT");
+								CT_Viewport_Resize(self, "TOPLEFT");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -271,13 +271,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("TOPRIGHT");
+								CT_Viewport_Resize(self, "TOPRIGHT");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -294,13 +294,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("BOTTOMLEFT");
+								CT_Viewport_Resize(self, "BOTTOMLEFT");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -317,13 +317,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("BOTTOMRIGHT");
+								CT_Viewport_Resize(self, "BOTTOMRIGHT");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -345,13 +345,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("TOP");
+								CT_Viewport_Resize(self, "TOP");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -373,13 +373,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("BOTTOM");
+								CT_Viewport_Resize(self, "BOTTOM");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -401,13 +401,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("LEFT");
+								CT_Viewport_Resize(self, "LEFT");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -429,13 +429,13 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:SetFrameLevel(this:GetFrameLevel()-1);
+								self:SetFrameLevel(self:GetFrameLevel()-1);
 							</OnLoad>
 							<OnMouseDown>
-								CT_Viewport_Resize("RIGHT");
+								CT_Viewport_Resize(self, "RIGHT");
 							</OnMouseDown>
 							<OnMouseUp>
-								CT_Viewport_StopResize();
+								CT_Viewport_StopResize(self);
 							</OnMouseUp> 
 						</Scripts>
 					</Button>
@@ -452,9 +452,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(this:GetParent():GetName() .. "BottomEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "BottomEB"):SetFocus();
 						else
-							getglobal(this:GetParent():GetName() .. "TopEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "TopEB"):SetFocus();
 						end
 					</OnTabPressed>
 				</Scripts>
@@ -470,9 +470,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(this:GetParent():GetName() .. "TopEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "TopEB"):SetFocus();
 						else
-							getglobal(this:GetParent():GetName() .. "BottomEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "BottomEB"):SetFocus();
 						end
 					</OnTabPressed>
 				</Scripts>
@@ -488,9 +488,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(this:GetParent():GetName() .. "LeftEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "LeftEB"):SetFocus();
 						else
-							getglobal(this:GetParent():GetName() .. "RightEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "RightEB"):SetFocus();
 						end
 					</OnTabPressed>
 				</Scripts>
@@ -506,9 +506,9 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnTabPressed>
 						if ( IsShiftKeyDown() ) then
-							getglobal(this:GetParent():GetName() .. "RightEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "RightEB"):SetFocus();
 						else
-							getglobal(this:GetParent():GetName() .. "LeftEB"):SetFocus();
+							getglobal(self:GetParent():GetName() .. "LeftEB"):SetFocus();
 						end
 					</OnTabPressed>
 				</Scripts>
@@ -527,7 +527,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				<Scripts>
 					<OnClick>
 						CT_Viewport_ApplyViewport();
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -544,7 +544,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						HideUIPanel(this:GetParent());
+						HideUIPanel(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -568,15 +568,15 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Frames>
 		<Scripts>
 			<OnHide>
-				this.isResizing = nil;
-				getglobal(this:GetName() .. "InnerFrame"):StopMovingOrSizing();
+				self.isResizing = nil;
+				getglobal(self:GetName() .. "InnerFrame"):StopMovingOrSizing();
 				PlaySound("UChatScrollButton");
 			</OnHide>
 			<OnLoad>
-				CT_ViewportFrame_OnLoad();
+				CT_ViewportFrame_OnLoad(self);
 			</OnLoad>
 			<OnUpdate>
-				CT_ViewportFrame_OnUpdate(arg1);
+				CT_ViewportFrame_OnUpdate(self, elapsed);
 			</OnUpdate>
 			<OnShow>
 				CT_ViewportFrame_OnShow();

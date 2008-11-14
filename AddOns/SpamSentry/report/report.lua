@@ -143,7 +143,7 @@ function SS_Report:ShowGUI(t)
   if t=="bot" then
     SpamSentry_TicketHelpText:SetText(L["SSGUITICKETHELP"])
     SpamSentry_TicketEditBox:SetText(self:MakeBotReport())
-    SpamSentry_TicketButtonClearRP:Show()
+    SpamSentry_TicketButtonClearBot:Show()
   elseif t=="rp" then
     SpamSentry_TicketHelpText:SetText(L["SSGUITICKETHELP"]) 
     SpamSentry_TicketEditBox:SetText(self:MakeRPReport())
@@ -217,10 +217,11 @@ end
 -- Feedback functions
 
 function SS_Report:FeedBackText()
-  local l = SS.spamFeedbackList
   local ret = ""
-  for i=1, getn(l), 1 do
-    ret = ret .. self:StringToHex(l[i]).."\n\n"
+  if SS.spamFeedbackList then
+    for i,v in pairs(SS.spamFeedbackList) do
+      ret = ret .. self:StringToHex(v).."\n\n"
+    end
   end
   return ret
 end
@@ -292,7 +293,7 @@ function SS_Report:Update()
     local item = getglobal("SpamSentryUIItem".. index)
 
     if i <= size then
-      item:SetText(format("[%02d] %s: |cffffffff%s|r",i,SS.spamReportList[i].player, SS.spamReportList[i].message))
+      item:SetText(format("|cffffff00[%02d] %s: |cffffffff%s|r",i,SS.spamReportList[i].player, SS.spamReportList[i].message))
       item:SetID(i)
       item:Show()
     else

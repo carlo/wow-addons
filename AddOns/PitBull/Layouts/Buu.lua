@@ -14,13 +14,13 @@
 --
 --]]
 
-local VERSION = tonumber(('$Revision: 35217 $'):match('%d+'))
+local VERSION = tonumber(('$Revision: 897 $'):match('%d+'))
 
 local PitBull = PitBull
 if PitBull.revision < VERSION then
 	PitBull.version = 'r' .. VERSION
 	PitBull.revision = VERSION
-	PitBull.date = ('$Date: 2007-05-12 09:27:43 -0400 (Sat, 12 May 2007) $'):match('%d%d%d%d%-%d%d%-%d%d')
+	PitBull.date = ('$Date: 2007-05-12 13:27:43 +0000 (Sat, 12 May 2007) $'):match('%d%d%d%d%-%d%d%-%d%d')
 end
 
 -- Todo: Make this a user setting?

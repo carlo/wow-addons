@@ -1,4 +1,5 @@
-## Interface: 20200
+## Interface: 30000
+## X-Curse-Packaged-Version: r1093
 
 ## Title: Lib: AceLocale-2.2
 ## Notes: AddOn development framework
@@ -10,4 +11,3 @@
 ## Dependencies: AceLibrary
  
 AceLocale-2.2.lua
-AceLocale-2.2-2.lua

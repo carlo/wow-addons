@@ -115,11 +115,11 @@ L:RegisterTranslations("deDE", function() return({
 	fontColor = "Schriftfarbe",
 	fontColor_desc = "Ändert die Schriftfarbe der Koordinaten",
 	instanceHide = "Instanz aus",
-	instanceHide_desc = "Verstecke das Koordinatenfenster wenn keine Koordinaten verfügbar sind",
+	instanceHide_desc = "Verstecke das Koordinatenfenster wenn keine Koordinaten (wie z.B. in Instanzen) verfügbar sind",
 	position = "Position",
 	position_desc = "Position des Koordinatenfensters an der Minimap",
 	precision = "Genauigkeit",
-	precision_desc = "Genauigkeit Koordinaten",
+	precision_desc = "Genauigkeit der Minimap Koordinaten",
 	scale = "Größenverhältnis",
 	scale_desc = "Stellt das Größenverhältnis des Fensters ein",
 	separator = "Abstandhalter",
@@ -205,6 +205,41 @@ L:RegisterTranslations("esES", function() return({
 		"inferior derecha"
 	}
 }) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	alpha = "Прозрачность",
+	alpha_desc = "Установить прозрачность фреймов координат",
+	backdrop = "Фон",
+	backdrop_desc = "Показать/Скрыть фон фрейма координат",
+	border = "Рамка",
+	border_desc = "Показать/Скрыть рамку фреймов координат",
+	coords = "Координаты",
+	coords_desc = "Фрейм координат у мини-карты",
+	fontColor = "Цвет шрифта",
+	fontColor_desc = "Изменить цвет шрифта координат",
+	instanceHide = "Скрывать в подземельях",
+	instanceHide_desc = "Скрыть фреймы координат когда нет доступных координат",
+	position = "Позиция",
+	position_desc = "Позиция фрейма координат у мини-карты",
+	precision = "Воспроизводимость",
+	precision_desc = "Воспроизводимость координат мини-карты",
+	scale = "Масштаб",
+	scale_desc = "Установить масштаб координат у мини-карты",
+	separator = "Разделитель",
+	separator_desc = "Знак препинания разделяющие направления X и Y",
+	time = "Время",
+	time_desc = "Задержка(в секундах) между обновлением координат",
+	positions = {
+		"Снизу внутри",
+		"Снизу снаружи",
+		"Сверху внутри",
+		"Сверху снаружи",
+		"Сверху слева",
+		"Снизу слева",
+		"Сверху справа",
+		"Снизу справа"
+	}
+}) end)
 
 local mod = simpleMinimap:NewModule("coords", "AceEvent-2.0")
 mod.desc = L["coords_desc"]
@@ -282,7 +317,7 @@ end
 mod.options = {
 	alpha = {
 		type = "range",
-		order = 10,
+		order = 16,
 		name = L.alpha,
 		desc = L.alpha_desc,
 		min = 0,
@@ -295,7 +330,7 @@ mod.options = {
 	},
 	backdrop = {
 		type = "toggle",
-		order = 10,
+		order = 19,
 		name = L.backdrop,
 		desc = L.backdrop_desc,
 		set = set,
@@ -304,7 +339,7 @@ mod.options = {
 	},
 	border = {
 		type = "toggle",
-		order = 10,
+		order = 18,
 		name = L.border,
 		desc = L.border_desc,
 		set = set,
@@ -313,7 +348,7 @@ mod.options = {
 	},
 	fontColor = {
 		type = "color",
-		order = 10,
+		order = 17,
 		name = L.fontColor,
 		desc = L.fontColor_desc,
 		set = set,
@@ -322,7 +357,7 @@ mod.options = {
 	},
 	instanceHide = {
 		type = "toggle",
-		order = 10,
+		order = 20,
 		name = L.instanceHide,
 		desc = L.instanceHide_desc,
 		set = set,
@@ -331,14 +366,14 @@ mod.options = {
 	},
 	position = {
 		type = "group",
-		order = 10,
+		order = 15,
 		name = L.position,
 		desc = L.position_desc,
 		args = {}
 	},
 	precision = {
 		type = "range",
-		order = 10,
+		order = 12,
 		name = L.precision,
 		desc = L.precision_desc,
 		set = set,
@@ -350,7 +385,7 @@ mod.options = {
 	},
 	scale = {
 		type = "range",
-		order = 10,
+		order = 11,
 		name = L.scale,
 		desc = L.scale_desc,
 		set = set,
@@ -362,7 +397,7 @@ mod.options = {
 	},
 	separator = {
 		type = "text",
-		order = 10,
+		order = 14,
 		name = L.separator,
 		desc = L.separator_desc,
 		usage = "\"<"..L.separator..">\"",
@@ -372,7 +407,7 @@ mod.options = {
 	},
 	time = {
 		type = "range",
-		order = 10,
+		order = 13,
 		name = L.time,
 		desc = L.time_desc,
 		min = 0,
@@ -400,7 +435,7 @@ for i,_ in pairs(positions) do
 end
 
 mod.defaults = {
-	enabled = true,
+	enabled = false,
 	alpha = 1,
 	backdrop = true,
 	border = true,

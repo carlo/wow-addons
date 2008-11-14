@@ -1,27 +1,26 @@
 <html>
 	<head>
 		<title>Outfitter User's Manual</title>
-		<style type="text/css"> 
-			a:link { color: #ffe040; }
-			a:visited { color: #ffe040; }
-			a:hover { color: white; }
-			a:active { color: purple; }
-			body { background-image: url('Images/Background.jpg'); background-repeat: repeat-xy; color: #ffe040; }
-			h2 { color: white; }
-			p { font-size: medium; font-weight: bold; margin-left: 3em; }
-			div { font-size: medium; font-weight: bold; padding-left: 3em; }
-			ul { margin-left: 5em; }
-			li { font-size: medium; font-weight: bold; }
-			.title { font-size: xx-large; font-weight: bold; color: #ffffff; }
-			.note { color: #ffffff; margin-left: 2em; }
-			.GameFontNormal { font-size: medium; font-weight: bold; color: #ffe040; }
-			.GameFontHighlight { font-size: medium; font-weight: bold; color: #ffffff; }
-			.Cmd { font-family: courier; font-size: medium; font-weight: normal; color: #ffffff; }
-		</style>
+		<style type="text/css"> a:link { color: #ffe040; }
+	a:visited { color: #ffe040; }
+	a:hover { color: white; }
+	a:active { color: purple; }
+	body { background-image: url('Images/background.jpg'); background-repeat: repeat-xy; color: #ffe040; }
+	h2 { color: white; }
+	p { font-size: medium; font-weight: bold; margin-left: 3em; }
+	div { font-size: medium; font-weight: bold; padding-left: 3em; }
+	ul { margin-left: 5em; }
+	li { font-size: medium; font-weight: bold; }
+	pre { margin-left: 7em; color: white; }
+	.title { font-size: xx-large; font-weight: bold; color: white; }
+	.note { color: white; margin-left: 2em; }
+	.GameFontNormal { font-size: medium; font-weight: bold; color: #ffe040; }
+	.GameFontHighlight { font-size: medium; font-weight: bold; color: white; }
+	.Cmd { font-family: courier; font-size: medium; font-weight: normal; color: white; }
+	</style>
 	</head>
 	<body>
-		<span class="title"><img style="vertical-align: middle" src="Images/OutfitterIcon.jpg" alt="">Outfitter Instructions</span>
-		<h3>Note: This page is still being developed. Some things are missing from the below instructions.<br></h3>
+		<div class="title"><img style="vertical-align: middle" src="Images/OutfitterIcon.jpg" alt="">Outfitter Instructions</div>
 		<h2>Contents</h2>
 		<ul>
 			<li>
@@ -35,10 +34,6 @@
 			<li>
 				<a href="#Update">Updating an outfit</a>
 			<li>
-				<a href="#HelmCloak">Changing Helm/Cloak Visibility</a>
-			<li>
-				<a href="#Priority">Setting Equipment Change Order</a>
-			<li>
 				<a href="#Minimap">The minimap button</a>
 			<li>
 				<a href="#Quickslots">QuickSlots</a>
@@ -48,11 +43,8 @@
 				<a href="#Scripts">Scripts</a>
 			<li>
 				<a href="#KeyBindings">Key Bindings</a>
-			<li>
-				<a href="#Links">Links</a>				
+			<li><a href="#SampleScripts">Sample Scripts</a>
 		</ul>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Install">Installing Outfitter</a></h2>
 		<p>Outfitter is installed just like any other addon. If World of Warcraft is 
 			running you should exit from the game before installing. Extract the contents 
@@ -72,15 +64,11 @@
 			containing the .toc file is the one which should be copied to your World of 
 			Warcraft addons folder.</p>
 		<p>The addon is now installed and you can now launch World of Warcraft.</p>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Access">Accessing Outfitter</a></h2>
 		<p>To open Outfitter simply open World of Warcrafts character window (usually the 
 			'c' key on your keyboard. You can open Outfitter from the Character window by 
 			click the button with a robe icon in the top right corner of the window.</p>
 		<div align="center"><img src="Images/OutfitterUI.jpg" alt=""></div>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Categories">Outfit categories and ready-made outfits</a></h2>
 		<p>One of the first things you will notice is that Outfitter has created several 
 			outfits for you and that these outfits are in categories named Complete 
@@ -122,7 +110,7 @@
 		<p>The
 			<span class="GameFontHighlight">Riding</span>
 			outfit will be worn whenever you are mounted and will automatically be setup 
-			with your Riding crop, Carrot on a Stick, boots with Mithril Spurs, and gloves with the 
+			with your Carrot on a Stick, boots with Mithril Spurs, and gloves with the 
 			Riding Skill enchantment if you have those. Note that by default the riding 
 			outfit is setup so that it won't equip when you are in a battleground. You can 
 			change this setting using the menu to the right of the outfit.</p>
@@ -136,7 +124,7 @@
 			intellect.</p>
 		<p>The
 			<span class="GameFontHighlight">Battlegrounds</span>
-			outfit will be worn whenever you're in one of the battlegrounds and can 
+			outfit will be worn whenever you're in one of the three battlegrounds and can 
 			be used to automatically equip your PvP gear.</p>
 		<p>There are also class-specific outfits for priests (shadowform), rogues 
 			(stealth), warriors (all three stances), and druids (all four shapeshift 
@@ -145,8 +133,6 @@
 		<p>Any of the Special Occassion outfits can be disabled by using the menu to the 
 			right of the outfit. This is useful if you only temporarily want to prevent 
 			that outfit from auto-equipping.</p>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Create">Creating an outfit</a></h2>
 		<p>To create an outfit click the New Outfit button at the bottom of the window. 
 			This will open the New Outfit window where you can name your new outfit and 
@@ -164,8 +150,6 @@
 			inventory and choose an item for each slot which has the maximum value for that 
 			attribute. If you don't have any items for a slot which contain that attribute 
 			then that slot will not be enabled in your new outfit.</p>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Update">Updating an outfit</a></h2>
 		<p>You can change the contents of an outfit at any time by opening Outfitter and 
 			selecting the outfit from your list of outfits. The selected outfit will equip 
@@ -176,62 +160,11 @@
 			character window "Enable all" and "Enable none" These buttons can be used to 
 			quickly enable all item slots or disable all item slots to make it easier to 
 			create your outfit.</p>
-
-		<!-- ################################################################################## -->
-		<h2><a name="HelmCloak">Changing Helm/Cloak visibility</a></h2>		
-		<p>Each outfit has the ability to <span class="GameFontHighlight">Show</span> or <span class="GameFontHighlight">Hide</span>
-			 your helm and/or cloak.</p>
-		<div align="center"><img src="Images/ShowHide.jpg" alt=""></div>
-		<p>If the outfit has "Nothing Ticked" (In image above) the outfit will not effect the current settings.<br>
-			 But this means, if you have your helm shown in your "PVP" outfit and nothing 
-			 selected in your "Normal" Outfit. When you switch into your "PVP" outfit your helm is shown 
-			 and then back to your "Normal" outfit, your helm is still shown because the "Normal" outfit 
-			effect on the current settings ("Nothing Ticked" = "Use Current Settings")</p>
-			
-		<!-- ################################################################################## -->
-		<h2><a name="Priority">Setting Equipment Change Order</a></h2>		
-		<p>Each outfit has the ability to set equipment's change "Priority"
-			 this can be used to keep stats as high as possible while changing equipment automatically.
-			 An example of this would be to keep "Stamina" as high as possible consider the following:
-			<table border="1" bordercolor="gray">
-				<tr>
-					<td class="Cmd">
-						Total stamina is +40, but drops to +20 and has to regen.<br />
-						Replace boot +40 stamina, with +20 stamina<br />
-						Replace finger +20 stamina, with +40 stamina<br />
-					</td>
-				</tr>
-			</table>
-		<br />
-		<br />
-		Now if we set the "Finger Slot" to change before the "Feet Slot" this keeps the stamina high thus removing the need to regenrate health:
-		<table border="1" bordercolor="gray">
-			<tr>
-				<td class="Cmd">
-					Total stamina is +40, and stays as high as possible.<br />
-					Finger +20 stamina, with +40 stamina<br />
-					Boot +40 stamina, with +20 stamina<br />
-				</td>
-			</tr>
-		</table>
-		Obviously this can be used to keep any Stat as high as possible.
-		<br />
-		<br />
-		<div align="center"><img src="Images/Enable_priority.jpg" alt=""></div></p>
-		
-		<p>Selecting an Outfit that has "Enable slot priority" checked will make the "Priority Listbox" screen is show.
-			<div align="center"><img src="Images/Open_Priority_Screen.jpg" alt=""></div>
-		</p>
-		
-		<p>Items/Slots are changed in order from top to bottom.</p>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Minimap">The minimap button</a></h2>
-		<p>The minimap button will initially be located at the center of the top of 
+		<p>The minimap button will initially be located at the center of the left side of 
 			your minimap. If you are using other addons which place buttons around the 
 			minimap you may have to temporarily move them out of the way in order to see 
-			Outfitters button. The minimap button is not tied to the Minimap you can drag
-			it to anywhere on the UI</p>
+			Outfitters button.</p>
 		<div align="center"><img src="Images/Minimap.jpg" alt=""></div>
 		<p>To change the position of Outfitter button just drag it to where you'd like it. 
 			This position will be remembered and set for you each time you start World of 
@@ -239,8 +172,6 @@
 		<p>To bring up Outfitters minimap menu click the button. From here you can open the 
 			Outfitter UI in order to edit outfits or you can quickly select an outfit to 
 			wear.</p>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Quickslots">QuickSlots</a></h2>
 		<p>QuickSlots are automatically added to your character window for each item slot. 
 			They allow you to quickly find items which go into that slot without having to 
@@ -249,8 +180,6 @@
 			you have which can go into that slot. An empty slot is also provided so you can 
 			quickly unequip an item without having to open your bags.</p>
 		<div align="center"><img src="Images/QuickSlots.jpg" alt="QuickSlots UI"></div>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Commands">Commands</a></h2>
 		<p>Commands to equip or unequip outfits can be included in macros. Outfitter 
 			supports these commands:</p>
@@ -261,34 +190,22 @@
 			Unequips the outfit named outfitname<br>
 			<span class="Cmd">/outfitter toggle outfitname</span>
 			Toggles the outfit named outfitname (if it is currently equipped it's removed, 
-			otherwise it's equipped<br><br>
-			For druids with "Furor" the following MACRO should be used in replacement of your 
-			"Dire Bear Form", if you have Furor you are placed into combat when you transform. Meaning 
-			that your equipment can not be changed for the 10 seconds. The below macro changes your equipment
-			and then transforms you.<br>
-			<span class="Cmd">/cancelaura [stance:1] Dire Bear Form;<br>
-												/stopmacro [stance:1/2/3/4/5/6];<br>
-												/outfitter wear Druid: Bear Form;<br>
-												/cast [nostance] Dire Bear Form;</span><br>
-			Get all your macro information from <a href="http://www.wowwiki.com/HOWTO:_Make_a_Macro">http://www.wowwiki.com/HOWTO:_Make_a_Macro</a><br>
+			otherwise it's equipped<br>
 		</p>
-
-		<!-- ################################################################################## -->
 		<h2><a name="Scripts">Scripts</a></h2>
-		<p>You can create your own custom automatic behavior for outfits by attaching scripts to them.  See
+		<p>You can create custom behaviors for outfits by attaching scripts to them.  See
 		<a href="http://www.lua.org">lua.org</a> for more information on the LUA language used by World of
 		Warcraft for scripting and see <a href="http://www.wowwiki.com">WoWiki</a> for more information on
 		the Warcraft interface</p>
 		<p>
 			In addition to the normal events provided by WoW, Outfitter also provides some useful
 			custom events to help in writing scripts.</p>
-		<div>
+		
 		<h3>General Events</h3>
 		<span class="Cmd">GAMETOOLTIP_SHOW</span> Event fires whenever the game tooltip is shown<br />
 		<span class="Cmd">GAMETOOLTIP_HIDE</span> Event fires whenever the game tooltip is hidden<br />
 		<span class="Cmd">TIMER</span> Event which fires once every second -- useful for outfits which can't use other events and need to periodically poll for their state<br />
 		<span class="Cmd">DINING and NO_DINING</span> Fired when a player starts and stops eating<br />
-		<span class="Cmd">WEAROUTFIT and UNWEAROUTFIT</span> Fired when a players Outfit is put on or removed<br />
 		<h3>Warrior Events</h3>
 		<span class="Cmd">BATTLE_STANCE and NO_BATTLE_STANCE</span> Fired when a warrior enters and leaves Battle Stance<br />
 		<span class="Cmd">DEFENSIVE_STANCE and NO_DEFENSIVE_STANCE</span> Fired when a warrior enters and leaves Defensive Stance<br />
@@ -300,11 +217,7 @@
 		<span class="Cmd">TRAVEL_FORM and NO_TRAVEL_FORM</span> Fired when a druid enters and leaves Travel Form<br />
 		<span class="Cmd">MOONKIN_FORM and NO_MOONKIN_FORM</span> Fired when a druid enters and leaves Moonkin Form<br />
 		<span class="Cmd">TREE_FORM and NO_TREE_FORM</span> Fired when a druid enters and leaves Tree Form<br />
-		<span class="Cmd">FLIGHT and NO_FLIGHT<strong><span style="color: #ffe040; font-family: Times New Roman">
-    Fired when a druid enters and leaves Flight Form<br />
-    </span></strong>SWIFTFLIGHT and NO_SWIFTFLIGHT<strong><span style="color: #ffe040;
-            font-family: Times New Roman"> Fired when a druid enters and leaves Swift Flight
-            Form (Will be combined with Flight Form at a later stage)</span></strong><br />STEALTH and NO_STEALTH</span> Fired when a druid or rogue enters and leaves stealth/prowl<br />
+		<span class="Cmd">STEALTH and NO_STEALTH</span> Fired when a druid or rogue enters and leaves stealth/prowl<br />
 		<h3>Rogue Events</h3>
 		<span class="Cmd">STEALTH and NO_STEALTH</span> Fired when a druid or rogue enters and leaves stealth/prowl<br />
 		<h3>Priest Events</h3>
@@ -323,16 +236,16 @@
 		<h3>Mage Events</h3>
 		<span class="Cmd">EVOCATE and NO_EVOCATE</span> Fired when a mage begins and ends Evocate<br />
 		<h3>Special Variables</h3>
-		<span style="font-size: small">Note: Viarables are case sensitive</span><br />
-		<span class="Cmd">OutfitName</span>Variable which contains the name of the current Outfit.<br />
-		<span class="Cmd">equip</span> Variable which tells Outfitter what you want done with the outfit after the script is run.  Set it to true to equip the outfit, set it to false to unequip the outfit, or don't set it (or set it to nil) to leave the outfit as-is<br />
-		<span class="Cmd">isEquipped</span> Variable which is set to true if the outfit is currently equipped<br />
-		<span class="Cmd">didEquip</span> Variable which is set to true if your script is the reason the outfit is currently equipped<br />
-		<span class="Cmd">FiveSecRule</span> Variable which is set to true if you are within the "Five Second Rule"/You are within five seconds of a cast.</div>
-
-		<!-- ################################################################################## -->
+		<span class="Cmd">isEquipped</span> Set to true if the outfit is currently equipped<br />
+		<span class="Cmd">didEquip</span> Set to true if your script is the reason the outfit is currently equipped<br />
+		<span class="Cmd">didUnequip</span> Set to true if your script is the reason the outfit is currently unequipped<br />
+		<span class="Cmd">time</span> The current system time as returned by GetTime()<br />
+		<span class="Cmd">setting</span> Current values of the script's $SETTING inputs<br />
+		<span class="Cmd">equip</span> Tells Outfitter what you want done with the outfit after the script is run.  Set it to true to equip the outfit, set it to false to unequip the outfit, or don't set it (or set it to nil) to leave the outfit as-is<br />
+		<span class="Cmd">layer</span> Tells Outfitter which layer (if any) to tag the outfit with.  Other outfits with the same layer tag will be equipped adjacent to this outfit in the stack<br />
+		<span class="Cmd">delay</span> Tells Outfitter How many seconds to wait before equipping or unequipping the outfit<br />
+		
 		<h2><a name="KeyBindings">Key Bindings</a></h2>
-		<p>A key can be bound to open the Outfitter window.</p>
 		<p>Outfits can be attached to a key so that they can be equipped or removed using a 
 			key press. Outfitter supports up to 10 outfits being attached to keys. To 
 			attach an outfit to a key on your keyboard, do the following:</p>
@@ -341,11 +254,69 @@
 		<p>Next open World of Warcraft's Key Binding settings window and scroll down to the 
 			Outfitter section. In that section you will see the 10 key binding outfits 
 			listed and you can associate a key combination with that outfit.</p>
+		<h2><a name="SampleScripts">Sample Scripts</a></h2>
+		<p>Detect Spellsurge proc and equip an alternate weapon</p>
+		<pre>-- $EVENTS PLAYER_ENTERING_WORLD CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS TIMER
+-- $DESC Equips the outfit when the players own Spellsurge procs, then unequips it 50 seconds later
 
-		<!-- ################################################################################## -->
-		<h2><a name="Links">Links</a></h2>
-		<p><a href="http://www-en.curse-gaming.com/downloads/details/7446/">Outftter Files</a><br>
-		<a href="http://www.wowinterface.com/downloads/info5069-FuBar-OutfitterFu.html">Outftter Fubar</a><br>
-		<a href="http://forums.pcsd.com.au/">Forums</a></p>
+if event == "PLAYER_ENTERING_WORLD" then
+    outfit.spellsurgeEnd = nil
+elseif event == "CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS" then
+    if arg1 == "You gain 10 Mana from Spellsurge."
+    and not outfit.spellsurgeEnd then
+        outfit.spellsurgeEnd = time + 50
+        equip = true
+    end
+elseif event == "TIMER" then
+    if outfit.spellsurgeEnd 
+    and time >= outfit.spellsurgeEnd then
+        outfit.spellsurgeEnd = nil
+        equip = false
+    end
+end</pre>
+		<p>Equip on specific spellcast</p>
+		<pre>-- $EVENTS UNIT_SPELLCAST_START
+-- $DESC Equips when you start casting the specified spell, unequips when you cast something else
+-- $SETTING spell={Type="String", Label="Spell"}
+
+if arg1 ~= "player" then return end
+
+if strlower(arg2) == strlower(setting.spell) then
+    equip = true
+else
+    equip = false
+end</pre>
+		<p>Equips when mana is low, then unequips when mana returns (by RaeVanMorlock)</p>
+		<pre>-- $EVENTS UNIT_MANA
+-- $DESC Equips the outfit when your mana drops below a certain percentage. Unequips when it reaches a certain percentage.
+
+-- $SETTING ManaEquip={Label="Equip below", Type="Number", Suffix="% mana"}
+-- $SETTING ManaUnequip={Label="Unquip above", Type="Number", Suffix="% mana"}
+
+if arg1 ~= "player" then return end
+
+local manaPercent = 100 * UnitMana(arg1) / UnitManaMax(arg1)
+
+if manaPercent < setting.ManaEquip then
+    equip = true
+elseif didEquip and manaPercent > setting.ManaUnequip then
+    equip = false
+end</pre>
+		<p>Unequips other outfits when this outfit is equipped, then puts them back on when it's unequipped</p>
+		<pre>-- $EVENTS OUTFIT_EQUIPPED OUTFIT_UNEQUIPPED
+-- $SETTING Outfits="StringTable"
+-- $DESC Unequips the listed outfits when this outfit is equipped, then puts them back on when it's unequipped
+
+if event == "OUTFIT_EQUIPPED" then
+    for _, name in ipairs(settings.Outfits) do
+        Outfitter:RemoveOutfit(Outfitter:FindOutfit(name))
+    end
+    return
+elseif event == "OUTFIT_UNEQUIPPED" then
+    for _, name in ipairs(settings.Outfits) do
+        Outfitter:WearOutfitByName(name)
+    end
+    return
+end</pre>
 	</body>
 </html>

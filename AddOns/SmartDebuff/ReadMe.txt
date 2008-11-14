@@ -18,14 +18,20 @@ As example per default:
 Highlighted BLUE = LEFT click
 Highlighted RED = RIGHT click
 
+Q4: My SmartDebuff frame is gone, how I get it back?
+A4: Type in the chat "/sdbo" or "/sdbm", if the options menu not opens SmartDebuff is not enabled, type "/sdb rafp" to reset all frame positions.
+
+Q5: I use the "Auto hide" feature, but now SmartDebuff is hidden till combat, how I can configure it?
+A5: Type in the chat "/sdbo" or "/sdbm" the options menu will displayed and the unit buttons also.
+
 
 
 
 Features:
 - Supports all classes
-- Supports EN/DE/FR clients
+- Supports all clients
 - Checks debuffs on you, raid/party members, raid/party pets
-- Shows HP, Mana, AFK, offline, feign death state
+- Shows HP, Mana, AFK, offline, aggro state
 - Shows class colors
 - Sorted by groups or classes
 - Choose your favorite debuff hightlight colors
@@ -53,7 +59,7 @@ Type /sdb [command] or /smartdebuff [command] in game
 options - Show/hide SmartDebuff options frame
 rafp - Reset all frame positions
 
-Type /sdbo for SmartDebuff options frame in game
+Type /sdbo or /sdbm for SmartDebuff options frame in game
 
 
 Please send me a mail or write a comment if you discover Bugs or have Suggestions.
@@ -69,6 +75,34 @@ aeldra@sonnenkinder.org
 Changes: 
 Rev     Date        Description
 ------  ----------  -----------------------
+3.0a    2008-10-15  Updated to patch 3.0
+                    Updated debuff detection
+                    Fixed auto hide feature
+
+2.4b    2008-07-31  Added 'Debuff Guard', highlights critical debuffs which are not removable.
+                    Added 'Debuff Guard' option frame
+                    Added debuff timer (if L/R/M is unchecked), shows how many seconds the debuff ticks, since it was applied
+                    Added full customizable buttons for spells/items/macros
+                    Added 3rd mouse button and shift/alt/ctrl modifier support
+                    Added key binding option frame (drag'n'drop)
+                    Added auto update if a newer debuff spell is learned
+                    Added 'Reset Color' button for debuff colors
+                    Added options tooltips
+                    Updated Warlock Felhunter check and option frame
+                    Updated options frame
+                    Removed auto hide feature, due to frame update issue befor combat
+                    
+2.4a    2008-07-31  Redesign to the new GetSpellInfo method, localization of the spells is not longer needed and SDB will now work for every language
+                    Added new option: "Show Aggro", shows who has currently aggro
+                    Added new option: "Gradient", enable gradient to the unit button color
+                    Added new option: "Auto hide", hides automatically the SDB frame out of combat, if no one has a debuff
+                    Added "Frost Trap Aura" to ignore list
+                    Added Missdirection for hunters as support spell (use heal range to display in range)
+                    Changed interval slider, values start now from 25ms - 500ms, default is 100ms
+                    Fixed display debuff of mind controlled players for priests
+                    Updated offline detection                    
+                    Updated TOC
+
 2.3a    2007-11-14  Added "Unstable Affliction" to ignore list
                     Updated TOC
 

@@ -24,9 +24,9 @@ WKB_overRide = false;
 WKB_ShowAllZones = false;
 WKB_ScrollFrameButtonID = 0;
 WKB_VarsLoaded = false;
-
+local WKB_SinglePrint = nil;
 local WKB_LastSearch = "";
-local WKB_SearchResults = {};
+WKB_SearchResults = {};
 local WKB_PlayerX = 0;
 local WKB_PlayerY = 0;
 
@@ -35,9 +35,11 @@ function WKB_EventFrame_OnLoad()
 	this:RegisterEvent("WORLD_MAP_UPDATE");
 	this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	this:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
+	this:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
 
-function WKB_OnEvent(event)
+function WKB_OnEvent(self, event, ...)
+	local arg1 = ...
 	if(event == "ADDON_LOADED" and arg1 == "MetaMapWKB") then
 		WKB_LoadZones();
 		for option, value in pairs(WKB_Default) do
@@ -60,11 +62,30 @@ function WKB_OnEvent(event)
 			WKB_Search();
 		end
 	end
-	if(event == "UPDATE_MOUSEOVER_UNIT" and WKB_Options.AutoTrack) then
-		if(UnitIsPlayer("mouseover")~=1 and UnitPlayerControlled("mouseover")~=1 and UnitIsDead("mouseover")~=1) then
-			WKB_AddUnitInfo("mouseover");
+	if((event == "UPDATE_MOUSEOVER_UNIT" or event == "PLAYER_TARGET_CHANGED") and WKB_Options.AutoTrack) then
+		local target = "target"; if (event == "UPDATE_MOUSEOVER_UNIT") then target = "mouseover" end
+		-- if(UnitIsPlayer(target)~=1 and UnitPlayerControlled(target)~=1 and UnitIsDead(target)~=1) then
+			-- WKB_AddUnitInfo("mouseover");
+		-- end
+		if UnitExists(target) and (not UnitIsPlayer(target)) and (not UnitIsGhost(target)) and (not WKB_UnitIsPet(target)) and (not (UnitCreatureType(target) == "Critter")) 
+		  and (not (UnitName(target) == "Viper")) and (not WKB_UnitIsTotem(target)) then  --not a snake trap Viper and not a Totem		
+				WKB_AddUnitInfo(target) --add mob to MetaMap db
 		end
 	end
+end
+
+function WKB_UnitIsPet(target)
+	if UnitPlayerControlled(target) then
+		if UnitIsPlayer(target) then
+			return false
+		end
+		return true
+	end
+end
+
+function WKB_UnitIsTotem(target)
+	local name, _ = UnitName(target)
+	return (string.find(name, " Totem") and not string.find(name, "Totemic"))
 end
 
 function WKB_InitFrame()
@@ -120,7 +141,7 @@ end
 
 function WKB_UpdateKeySelectedUnit()
 	if (not UnitExists("target")) then
-		MetaMap_Print(WKB_NOTARGET,WKB_Options.ShowUpdates);
+		MetaMap_Print(WKB_NOTARGET, WKB_Options.ShowUpdates);
 		return;
 	else
 		if(IsControlKeyDown()) then
@@ -140,8 +161,12 @@ function WKB_AddUnitInfo(UnitSelect)
 		if(not CheckInteractDistance(UnitSelect, WKB_Options.RangeCheck)) then return; end
 	end
 	if(not WKB_Data[mapName]) then
-		MetaMap_Print(METAMAP_INVALIDZONE, WKB_Options.ShowUpdates);
-		return;
+		--MetaMap_Print(METAMAP_INVALIDZONE, WKB_Options.ShowUpdates);
+		local zone = GetRealZoneText() or GetZoneText()  or GetMinimapZoneText() or GetSubZoneText()
+		if not zone or zone == "" then
+			return;
+		end
+		WKB_Data[zone] = {} --create a new zone
 	end
 	local icon = 3; --green by default
 	local unitName = UnitName(UnitSelect);
@@ -212,8 +237,8 @@ function WKB_AddUnitInfo(UnitSelect)
 	local addedSomething = false;
 	local updatedSomething = false;
 	local currentUnit = WKB_Data[mapName][unitName];
-
-	if(not currentUnit) then
+	
+	if (not currentUnit) then
 		WKB_Data[mapName][unitName] = {};
 		currentUnit = WKB_Data[mapName][unitName];
 		currentUnit["inf1"] = desc1;
@@ -225,6 +250,7 @@ function WKB_AddUnitInfo(UnitSelect)
 		currentUnit[4] = 20000;
 		addedSomething = true
 		MetaMap_Print(format(TEXT(WKB_DISCOVERED_UNIT), unitName), true);
+		WKB_SinglePrint = true
 	else
 		currentUnit["icon"] = icon;
 		if(currentUnit["inf1"] == "") then
@@ -259,14 +285,18 @@ function WKB_AddUnitInfo(UnitSelect)
 	end
 	if(WKB_Options.KBstate) then
 		if(addedSomething) then
-			MetaMap_Print(format(TEXT(WKB_ADDED_UNIT_IN_ZONE), unitName, mapName), WKB_Options.ShowUpdates);
+			if WKB_SinglePrint then
+				WKB_SinglePrint = nil
+			else
+				MetaMap_Print(format(TEXT(WKB_ADDED_UNIT_IN_ZONE), unitName, mapName), WKB_Options.ShowUpdates);
+			end
 		end
-		if(changedSomething and not addedSomething) then
-			MetaMap_Print(format(TEXT(WKB_UPDATED_MINMAX_XY), unitName, mapName), WKB_Options.ShowUpdates);
-		end
-		if(updatedSomething) then
-			MetaMap_Print(format(TEXT(WKB_UPDATED_INFO), unitName, mapName), WKB_Options.ShowUpdates);
-		end
+		--if(changedSomething and not addedSomething) then
+			--MetaMap_Print(format(TEXT(WKB_UPDATED_MINMAX_XY), unitName, mapName), WKB_Options.ShowUpdates);
+		--end
+		--if(updatedSomething) then
+			--MetaMap_Print(format(TEXT(WKB_UPDATED_INFO), unitName, mapName), WKB_Options.ShowUpdates);
+		--end
 	else
 		currentUnit = nil;
 	end
@@ -295,7 +325,7 @@ function WKB_BuildSearchResults()
 		local showThis = MetaMap_CheckRelatedZone(zoneName, mapName);
 		for unit, value in pairs(nameTable) do
 			local cCode = 1;
-			local coordString = "";
+			local coordString = ""; local coordString2
 			if(showThis or WKB_ShowAllZones) then
 				local dataZone = WKB_Data[zoneName][unit];
 				local inf1 = dataZone["inf1"];
@@ -307,14 +337,16 @@ function WKB_BuildSearchResults()
 				elseif(ncol == 6) then ncol = 1; end
 				if(zoneName == mapName) then
 					coordString, cCode = WKB_FormatCoords(dataZone);
+					coordString2 = coordString
 				else
 					coordString = zoneName;
+					coordString2, _ = WKB_FormatCoords(dataZone);
 				end
 				if(string.find(string.lower(unit),string.lower(WKB_LastSearch),1,true)~=nil
 					or string.find(string.lower(inf1),string.lower(WKB_LastSearch),1,true)~=nil
 					or string.find(string.lower(inf2),string.lower(WKB_LastSearch),1,true)~=nil
 					or string.find(string.lower(coordString),string.lower(WKB_LastSearch),1,true)~=nil) then
-					tinsert(WKB_SearchResults, {name = unit, zoneName = zoneName, desc = inf1, level = inf2, ncol = ncol, location = coordString, cCode = cCode});
+					tinsert(WKB_SearchResults, {name = unit, zoneName = zoneName, desc = inf1, level = inf2, ncol = ncol, location = coordString, cCode = cCode, location2 =  coordString2});
 					nameCount = nameCount + 1;
 					if(tempZones[zoneName] == nil and zoneName ~= nil) then
 						zoneCount = zoneCount + 1;
@@ -340,6 +372,7 @@ function WKB_UpdateScrollFrame()
 		local CoordsButton = getglobal("WKB_ScrollFrameButton"..iScrollFrameButton.."Coords");
 
 		if(buttonIndex < WKB_SearchResults.onePastEnd) then
+			local currentZone = GetRealZoneText() or GetZoneText() or GetMinimapZoneText() or GetSubZoneText() or ""
 			if(WKB_SearchResults[buttonIndex]["zoneName"] == GetRealZoneText()) then
 				-- Unit is in the same zone, show in yellow
 				NameButton:SetText(WKB_SearchResults[buttonIndex]["name"]);
@@ -354,13 +387,13 @@ function WKB_UpdateScrollFrame()
 				end
 				scrollFrameButton:Show();
 			else
-					-- Unit is in a different zone, show in red
-					NameButton:SetText(WKB_SearchResults[buttonIndex]["name"]);
-					Info1Button:SetText(WKB_SearchResults[buttonIndex]["desc"]);
-					Info2Button:SetText(WKB_SearchResults[buttonIndex]["level"]);
-					CoordsButton:SetText(WKB_SearchResults[buttonIndex]["zoneName"]);
-					CoordsButton:SetTextColor(1,0,0)
-					scrollFrameButton:Show();
+				-- Unit is in a different zone, show in red
+				NameButton:SetText(WKB_SearchResults[buttonIndex]["name"]);
+				Info1Button:SetText(WKB_SearchResults[buttonIndex]["desc"]);
+				Info2Button:SetText(WKB_SearchResults[buttonIndex]["level"]);
+				CoordsButton:SetText(WKB_SearchResults[buttonIndex]["zoneName"]);
+				CoordsButton:SetTextColor(1,0,0)
+				scrollFrameButton:Show();
 			end
 			local ncol = WKB_SearchResults[buttonIndex]["ncol"];
 			NameButton:SetTextColor(MetaMap_Colors[ncol].r,MetaMap_Colors[ncol].g,MetaMap_Colors[ncol].b)
@@ -370,8 +403,7 @@ function WKB_UpdateScrollFrame()
 			scrollFrameButton:Hide();
 		end
 	end
-	FauxScrollFrame_Update(WKB_ScrollFrame, WKB_SearchResults.onePastEnd - 1,
-        WKB_BUTTON_SHOWN, WKB_BUTTON_HEIGHT)
+	FauxScrollFrame_Update(WKB_ScrollFrame, WKB_SearchResults.onePastEnd - 1, WKB_BUTTON_SHOWN, WKB_BUTTON_HEIGHT)
 end
 
 function WKB_FormatCoords(dataSet, mode)
@@ -417,7 +449,7 @@ end
 function MetaKBList_SortBy(aSortType, aSortDone)
 	MetaMap_sortType = aSortType;
 	MetaMap_sortDone = aSortDone;
-  table.sort(WKB_SearchResults, MetaMap_SortCriteria);
+    table.sort(WKB_SearchResults, MetaMap_SortCriteria);
 	if(not MetaMap_sortDone)then
 		local count = WKB_SearchResults.onePastEnd;
 		WKB_SearchResults = MetaMap_InvertList(WKB_SearchResults);
@@ -426,19 +458,19 @@ function MetaKBList_SortBy(aSortType, aSortDone)
 	WKB_UpdateScrollFrame();
 end
 
-function WKB_ScrollFrameButtonOnClick(button)
-	if(button == "LeftButton") then
+function WKB_ScrollFrameButtonOnClick(self, button)
+	if (button == "LeftButton") then
 		WKB_ScrollFrameButtonID = this:GetID();
 		local x, y = GetCursorPosition();
 		x = x / UIParent:GetEffectiveScale();
 		y = y / UIParent:GetEffectiveScale();
-		MetaKBMenu:SetPoint("TOP", "UIParent", "BOTTOMLEFT", x , y +10);
-		MetaKBMenu:Show();
-	elseif(button == "RightButton") then
+		MetaKBMenu:SetPoint("TOP", "UIParent", "BOTTOMLEFT", x , y + 10);
+		MetaKBMenu:Show(self);
+	elseif (button == "RightButton") then
 		if(IsControlKeyDown()) then
-			MetaKBMenu_CRBSelect(this:GetID());
+			MetaKBMenu_CRBSelect(this:GetID(), self);
 		elseif(IsShiftKeyDown()) then
-			MetaKBMenu_SRBSelect(this:GetID());
+			MetaKBMenu_SRBSelect(this:GetID(), self);
 		else
 			MetaMap_LoadBWP(this:GetID(), 1);
 		end
@@ -490,8 +522,7 @@ function MetaKBMenu_Select(id)
 		if(not ChatFrameEditBox:IsVisible()) then ChatFrameEditBox:Show(); end
 		local dataZone = WKB_Data[zoneName][unit];
 		local centerx, centery = WKB_FormatCoords(dataZone, 2)
-		local mInfo = " "
-		if(dataZone.inf1 ~= "") then mInfo = " ["..dataZone.inf1.."] "; end
+		local mInfo = " "; if(dataZone.inf1 ~= "") then mInfo = " ["..dataZone.inf1.."] "; end
 		ChatFrameEditBox:Insert(unit..mInfo.."("..zoneName.." - "..centerx..", "..centery..")");
 	elseif(id == 8) then
 		local noteID;
@@ -499,6 +530,14 @@ function MetaKBMenu_Select(id)
 			_, noteID = WKB_AddMapNotes(unit, zoneName, 0);
 		end
 		MetaMap_ShowLocation(zoneName, unit, noteID);
+	elseif(id == 9) then
+		MetaMap_LoadBWP(0, 3);
+		if(IsAddOnLoaded("MetaMapBWP")) then
+			--MyPrint("QuestHelper Icon Set as the MetaMap Waypoint.")
+			local dataZone = WKB_Data[zoneName][unit];
+			local centerx, centery = WKB_FormatCoords(dataZone, 2)
+			BWP_LocCommand(format("%d, %d", centerx, centery)..unit); --set BWP waypoint
+		end
 	end
 	WKB_Options.ShowUpdates = tUpdate;
 end

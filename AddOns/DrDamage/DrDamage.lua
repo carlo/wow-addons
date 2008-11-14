@@ -1,50 +1,78 @@
-local playerClass = select(2,UnitClass("player"))
-local playerHealer, playerCaster, playerMelee, playerHybrid
-if playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "PALADIN" or playerClass == "DRUID" then playerHealer = true end
-if playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARLOCK" then playerCaster = true end
-if playerClass == "DRUID" or playerClass == "PALADIN" or playerClass == "SHAMAN" then playerHybrid = true end
-if playerClass == "ROGUE" or playerClass == "WARRIOR" or playerClass == "HUNTER" then playerMelee = true end
+local _, playerClass = UnitClass("player")
+local playerHealer = (playerClass == "PRIEST") or (playerClass == "SHAMAN") or (playerClass == "PALADIN") or (playerClass == "DRUID")
+local playerCaster = (playerClass == "MAGE") or (playerClass == "PRIEST") or (playerClass == "WARLOCK")
+local playerMelee = (playerClass == "ROGUE") or (playerClass == "WARRIOR") or (playerClass == "HUNTER")
+local playerHybrid = (playerClass == "DEATH KNIGHT") or (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN")
+-- Hybrid = Melee and Caster
+-- Death Knight = Melee, Caster = Hybrid only
+-- Druid = Melee, Caster, Healer = Hybrid, Healer
+-- Hunter = Melee only
+-- Mage = Caster only
+-- Paladin = Healer, Melee, Caster = Hybrid, Healer
+-- Priest = Healer, Caster
+-- Rogue = Melee only
+-- Shaman = Healer, Melee Caster = Hybrid, Healer
+-- Warlock = Caster only
+-- Warrior = Melee only
 
+--Libraries
 local L = AceLibrary("AceLocale-2.2"):new("DrDamage")
-local GT = AceLibrary("Gratuity-2.0")
-local Deformat = AceLibrary("Deformat-2.0")
-local BS
-if GetLocale() ~= "enUS" then 
-	BS = AceLibrary("Babble-Spell-2.2") 
-end
+local GT = LibStub:GetLibrary("LibGratuity-3.0")
+local DrDamage = DrDamage
 
---LOCAL COPIES OF FUNCTIONS
 --General
 local settings
+local _G = getfenv(0)
 local type = type
 local pairs = pairs
 local ipairs = ipairs
 local tonumber = tonumber
 local math_floor = math.floor
+local math_min = math.min
 local math_max = math.max
 local string_match = string.match
+local string_format = string.format
+local string_find = string.find
+local string_sub = string.sub
+local string_gsub = string.gsub
+local string_len = string.len
 local select = select
-local GetSpellName = GetSpellName
-local UnitLevel = UnitLevel
-local BOOKTYPE_SPELL = BOOKTYPE_SPELL
-local Mana_Cost = MANA_COST
-local UnitMana = UnitMana
 
---Core
-local _G = getfenv(0)
+--Module
+local UnitBuff = UnitBuff
+local UnitDebuff = UnitDebuff
+local UnitMana = UnitMana
+local UnitLevel = UnitLevel
+local UnitDamage = UnitDamage
+local UnitPowerType = UnitPowerType
 local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local GetSpellName = GetSpellName
+local GetSpellInfo = GetSpellInfo
+local GetMacroSpell = GetMacroSpell
 local GetActionInfo = GetActionInfo
+local GetCursorInfo = GetCursorInfo
+local GetInventoryItemLink = GetInventoryItemLink
+local GetInventorySlotInfo = GetInventorySlotInfo
+local GetItemInfo = GetItemInfo
+local GetItemGem = GetItemGem
+local GetTime = GetTime
+local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local HasAction = HasAction
 local IsEquippedItem = IsEquippedItem
-local DrD_Font = GameFontNormal:GetFont()
+local SecureButton_GetModifiedAttribute = SecureButton_GetModifiedAttribute
+local SecureButton_GetEffectiveButton = SecureButton_GetEffectiveButton
+local ActionButton_GetPagedID = ActionButton_GetPagedID
+
+--Module variables
+local spellInfo
 local playerCompatible
 local updatingSpell, updateSetItems
-local GetTime = GetTime
 local dmgMod
 local loadedTalents
+local DrD_Font = GameFontNormal:GetFont()
 DrDamage.visualChange = true
 
+--Local functions
 local function DrD_ClearTable( table )
 	for k in pairs( table ) do
 		table[k] = nil
@@ -79,82 +107,132 @@ local function DrD_MatchData( data, ... )
 	return false
 end
 
-local function DrD_GetTextFrame( hide, ... )
-	for i = 1, select('#', ...) do
-		local frame = select(i, ...)
-		if frame and frame:GetName() == "DrDamageText" and frame.text then
-			if hide then frame.text:Hide() end
-			return frame
-		end
-	end
-end
-
-local function DrD_Set( n, v, setOnly )
+local function DrD_Set( n, set, change )
 	return function(v) 
 		settings[n] = v
-		if not setOnly and not DrDamage:IsEventScheduled("UpdatingAB") then
-			DrDamage:ScheduleEvent("UpdatingAB", DrDamage.UpdateAB, 1.0, DrDamage)
+		if change then
+			DrDamage.visualChange = true
+		end
+		if not set and not DrDamage:IsEventScheduled("DrD_FullUpdate") then
+			DrDamage:CancelSpellUpdate()
+			DrDamage:ScheduleEvent("DrD_FullUpdate", DrDamage.UpdateAB, 1.0, DrDamage)
 		end
 	end
 end
 
-local ABstop, ABdefault, ABtable, ABgetID, ABglobalbutton, CTBar, ABdisable
-local defaultBars = { "MultiBarBottomLeftButton", "MultiBarBottomRightButton","MultiBarRightButton", "MultiBarLeftButton" }
+local ABstop, ABdefault, ABdisable, ABfunc --, ABhidden
+local ABtable, ABobjects, ABrefresh = {}, {}, {}
+
 local function DrD_DetermineAB()
-	if IsAddOnLoaded("Bartender3") then
-		ABglobalbutton = "BT3Button"
-		ABtable = Bartender3.actionbuttons
-		ABgetID = function( button, index, ABtable )
-					if ABtable[index] and ABtable[index].state == "used" then
-						return ABtable[index].object:PagedID()
+	--Default
+	ABdefault = true
+	for i = 1, 6 do
+		for j = 1, 12 do
+			table.insert(ABobjects,_G[((select(i,"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton", "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"))..j)])
+		end
+	end
+	
+	if IsAddOnLoaded("Bartender4") then
+		local func = function(button) if button.Secure then return button.Secure:GetActionID() else return button:GetActionID() end end
+		ABrefresh["BT4Button"] = function()
+			for i=1,120 do
+				ABtable["BT4Button"..i] = func
+			end
+		end
+		ABdefault = false
+	end
+	if IsAddOnLoaded("Nurfed") then
+		local func = function(button)
+			if button.spell then
+				if button.type == "spell" then
+					local pid = Nurfed:getspell(button.spell)
+					if pid then
+						return nil, GetSpellName(pid, BOOKTYPE_SPELL)
 					end
-		end	
-	elseif IsAddOnLoaded( "Bongos2" ) then
-		ABglobalbutton = "BongosActionButton"
-		ABgetID = function( button ) return SecureButton_GetModifiedAttribute(button,"action",SecureStateChild_GetEffectiveButton(button)) end
-	elseif IsAddOnLoaded( "Bongos" ) then
-		ABglobalbutton = "BActionButton"
-		ABgetID = function( button ) return SecureButton_GetModifiedAttribute(button,"action",SecureStateChild_GetEffectiveButton(button)) end
-	elseif IsAddOnLoaded( "CogsBar" ) then
-		ABglobalbutton = "CogsBarButton"
-		ABgetID = function( button ) return SecureButton_GetModifiedAttribute(button,"action",SecureStateChild_GetEffectiveButton(button)) end
-	elseif IsAddOnLoaded("TrinityBars") or IsAddOnLoaded("TrinityBars2") then
-		ABglobalbutton = "TrinityActionButton"
-		ABgetID = function( button ) return SecureButton_GetModifiedAttribute(button,"action",SecureStateChild_GetEffectiveButton(button)) end
-	elseif IsAddOnLoaded("idActionbar") then
-		ABglobalbutton = "idButton"
-		ABgetID = function( button ) return SecureButton_GetModifiedAttribute(button,"action",SecureStateChild_GetEffectiveButton(button)) end
-	elseif IsAddOnLoaded( "InfiniBar" ) or IsAddOnLoaded( "FlexBar2" ) then
-		ABstop = true
-	elseif IsAddOnLoaded("DiscordActionBars") then
-		ABglobalbutton = "DAB_ActionButton_"
-		ABgetID = function( button ) return button:GetActionID() end
-	elseif IsAddOnLoaded("Nurfed") then
-		ABglobalbutton = "Nurfed_Button"
-		ABgetID = function( button )
-			if button.type == "spell" and button.spell then
-				local pos = string.find( button.spell, "[^%s][%(]" )
-				if not pos then pos = string.len( button.spell ) end
-				return nil, string.sub( button.spell, 1, pos ), string_match(button.spell,"%d+")
-			elseif button.type == "macro" and button.spell then
-				local action, rank = GetMacroSpell(button.spell)
-				local pid
-				if action and not GetMacroItem(button.spell) then
-					pid = Nurfed:getspell(action) 
-				end
-				if pid then 
-					return nil, action, rank 
+				elseif button.type == "macro" then
+					local action, rank = GetMacroSpell(button.spell)
+					if action then 							
+						return nil, action, rank
+					end
 				end
 			end
 		end	
+		ABrefresh["Nurfed_Button"] = function()
+			for i=1,120 do
+				ABtable["Nurfed_Button"..i] = func
+			end
+		end
+		ABdefault = false
+	end
+	if IsAddOnLoaded("Macaroon") then
+		local func = function(button)
+			if button.macrospell then
+				return nil, string_match(button.macrospell,"[%w%s]+"), button.macrorank
+			end
+		end
+		ABrefresh["MacaroonButton"] = function()
+			for _, button in pairs(Macaroon.Buttons) do
+			    ABtable[button[1]:GetName()] = func
+			end
+		end
+	end	
+	if IsAddOnLoaded("Dominos") then
+		local func = function(button) return SecureButton_GetModifiedAttribute(button,"action",SecureButton_GetEffectiveButton(button)) end
+		ABrefresh["DominosActionButton"] = function()
+			for i=1,120 do
+				ABtable["DominosActionButton"..i] = func
+			end
+		end
+	end
+	if IsAddOnLoaded("IPopBar") then
+		local func = function(button) return SecureButton_GetModifiedAttribute(button,"action",SecureButton_GetEffectiveButton(button)) end
+		ABrefresh["IPopBarButton"] = function()
+			for i=1,120 do
+				ABtable["IPopBarButton"..i] = func
+			end
+		end
+	end	
+	if IsAddOnLoaded( "FlexBar2" ) then
+		ABstop = true
+		ABfunc = function()
+			for _, button in pairs(FlexBar2.Buttons) do
+				button:UpdateTextSub("drd")
+			end
+		end
+	end	
+	--[[
 	elseif IsAddOnLoaded("CT_BarMod") then
-		CTBar = true
 		ABtable = CT_BarMod.actionButtonList
 		ABgetID = function( button, index, ABtable )
 			if ABtable[index] and ABtable[index].hasAction then return index end
-		end		
-	else
-		ABdefault = true
+		end
+		settings.BlizzardAB = true	
+	elseif IsAddOnLoaded("Poppins") then
+		ABglobalbutton = "PoppinsPopButton"
+		ABglobalbutton2 = "PoppinsFrame%dButton"
+		ABhidden = true
+		ABgetID = function(button)
+			local spell = SecureButton_GetModifiedAttribute(button,"spell",SecureButton_GetEffectiveButton(button))
+			if spell then return nil, GetSpellName(spell) end
+		end
+		settings.BlizzardAB = true
+	
+	--]]
+	if ABdefault then
+		settings.BlizzardAB = true
+	end
+	
+	DrDamage:RefreshAB()
+end
+
+function DrDamage:RefreshAB()
+	if ABrefresh then
+		for k in pairs(ABtable) do
+			ABtable[k] = nil
+		end
+		for _, func in pairs(ABrefresh) do
+			func()
+		end
 	end
 end
 
@@ -177,6 +255,10 @@ defaults.AltTooltip = false
 defaults.CtrlTooltip = false
 defaults.ShiftTooltip = false
 defaults.DefaultColor = false
+defaults.SwapCalc = false
+defaults.PlayerAura = {}
+defaults.TargetAura = {}
+defaults.Consumables = {}
 DrDamage:RegisterDB("DrDamageDB");
 DrDamage:RegisterDefaults("profile", defaults)
 
@@ -189,8 +271,7 @@ DrDamage.cannotDetachTooltip = true
 DrDamage.hideWithoutStandby = true
 DrDamage.independentProfile = true
 DrDamage.blizzardTooltip = true
-if playerMelee then DrDamage.hasIcon = "Interface\\Icons\\Ability_DualWield"
-else DrDamage.hasIcon = "Interface\\Icons\\Spell_Holy_SearingLightPriest" end
+DrDamage.hasIcon = playerMelee and "Interface\\Icons\\Ability_DualWield" or "Interface\\Icons\\Spell_Holy_SearingLightPriest"
 
 function DrDamage:OnTooltipUpdate()
 	GameTooltip:AddLine( "          Dr. Damage" )
@@ -198,53 +279,25 @@ function DrDamage:OnTooltipUpdate()
 end
 
 function DrDamage:OnInitialize()
-	settings = self.db.profile	
-
+	settings = self.db.profile
 	self.options = { type='group', args = {} }
 	self:RegisterChatCommand({ "/drdmg", "/drdamage" }, self.options)
 	self.OnMenuRequest = self.options		
-
-	if IsAddOnLoaded( "InfiniBar" ) then
-		InfiniBar:RegisterTextSub("drd", "DrDamage_Update",
-		function( bar, btn, options, updateSpells )
-			if not playerCompatible then return false end
-			local spellName, spellRank = bar:GetSpellNameAndRank( btn )
-			if spellName and spellRank then
-				if not updateSpells or DrD_MatchData( updateSpells, spellName ) then
-					return self:CheckAction( nil, nil, nil, nil, spellName, spellRank )
-				end
-			end
-			return false
-		end)
-	end
-	
-	-- data conversion for older options
-	if settings["Display"] == true then
-		settings["AlwaysTooltip"] = not settings["ShiftTooltip"]
-		settings["Display"] = nil
-	elseif settings["Display"] == false then
-		settings["AlwaysTooltip"] = false
-		settings["NeverTooltip"] = true
-		settings["Display"] = nil
-	end
 end
 
 function DrDamage:OnEnable()
 	if IsAddOnLoaded("FlexBar2") and FlexBar2:HasModule("TextSubs") then
 		FlexBar2:GetModule("TextSubs"):RegisterTextSub("drd", 
-			function( Button)
-				if not playerCompatible then return false end
-				local Spell = Button:GetModifiedAttribute("spell");
-				if(Spell and Spell ~= "") then
-					-- Run the spell through GetSpellName to seperate Name & Rank and get the rank if its not specified
-					local SpellName, SpellRank = GetSpellName(Spell);
-					if(SpellRank) then
-						_, _, SpellRank = string.find(SpellRank, "^.* (%d+)$");
-						SpellRank = tonumber(SpellRank);
-					end
-					return self:CheckAction(nil, nil, nil, nil, SpellName, SpellRank);
-				end
-			end);		
+		function(button)
+			if not playerCompatible then return false end
+			if not settings.ABText then return "" end
+			local spell = button:GetModifiedAttribute("spell");
+			if(spell and spell ~= "") then
+				-- Run the spell through GetSpellName to seperate Name & Rank and get the rank if its not specified
+				local name, rank = GetSpellName(spell)
+				return self:CheckAction(nil, nil, nil, name, rank)
+			end
+		end)		
 	end
 
 	if self.PlayerData then
@@ -257,6 +310,7 @@ function DrDamage:OnEnable()
 		self.talents = {}
 		self:PlayerData()
 		self.PlayerData = nil
+		spellInfo = self.spellInfo
 	elseif not self.spellInfo and not self.talentInfo then
 		return
 	end
@@ -269,7 +323,6 @@ function DrDamage:OnEnable()
 	end
 	
 	dmgMod = select(7, UnitDamage("player"))
-	self.globalMod = dmgMod	
 	
     	self:RegisterEvent("AceDB20_ResetDB")
     	self:RegisterEvent("AceEvent_FullyInitialized")
@@ -282,9 +335,11 @@ end
 function DrDamage:AceEvent_FullyInitialized()
 	if self.Caster_OnEnable then
 		self:Caster_OnEnable()
+		self.Caster_OnEnable = nil
 	end
 	if self.Melee_OnEnable then
 		self:Melee_OnEnable()
+		self.Melee_OnEnable = nil
 	end
 	if DrD_DetermineAB then 
 		DrD_DetermineAB()
@@ -297,52 +352,33 @@ function DrDamage:AceEvent_FullyInitialized()
 		self:Melee_InventoryChanged()
 	end
 	
+	self:MetaGems(true)
 	playerCompatible = true
 	
 	if not loadedTalents then
-    		self:UpdateTalents()
-    	else
-    		self:UpdateAB()
-    	end
+		self:UpdateTalents()
+	else
+		self:UpdateAB()
+	end
 	
 	self:Hook(GameTooltip, "SetAction", true)
 	self:SecureHook(GameTooltip, "SetSpell")   	
-   	self:RegisterEvent("UNIT_INVENTORY_CHANGED")
-    	self:RegisterEvent("CHARACTER_POINTS_CHANGED")
+  self:RegisterEvent("UNIT_INVENTORY_CHANGED")
+  self:RegisterEvent("CHARACTER_POINTS_CHANGED")
 	
-    	if settings.DisplayType == "Off" then
-    		settings.ABText = false
-    		settings.DisplayType = "Avg"
-    	end
-
-	if settings.UpdateAlt or settings.UpdateCtrl or settings.UpdateShift then
-		self:RegisterEvent( "MODIFIER_STATE_CHANGED" )
-	end    	
-
 	if settings.ABText then
-    		self:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-    		self:RegisterEvent("ACTIONBAR_HIDEGRID")
-    		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-    		self:RegisterEvent("PLAYER_TARGET_CHANGED")
-    		self:RegisterEvent("UPDATE_MACROS")    	
-		self:RegisterEvent( "SpecialEvents_PlayerBuffGained", "PlayerAuraUpdate" )
-		self:RegisterEvent( "SpecialEvents_PlayerBuffCountChanged", "PlayerAuraUpdate" )
-		self:RegisterEvent( "SpecialEvents_PlayerBuffLost", "PlayerAuraUpdate" )
-		self:RegisterEvent( "SpecialEvents_PlayerDebuffGained", "PlayerAuraUpdate" )
-		self:RegisterEvent( "SpecialEvents_PlayerDebuffCountChanged", "PlayerAuraUpdate" )
-		self:RegisterEvent( "SpecialEvents_PlayerDebuffLost", "PlayerAuraUpdate" )
-		
-    		if playerHealer and self.HealingBuffs then
-    			self:RegisterEvent( "SpecialEvents_UnitBuffGained", "TargetBuffUpdate" )
-    			self:RegisterEvent( "SpecialEvents_UnitBuffCountChanged", "TargetBuffUpdate" )
-    			self:RegisterEvent( "SpecialEvents_UnitBuffLost", "TargetBuffUpdate" )
-    		end
-    		if self.Debuffs then
-    			self:RegisterEvent( "SpecialEvents_UnitDebuffGained", "TargetDebuffUpdate" )
-    			self:RegisterEvent( "SpecialEvents_UnitDebuffCountChanged", "TargetDebuffUpdate" )
-    			self:RegisterEvent( "SpecialEvents_UnitDebuffLost", "TargetDebuffUpdate" )
-    		end
-    	end
+		if settings.UpdateAlt or settings.UpdateCtrl or settings.UpdateShift then
+			self:RegisterEvent( "MODIFIER_STATE_CHANGED" )
+		end
+    self:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
+    self:RegisterEvent("ACTIONBAR_HIDEGRID")
+    self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+    self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+    self:RegisterEvent("PLAYER_TARGET_CHANGED")
+    self:RegisterEvent("UPDATE_MACROS")
+    self:RegisterEvent("LEARNED_SPELL_IN_TAB")
+		self:RegisterEvent("UNIT_AURA", "PlayerAuraUpdate")
+	end
 end
 
 function DrDamage:OnDisable()
@@ -371,10 +407,18 @@ function DrDamage:GeneralOptions()
 				type = 'toggle',
 				name = L["Actionbar text on/off"],
 				desc = L["Toggles the actionbar text on/off"],
-				order = 70,
+				order = 10,
 				get = function() return settings["ABText"] end,
 				set = DrD_Set("ABText"),
-			},		
+			},
+			BlizzardAB = {
+				type = 'toggle',
+				name = L["Support for Blizzard AB even with other AB addons running."],
+				desc = L["Toggles updating on for the default actionbar."],
+				order = 20,
+				get =  function() return settings["BlizzardAB"] end,
+				set =  DrD_Set("BlizzardAB"),				
+			},			
 			FontSize = {
 				type = 'range',
 				name = L["Actionbar font size"],
@@ -382,20 +426,16 @@ function DrDamage:GeneralOptions()
 				min = 6,
 				max = 20,
 				step = 1,
-				order = 75,
+				order = 30,
 				get =  function() return settings["FontSize"] end,
-				set = 	function(v) 
-						settings.FontSize = v
-						self.visualChange = true
-						self:UpdateAB()
-					end,
+				set = DrD_Set("FontSize", false, true),
 			},
 			FontEffect = {
 				type = "text",
 				name = L["Actionbar font effect"],
 				desc = L["Set the font effect"],
 				validate = { L["Outline"], L["ThickOutline"], L["None"] },
-				order = 77,
+				order = 40,
 				get =	function()
 	
 						if settings.FontEffect == "" then
@@ -426,13 +466,9 @@ function DrDamage:GeneralOptions()
 				min = -5,
 				max = 5,
 				step = 1,
-				order = 80,
+				order = 50,
 				get =  function() return settings["FontXPosition"] end,
-				set = 	function(v) 
-						settings.FontXPosition = v
-						self.visualChange = true
-						self:UpdateAB()
-					end,
+				set = 	DrD_Set("FontXPosition", false, true),
 			},
 			FontYPosition = {
 				type = 'range',
@@ -441,20 +477,16 @@ function DrDamage:GeneralOptions()
 				min = -15,
 				max = 30,
 				step = 1,
-				order = 85,
+				order = 60,
 				get =  function() return settings["FontYPosition"] end,
-				set = 	function(v) 
-						settings.FontYPosition = v
-						self.visualChange = true
-						self:UpdateAB()
-					end,
+				set = 	DrD_Set("FontYPosition", false, true),
 			},
 			FontColorDmg = {
 				type = "text",
 				name = L["Damage text color"],
 				desc = L["Set the actionbar damage text color"],
 				usage = L["<r=n, g=n, b=n> where n is 0-1"],
-				order = 90,
+				order = 70,
 				get = function()
 					return "r="..settings.FontColorDmg.r..", g="..settings.FontColorDmg.g..", b="..settings.FontColorDmg.b
 				end,
@@ -469,83 +501,83 @@ function DrDamage:GeneralOptions()
 				end
 			},
 			Update = {
+				type = 'group', 
 				name = L["Update"],
-				desc = L["Forces update to actionbar"],
-				type = "execute",
-				order = 110,
-				func = function() self.visualChange = true, self:UpdateAB() end,
-			},
-			UpdateShift = {
-				type = 'toggle',
-				name = L["Updates actionbars on shift modifier key."],
-	
-				desc = L["Toggles updates on modifier key on/off."],
-				order = 115,
-				get =  function() return settings["UpdateShift"] end,
-				set =  function(v)
-						settings["UpdateShift"] = v
-						if v then
-							if not self:IsEventRegistered("MODIFIER_STATE_CHANGED") then
-								self:RegisterEvent("MODIFIER_STATE_CHANGED")
-							end
-						elseif not settings.UpdateAlt and not settings.UpdateCtrl then
-							self:UnregisterEvent("MODIFIER_STATE_CHANGED")
-						end
-					end,				
-			},
-			UpdateAlt = {
-				type = 'toggle',
-				name = L["Updates actionbars on alt modifier key."],
-				desc = L["Toggles updates on modifier key on/off."],
-				order = 120,
-				get =  function() return settings["UpdateAlt"] end,
-				set =  function(v)
-						settings["UpdateAlt"] = v
-						if v then
-							if not self:IsEventRegistered("MODIFIER_STATE_CHANGED") then
-								self:RegisterEvent("MODIFIER_STATE_CHANGED")
-							end
-						elseif not settings.UpdateCtrl and not settings.UpdateShift then
-							self:UnregisterEvent("MODIFIER_STATE_CHANGED")
-						end
-					end,				
-			}, 
-			UpdateCtrl = {
-				type = 'toggle',
-				name = L["Updates actionbars on ctrl modifier key."],
-				desc = L["Toggles updates on modifier key on/off."],
-				order = 125,
-				get =  function() return settings["UpdateCtrl"] end,
-				set =  function(v)
-						settings["UpdateCtrl"] = v
-						if v then
-							if not self:IsEventRegistered("MODIFIER_STATE_CHANGED") then
-								self:RegisterEvent("MODIFIER_STATE_CHANGED")
-							end
-						elseif not settings.UpdateAlt and not settings.UpdateShift then
-							self:UnregisterEvent("MODIFIER_STATE_CHANGED")
-						end
-					end,				
-			}, 
-			BlizzardAB = {
-				type = 'toggle',
-				name = L["Support for Blizzard AB even with other AB addons running."],
-				desc = L["Toggles updating on for the default actionbar."],
-				order = 130,
-				get =  function() return settings["BlizzardAB"] end,
-				set =  DrD_Set("BlizzardAB"),				
+				desc = L["Update"],
+				order = 90,
+				args = {
+					Update = {
+						name = L["Update"],
+						desc = L["Forces update to actionbar"],
+						type = "execute",
+						order = 1,
+						func = function() self.visualChange = true, self:UpdateAB() end,
+					},
+					UpdateShift = {
+						type = 'toggle',
+						name = L["Updates actionbars on shift modifier key."],
+
+						desc = L["Toggles updates on modifier key on/off."],
+						order = 2,
+						get =  function() return settings["UpdateShift"] end,
+						set =  function(v)
+								settings["UpdateShift"] = v
+								if v then
+									if not self:IsEventRegistered("MODIFIER_STATE_CHANGED") then
+										self:RegisterEvent("MODIFIER_STATE_CHANGED")
+									end
+								elseif not settings.UpdateAlt and not settings.UpdateCtrl then
+									self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+								end
+							end,				
+					},
+					UpdateAlt = {
+						type = 'toggle',
+						name = L["Updates actionbars on alt modifier key."],
+						desc = L["Toggles updates on modifier key on/off."],
+						order = 3,
+						get =  function() return settings["UpdateAlt"] end,
+						set =  function(v)
+								settings["UpdateAlt"] = v
+								if v then
+									if not self:IsEventRegistered("MODIFIER_STATE_CHANGED") then
+										self:RegisterEvent("MODIFIER_STATE_CHANGED")
+									end
+								elseif not settings.UpdateCtrl and not settings.UpdateShift then
+									self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+								end
+							end,				
+					}, 
+					UpdateCtrl = {
+						type = 'toggle',
+						name = L["Updates actionbars on ctrl modifier key."],
+						desc = L["Toggles updates on modifier key on/off."],
+						order = 4,
+						get =  function() return settings["UpdateCtrl"] end,
+						set =  function(v)
+								settings["UpdateCtrl"] = v
+								if v then
+									if not self:IsEventRegistered("MODIFIER_STATE_CHANGED") then
+										self:RegisterEvent("MODIFIER_STATE_CHANGED")
+									end
+								elseif not settings.UpdateAlt and not settings.UpdateShift then
+									self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+								end
+							end,				
+					},
+				},
 			},
 			DisplayTooltip = {
 				type = 'group',
 				name = L["Display tooltip"],
 				desc = L["Control when the tooltip is displayed"],
-				order = 135,
+				order = 100,
 				args = {
 					Always = {
 						type = 'toggle',
 						name = L["Always"],
 						desc = L["Always display the tooltip"],
-						order = 101,
+						order = 1,
 						get = function() return settings["AlwaysTooltip"] end,
 						set = function(v)
 							settings.AlwaysTooltip = v
@@ -560,7 +592,7 @@ function DrDamage:GeneralOptions()
 						type = 'toggle',
 						name = L["Never"],
 						desc = L["Never display the tooltip"],
-						order = 102,
+						order = 2,
 						get = function() return settings["NeverTooltip"] end,
 						set = function(v)
 							settings.AlwaysTooltip = not v
@@ -574,7 +606,7 @@ function DrDamage:GeneralOptions()
 						type = 'toggle',
 						name = L["With Alt"],
 						desc = L["Display tooltip when Alt is pressed"],
-						order = 111,
+						order = 3,
 						get = function() return settings["AltTooltip"] end,
 						set = function(v)
 							settings.NeverTooltip = false
@@ -590,7 +622,7 @@ function DrDamage:GeneralOptions()
 						type = 'toggle',
 						name = L["With Ctrl"],
 						desc = L["Display tooltip when Ctrl is pressed"],
-						order = 112,
+						order = 4,
 						get = function() return settings["CtrlTooltip"] end,
 						set = function(v)
 							settings.NeverTooltip = false
@@ -606,7 +638,7 @@ function DrDamage:GeneralOptions()
 						type = 'toggle',
 						name = L["With Shift"],
 						desc = L["Display tooltip when Shift is pressed"],
-						order = 113,
+						order = 5,
 						get = function() return settings["ShiftTooltip"] end,
 						set = function(v)
 							settings.NeverTooltip = false
@@ -624,19 +656,88 @@ function DrDamage:GeneralOptions()
 				type = 'toggle',
 				name = L["Default tooltip colors"],
 				desc = L["Toggles the default blizzard tooltip colors on/off"],
-				order = 140,
+				order = 110,
 				get = function() return settings["DefaultColor"] end,
-				set = DrD_Set("DefaultColor", nil, true),
+				set = DrD_Set("DefaultColor", true),
 			},
+			SwapCalc = {
+				type = 'toggle',
+				name = L["Swap calculation for double purpose abilities"],
+				desc = L["Toggles between the two calculations for abilities."],
+				order = 120,
+				get = function() return settings["SwapCalc"] end,
+				set = DrD_Set("SwapCalc", false, true),
+			},
+			Aura = {
+				type = 'group',
+				name = L["Modify Buffs/Debuffs"],
+				desc = L["Choose what buffs/debuffs to always include into calculations. Abilities will mostly NOT double stack if buff/debuff is really applied."],
+				order = 170,
+				args = {
+					Player = {
+						type = 'group',
+						name = L["Player"],
+						desc = L["Choose player buffs/debuffs."],
+						args = {},
+						},
+					Target = {
+						type = 'group',
+						name = L["Target"],
+						desc = L["Choose target buffs/debuffs."],
+						args = {},
+						},
+					Consumables = {
+						type = 'group',
+						name = L["Consumables"],
+						desc = L["Choose consumables to include."],
+						args = {},
+						},
+				},
+			},			
 		},
 	}
+	local optionsTable = self.options.args.General.args
+	local auraTable = optionsTable.Aura.args.Player.args
+	for k,v in pairs( self.PlayerAura ) do
+		if not v.ModType or v.ModType ~= "Update" then
+			auraTable[(string_gsub(k," +", ""))] = {
+				type = 'toggle',
+				name = k,
+				desc = L["Include "] .. k,
+				get = function() return settings["PlayerAura"][k] end,
+				set = function(v) settings["PlayerAura"][k] = v or nil; self:UpdateAB() end,
+			}
+		end
+	end
+	auraTable = optionsTable.Aura.args.Target.args
+	for k,v in pairs( self.TargetAura ) do
+		if not v.ModType or v.ModType ~= "Update" then
+			auraTable[(string_gsub(k," +", ""))] = {
+				type = 'toggle',
+				name = k,
+				desc = L["Include "] .. k,
+				get = function() return settings["TargetAura"][k] end,
+				set = function(v) settings["TargetAura"][k] = v or nil; self:UpdateAB() end,
+			}
+		end
+	end
+	auraTable = optionsTable.Aura.args.Consumables.args
+	for k,v in pairs( self.Consumables ) do
+		auraTable[(string_gsub(k," +", ""))] = {
+			type = 'toggle',
+			name = k,
+			desc = L["Include "] .. k,
+			get = function() return settings["Consumables"][k] end,
+			set = function(v) settings["Consumables"][k] = v or nil; self:UpdateAB() end,
+		}
+	end	
 	if playerHealer then
-		self.options.args.General.args.FontColorHeal = {
+		optionsTable.FontColorHeal = {
 			type = "text",
 			name = L["Heal text color"],
 			desc = L["Set the actionbar heal text color"],
 			usage = L["<r=n, g=n, b=n> where n is 0-1"],
-			order = 95,
+			order = 80,
 			get = function()
 				return "r="..settings.FontColorHeal.r..", g="..settings.FontColorHeal.g..", b="..settings.FontColorHeal.b
 			end,
@@ -654,26 +755,47 @@ function DrDamage:GeneralOptions()
 end
 
 --EVENTS:
+function DrDamage:CancelSpellUpdate()
+	updatingSpell = nil
+	self:CancelScheduledEvent("DrD_SpellUpdate")
+end
 
 --REQUIRES DELAY:
 function DrDamage:ACTIONBAR_PAGE_CHANGED()
-	if not self:IsEventScheduled("UpdatingAB") or updatingSpell then
-		self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.2, self)
-		self.visualChange = true
+	self.visualChange = true
+	if not self:IsEventScheduled("DrD_FullUpdate") then
+		self:CancelSpellUpdate()
+		self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 0.2, self)
 	end
 end
 
 function DrDamage:ACTIONBAR_HIDEGRID()
-	if (not self:IsEventScheduled("UpdatingAB") or updatingSpell) and (GetCursorInfo() == "spell" or GetCursorInfo() == "macro") then
-		self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.2, self)
-		self.visualChange = true
+	self.visualChange = true
+	if not self:IsEventScheduled("DrD_FullUpdate") and (GetCursorInfo() == "spell" or GetCursorInfo() == "macro") then
+		self:CancelSpellUpdate()
+		self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 0.2, self)
 	end
 end
 
 function DrDamage:UPDATE_SHAPESHIFT_FORM()
-	if not self:IsEventScheduled("UpdatingAB") or updatingSpell then
-		self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.5, self)
-		self.visualChange = true
+	self.visualChange = true
+	if not self:IsEventScheduled("DrD_FullUpdate") then
+		self:CancelSpellUpdate()
+		self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 0.5, self)
+	end
+end
+
+--INSTANT SLOT UPDATE
+function DrDamage:ACTIONBAR_SLOT_CHANGED(id)
+	local gtype, pid = GetActionInfo(id)
+	if gtype == "macro" then
+		local name = GetMacroSpell(pid)
+		if name and spellInfo[name] then
+			self.visualChange = true
+			if not self:IsEventScheduled("DrD_FullUpdate") then
+				self:UpdateAB(nil, id)
+			end
+		end
 	end
 end
 
@@ -690,137 +812,266 @@ function DrDamage:AceDB20_ResetDB( name, dab )
 end
 
 function DrDamage:UPDATE_MACROS()
-	self:CancelScheduledEvent("UpdatingAB")
+	self:CancelScheduledEvent("DrD_FullUpdate")
 	self.visualChange = true
 	self:UpdateAB()
 end
 
-function DrDamage:PLAYER_COMBO_POINTS()
-	self:CancelScheduledEvent("UpdatingAB")
-	self:UpdateAB()
+function DrDamage:UNIT_COMBO_POINTS( unit ) --Changed from old PLAYER_COMBO_POINTS --DALLYTEMP
+	if settings.ComboPoints_M == 0 then
+		if UnitIsUnit(unit, "player") then
+			self:CancelScheduledEvent("DrD_FullUpdate")
+			self:UpdateAB()
+		end
+	end
 end
 
 function DrDamage:UNIT_INVENTORY_CHANGED( unit )
-	if unit == "player" then
-		if self.Caster_InventoryChanged then
-			if self:Caster_InventoryChanged() then
-				updateSetItems = true
-				self:UpdateAB()
-				return
+	if UnitIsUnit(unit,"player") then
+		if self.Caster_InventoryChanged and self:Caster_InventoryChanged() then
+			updateSetItems = true
+			self:CancelScheduledEvent("DrD_FullUpdate")
+			self:UpdateAB()
+			self:ScheduleEvent("DrDamage_UpdateMetaGem", self.MetaGems, 0.5, self)
+			return
+		end
+		if self.Melee_InventoryChanged and self:Melee_InventoryChanged() then
+			updateSetItems = true
+			self:CancelScheduledEvent("DrD_FullUpdate")
+			self:UpdateAB()
+			self:ScheduleEvent("DrDamage_UpdateMetaGem", self.MetaGems, 0.5, self)
+			return
+		end
+	end
+end
+
+DrDamage.Melee_critMBonus = 0
+DrDamage.Caster_critMBonus = 0
+
+function DrDamage:MetaGems( initial )
+	local oldactive, newactive
+	
+	if self.Melee_critMBonus ~= 0 or self.Caster_critMBonus ~= 0 then
+		self.Melee_critMBonus = 0
+		self.Caster_critMBonus = 0
+		oldactive = true
+	end
+
+	local helm = GetInventoryItemLink("player", 1)
+	if helm then
+		for i = 1, 3 do 
+			local mgem = string_match(select(2, GetItemGem(helm, i)) or "",".-item:(%d+).*")
+			if tonumber(mgem) == 34220 then
+				if not self:IsMetaGemInactive() then
+					self.Caster_critMBonus = 0.03
+					newactive = true
+				end
+				break
+			elseif tonumber(mgem) == 32409 then
+				if not self:IsMetaGemInactive() then
+					self.Melee_critMBonus = 0.03
+					newactive = true
+				end
+				break
 			end
 		end
-		if self.Melee_InventoryChanged then
-			if self:Melee_InventoryChanged() then
-				updateSetItems = true
-				self:UpdateAB()
-				return
-			end
+	end
+	if not initial and newactive ~= oldactive then
+		self:CancelScheduledEvent("DrD_FullUpdate")
+		self:UpdateAB()
+	end
+end
+
+function DrDamage:IsMetaGemInactive()
+	GT:SetInventoryItem("player", 1)
+	for j = 1, GT:NumLines() do 
+		if GT:GetLine(j) and string_find(GT:GetLine(j), "|cff808080.*808080") then
+			return true
 		end
 	end
 end
 
 --DELAY FOR EFFICIENCY
+function DrDamage:LEARNED_SPELL_IN_TAB()
+	if not self:IsEventScheduled("DrD_FullUpdate") then
+		self:CancelSpellUpdate()
+		self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 1, self)
+	end
+end
+
 function DrDamage:PLAYER_TARGET_CHANGED()
-	if not self:IsEventScheduled("UpdatingAB") or updatingSpell then
-		self:ScheduleEvent("UpdatingAB", self.UpdateAB, 2, self)
+	if not self:IsEventScheduled("DrD_FullUpdate") then
+		self:CancelSpellUpdate()
+		self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 1.5, self)
 	end
+	self:TargetAuraUpdate("target",true)
 end
 
-function DrDamage:PlayerAuraUpdate( buffName )
-	local newDmgMod = select(7, UnitDamage("player"))
-	local modUpdate
-	
-	if newDmgMod ~= dmgMod then
-		dmgMod = newDmgMod
-		self.globalMod = newDmgMod
-		modUpdate  = true
-	end
-	
-	if self:IsEventScheduled("UpdatingAB") and not updatingSpell then
-		return
-	end
-	
-	if modUpdate then
-		self:UpdateAB()
-		return
-	end
-	
-	if self.Caster_CheckBaseStats then
-		if self:Caster_CheckBaseStats() then
+local PlayerAura = DrDamage.PlayerAura
+local TargetAura = DrDamage.TargetAura
+local oPlayerAura = {}
+local nPlayerAura = {}
+local oTargetAura = {}
+local nTargetAura = {}
+
+function DrDamage:PlayerAuraUpdate(unit)
+	if unit == "player" then
+		if self:IsEventScheduled("DrD_FullUpdate") then
+			return
+		end	
+		if dmgMod ~= select(7, UnitDamage("player")) then
+			dmgMod = select(7, UnitDamage("player"))
 			self:UpdateAB()
 			return
 		end
-	end
-	if self.Melee_CheckBaseStats then
-		if self:Melee_CheckBaseStats() then
+		if self.Caster_CheckBaseStats and self:Caster_CheckBaseStats() then
 			self:UpdateAB()
 			return
 		end
-	end
-	
-	if BS and BS:HasReverseTranslation( buffName ) then
-		buffName = BS:GetReverseTranslation( buffName )
-	end
-				
-	if self.PlayerAura[buffName] then
-		local updateSpell = self.PlayerAura[buffName].Spell
-		
-		if updatingSpell and updatingSpell == updateSpell or updateSpell then
-			self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.5, self, updateSpell)
-			updatingSpell = updateSpell
-		else
-			self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.5, self)
-		end
-	end
-end
-
-function DrDamage:TargetBuffUpdate( unitID, buffName )	
-	if unitID == "target" then
-		if self:IsEventScheduled("UpdatingAB") and not updatingSpell then
+		if self.Melee_CheckBaseStats and self:Melee_CheckBaseStats() then
+			self:UpdateAB()
 			return
 		end
+		--[[ Enable if ever needed
+		if self.Calculation["PlayerAura"] then
+			local update, spell = self.Calculation["PlayerAura"]
+			if update then
+				return self:UpdateAB(spell)
+			end
+		end
+		--]]
+		for i=1,40 do
+			local name, rank, texture, count = UnitBuff("player",i)
+			if name then
+				if PlayerAura[name] then			
+					nPlayerAura[name] = (rank or "") .. (count or "")
+				end
+			else
+				break
+			end
+		end
+		for i=1,40 do
+			local name, rank, texture, count = UnitDebuff("player",i)
+			if name then
+				if PlayerAura[name] then
+					nPlayerAura[name] = (rank or "") .. (count or "")
+				end
+			else 
+				break
+			end
+		end
+		local buffName, multi
+		--Buff/debuff gained or count/rank changed
+		for k,v in pairs(nPlayerAura) do
+			if not oPlayerAura[k] then
+				multi = buffName
+				buffName = k
+			elseif 	oPlayerAura[k] ~= v then
+				multi = buffName
+				buffName = k
+			end
+		end	
+		--Buff/debuff lost
+		for k,v in pairs(oPlayerAura) do
+			if not nPlayerAura[k] then
+				multi = buffName
+				buffName = k
+			end
+			oPlayerAura[k] = nil
+		end
+		--Copy new table to old and clear
+		for k,v in pairs(nPlayerAura) do
+			oPlayerAura[k] = v
+			nPlayerAura[k] = nil
+		end
+		if buffName then
+			local updateSpell = not multi and PlayerAura[buffName].Spell
 			
-		if BS and BS:HasReverseTranslation( buffName ) then
-			buffName = BS:GetReverseTranslation( buffName )
-		end		
-		
-		if self.HealingBuffs[buffName] then
-			local buff = self.HealingBuffs[buffName]
+			if updatingSpell and updatingSpell == updateSpell then
+				return
+			end
+			if updateSpell then
+				updatingSpell = updateSpell
+				self:ScheduleEvent("DrD_SpellUpdate", self.UpdateAB, 0.5, self, updateSpell)
+			else
+				self:CancelSpellUpdate()
+				self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 0.5, self)
+			end
+		end
+	elseif unit == "target" then 
+		self:TargetAuraUpdate("target")
+	end
+end
 
-			if buff.Class and DrD_MatchData( buff.Class, playerClass ) or not buff.Class then
-				local updateSpell = buff.Spell
-				if updatingSpell and updatingSpell == updateSpell or updateSpell then
-					self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.5, self, updateSpell )
-					updatingSpell = updateSpell				
+function DrDamage:TargetAuraUpdate( unitID, changed )
+	if unitID == "target" then
+		if self:IsEventScheduled("DrD_FullUpdate") and not changed then
+			return
+		end
+		if self.Calculation["TargetAura"] then
+			local update, spell = self.Calculation["TargetAura"]
+			if update and not changed then
+				return self:UpdateAB(spell)
+			end
+		end		
+		if playerHealer then
+			for i=1,40 do
+				local name, rank, texture, count = UnitBuff("target",i)
+				if name then
+					if TargetAura[name] then			
+						nTargetAura[name.."|"..texture] = (rank or "") .. (count or "")
+					end
 				else
-					self:ScheduleEvent("UpdatingAB", self.UpdateAB, 1.0, self)
+					break
 				end
 			end
 		end
-	end
-end
-
-function DrDamage:TargetDebuffUpdate( unitID, buffName )	
-	if unitID == "target" then
-		if self:IsEventScheduled("UpdatingAB") and not updatingSpell then
-			return
-		end
-			
-		if BS and BS:HasReverseTranslation( buffName ) then
-			buffName = BS:GetReverseTranslation( buffName )
-		end		
-		
-		if self.Debuffs[buffName] then
-			local debuff = self.Debuffs[buffName]
-		
-			if debuff.Class and DrD_MatchData( debuff.Class, playerClass ) or playerHealer and debuff.School == "Healing" or not debuff.Class and not debuff.School then
-				local updateSpell = debuff.Spell
-				if updatingSpell and updatingSpell == updateSpell or updateSpell then
-					self:ScheduleEvent("UpdatingAB", self.UpdateAB, 0.75, self, updateSpell )
-					updatingSpell = updateSpell				
-				else
-					self:ScheduleEvent("UpdatingAB", self.UpdateAB, 1.5, self)
+		for i=1,40 do
+			local name, rank, texture, count = UnitDebuff("target",i)
+			if name then
+				if TargetAura[name] then
+					nTargetAura[name.."|"..texture] = (rank or "") .. (count or "")
 				end
+			else 
+				break
+			end
+		end
+		local buffName, multi
+		--Buff/debuff gained or count/rank changed
+		for k,v in pairs(nTargetAura) do
+			if not oTargetAura[k] then
+				multi = buffName
+				buffName = string_match(k,"[%w%s]+")
+			elseif 	oTargetAura[k] ~= v then
+				multi = buffName
+				buffName = string_match(k,"[%w%s]+")
+			end
+		end	
+		--Buff/debuff lost
+		for k,v in pairs(oTargetAura) do
+			if not nTargetAura[k] then
+				multi = buffName
+				buffName = string_match(k,"[%w%s]+")
+			end
+			oTargetAura[k] = nil
+		end
+		--Copy new table to old and clear
+		for k,v in pairs(nTargetAura) do
+			oTargetAura[k] = v
+			nTargetAura[k] = nil
+		end		
+		if TargetAura[buffName] and not changed then
+			local updateSpell = not multi and TargetAura[buffName].Spell
+			
+			if updatingSpell and updatingSpell == updateSpell then
+				return
+			end
+			if updateSpell then
+				updatingSpell = updateSpell
+				self:ScheduleEvent("DrD_SpellUpdate", self.UpdateAB, 0.8, self, updateSpell )				
+			else
+				self:CancelSpellUpdate()
+				self:ScheduleEvent("DrD_FullUpdate", self.UpdateAB, 1.0, self)
 			end
 		end
 	end
@@ -849,8 +1100,9 @@ function DrDamage:UpdateTalents()
 	
 	local talentTable
 	
+	--JokeyRhyme: fixed so that Reset button is always the first item
 	if not loadedTalents then
-		self.options.args.General.args.Talents = { type = "group", name = L["Modify Talents"], desc = L["Modify talents manually. Modified talents are not saved between sessions."], order = 145, args = {} }
+		self.options.args.General.args.Talents = { type = "group", name = L["Modify Talents"], desc = L["Modify talents manually. Modified talents are not saved between sessions."], order = 200, args = {} }
 		talentTable = self.options.args.General.args.Talents.args
 		talentTable.Reset = { type = "execute", name = L["Reset Talents"], desc = L["Reset talents to your current talent configuration."], order = 1, func = function() self:UpdateTalents() end }
 		loadedTalents = true
@@ -858,52 +1110,32 @@ function DrDamage:UpdateTalents()
 
 	for t = 1, GetNumTalentTabs() do	
 		for i = 1, GetNumTalents(t) do
-			local l_nameTalent, _, _, _, currRank, maxRank = GetTalentInfo(t, i)
-			local nameTalent
+			local talentName, _, _, _, currRank, maxRank = GetTalentInfo(t, i)
 			
-			if BS and BS:HasReverseTranslation(l_nameTalent) then
-				nameTalent = BS:GetReverseTranslation(l_nameTalent)
-			else
-				nameTalent = l_nameTalent
-			end
-			
-			if talentTable and self.talentInfo[nameTalent] and (self.talentInfo[nameTalent][1].Locale and DrD_MatchData( self.talentInfo[nameTalent][1].Locale, GetLocale() ) or not self.talentInfo[nameTalent][1].Locale) then
-				talentTable[(l_nameTalent:gsub(" +", ""))] = {
+			if talentTable and self.talentInfo[talentName] and not self.talentInfo[talentName].NoManual then
+				talentTable[(string_gsub(talentName," +", ""))] = {
 						type = 'range',
-						name = l_nameTalent,
-						desc = L["Modify "] .. l_nameTalent,
+						name = talentName,
+						desc = L["Modify "] .. talentName,
 						min = 0,
 						max = maxRank,
 						step = 1,
 						order = i + (t-1) * 35,
 						get =  function() 
-								if self.talents[nameTalent] then
-									return self.talents[nameTalent]
+								if self.talents[talentName] then
+									return self.talents[talentName]
 								else
 									return 0
 								end
 							end,
 						set = 	function(v) 
-								if math_floor(v+0.5) == 0 then
-									self.talents[nameTalent] = nil
-								else
-									self.talents[nameTalent] = math_floor(v+0.5)
-								end
+								self.talents[talentName] = math_floor(v+0.5)
 								self:UpdateAB()
 							end,
 				}
 			end
-			if currRank ~= 0 then
-				if self.talentInfo[nameTalent] then
-					if self.talentInfo[nameTalent][1].Locale then
-						if DrD_MatchData( self.talentInfo[nameTalent][1].Locale, GetLocale() ) then
-							self.talents[nameTalent] = currRank
-						end
-					else
-						self.talents[nameTalent] = currRank
-					end
-					--self:Print("Talent name: " .. nameTalent .. " Points: " .. currRank )
-				end
+			if currRank ~= 0 and self.talentInfo[talentName] then
+				self.talents[talentName] = currRank
 			end	    	    
 		end
 	end
@@ -936,29 +1168,20 @@ end
 
 function DrDamage:SetSpell( frame, slot )
 	if settings.NeverTooltip or (not settings.AlwaysTooltip and not (settings.AltTooltip and IsAltKeyDown()) and not (settings.CtrlTooltip and IsControlKeyDown()) and not (settings.ShiftTooltip and IsShiftKeyDown())) then
-		do return end
+		return
 	end
 	
-	local spellName, spellRank = GetSpellName(slot,BOOKTYPE_SPELL)
+	local name, rank = GetSpellName(slot,BOOKTYPE_SPELL)
 	
-	if spellRank then 
-		spellRank = tonumber(string_match(spellRank, "%d+"))
-	end
-	if not spellRank then
-		spellRank = "None"
-	end
+	if spellInfo[name] then
+		local baseSpell = spellInfo[name][0]
+		if type(baseSpell) == "function" then baseSpell = baseSpell() end
 
-	if self.spellInfo[spellName] then
-		local baseSpell = self.spellInfo[spellName][0]
-		local tableSpell = self.spellInfo[spellName][spellRank] or self.spellInfo[spellName]["None"]
-		if type(baseSpell) == "function" then spellName, baseSpell, tableSpell = baseSpell() end
-
-		if tableSpell and not baseSpell.NoTooltip then	
-			GT:SetSpell( slot, BOOKTYPE_SPELL )
+		if baseSpell and not baseSpell.NoTooltip then	
 			if playerCaster or playerHybrid and not baseSpell.Melee then
-				self:CasterTooltip( frame, spellName, baseSpell, tableSpell )
+				self:CasterTooltip( frame, name, rank )
 			elseif playerMelee or playerHybrid and baseSpell.Melee then
-				self:MeleeTooltip( frame, spellName, baseSpell, tableSpell )
+				self:MeleeTooltip( frame, name, rank )
 			end
 		end
 	end
@@ -968,330 +1191,244 @@ function DrDamage:SetAction( frame, slot )
 	self.hooks[frame].SetAction(frame, slot)
 	
 	if settings.NeverTooltip or (not settings.AlwaysTooltip and not (settings.AltTooltip and IsAltKeyDown()) and not (settings.CtrlTooltip and IsControlKeyDown()) and not (settings.ShiftTooltip and IsShiftKeyDown())) then
-		do return end
+		return
 	end
 	
 	local gtype, pid = GetActionInfo(slot)
-
-	if gtype == "spell" or gtype == "macro" then
-		local spellName, spellRank
+	local name, rank
 		
-		if pid and gtype == "spell" then
-			spellName, spellRank = GetSpellName(pid, BOOKTYPE_SPELL)
-		else
-			spellName, spellRank = frame:GetSpell()
-			if not spellName then
-				spellName = _G["GameTooltipTextLeft1"]:GetText()
-			end
-		end
-	
-		if spellRank then 
-			spellRank = tonumber(string_match(spellRank, "%d+"))
-		end
-		if not spellRank then
-			spellRank = "None"
-		end
-		
-		if self.spellInfo[spellName] then
-			local baseSpell = self.spellInfo[spellName][0]
-			local tableSpell = self.spellInfo[spellName][spellRank] or self.spellInfo[spellName]["None"]
-			if type(baseSpell) == "function" then spellName, baseSpell, tableSpell = baseSpell() end
+	if (gtype == "spell" and pid ~= 0) then --or gtype == "pet" then -- hack to fix mounts and non-combat pet summon buttons --DALLYTEMP
+		name, rank = GetSpellName(pid, gtype)
+	elseif gtype == "macro" then
+		name, rank = GetMacroSpell(pid)
+	end
 
-			if tableSpell and not baseSpell.NoTooltip then
-				GT:SetAction(slot)
-				if playerCaster or playerHybrid and not baseSpell.Melee then
-					self:CasterTooltip( frame, spellName, baseSpell, tableSpell )
-				elseif playerMelee or playerHybrid and baseSpell.Melee then
-					self:MeleeTooltip( frame, spellName, baseSpell, tableSpell )
-				end
+	if name and spellInfo[name] then
+		local baseSpell = spellInfo[name][0]
+		if type(baseSpell) == "function" then baseSpell = baseSpell() end
+
+		if baseSpell and not baseSpell.NoTooltip then
+			rank = rank or select(2,GetSpellInfo(name))
+			if playerCaster or playerHybrid and not baseSpell.Melee then
+				self:CasterTooltip( frame, name, rank )
+			elseif playerMelee or playerHybrid and baseSpell.Melee then
+				self:MeleeTooltip( frame, name, rank )
 			end
 		end
 	end
 end
 
-local DrD_ProcessButton
-function DrDamage:UpdateAB(updateSpell, manaUpdate)
+local DrD_ProcessButton, DrD_CreateText, DrD_SpecialText
+function DrDamage:UpdateAB(spell, uid)
 
-	self:TriggerEvent("DrDamage_Update", updateSpell )
-	if(IsAddOnLoaded("FlexBar2")) then
-		for _, Button in pairs(FlexBar2.Buttons) do
-			Button:UpdateTextSub("drd");
-		end
-	end	
+	self:TriggerEvent("DrDamage_Update", spell, uid)
+	self:CancelSpellUpdate()
 
-	--[[	Used for debugging updates.
-	if updateSpell then
+	--	Used for debugging updates.
+	--[[
+	if spell then
 		self:Print( "Update AB: Spell" )
 		
-		if type( updateSpell ) == "table" then
-			for _, gar in ipairs( updateSpell ) do
+		if type( spell ) == "table" then
+			for _, gar in ipairs( spell ) do
 				self:Print( "Updating: " .. gar )
 			end
 		else
-			self:Print( "Updating: " .. updateSpell )
+			self:Print( "Updating: " .. spell )
 		end
+	elseif uid then
+		self:Print( "Update AB: ID" )
+		
 	else
 		self:Print( "Update AB: All" )
 	end
 	--]]
+	
+	if ABfunc then
+		ABfunc()
+	end
 
 	if not ABdefault then
 		if settings.BlizzardAB then 
 			ABdefault = true 
 		elseif ABstop then
-			updatingSpell = nil
 			return
 		end
+	elseif not settings.BlizzardAB and ABtable then
+		ABdisable = true
+		ABdefault = false
 	end
 	
-	if ABglobalbutton then
-		for i = 1, 120 do	
-			DrD_ProcessButton(_G[ABglobalbutton..i], i, updateSpell, manaUpdate)
-		end
-	elseif CTBar then
-		for i, list in pairs(ABtable) do
-			DrD_ProcessButton(list.button, i, updateSpell, manaUpdate)
+	if ABtable then
+		for name, func in pairs(ABtable) do
+			DrD_ProcessButton(_G[name], func, spell, uid)
 		end	
 	end
-	
-	if ABdefault or CTBar then
-		if ABdefault then
-			if not settings.BlizzardAB and (CTBar or ABglobalbutton) then
-				ABdisable = true
-				ABdefault = false
-			end
-			for bar = 1, 4 do
-				for i = 1, 12 do
-					DrD_ProcessButton(_G[defaultBars[bar]..i], nil, updateSpell, manaUpdate, ABdisable)
-				end
-			end			
-		end
-		if _G["BonusActionBarFrame"]:IsVisible() then
-			for i = 1, 12 do
-				DrD_ProcessButton(_G["BonusActionButton"..i], nil, updateSpell, manaUpdate, ABdisable)
-			end
-		else
-			for i = 1, 12 do		
-				DrD_ProcessButton(_G["ActionButton"..i], nil, updateSpell, manaUpdate, ABdisable)
-			end
+	if ABdefault or ABdisable then
+		for i, name in ipairs(ABobjects) do
+			DrD_ProcessButton(name, nil, spell, uid)
 		end
 	end
 					
-	updatingSpell = nil
 	self.visualChange = nil
 	ABdisable = false
 end
 
-DrD_ProcessButton = function( button, index, updateSpell, manaUpdate, ABdisable )
-	if not button then do return end end
-
-	local textFrame = DrD_GetTextFrame(not updateSpell,button:GetChildren())
-	
-	if not settings.ABText or ABdisable then
-		do return end
+DrD_ProcessButton = function(button, func, spell, uid)
+	if not button then return end 
+	if not settings.ABText or ABdisable then 
+		if button.drd then button.drd:Hide() end		
+		return 
 	end
-
-	if button:IsVisible() then
-		local id, spellName, spellRank, pid
+	if button:IsVisible() then --or ABhidden then
+		if not spell and not uid then
+			local frame = button.drd
+			if frame then frame:Hide() end
+		end	
+		local id, name, rank
 		
-		if not index then 
+		if func then 
+			id, name, rank = func(button)
+		else
 			id = ActionButton_GetPagedID(button)
-		elseif ABgetID then
-			id, spellName, spellRank, pid = ABgetID(button, index, ABtable) 
 		end
-
-		if id then
-			if HasAction(id) then
-				DrDamage:CheckAction(id, button, manaUpdate, updateSpell, nil, nil, textFrame)
-			end
-		elseif spellName and spellRank then
-			DrDamage:CheckAction(nil, button, manaUpdate, updateSpell, spellName, spellRank, textFrame, pid)
-		end
+		if id and (not HasAction(id) or uid and uid ~= id) then return end
+		DrDamage:CheckAction(button, spell, id, name, rank)
 	end
 end
 
-local displayTypeTable = { ["Avg"] = 2, ["DPS"] = 3, ["DPSC"] = 4, ["AvgHit"] = 5, ["Min"] = 6, ["MaxHit"] = 7, ["AvgHitTotal"] = 8, ["Max"] = 9, ["DPM"] = 10, ["ManaCost"] = 11, ["TrueManaCost"] = 12, ["MPS"] = 13 }
-
-function DrDamage:CheckAction(id, button, manaUpdate, updateSpell, spellName, spellRank, textFrame, pid)
-	local gtype
-	
-	if not settings.ABText then return "" end
-	
+function DrDamage:CheckAction(button, spell, id, name, rank)
+	local gtype, pid
 	if id then
 		gtype, pid = GetActionInfo(id)
 
-		if gtype == "spell" and pid then
-			spellName, spellRank = GetSpellName(pid, BOOKTYPE_SPELL)
+		if gtype == "spell" and (pid > 0) then --or gtype == "pet" then -- hack to fix mounts and non-combat pet summon buttons --DALLYTEMP
+			name, rank = GetSpellName(pid, gtype)
 		elseif gtype == "macro" then
-			GT:SetAction(id)
-			spellName = GT:GetLine(1, false)
-			spellRank = GT:GetLine(1, true)
+			name, rank = GetMacroSpell(pid)
 		end
 	end
-	if spellName then
-		if updateSpell then
-			if not DrD_MatchData(updateSpell, spellName) then return end
-			--self:Print( "Spell matched." )
-		end	
-	
-		if self.ClassSpecials[spellName] then
-			return self:SpecialSlot(self.ClassSpecials[spellName], spellRank, button, nil, textFrame)
+	if name then
+		if spell and not DrD_MatchData(spell, name) then
+			return
 		end
-	
-		if self.spellInfo[spellName] then
-			local baseSpell = self.spellInfo[spellName][0]
-			local tableSpell = self.spellInfo[spellName][(spellRank and tonumber(string_match(spellRank,"%d+"))) or "None"]
-			if type(baseSpell) == "function" then spellName, baseSpell, tableSpell = baseSpell() end
+		if rank and tonumber(rank) and GetSpellInfo(name) then
+			rank = string_gsub(select(2,GetSpellInfo(name)),"%d+", rank)
+		end
+		if self.ClassSpecials[name] then
+			return DrD_SpecialText(self.ClassSpecials[name], rank, button)
+		end
+		if spellInfo[name] then
+			local baseSpell = settings.SwapCalc and spellInfo[name]["Secondary"] and spellInfo[name]["Secondary"][0] or spellInfo[name][0]
+			if type(baseSpell) == "function" then baseSpell = baseSpell() end
 
-			if tableSpell then
+			if baseSpell then
 				if gtype == "macro" and button then
 					local macroText = _G[button:GetName().."Name"]
 					if macroText then macroText:Hide() end
-					if CTBar then if button.name then button.name:SetText("") end end
 				end			
-			
+
 				local text, healingSpell
-				
+
 				if playerCaster or playerHybrid and not baseSpell.Melee then
 					healingSpell = baseSpell.Healing or DrD_MatchData(baseSpell.School, "Healing")
-					local selector = displayTypeTable[settings.DisplayType] or 2
 
-					if id or pid and not baseSpell.NoDPM then
-						local casts
-						if settings.CastsLeft and healingSpell or settings.CastsLeftDmg and not healingSpell then
-							casts = true
-						end
-						if selector > 9 or casts then
-							if id then GT:SetAction(id)
-							else GT:SetSpell(pid, BOOKTYPE_SPELL) end
-							if casts then
-								local manaCost
-								if GT:GetLine(2) and Mana_Cost then
-									manaCost = Deformat(GT:GetLine(2), Mana_Cost)
-								end
-								if manaCost then
-									manaCost = tonumber(manaCost)
-									if manaCost > 0 then
-										if UnitPowerType("player") == 0 then
-											text = math.floor( UnitMana("player") / manaCost + 0.5 )
-										else
-											text = math.floor( self.lastMana / manaCost + 0.5 )
-										end
-									else
-										text = "\226\136\158"
-									end
-								end
+					if (settings.CastsLeft and healingSpell or settings.CastsLeftDmg and not healingSpell) and not baseSpell.NoDPM then
+						local _, _, _, manaCost = GetSpellInfo(name,rank)
+
+						if manaCost and manaCost > 0 then
+							if UnitPowerType("player") == 0 then
+								text = math_floor(UnitMana("player") / manaCost)
 							else
-								local values = select(10, self:RawNumbers( tableSpell, spellName, false, true ))
-								text = values[settings.DisplayType]
+								text = math_floor(self.lastMana / manaCost)	
 							end
-						end
-					end
-					if not text then
-						if manaUpdate then
-							return
 						else
-							if baseSpell.NoDPS and (selector == 3 or selector == 4) then selector = 2 end
-							if selector > 9 then selector = 2 end
-							text = math.floor((select(selector, self:RawNumbers(tableSpell, spellName)))+0.5)
+							text = "\226\136\158"
 						end
 					else
-						if type(text) == "number" then
-							text = DrD_Round(text,1)
-						end								
+						text = self:CasterCalc(name, rank)								
 					end
 				elseif playerMelee or playerHybrid and baseSpell.Melee then
-					text = self:MeleeCalc( tableSpell, spellName )
+					text = self:MeleeCalc(name, rank)
+				end
+
+				if type(text) == "number" then
+					text = math_floor(text + 0.5)
 				end
 
 				if button then
-					self:CreateABtext(button, text, healingSpell, textFrame)
-				else
+					DrD_CreateText(text, button, healingSpell)
+				elseif text then
 					if healingSpell then
-           					return "|cff".. string.format("%02x%02x%02x", settings.FontColorHeal.r * 255, settings.FontColorHeal.g * 255, settings.FontColorHeal.b * 255).. text .. "|r"
+						return "|cff".. string_format("%02x%02x%02x", settings.FontColorHeal.r * 255, settings.FontColorHeal.g * 255, settings.FontColorHeal.b * 255).. text .. "|r"
 					else
-						return "|cff".. string.format("%02x%02x%02x", settings.FontColorDmg.r * 255, settings.FontColorDmg.g * 255, settings.FontColorDmg.b * 255).. text .. "|r"
+						return "|cff".. string_format("%02x%02x%02x", settings.FontColorDmg.r * 255, settings.FontColorDmg.g * 255, settings.FontColorDmg.b * 255).. text .. "|r"
 					end
 				end
-			end				
-		end
-	end
-end
-
-function DrDamage:CreateABtext( button, text, healingSpell, frame, r, g, b )
-
-	if not frame then
-		frame = DrD_GetTextFrame(false,button:GetChildren())
-	end
-	
-	if frame and self.visualChange or not frame then
-		if not r then
-			if healingSpell then
-				local color = settings.FontColorHeal
-				r,g,b = color.r, color.g, color.b
-			else
-				local color = settings.FontColorDmg
-				r,g,b = color.r, color.g, color.b
 			end
 		end
-	end		
-	
-	if frame then
-		if self.visualChange then
-			frame.text:SetFont(DrD_Font, settings.FontSize, settings.FontEffect)
-			frame.text:SetPoint("BOTTOMLEFT", frame ,"BOTTOMLEFT", -10 + settings.FontXPosition, settings.FontYPosition + 5)
-			frame.text:SetPoint("BOTTOMRIGHT", frame ,"BOTTOMRIGHT", 10 + settings.FontXPosition, settings.FontYPosition + 5)
-			frame.text:SetTextColor(r,g,b)	
-		end
-		frame.text:SetText(text)
-		frame.text:Show()
-	else
-		local dpsText = CreateFrame("Frame", "DrDamageText", button)
-		dpsText:SetAllPoints(button)
-		dpsText:SetFrameLevel(dpsText:GetFrameLevel() + 1)
-		dpsText.text = dpsText:CreateFontString( nil, "OVERLAY")
-		dpsText.text:SetPoint("BOTTOMLEFT", dpsText ,"BOTTOMLEFT", -10 + settings.FontXPosition, settings.FontYPosition + 5)
-		dpsText.text:SetPoint("BOTTOMRIGHT", dpsText ,"BOTTOMRIGHT", 10 + settings.FontXPosition, settings.FontYPosition + 5)
-		dpsText.text:SetFont(DrD_Font, settings.FontSize, settings.FontEffect)
-		dpsText.text:SetJustifyH("CENTER")
-		dpsText.text:SetTextColor(r,g,b)
-		dpsText.text:SetText(text)
-		dpsText.text:Show()
-		
-		--Fix to properly inherit parent alpha
-		if button:GetAlpha() == 0 then
-			button:SetAlpha(0.01)
-			button:SetAlpha(0)
-		end
 	end
 end
 
-function DrDamage:SpecialSlot( func, rank, button, healingSpell, textFrame )
-	if rank then rank = tonumber(string_match(rank,"%d+")) end
+DrD_CreateText = function(text, button, healing, r, g, b )
+	local drd = button.drd
+
+	if not r and (DrDamage.visualChange or not drd) then
+		local color = healing and settings.FontColorHeal or settings.FontColorDmg
+		r,g,b = color.r, color.g, color.b
+	end		
+	
+	if drd then
+		if DrDamage.visualChange then
+			drd:SetFont(DrD_Font, settings.FontSize, settings.FontEffect)
+			drd:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", -10 + settings.FontXPosition, settings.FontYPosition + 5)
+			drd:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 10 + settings.FontXPosition, settings.FontYPosition + 5)
+			drd:SetTextColor(r,g,b)	
+		end
+		drd:SetText(text)
+		drd:Show()
+	else
+		drd = button:CreateFontString("drd", "OVERLAY")
+		button.drd = drd
+		drd:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", -10 + settings.FontXPosition, settings.FontYPosition + 5)
+		drd:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 10 + settings.FontXPosition, settings.FontYPosition + 5)
+		drd:SetFont(DrD_Font, settings.FontSize, settings.FontEffect)
+		drd:SetJustifyH("CENTER")
+		drd:SetTextColor(r,g,b)
+		drd:SetText(text)
+		drd:Show()
+	end
+end
+
+DrD_SpecialText = function( func, rank, button )
 	local text, r, g, b = func(rank)
 	if type(text) == "number" then text = math_floor(text + 0.5) end
-	if button and text then 
-		self:CreateABtext(button, text, healingSpell, textFrame, r, g, b)
-	elseif text then 
-		if r then
-			return "|cff".. string.format("%02x%02x%02x", r * 255, g * 255, b * 255) .. text .. "|r"
+	if text then
+		if button then 
+			DrD_CreateText(text, button, false, r, g, b)
 		else
-			return "|cff".. string.format("%02x%02x%02x", settings.FontColorDmg.r * 255, settings.FontColorDmg.g * 255, settings.FontColorDmg.b * 255) .. text .. "|r"
+			if r then
+				return "|cff".. string_format("%02x%02x%02x", r * 255, g * 255, b * 255) .. text .. "|r"
+			else
+				return "|cff".. string_format("%02x%02x%02x", settings.FontColorDmg.r * 255, settings.FontColorDmg.g * 255, settings.FontColorDmg.b * 255) .. text .. "|r"
+			end
 		end
 	end
 end
 
 --Credits to the author of RatingBuster (Whitetooth) for the formula!
-local ratingTypes = { ["Hit"] = 8, ["Crit"] = 14, ["MeleeHit"] = 10 }
+local ratingTypes = { ["Hit"] = 8, ["Crit"] = 14, ["MeleeHit"] = 10, ["SpellHaste"] = 10 }
 function DrDamage:GetRating( rType, convertR, full )
 	local playerLevel = UnitLevel("player")
 	local base = ratingTypes[rType]
 	local rating, value
 
-	if playerLevel <= 60 then
-		rating = base * (math.max(10,playerLevel) - 8) / 52
-	elseif playerLevel <= 70 then
+	if playerLevel > 60 then
 		rating = base * 82 / (262 - 3 * playerLevel)
+	elseif playerLevel > 10 then
+		rating = base * ((playerLevel - 8) / 52)
+	elseif 	playerLevel <= 10 then
+		rating = base / 26
 	end
 
 	value = convertR and convertR/rating or rating
@@ -1311,7 +1448,7 @@ function DrDamage:GetLevels()
 		end
 	end
 	
-	local lvlDiff = math.min(10, targetLevel - playerLevel)
+	local lvlDiff = math_min(10, targetLevel - playerLevel)
 	return lvlDiff, playerLevel, targetLevel
 end
 
@@ -1327,10 +1464,43 @@ function DrDamage:CheckRelicSlot()
 	end
 end
 
-function DrDamage:GetSpellInfo( spellName, spellRank )
-	if spellName and spellRank then
-		if self.spellInfo and self.spellInfo[spellName] then
-			return self.spellInfo[spellName][spellRank] or self.spellInfo[spellName]["None"]
+local WeaponBuffScan = GetTime()
+local WeaponBuff, WeaponBuffRank 
+function DrDamage:GetWeaponBuff(off)
+	local mh, _, _, oh = GetWeaponEnchantInfo()
+	local name, rank, buff
+	
+	if not off and mh then
+		if GetTime() > WeaponBuffScan then
+			WeaponBuffScan = GetTime() + 2
+			GT:SetInventoryItem("player", GetInventorySlotInfo("MainHandSlot"))
+			_, _, buff = GT:Find("^([^%(]+) %(%d+ [^%)]+%)$", nil, nil, false, true)
+			if buff then
+				name, rank = string_match(buff,"^(.*) (%d+)$")
+			end
+			WeaponBuff, WeaponBuffRank = name or buff, rank
+		end
+		return WeaponBuff, WeaponBuffRank
+	elseif off and oh then
+		GT:SetInventoryItem("player", GetInventorySlotInfo("SecondaryHandSlot"))
+		_, _, name, rank = GT:Find("^([^%(]+) %(%d+ [^%)]+%)$", nil, nil, false, true)
+		if buff then
+			name, rank = string_match(buff,"^(.*) (%d+)$")
+		end
+	end
+	return name or buff, rank
+end
+
+function DrDamage:Calc(name, rank, tooltip, modify)
+	if not spellInfo or not name then return end
+	if not spellInfo[name] then return end
+	local baseSpell = settings.SwapCalc and spellInfo[name]["Secondary"] and spellInfo[name]["Secondary"][0] or spellInfo[name][0]
+	if type(baseSpell) == "function" then baseSpell = baseSpell() end
+	if baseSpell then
+		if playerCaster or playerHybrid and not baseSpell.Melee then
+			return self:CasterCalc(name, rank, tooltip, modify)								
+		elseif playerMelee or playerHybrid and baseSpell.Melee then
+			return self:MeleeCalc(name, rank, tooltip, modify)
 		end
 	end
 end

@@ -33,6 +33,9 @@ L:RegisterTranslations("zhTW", function() return {
 	["Automatically sell all grey inventory items when at merchant"] = "與商人交易時自動賣出灰色物品",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Automatically sell all grey inventory items when at merchant"] = "与商人交易时自动出售灰色的物品",
+} end)
 
 module.description = L["Automatically sell all grey inventory items when at merchant"]
 module.options = {

@@ -1,1 +1,26 @@
-## Interface: 30000## Title: CCBreaker## Notes: Displays who breaks CrowdControl Effects## Author: Pheredhel## Version: 0.3## SavedVariables: CCBreakerDB## SavedVariablesPerCharacter: CCBreakerDBPC## OptionalDeps: Ace2, Parser-3.0, Babble-2.2, FuBarPlugin-2.0, Fubar, Tablet-2.0, Waterfall-1.0## X-Email: pheredhel@gmx.de## X-Category: Interface Enhancements## X-Embeds: Ace2, Parser-3.0, Babble-2.2, FuBarPlugin-2.0, Fubar, Tablet-2.0, Waterfall-1.0#Librarysembeds.xml# LocalisationsLocale-enUS.luaLocale-koKR.lua# Addon FilesCCBreaker.luaCCOptions.lua
+## Interface: 30000
+## Title: CCBreaker
+## Notes: Displays who breaks CrowdControl Effects
+## Notes-zhTW: 破控警告
+## Notes-zhCN: 显示是谁破坏了控制技能的效果
+## Author: Pheredhel
+## Version: 0.5
+## SavedVariables: CCBreakerDB
+## SavedVariablesPerCharacter: CCBreakerDBPC
+## OptionalDeps: Ace2, FuBarPlugin-2.0, Tablet-2.0, Waterfall-1.0
+## X-Embeds: Ace2, FuBarPlugin-2.0, Tablet-2.0, Waterfall-1.0
+## X-Email: pheredhel@gmx.de
+## X-Category: Interface Enhancements
+
+#Librarys
+embeds.xml
+
+# Localisations
+Locale-enUS.lua
+Locale-koKR.lua
+Locale-zhCN.lua
+Locale-zhTW.lua
+
+# Addon Files
+CCBreaker.lua
+CCOptions.lua

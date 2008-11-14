@@ -1,8 +1,9 @@
 ﻿local L = AceLibrary("AceLocale-2.2"):new("Automaton")
 Automaton = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceEvent-2.0", "AceDebug-2.0", "AceDB-2.0", "AceModuleCore-2.0", "FuBarPlugin-2.0")
-local waterfall = AceLibrary("Waterfall-1.0")
 
 L:RegisterTranslations("enUS", function() return {
+	["Config"] = true,
+	["Open config dialog"] = true,
 	['Enabled'] = true,
 	["Suspend/resume this module"] = true,
 	["Debugging"] = true,
@@ -23,17 +24,19 @@ L:RegisterTranslations("zhTW", function() return {
 	["Toggle debugging for this module"] = "切換此模組的除錯模式.",
 } end)
 
+L:RegisterTranslations("zhCN", function() return {
+	["Config"] = "配置选项",
+	["Open config dialog"] = "打开配置选项对话框",
+	['Enabled'] = "启用",
+	["Suspend/resume this module"] = "暂停/恢复该模块",
+	["Debugging"] = "调试",
+	["Toggle debugging for this module"] = "开关该模块的调试模式",
+} end)
+
 Automaton.options = {
 	type = 'group',
-	args = {
-		config = {
-			type = 'execute',
-			name = 'Config',
-			desc = 'Open config dialog',
-			func = function() waterfall:Open("Automaton") end,
-		},
-	},
-}
+	args = {}
+	}
 
 Automaton:RegisterChatCommand({"/auto", "/automaton"}, Automaton.options)
 
@@ -45,7 +48,6 @@ function Automaton:OnInitialize()
 	Automaton.hideWithoutStandby = true
 	Automaton.hasIcon = true
 	Automaton.OnMenuRequest = self.options
-	waterfall:Register("Automaton", 'aceOptions', self.options)
 end
 
 function Automaton:OnEnable()

@@ -6,7 +6,7 @@ local L = AceLibrary("AceLocale-2.2"):new("Automaton_Gossip")
 
 L:RegisterTranslations("zhTW", function() return {
 ["Gossip"] = "Gossip",
-["Automatically complete quests and skip gossip text"] = "Automatically complete quests and skip gossip text",
+["Automatically complete quests and skip gossip text"] = "還任務時自動跳過閒聊窗口，直接完成任務",
 
 --------------
 -- Gossip Text

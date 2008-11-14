@@ -44,6 +44,12 @@ elseif locale == "zhTW" then
 		["Ghost Wolf"] = "幽魂之狼",
 		["Shadowform"] = "暗影形態",
 	}
+elseif locale == "zhCN" then
+	L = {
+		["Automatically unshapeshift when you receive error messages about being shapeshifted"] = "当收到“不能在变形状态下”错误信息时自动解除形态",
+		["Ghost Wolf"] = "幽魂之狼",
+		["Shadowform"] = "暗影形态",
+	}
 end
 L = setmetatable(L or {}, { __index = function(self, key) rawset(self, key, key) return key end })
 

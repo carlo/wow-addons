@@ -1,3 +1,6 @@
+3.3 (2008-04-07)
+- Removed all Ace2 dependancies, it's now standalone
+
 3.2 (2006-08-29)
 - TOC Update
 - Tweaked description of the precision option

@@ -45,6 +45,22 @@ elseif locale == "zhTW" then
 		["Delay"] = "延遲",
 		["With this option enabled, automatic resurrection accept is delayed."] = "當提示出現後延遲後自動接受復活",
 		["Accepting resurrect in %s..."] = "%s後自動接受復活",
+		["Delay Time"] = "延遲時間",
+		["Set the time, in seconds, to wait before automatically accepting resurrections."] = "設置在自動復活前所等待的秒數。",
+		["Ignore Battle Resurrections"] = "忽略戰鬥復活",
+	}
+elseif locale == "zhCN" then
+	L = {
+		["Options for accepting resurrection requests."] = "自动接受复活",
+		["Persist"] = "保持",
+		["With this option enabled, AutoRez will persist for every resurrection request."] = "当本选项开启时，本模块将自动接受所有的复活请求。",
+		["Delay"] = "延时",
+		["With this option enabled, automatic resurrection accept is delayed."] = "当本选项开启时，会自动延时一段时间再接受复活。",
+		["Delay Time"] = "延时长度",
+		["Set the time, in seconds, to wait before automatically accepting resurrections."] = "设置在自动复活前所等待的秒数。",
+		["Ignore Battle Resurrections"] = "忽略战斗复活",
+		["With this option enabled, resurrections from druids will not be automatically accepted."] = "当本选项开启时，来自于德鲁伊的复活将不会被自动接受。",
+		["Accepting resurrect in %s..."] = "%s秒后自动接收复活……",
 	}
 end
 L = setmetatable(L or {}, { __index = function(self, key) rawset(self, key, key) return key end })

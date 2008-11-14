@@ -171,8 +171,8 @@ do
 					self, "FauxScrollFrameTemplate");
 				scrollFrame:SetPoint("TOPLEFT", self, 5, -72);
 				scrollFrame:SetPoint("BOTTOMRIGHT", self, -26, 5);
-				scrollFrame:SetScript("OnVerticalScroll", function()
-					FauxScrollFrame_OnVerticalScroll(20, updateMailLog);
+				scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
+					FauxScrollFrame_OnVerticalScroll(self, offset, 20, updateMailLog);
 				end);
 			end,
 			
@@ -208,8 +208,8 @@ do
 		local createMoneyFrame;
 		do
 			local moneyTypeInfo = {
-				UpdateFunc = function()
-					return this.staticMoney;
+				UpdateFunc = function(self)
+					return self.staticMoney;
 				end,
 				collapse = 1,
 				truncateSmallCoins = 1,

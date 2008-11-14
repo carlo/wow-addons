@@ -1,9 +1,0 @@
-------------------------------------------------------------------------
-r54646 | speeddymon | 2007-11-14 07:19:49 -0500 (Wed, 14 Nov 2007) | 2 lines
-Changed paths:
-   M /trunk/simpleMinimap/simpleMinimap.lua
-   M /trunk/simpleMinimap/simpleMinimap.toc
-
-simpleMinimap:
-- Change MinimapTrackingFrame to MinimapTracking and bump TOC
-------------------------------------------------------------------------

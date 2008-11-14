@@ -30,6 +30,9 @@
 			<OnShow>
 				AutoProfitX:OnShowButton()
 			</OnShow>
+			<OnHide>
+				AutoProfitX:ButtonStopSpin()
+			</OnHide>
 			<OnDragStart>
 				this.dragging = true;
 			</OnDragStart> 

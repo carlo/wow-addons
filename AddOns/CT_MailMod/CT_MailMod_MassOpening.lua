@@ -54,9 +54,9 @@ for i = 1, INBOXITEMS_TO_DISPLAY, 1 do
 end
 
 local oldInboxFrameItem_OnEnter = InboxFrameItem_OnEnter;
-function InboxFrameItem_OnEnter(...)
-	oldInboxFrameItem_OnEnter(...);
-	if ( not this.cod ) then
+function InboxFrameItem_OnEnter(self, ...)
+	oldInboxFrameItem_OnEnter(self, ...);
+	if ( not self.cod ) then
 		GameTooltip:AddLine("Press Alt-Right-Click to quick open.", 1, 1, 0.5);
 		GameTooltip:Show();
 	end

@@ -1,1 +1,18 @@
-## Interface: 30000## Title: BuyEmAll## Author: Cogwheel## Url: http://cogwheel.wowinterface.com## eMail: mcogwheel@gmail.com## Notes: Enhances shift-click interface at vendors## OptionalDeps: CogsBagSpaceCogsBagSpace\CogsBagSpace.luaLocalization.enUS.luaLocalization.deDE.luaLocalization.frFR.luaLocalization.zhCN.luaLocalization.zhTW.luaLocalization.koKR.luaBuyEmAll.luaBuyEmAll.xml
+## Interface: 30000
+## Title: BuyEmAll
+## Author: Cogwheel
+## Url: http://cogwheel.info
+## Notes: Enhances shift-click interface at vendors
+## OptionalDeps: CogsBagSpace
+
+CogsBagSpace\CogsBagSpace.lua
+
+Localization.enUS.lua
+Localization.deDE.lua
+Localization.frFR.lua
+Localization.zhCN.lua
+Localization.zhTW.lua
+Localization.koKR.lua
+
+BuyEmAll.lua
+BuyEmAll.xml

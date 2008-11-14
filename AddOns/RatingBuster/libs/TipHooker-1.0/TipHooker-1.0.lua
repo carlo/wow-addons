@@ -1,12 +1,13 @@
 ﻿--[[
 Name: TipHooker-1.0
 Description: A Library for hooking tooltips.
-Revision: $Revision: 50447 $
-Author: Whitetooth@Cenarius (hotdogee@bahamut.twbbs.org)
-LastUpdate: $Date: 2007-10-01 15:10:59 +0800 (星期一, 01 十月 2007) $
+Revision: $Revision: 52 $
+Author: Whitetooth
+Email: hotdogee [at] gmail [dot] com
+LastUpdate: $Date: 2008-10-09 21:54:48 +0000 (Thu, 09 Oct 2008) $
 Website:
 Documentation:
-SVN: $URL: http://svn.wowace.com/wowace/trunk/TipHookerLib/TipHooker-1.0/TipHooker-1.0.lua $
+SVN: $URL: svn://nevcairiel@svn.wowace.com/wow/tiphookerlib/mainline/trunk/TipHooker-1.0/TipHooker-1.0.lua $
 Dependencies: AceLibrary
 License: LGPL v2.1
 ]]
@@ -15,18 +16,18 @@ License: LGPL v2.1
 
 --[[ Tips for using TipHooker
 {
-This library provides tooltip hooks, mainly for use with tooltip modification, you can eazily append or modify text in a tooltip with TipHookerLib.
+This library provides tooltip hooks, mainly for use with item tooltip modification, you can easily append or modify text in a tooltip with TipHookerLib.
 If you need to not only modify the tooltip but also need to scan the tooltip for information, you should use other libraries with TipHookerLib.
-Bedcause TipHookerLib passes the real tooltip frame to your handler function,
+Because TipHookerLib passes the real tooltip frame to your handler function,
 which may already be modifided by other addons and may not be suited for scanning.
 For simple custom scaning you can use GratuityLib, it creates a custom tooltip and scan that for patterns.
-For a complete item scanning solution to stat scanning you can use ItemBonusLib, or my more light weight version: StatLogicLib.
+For a complete item scanning solution to stat scanning you can use ItemBonusLib or StatLogicLib.
 }
 --]]
 
 
 local MAJOR_VERSION = "TipHooker-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 50447 $"):sub(12, -3))
+local MINOR_VERSION = tonumber(("$Revision: 52 $"):sub(12, -3))+90000
 
 if not AceLibrary then error(MAJOR_VERSION.." requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -98,6 +99,12 @@ local TooltipList = {
 		"SniffTooltip",
 		-- LinkHeaven support
 		"LH_",
+		-- Mirror support
+		"MirrorTooltip",
+		-- TooltipExchange support
+		"TooltipExchange_TooltipShow",
+		-- AtlasQuest support
+		"AtlasQuestTooltip",
 	},
 	buff = {
 		"GameTooltip",
@@ -144,11 +151,14 @@ local MethodList = {
 		-- vendor tooltip
 		"SetMerchantItem",
 		"SetBuybackItem",
+		"SetMerchantCostItem",
 		-- socketing interface
 		"SetSocketGem",
 		"SetExistingSocketGem",
 		-- 2.1.0
 		"SetHyperlinkCompareItem",
+		-- 2.3.0
+		"SetGuildBankItem",
 	},
 	buff = {
 		"SetPlayerBuff",

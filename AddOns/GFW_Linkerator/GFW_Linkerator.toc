@@ -1,1 +1,18 @@
-## Interface: 30000## Version: 2.3## X-Revision: $Rev: 618 $## X-Date: $Date: 2007-11-12 18:22:52 -0800 (Mon, 12 Nov 2007) $## Author: Gazmik Fizzwidget## X-Website: http://fizzwidget.com/linkerator## X-Appcast: http://fizzwidget.com/notes/linkerator/feed## Title: Fizzwidget Linkerator## Notes: Remembers item links so you can type them out later.## X-Category: Interface Enhancements## SavedVariables: FLT_MaxFoundTime, FLT_MaxNotFoundTime, FLT_Debug, FLT_RandomItemIDs, FLT_RandomPropIDs, FLT_RandomItemCombos, FLT_EnchantLinks, FLT_CompleteDelay## LoadManagers: AddonLoader## X-LoadOn-Always: delayedGFWUtils.luaGFWTable.luaLinkerator.luaLinkerator.xml
+## Interface: 30000
+## Version: 3.0.1
+## X-Revision: $Rev: 677 $
+## X-Date: $Date: 2008-10-22 16:28:41 -0700 (Wed, 22 Oct 2008) $
+## Author: Gazmik Fizzwidget
+## X-Website: http://fizzwidget.com/linkerator
+## X-Appcast: http://fizzwidget.com/notes/linkerator/feed
+## Title: Fizzwidget Linkerator
+## Notes: Remembers item links so you can type them out later.
+## X-Category: Interface Enhancements
+## SavedVariables: FLT_MaxFoundTime, FLT_MaxNotFoundTime, FLT_Debug, FLT_RandomItemIDs, FLT_RandomPropIDs, FLT_RandomItemCombos, FLT_EnchantLinks, FLT_CompleteDelay
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
+GFWUtils.lua
+GFWTable.lua
+Linkerator.lua
+Linkerator.xml

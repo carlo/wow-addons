@@ -1,1 +1,48 @@
-## Interface: 30000## Version: 1.0b## X-Build: $Revision: 55025 $## X-ReleaseDate: $Date: 2007-11-16 08:21:51 -0500 (Fri, 16 Nov 2007) $## Title: Omen |cff7fff7f -Ace2-|r## Notes: A lightweight, flexible, multi-target threat meter [beta, use at own risk!]## Notes-frFR: Un "threat meter" léger, flexible et multi-cibles.## Notes-zhCN: 一个灵活的，多目标的，低资源占用的威胁值计量器，官方版由Taburiss汉化。## Author: Antiarc## OptionalDeps: Ace2, FuBar, Threat-1.0, SW_Stats, SinkLib, SpecialEvents-Aura-2.0, Babble-Spell-2.2, Dewdrop-2.0, LibSharedMedia-2.0, SharedMedia-2.0## X-Category: Combat## SavedVariables: OmenDB## SavedVariablesPerCharacter: OmenDBPC## X-Embeds: Ace2, LibSharedMedia-2.0, FuBarPlugin-2.0, Threat-1.0, SpecialEventsEmbed, Babble-2.2, Parser-3.0, SinkLib, Dewdrop-2.0## X-Donate: PayPal:cheald AT gmail DOT comembeds.xmllocalization_enUS.lualocalization_deDE.lualocalization_koKR.lualocalization_frFR.lualocalization_zhTW.lualocalization_zhCN.lualocalization_esES.luaDefaultSkins.luaOmen.luaOmenDisplay.luaOmenMenu.luaOmenThreatBar.lua
+## Interface: 30000
+## Version: 3.0.2
+## Title: Omen3
+## Notes: A lightweight, flexible, multi-target threat meter.
+## Notes-ruRU: Лёгкий, гибкий, измеритель угрозы.
+## Notes-frFR: Un "threat meter" léger, flexible et multi-cibles.
+## Notes-zhCN: 一个灵活的，多目标的，低资源占用的威胁值计量器。
+## Notes-zhTW: 一個輕量級、有彈性、可監視多個目標的仇恨統計插件。
+## Notes-koKR: 다중-대상에 대한 위협수준 미터기로 보여줍니다.
+## Author: Xinhuan
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibSink-2.0, LibDBIcon-1.0
+## X-eMail: xinhuan @ gmail DOT com
+## X-Donate: PayPal:xinhuan @ gmail DOT com
+## X-Category: Combat
+## SavedVariables: Omen3DB
+## X-Curse-Packaged-Version: v3.0.2
+
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceLocale-3.0\AceLocale-3.0.xml
+Libs\AceTimer-3.0\AceTimer-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\LibSharedMedia-3.0\lib.xml
+Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+Libs\LibSink-2.0\lib.xml
+#@end-no-lib-strip@
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+#@no-lib-strip@
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+#@end-no-lib-strip@
+
+Localization\enUS.lua
+Localization\deDE.lua
+Localization\frFR.lua
+Localization\esES.lua
+Localization\koKR.lua
+Localization\zhTW.lua
+Localization\zhCN.lua
+Localization\ruRU.lua
+
+Omen.lua

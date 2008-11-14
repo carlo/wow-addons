@@ -15,7 +15,7 @@
 --
 
 -- Version ID
-EQUIPCOMPARE_VERSIONID = "2.10";
+EQUIPCOMPARE_VERSIONID = "2.13";
 
 -- "Bonus" inventory types
 -- WARNING: these lines must match the text displayed by the client exactly.

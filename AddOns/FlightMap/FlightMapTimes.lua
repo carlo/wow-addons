@@ -12,12 +12,11 @@ StaticPopupDialogs["FLIGHT_CONFIRM"] = {
     text = TEXT(FLIGHTMAP_CONFIRM),
     button1 = TEXT(YES),
     button2 = TEXT(NO),
-    OnAccept = function(data)
+    OnAccept = function(self)
         -- Start the recorder -- this will also display the timer bar
         FlightMapTimesRecorderFrame_Show();
-
         -- Take the flight
-        lFMT_OldTakeTaxiNode(data);
+        lFMT_OldTakeTaxiNode(self.data);
     end,
     timeout = 0,
     hideOnEscape = 1
@@ -143,7 +142,7 @@ function FlightMapTimes_TaxiNodeOnButtonEnter(button)
     lFMT_OldTaxiNodeOnButtonEnter(button);
 
     -- Establish a node key
-    local index = this:GetID();
+    local index = button:GetID();
     local thisCont = FlightMapUtil.getContinent();
     local x, y = TaxiNodePosition(index);
     local nodeKey = FlightMapUtil.makeNodeName(thisCont, x, y);  
@@ -160,11 +159,11 @@ function FlightMapTimes_TaxiNodeOnButtonEnter(button)
     -- Recreate the tooltip!
     GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
     FlightMapUtil.addFlightsForNode(GameTooltip, nodeKey, "", sourceKey);
-    SetTooltipMoney(GameTooltip, TaxiNodeCost(this:GetID()));
+    SetTooltipMoney(GameTooltip, TaxiNodeCost(button:GetID()));
     GameTooltip:Show();
 end
 
-function FlightMapTimes_OnLoad()
+function FlightMapTimes_OnLoad(self)
     lFMT_OldTakeTaxiNode = TakeTaxiNode;
     lFMT_OldSelectGossipOption = SelectGossipOption;
     if Sea and Sea.util and Sea.util.hook then
@@ -181,7 +180,7 @@ function FlightMapTimes_OnLoad()
         TaxiNodeOnButtonEnter = FlightMapTimes_TaxiNodeOnButtonEnter;
         SelectGossipOption = FlightMapTimes_SelectGossipOption;
     end
-    this:RegisterForDrag("LeftButton");
+    self:RegisterForDrag("LeftButton");
     FlightMapTimesFlash:SetAlpha(0);
 end
 
@@ -205,10 +204,10 @@ local function lSaveFlightTime(length, from, to, flightType)
     end
 end
 
-function FlightMapTimes_OnUpdate()
+function FlightMapTimes_OnUpdate(self, elapsed)
     -- Make sure the user is still airborne
     if not UnitOnTaxi("player") then
-        local alpha = this:GetAlpha() - FLIGHTMAPTIMES_FADESTEP;
+        local alpha = self:GetAlpha() - FLIGHTMAPTIMES_FADESTEP;
         local flash = FlightMapTimesFlash:GetAlpha();
         -- Flash the overlay in
         if flash < 1 then
@@ -217,19 +216,21 @@ function FlightMapTimes_OnUpdate()
             FlightMapTimesFlash:SetAlpha(flash);
         -- Fade the bar out
         elseif alpha > 0 then
-            this:SetAlpha(alpha);
+            self:SetAlpha(alpha);
         else
             -- Hide up, reset alpha/flash
-            this:Hide();
-            this:SetAlpha(1.0);
+            self:SetWidth(195);
+            self:Hide();
+            self:SetAlpha(1.0);
             FlightMapTimesFlash:SetAlpha(0);
         end
     else
-        local label = this.destination .. ": ";
+        local dest = ": "..self.destination;
+        local label;
         local now = GetTime();
         -- If the time was too short, wipe it out and save a new one!
-        if (this.endTime and this.endTime < now) then
-            this.endTime = nil;
+        if (self.endTime and self.endTime < now) then
+            self.endTime = nil;
             FlightMapTimesFrame:SetMinMaxValues(0, 100);
             FlightMapTimesFrame:SetValue(100);
             FlightMapTimesFrame:SetStatusBarColor(0.0, 0.0, 1.0);
@@ -237,25 +238,25 @@ function FlightMapTimes_OnUpdate()
         end
 
         -- Update the spark, status bar and label
-        if (this.endTime) then
-            local remains = this.endTime - now;
-            label = label .. FlightMapUtil.formatTime(remains, true);
-            local sparkPos = ((now - this.startTime)
-                            / (this.endTime - this.startTime)) * 195;
+        if (self.endTime) then
+            local remains = self.endTime - now;
+            label = FlightMapUtil.formatTime(remains, true)..dest;
+            local sparkPos = ((now - self.startTime)
+                            / (self.endTime - self.startTime)) * self:GetWidth();
             FlightMapTimesSpark:SetPoint("CENTER",
                     "FlightMapTimesFrame", "LEFT", sparkPos, 2);
             FlightMapTimesFrame:SetValue(now);
         else
-            label = label .. FLIGHTMAP_TIMING;
+            label = string.format(FLIGHTMAP_TIMING,FlightMapUtil.formatTime(now - self.startTime))..dest;
         end
         FlightMapTimesText:SetText(label);
 
         -- If alpha is below one, fade-in is active
-        local alpha = this:GetAlpha();
+        local alpha = self:GetAlpha();
         if (alpha < 1) then
             alpha = alpha + FLIGHTMAPTIMES_FADESTEP * 4;
             if (alpha > 1) then alpha = 1; end
-            this:SetAlpha(alpha);
+            self:SetAlpha(alpha);
         end
     end
 end
@@ -307,45 +308,45 @@ function FlightMapTimesRecorderFrame_Show()
 end
 
 -- Take care of monitoring flight status
-function FlightMapTimesRecorderFrame_OnUpdate()
+function FlightMapTimesRecorderFrame_OnUpdate(self, elapsed)
     -- Wait for us to be in flight; when we are, set up all variables
     -- and tell the flight timer bar to show itself
-    if not this.started then
+    if not self.started then
         local now = GetTime();
         if UnitOnTaxi("player") then
-            this.started = true;
-            this.startTime = now;
-            if this.duration then
-                this.endTime = this.startTime + this.duration;
+            self.started = true;
+            self.startTime = now;
+            if self.duration then
+                self.endTime = self.startTime + self.duration;
             else
-                this.endTime = nil;
+                self.endTime = nil;
             end
 
-            FlightMapTimes_BeginFlight(this.duration, this.destName);
-        elseif this.flightType == 'gossip' and this.timeout <= now then
+            FlightMapTimes_BeginFlight(self.duration, self.destName);
+        elseif self.flightType == 'gossip' and self.timeout <= now then
             -- Time out waiting to get onto the bird, this gossip was not
             -- a flight
-            this:Hide();
+            self:Hide();
         end
     elseif not UnitOnTaxi("player") then
         -- If the player is no longer in the air, then the ride is over
-        this:Hide();
+        self:Hide();
 
         -- Update the flight's duration
-        local length = GetTime() - this.startTime;
-        lSaveFlightTime(length, this.sourceKey, this.destKey, this.flightType);
+        local length = GetTime() - self.startTime;
+        lSaveFlightTime(length, self.sourceKey, self.destKey, self.flightType);
 
         FlightMapTimes_EndFlight();
     end
 end
 
 -- Movable window
-function FlightMapTimes_OnDragStart()
+function FlightMapTimes_OnDragStart(self)
     if IsShiftKeyDown() then
         FlightMapTimesFrame:StartMoving();
     end
 end
 
-function FlightMapTimes_OnDragStop()
+function FlightMapTimes_OnDragStop(self)
     FlightMapTimesFrame:StopMovingOrSizing();
 end

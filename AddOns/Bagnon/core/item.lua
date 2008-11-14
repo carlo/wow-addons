@@ -59,17 +59,8 @@ local itemID = 1
 local unused = {}
 
 function BagnonItem:Create()
-	local item
-	if BagnonUtil:ReusingFrames() then
-		local button = self:GetBlizzard(itemID)
-		if button then
-			item = self:New(button)
-		end
-	end
-	if not item then
-		local button = CreateFrame('Button', format('BagnonItem%d', itemID), nil, 'ContainerFrameItemButtonTemplate')
-		item = self:New(button)
-	end
+	local button = CreateFrame('Button', format('BagnonItem%d', itemID), nil, 'ContainerFrameItemButtonTemplate')
+	item = self:New(button)
 	item:ClearAllPoints()
 
 	local border = item:CreateTexture(nil, 'OVERLAY')
@@ -81,7 +72,6 @@ function BagnonItem:Create()
 	item.border = border
 
 	item.cooldown = getglobal(item:GetName() .. 'Cooldown')
-	item.cooldown:SetFrameLevel(4)
 
 	item:UnregisterAllEvents()
 	item:SetScript('OnEvent', nil)
@@ -93,17 +83,6 @@ function BagnonItem:Create()
 	itemID = itemID + 1
 
 	return item
-end
-
-function BagnonItem:GetBlizzard(id)
-	local bag = ceil(id / MAX_CONTAINER_ITEMS)
-	local slot = (id-1) % MAX_CONTAINER_ITEMS + 1
-	local item = getglobal(format('ContainerFrame%dItem%d', bag, slot))
-
-	if item then
-		item:SetID(0)
-		return item
-	end
 end
 
 function BagnonItem:Get()
@@ -151,24 +130,14 @@ end
 
 -- Update the texture, lock status, and other information about an item
 function BagnonItem:Update()
-	local _, link, texture, count, locked, readable, quality
 	local slot = self:GetID()
 	local bag = self:GetBag()
 	local player = self:GetPlayer()
+	local link, count, texture, quality, locked, readable, cached = BagnonUtil:GetItemInfo(bag, slot, player)
 
-	if BagnonUtil:IsCachedBag(bag, player) then
-		if BagnonDB then
-			link, count, texture, quality = BagnonDB:GetItemData(bag, slot, player)
-			self.readable = nil
-			self.cached = true
-		end
-	else
-		texture, count, locked, _, readable = GetContainerItemInfo(bag, slot)
-		self.readable = readable
-		self.cached = nil
-	end
-
-	self.hasItem = texture and (link or GetContainerItemLink(bag, slot))
+	self.readable = readable
+	self.cached = cached
+	self.hasItem = texture and link
 
 	SetItemButtonDesaturated(self, locked)
 	SetItemButtonTexture(self, texture)
@@ -181,6 +150,7 @@ function BagnonItem:Update()
 	if GameTooltip:IsOwned(self) then
 		self:UpdateTooltip()
 	end
+
 	if BagnonSpot:Searching() then
 		self:UpdateSearch()
 	end
@@ -192,10 +162,6 @@ function BagnonItem:UpdateBorder(quality)
 	local link = self.hasItem
 
 	if link and BagnonUtil:ShowingBorders() then
-		if not quality then
-			quality = select(3, GetItemInfo(link))
-		end
-
 		if quality and quality > 1 then
 			local r, g, b = GetItemQualityColor(quality)
 			border:SetVertexColor(r, g, b, 0.5)
@@ -211,7 +177,7 @@ end
 function BagnonItem:UpdateSlotBorder()
 	local bag = self:GetBag()
 	local player = self:GetPlayer()
-	local normalTexture = getglobal(self:GetName() .. "NormalTexture")
+	local normalTexture = getglobal(self:GetName() .. 'NormalTexture')
 
 	if bag == KEYRING_CONTAINER then
 		normalTexture:SetVertexColor(1, 0.7, 0)
@@ -331,7 +297,7 @@ function BagnonItem:OnEnter()
 		if bag == BANK_CONTAINER then
 			if self.hasItem then
 				self:AnchorTooltip()
-				GameTooltip:SetInventoryItem("player", BankButtonIDToInvSlotID(slot))
+				GameTooltip:SetInventoryItem('player', BankButtonIDToInvSlotID(slot))
 				GameTooltip:Show()
 			end
 		else

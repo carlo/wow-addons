@@ -5,239 +5,29 @@
 
 if (GetLocale() == "esES") then
 
--- Druid
-SMARTBUFF_DRUID_CAT = "Forma felina";
-SMARTBUFF_DRUID_MOONKIN = "Forma de lech\195\186cico lunar";
-SMARTBUFF_DRUID_TRACK = "Rastrear humanoides";
-
-SMARTBUFF_MOTW = "Marca de fiera";
-SMARTBUFF_GOTW = "Ofrenda de las fieras";
-SMARTBUFF_THORNS = "Espinas";
-SMARTBUFF_OMENOFCLARITY = "Augurio de claridad";
-SMARTBUFF_BARKSKIN = "Pielcorteza";
-SMARTBUFF_NATURESGRASP = "Trabaz\195\179n con la Naturaleza";
-SMARTBUFF_TIGERSFURY = "Furia del tigre";
-SMARTBUFF_REJUVENATION = "Rejuvenecimiento";
-SMARTBUFF_REGROWTH = "Recrecimiento";
-
-SMARTBUFF_REMOVECURSE = "Deshacer maldici\195\179n";
-SMARTBUFF_ABOLISHPOISON = "Suprimir veneno";
-
 -- Mage
-SMARTBUFF_AI = "Intelecto Arcano";
-SMARTBUFF_AB = "Luminosidad Arcana";
-SMARTBUFF_ICEARMOR = "Armadura de hielo";
-SMARTBUFF_FROSTARMOR = "Armadura de Escarcha";
-SMARTBUFF_MAGEARMOR = "Armadura de mago";
-SMARTBUFF_MOLTENARMOR = "Armadura de arrabio";
-SMARTBUFF_DAMPENMAGIC = "Empapar magia";
-SMARTBUFF_AMPLIFYMAGIC = "Amplificar magia";
-SMARTBUFF_MANASHIELD = "Escudo de man\195\161";
-SMARTBUFF_FIREWARD = "Resguardo contra el fuego";
-SMARTBUFF_FROSTWARD = "Resguardo contra la Escarcha";
-SMARTBUFF_ICEBARRIER = "Barrera de hielo";
-SMARTBUFF_COMBUSTION = "Combusti\195\179n";
-SMARTBUFF_ARCANEPOWER = "Poder Arcano";
-SMARTBUFF_PRESENCEOFMIND = "Presencia mental";
-
 SMARTBUFF_MAGE_PATTERN = {"^Armadura de %a+"};
 
--- Priest
-SMARTBUFF_PWF = "Palabra de poder: entereza";
-SMARTBUFF_POF = "Rezo de entereza";
-SMARTBUFF_SP = "Guardia de las sombras";
-SMARTBUFF_POSP = "Rezo de Protecci\195\179n contra las Sombras";
-SMARTBUFF_INNERFIRE = "Fuego interno";
-SMARTBUFF_DS = "Esp\195\173ritu divino";
-SMARTBUFF_POS = "Rezo de esp\195\173ritu";
-SMARTBUFF_PWS = "Palabra de poder: escudo";
-SMARTBUFF_FEARWARD = "Resguardo de miedo";
-SMARTBUFF_ELUNESGRACE = "Gracia de Elune";
-SMARTBUFF_FEEDBACK = "Rebote";
-SMARTBUFF_SHADOWGUARD = "Guardia de las Sombras";
-SMARTBUFF_TOUCHOFWEAKNESS = "Toque de debilidad";
-SMARTBUFF_INNERFOCUS = "Enfoque interno";
-SMARTBUFF_RENEW = "Renovar";
-
 -- Warlock
-SMARTBUFF_FELARMOR = "Armadura vil";
-SMARTBUFF_DEMONARMOR = "Armadura demon\195\173aca";
-SMARTBUFF_DEMONSKIN = "Piel de demonio";
-SMARTBUFF_UNENDINGBREATH = "Respiraci\195\179n inagotable";
-SMARTBUFF_DGINVISIBILITY = "Detectar invisibilidad superior";
-SMARTBUFF_DINVISIBILITY = "Detectar invisibilidad";
-SMARTBUFF_DLINVISIBILITY = "Detectar invisibilidad inferior";
-SMARTBUFF_SOULLINK = "Enlace de alma";
-SMARTBUFF_SHADOWWARD = "Resguardo contra las Sombras";
-SMARTBUFF_DARKPACT = "Pacto oscuro";
-SMARTBUFF_SOULSTONE = "Resucitar piedra de alma";
-
 SMARTBUFF_WARLOCK_PATTERN = {"%a+ demon%a+"};
 
 -- Hunter
-SMARTBUFF_TRUESHOTAURA = "Aura de disparo certero";
-SMARTBUFF_RAPIDFIRE = "Fuego r\195\161pido";
-SMARTBUFF_AOTH = "Aspecto del halc\195\179n";
-SMARTBUFF_AOTM = "Aspecto del mono";
-SMARTBUFF_AOTW = "Aspecto salvaje";
-SMARTBUFF_AOTB = "Aspecto de la bestia";
-SMARTBUFF_AOTC = "Aspecto del guepardo";
-SMARTBUFF_AOTP = "Aspecto de la manada";
-SMARTBUFF_AOTV = "Aspecto de la v\195\173bora";
-
 SMARTBUFF_HUNTER_PATTERN = {"^Aspecto %a+"};
 
 -- Shaman
-SMARTBUFF_LIGHTNINGSHIELD = "Escudo de rel\195\161mpagos";
-SMARTBUFF_WATERSHIELD = "Escudo de agua";
-SMARTBUFF_EARTHSHIELD = "Escudo de tierra";
-SMARTBUFF_ROCKBITERW = "Arma de Muerdepiedras";
-SMARTBUFF_FROSTBRANDW = "Arma Estigma de Escarcha";
-SMARTBUFF_FLAMETONGUEW = "Arma Lengua de Fuego";
-SMARTBUFF_WINDFURYW = "Arma Viento Furioso";
-SMARTBUFF_WATERBREATHING = "Respiraci\195\179n acu\195\161tica";
-
 SMARTBUFF_SHAMAN_PATTERN = {"^Escudo de %a+"};
 
--- Warrior
-SMARTBUFF_BATTLESHOUT = "Grito de batalla";
-SMARTBUFF_COMMANDINGSHOUT = "Grito de orden";
-SMARTBUFF_BERSERKERRAGE = "Ira rabiosa";
-SMARTBUFF_BLOODRAGE = "Ira sangrienta";
-
--- Rogue
-SMARTBUFF_BLADEFLURRY = "Aluvi\195\179n de acero";
-SMARTBUFF_SAD = "Hacer picadillo";
-SMARTBUFF_EVASION = "Evasi\195\179n";
-SMARTBUFF_INSTANTPOISON = "Veneno instant\195\161neo"; --Confirmar--
-SMARTBUFF_WOUNDPOISON = "Veneno hiriente"; --Confirmar--
-SMARTBUFF_MINDPOISON = "Veneno aturdidor"; --Confirmar--
-SMARTBUFF_DEADLYPOISON = "Veneno mortal"; --Confirmar--
-SMARTBUFF_CRIPPLINGPOISON = "Veneno paralizante"; --Confirmar--
-SMARTBUFF_ANESTHETICPOISON = "Veneno anest\195\169sico";
-
 -- Paladin
-SMARTBUFF_RIGHTEOUSFURY = "Furia justa";
-SMARTBUFF_HOLYSHIELD = "Escudo Sagrado";
-SMARTBUFF_BOM = "Bendici\195\179n de poder\195\173o";
-SMARTBUFF_GBOM = "Bendici\195\179n de poder\195\173o superior";
-SMARTBUFF_BOW = "Bendici\195\179n de sabidur\195\173a";
-SMARTBUFF_GBOW = "Bendici\195\179n de sabidur\195\173a superior";
-SMARTBUFF_BOSAL = "Bendici\195\179n de salvaci\195\179n";
-SMARTBUFF_GBOSAL = "Bendici\195\179n de salvaci\195\179n superior";
-SMARTBUFF_BOK = "Bendici\195\179n de reyes";
-SMARTBUFF_GBOK = "Bendici\195\179n de reyes superior";
-SMARTBUFF_BOSAN = "Bendici\195\179n de salvaguardia";
-SMARTBUFF_GBOSAN = "Bendici\195\179n de salvaguardia superior";
-SMARTBUFF_BOL = "Bendici\195\179n de Luz";
-SMARTBUFF_GBOL = "Bendici\195\179n de Luz superior";
-SMARTBUFF_BOF = "Bendici\195\179n de libertad";
-SMARTBUFF_BOP = "Bendici\195\179n de protecci\195\179n";
-SMARTBUFF_SOCOMMAND = "Sello de orden";
-SMARTBUFF_SOFURY = "Sello de justicia";
-SMARTBUFF_SOJUSTICE = "Sello de justicia";
-SMARTBUFF_SOLIGHT = "Sello de luz";
-SMARTBUFF_SORIGHTEOUSNESS = "Sello de rectitud";
-SMARTBUFF_SOWISDOM = "Sello de sabidur\195\173a";
-SMARTBUFF_SOTCRUSADER = "Sello del cruzado";
-SMARTBUFF_SOVENGEANCE = "Seal of Vengeance"; -- NOT TRANSLATED
-SMARTBUFF_SOBLOOD = "Seal of Blood"; -- NOT TRANSLATED
-SMARTBUFF_DEVOTIONAURA = "Aura de devoci\195\179n";
-SMARTBUFF_RETRIBUTIONAURA = "Aura de sanci\195\179n";
-SMARTBUFF_CONCENTRATIONAURA = "Aura de concentraci\195\179n";
-SMARTBUFF_SHADOWRESISTANCEAURA = "Aura de resistencia a las Sombras";
-SMARTBUFF_FROSTRESISTANCEAURA = "Aura de Resistencia a la Escarcha";
-SMARTBUFF_FIRERESISTANCEAURA = "Aura de Resistencia al Fuego";
-SMARTBUFF_SANCTITYAURA = "Aura de santidad";
-SMARTBUFF_CRUSADERAURA = "Aura del Cruzado";
-
 SMARTBUFF_PALADIN_PATTERN = {"^Sello de"};
 
--- Stones and oils
-SMARTBUFF_SSROUGH = "Piedra de afilar f\195\169rrea";
-SMARTBUFF_SSCOARSE = "Piedra de afilar burda";
-SMARTBUFF_SSHEAVY = "Piedra de afilar pesada";
-SMARTBUFF_SSSOLID = "Piedra de afilar s\195\179lida";
-SMARTBUFF_SSDENSE = "Piedra de afilar densa";
-SMARTBUFF_SSELEMENTAL = "Piedra de afilar elemental";
-SMARTBUFF_WSROUGH = "Contrapeso f\195\169rreo";
-SMARTBUFF_WSCOARSE = "Contrapeso burdo";
-SMARTBUFF_WSHEAVY = "Contrapeso pesado";
-SMARTBUFF_WSSOLID = "Contrapeso s\195\179lido";
-SMARTBUFF_WSDENSE = "Contrapeso denso";
-SMARTBUFF_SHADOWOIL = "Aceite de las Sombras";
-SMARTBUFF_FROSTOIL = "Aceite de Escarcha";
-SMARTBUFF_MANAOILMINOR = "Aceite de man\195\161 menor";
-SMARTBUFF_MANAOILLESSER = "Aceite de man\195\161 inferior";
-SMARTBUFF_MANAOILBRILLIANT = "Aceite de man\195\161 luminoso";
-SMARTBUFF_MANAOILSUPERIOR = "Aceite de man\195\161 superior";
-SMARTBUFF_WIZARDOILMINOR = "Aceite de zahor\195\173 menor";
-SMARTBUFF_WIZARDOILLESSER = "Aceite de zahor\195\173 inferior";
-SMARTBUFF_WIZARDOIL = "Aceite de zahor\195\173";
-SMARTBUFF_WIZARDOILBRILLIANT = "Aceite de zahor\195\173 luminoso";
-SMARTBUFF_WIZARDOILSUPERIOR = "Aceite de zahor\195\173 superior";
-
+-- Weapon types
 SMARTBUFF_WEAPON_STANDARD = {"Dagas", "Hachas", "Espadas", "Mazas", "Bastones", "Armas de pu\195\177o", "Lanzas"};
 SMARTBUFF_WEAPON_BLUNT = {"Mazas", "Bastones", "Armas de pu\195\177o"};
 SMARTBUFF_WEAPON_BLUNT_PATTERN = "^Contrapeso %a+";
 SMARTBUFF_WEAPON_SHARP = {"Dagas", "Hachas", "Espadas", "Lanzas"};
 SMARTBUFF_WEAPON_SHARP_PATTERN = "^Piedra de afilar %a+";
 
--- Tracking
-SMARTBUFF_FINDMINERALS = "Buscar minerales";
-SMARTBUFF_FINDHERBS = "Buscar hierbas";
-SMARTBUFF_FINDTREASURE = "Buscar tesoros";
-SMARTBUFF_TRACKHUMANOIDS = "Rastrear humanoides";
-SMARTBUFF_TRACKBEASTS = "Rastrear bestias";
-SMARTBUFF_TRACKUNDEAD = "Rastrear no-muertos";
-SMARTBUFF_TRACKHIDDEN = "Rastrear lo oculto";
-SMARTBUFF_TRACKELEMENTALS = "Rastrear elementales";
-SMARTBUFF_TRACKDEMONS = "Rastrear demonios";
-SMARTBUFF_TRACKGIANTS = "Rastrear gigantes";
-SMARTBUFF_TRACKDRAGONKIN = "Rastrear dragonante";
-SMARTBUFF_SENSEDEMONS = "Captar demonios";
-SMARTBUFF_SENSEUNDEAD = "Captar no-muertos";
-
--- Racial
-SMARTBUFF_STONEFORM = "Forma p\195\169trea";
-SMARTBUFF_PRECEPTION = "Percepci\195\179n";
-SMARTBUFF_BLOODFURY = "Furia de sangre";
-SMARTBUFF_BERSERKING = "Enrabiar";
-SMARTBUFF_WOTFORSAKEN = "Voluntad del renegado";
-
--- Reagents
-SMARTBUFF_WILDBERRIES = "Frutos silvestres";
-SMARTBUFF_WILDTHORNROOT = "Ra\195\173z de espina salvaje";
-SMARTBUFF_WILDQUILLVINE = "Videpluma salvaje";
-SMARTBUFF_ARCANEPOWDER = "Part\195\173culas Arcanas";
-SMARTBUFF_HOLYCANDLE = "Vela sagrada";
-SMARTBUFF_SACREDCANDLE = "Vela sacra";
-SMARTBUFF_SYMBOLOFKINGS = "S\195\173mbolo de Reyes";
-
-
--- Food
-SMARTBUFF_SAGEFISHDELIGHT = "Delicia de sabiolas";
-SMARTBUFF_BUZZARDBITES = "Pinchito de \195\161guila ratonera";
-SMARTBUFF_RAVAGERDOG = "Perro devastador";
-SMARTBUFF_FELTAILDELIGHT = "Delicias de colavil";
-SMARTBUFF_CLAMBAR = "Barrita de almeja";
-SMARTBUFF_SPORELINGSNACK = "Tentempi\195\169 de esporino";
-SMARTBUFF_BLACKENEDSPOREFISH = "Pescado con esporas ennegrecido";
-SMARTBUFF_BLACKENEDBASILISK = "Basilisco ennegrecido";
-SMARTBUFF_GRILLEDMUDFISH = "Pezfango a la parrilla";
-SMARTBUFF_POACHEDBLUEFISH = "Pezazul pochado";
-SMARTBUFF_ROASTEDCLEFTHOOF = "U\195\177agrieta asado";
-SMARTBUFF_WARPBURGER = "Hamburguesa de distorsi\195\179n";
-SMARTBUFF_TALBUKSTEAK = "Chuleta de talbuk";
-SMARTBUFF_GOLDENFISHSTICKS = "Palitos de pez dorado";
-SMARTBUFF_CRUNCHYSERPENT = "Serpiente crujiente";
-SMARTBUFF_MOKNATHALSHORTRIBS = "Costillitas de Mok'Nathal";
-SMARTBUFF_SPICYCRAWDAD = "Cigala picante";
-
-SMARTBUFF_FOOD_AURA = "Bien alimentado";
-
-
--- Creature type
+-- Creature types
 SMARTBUFF_HUMANOID  = "Humanoide";
 SMARTBUFF_DEMON     = "Demonio";
 SMARTBUFF_BEAST     = "Bestia";
@@ -245,7 +35,7 @@ SMARTBUFF_ELEMENTAL = "Elemental";
 SMARTBUFF_DEMONTYPE = "Diablillo";
 
 -- Classes
-SMARTBUFF_CLASSES = {"Druida", "Cazador", "Mago", "Palad\195\173n", "Sacerdote", "P\195\173caro", "Cham\195\161n", "Brujo", "Guerrero", "Mascota de cazador", "Mascota de brujo"};
+SMARTBUFF_CLASSES = {"Druida", "Cazador", "Mago", "Palad\195\173n", "Sacerdote", "P\195\173caro", "Cham\195\161n", "Brujo", "Guerrero", "Caballero de la Muerte", "Mascota de cazador", "Mascota de brujo"};
 
 -- Templates and Instances
 SMARTBUFF_TEMPLATES = {"Solo", "Grupo", "Banda", "Campos de batalla", "MC", "Ony", "BWL", "Naxx", "AQ", "ZG", "Custom 1", "Custom 2", "Custom 3", "Custom 4", "Custom 5"};

@@ -15,7 +15,15 @@ function beql:InitTracker()
 	self:Hook("GetNumQuestWatches", "Hooks_GetNumQuestWatches", true)
 	self:Hook("AddQuestWatch", "Hooks_AddQuestWatch", true)
 	self:Hook("GetQuestIndexForWatch", "Hooks_GetQuestIndexForWatch", true)
-	self:Hook("UIParent_ManageFramePositions","Hooks_UIParent_ManageFramePositions", true)  
+	
+	-- Hooking Secure Functions to prevent tainting
+	hooksecurefunc("UIParent_ManageFramePositions",function()
+		if beql.db.char.saved.qtrackercorner and beql.db.char.saved.qtrackerposx and beql.db.char.saved.qtrackerposy then
+			QuestWatchFrame:ClearAllPoints()
+			QuestWatchFrame:SetPoint(beql.db.char.saved.qtrackercorner,"UIParent","BOTTOMLEFT", beql.db.char.saved.qtrackerposx, beql.db.char.saved.qtrackerposy)
+			beql:AchievementFrameManagePosition()
+		end		
+	end)
 
     --self:RegisterEvent("Quixote_Quest_Gained")
     self:RegisterEvent("Quixote_Ready")
@@ -53,7 +61,7 @@ function beql:InitTracker()
 	beql.TrackerBackdrop:SetBackdrop({
 		bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", tile = true, edgeSize = 16, tileSize = 16,
-		insets = { left= 5, right = 5, top = 5, bottom = 5 }
+		insets = { left= 4, right = 4, top = 4, bottom = 4 }
 		})
 	beql.TrackerBackdrop:SetFrameLevel("1")
 	beql.TrackerBackdrop:Show()	
@@ -72,7 +80,7 @@ function beql:InitTracker()
 	beql.TrackerTitleBar:SetBackdrop({
 		bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", tile = true, edgeSize = 16, tileSize = 16,
-		insets = { left= 5, right = 5, top = 5, bottom = 5 }
+		insets = { left= 4, right = 4, top = 4, bottom = 4 }
 		})			
 	beql.TrackerTitleBar:SetFrameStrata("BACKGROUND")
 	beql.TrackerTitleBar:SetFrameLevel("1")
@@ -105,6 +113,12 @@ function beql:InitTracker()
 	end)
 	
 	QuestWatchFrame:SetAlpha(beql.db.profile.QuestTrackerAlpha)
+	if beql.db.profile.AddUntracked then
+		AUTO_QUEST_WATCH = "1"
+	else
+		AUTO_QUEST_WATCH = "0"
+	end
+
 	QuestWatch_Update()
 end
 
@@ -145,8 +159,6 @@ end
 
 function beql:Quixote_Ready()
 	QuestWatch_Update()
-	-- Check if enabled
-	beql:HistoryScanLog()
 end
 
 function beql:Quixote_Update()
@@ -163,7 +175,7 @@ function beql:Quixote_Quest_Gained(questname,id)
 	end
 	QuestWatch_Update()
 end
-]]--
+--]]
 
 function beql:CHAT_MSG_SYSTEM(arg1)
 	if beql.db.profile.AddNew then
@@ -231,6 +243,7 @@ function beql:Hooks_IsQuestWatched(questIndex)
 	
 	local questName, level = self.hooks.GetQuestLogTitle(questIndex)
 	local questLogHeader, isHeader, tempId
+	local _
 
 	isHeader = false
 	tempId = questIndex
@@ -263,6 +276,7 @@ function beql:Hooks_GetQuestIndexForWatch(id)
 	local questLogHeader, isHeader, tempId
 	local questFound = false
 	local temp, currentHeader=nil
+	local _
 
 	for i=1, numEntries, 1 do
 		questLogTitleText, level, _, _, isHeader, _ = GetQuestLogTitle(i)
@@ -276,14 +290,6 @@ function beql:Hooks_GetQuestIndexForWatch(id)
 		end
 	end
 	return 0
-end
-
-function beql:Hooks_UIParent_ManageFramePositions()
-	self.hooks.UIParent_ManageFramePositions()
-	if beql.db.char.saved.qtrackercorner and beql.db.char.saved.qtrackerposx and beql.db.char.saved.qtrackerposy then
-		QuestWatchFrame:ClearAllPoints()
-		QuestWatchFrame:SetPoint(beql.db.char.saved.qtrackercorner,"UIParent","BOTTOMLEFT", beql.db.char.saved.qtrackerposx, beql.db.char.saved.qtrackerposy)
-	end	
 end
 
 function beql:Hooks_QuestWatch_Update()
@@ -312,7 +318,14 @@ function beql:Hooks_QuestWatch_Update()
 	
 	for i=1, GetNumQuestWatches() do
 		questIndex = GetQuestIndexForWatch(i)
-		if questIndex then qTitle,qLvl,qTag,qRec,qStat,qObj,qZone,qID = beqlQ:GetQuestById(questIndex) end
+		qID = nil;
+		if questIndex then 
+			questLogTitleText, _, _, _, _, _ = GetQuestLogTitle(questIndex)
+			-- Fix submitted by Ben Schreiber for MarsQuestOrganizer
+			if questLogTitleText then	
+				qTitle,qLvl,qTag,qRec,qStat,qObj,qZone,qID = beqlQ:GetQuestByName(questLogTitleText)
+			end
+		end
 		if qID then
 			isRemoved = false
 			
@@ -341,7 +354,7 @@ function beql:Hooks_QuestWatch_Update()
 			--
 			-- Quest !
 			--
-			if questIndex > 0 and not isRemoved then
+			if qID > 0 and not isRemoved then
 				if qStat == 1 then
 					--Completed
 					completedQuests = completedQuests +1
@@ -391,7 +404,11 @@ function beql:Hooks_QuestWatch_Update()
 				if  numObjectives > 0 then
 
 					for j=1, numObjectives do
-						oText, oType, oNumP, oNumN, oComp = beqlQ:GetQuestStatusById(questIndex, j)
+						oText, oType, oNumP, oNumN, oComp = beqlQ:GetQuestStatusById(qID, j)
+						-- Hack: MarsQuestOrganizer doesnt throw errors !!! Still is a fix needed !!! <- Quixote doesnt returns the correct number and/or the correct objectives for the current quest.
+						if oNumN == nil then oNumN = 1 end				
+						if oNumP == nil then oNumP = 1 end
+						if oText == nil then oText = "" end
 													
 						if beql.db.profile.CustomObjetiveColor then
 									tempColor = { r=beql.db.profile.Color.ObjectiveEmpty.r, g=beql.db.profile.Color.ObjectiveEmpty.g, b=beql.db.profile.Color.ObjectiveEmpty.b }
@@ -541,12 +558,12 @@ function beql:Hooks_QuestWatch_Update()
 	if beql.db.char.saved.minimizedtracker then
 		beql:TrackerMinimize()
 	end
-
 end
 
 -- For adding Text to Watcher
 function beql:AddWatchLineText(id,text,size,color,height)
 	local curWidth, tempWidth
+	local _
 	--local linenr
 	if size == nil then size = beql.db.profile.TrackerFontHeight end
 	if color == nil then color = {r=1,g=1,b=1} end
@@ -643,3 +660,5 @@ function beql:TrackerLockCornerForGrowth()
 		end
 	end
 end
+
+-- EOF --

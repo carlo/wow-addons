@@ -37,6 +37,7 @@ WKB_QUICK_MENU_5 = "Remove from database"
 WKB_QUICK_MENU_6 = "Trim database"
 WKB_QUICK_MENU_7 = "Insert in message box"
 WKB_QUICK_MENU_8 = "Show on WorldMap";
+WKB_QUICK_MENU_9 = "Set Waypoint"
 
 WKB_SHOW_UPDATES_HELP = "Any change to the database will be displayed in the chat frame."
 WKB_CLEAR_NOTES_HELP = "Clears ALL notes created by KB only from the maps. All information is still retained in the database."
@@ -109,6 +110,7 @@ WKB_QUICK_MENU_5 = "Remove from database"
 WKB_QUICK_MENU_6 = "Trim database"
 WKB_QUICK_MENU_7 = "Insert in message box"
 WKB_QUICK_MENU_8 = "Show on WorldMap";
+WKB_QUICK_MENU_9 = "Set Waypoint"
 
 WKB_SHOW_UPDATES_HELP = "\195\132nderungen in der Datenbank werden im Chatfenster angezeigt."
 WKB_CLEAR_NOTES_HELP = "Clears ALL notes created by KB only from the maps. All information is still retained in the database."
@@ -179,6 +181,7 @@ WKB_QUICK_MENU_4 = "Remove ALL from map"
 WKB_QUICK_MENU_5 = "Remove from database"
 WKB_QUICK_MENU_6 = "Trim database"
 WKB_QUICK_MENU_7 = "Insert in message box"
+WKB_QUICK_MENU_9 = "Set Waypoint"
 WKB_QUICK_MENU_8 = "Show on WorldMap";
 
 WKB_SHOW_UPDATES_HELP = "Les modifications de la base seront annonc\195\169es dans le chat."
@@ -250,6 +253,7 @@ WKB_QUICK_MENU_5 = "Borra de la BaseDatos"
 WKB_QUICK_MENU_6 = "Trim BaseDatos"
 WKB_QUICK_MENU_7 = "Inserta en cuadro mensaje"
 WKB_QUICK_MENU_8 = "Show on WorldMap";
+WKB_QUICK_MENU_9 = "Set Waypoint"
 
 WKB_SHOW_UPDATES_HELP = "Cualquier cambio de la BaseDatos se mostrara en la ventana chat."
 WKB_CLEAR_NOTES_HELP = "Borra TODAS notas creadas por KB solo de los mapas. Toda la información se mantendra en la BaseDatos."

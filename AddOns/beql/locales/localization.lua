@@ -12,6 +12,7 @@ L:RegisterTranslations("enUS", function() return{
 	["FubarPlugin Config"] = true,
 	["Requires Interface Reload"] = true,
 	
+	
 	["Quest Log Options"] = true,
 	["Options related to the Quest Log"] = true,
 	["Lock Quest Log"] = true,
@@ -148,6 +149,85 @@ L:RegisterTranslations("enUS", function() return{
 	["Party Member Color"] = true,
 	["Party Member with Quixote Color"] = true,
 	["Sets the color for Party member"] = true,
+
+-- new with 3.0
+	["Main Options"] = true,
+	["Enable Addon"] = true,
+	["Enable this Addon"] = true,
+	["General Quest Log Options"] = true,
+	["No sound"] = true,
+	["Don't play a sound"] = true,
+	["Watch Options"] = true,
+	["Zones"] = true,
+	["NPC color"] = true,
+	["Title color"] = true,
+
+-- Fubar
+	["Show icon"] = true,
+	["Show the plugins icon on the panel."] = true,
+	["Show text"] = true,
+	["Show the plugins text on the panel."] = true,
+	["Show colored text"] = true,
+	["Allow the plugin to color its text."] = true,
+	["Detach tooltip"] = true,
+	["Detach the tooltip from the panel."] = true,
+	["Lock tooltip"] = true,
+	["Lock the tooltips position. When the tooltip is locked, you must use Alt to access it with your mouse."] = true,
+	["Position"] = true,
+	["Position the plugin on the panel."] = true,
+	["Left"] = true,
+	["Right"] = true,
+	["Center"] = true,
+	["Attach to minimap"] = true,
+	["Attach the plugin to the minimap instead of the panel."] = true,
+	["Hide plugin"] = true,
+	["Hidden"] = true,
+	["Hide the plugin from the panel or minimap, leaving the addon running."] = true,
+	["Other"] = true,
+	["Close"] = true,
+	["Close the menu."] = true,
+	["Minimap position"] = true,
+
+-- Profiles
+	["Profiles"] = true,
+ 
+-- Achievement Tracker
+	["Achievement Tracker"] = true,
+	["Enable Achievement Tracker"] = true,
+	["Enables the Achievement Tracker, which can be moved an collapsed."] = true,
+	["Makes the achievement tracker unmovable"] = true,
+	["Show Achievement Tracker Header"] = true,
+	["Shows the header of the Achievementtracker"] = true,
+	["Save tracked Achievement"] = true,
+	["Save last tracked Achievement and resore it after login"] = true,
+	["Remove Completed Achievement"] = true,
+	["Automatical remove the completed Achievement from tracker"] = true,
+	["Achievement Tracker Alpha"] = true,
+	["Sets the Alpha of the Achievement Tracker"] = true,
+	["Achievement Tracker Scale"] = true,
+	["Sets the Scale of the Achievement Tracker"] = true,
+
+-- Profiles
+
+	ace2profile_default = "Default",
+	ace2profile_intro = "You can change the active database profile, so you can have different settings for every character.",
+	ace2profile_reset_desc = "Reset the current profile back to its default values, in case your configuration is broken, or you simply want to start over.",
+	ace2profile_reset = "Reset Profile",
+	ace2profile_reset_sub = "Reset the current profile to the default",
+	ace2profile_choose_desc = "You can either create a new profile by entering a name in the editbox, or choose one of the already exisiting profiles.",
+	ace2profile_new = "New",
+	ace2profile_new_sub = "Create a new empty profile.",
+	ace2profile_choose = "Existing Profiles",
+	ace2profile_choose_sub = "Select one of your currently available profiles.",
+	ace2profile_copy_desc = "Copy the settings from one existing profile into the currently active profile.",
+	ace2profile_copy = "Copy From",
+	ace2profile_delete_desc = "Delete existing and unused profiles from the database to save space, and cleanup the SavedVariables file.",
+	ace2profile_delete = "Delete a Profile",
+	ace2profile_delete_sub = "Deletes a profile from the database.",
+	ace2profile_delete_confirm = "Are you sure you want to delete the selected profile?",
+	ace2profile_profiles = "Profiles",
+	ace2profile_profiles_sub = "Manage Profiles",
+
 
 } end )
 

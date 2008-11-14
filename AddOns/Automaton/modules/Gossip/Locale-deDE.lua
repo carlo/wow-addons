@@ -319,7 +319,15 @@ L:RegisterTranslations("deDE", function() return {
 	-- Shadowmoon Valley
 
 	-- Netherwing Ledge
-	["Accepting All Eggs"] = "mmer her mit den Eiern",
+	["Accepting All Eggs"] = "Immer her mit den Eiern",
 	["Netherwing Egg"] = "Ei der Netherschwingen",
+
+	-- 2.4 Battleground mark turn-in
+    ["Concerted Efforts"] = "Gemeinsames Bestreben",
+    ["For Great Honor"] = "Gro\195\159e Ehre",
+    ["Alterac Valley Mark of Honor"] = "Ehrenabzeichen des Alteractals",
+    ["Arathi Basin Mark of Honor"] = "Ehrenabzeichen des Arathibeckens",
+	["Warsong Gulch Mark of Honor"] = "Ehrenabzeichen des Kriegshymnenklans",
+	["Eye of the Storm Mark of Honor"] = "Ehrenabzeichen vom Auge des Sturms",
 
 } end)

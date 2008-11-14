@@ -1,6 +1,6 @@
 ﻿--[[
 Name: LibRock-1.0
-Revision: $Rev: 54069 $
+Revision: $Rev: 292 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for library and addon creation and easy table recycling functions.
@@ -8,7 +8,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRock-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 54069 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 292 $"):match("(%d+)")) + 90000
 
 local _G = _G
 local GetLocale = _G.GetLocale
@@ -126,12 +126,12 @@ elseif GetLocale() == "koKR" then
 	}
 elseif GetLocale() == "zhTW" then
 	CATEGORIES = {
-		["Action Bars"] = "動作條",
+		["Action Bars"] = "動作列",
 		["Auction"] = "拍賣",
 		["Audio"] = "音效",
 		["Battlegrounds/PvP"] = "戰場/PvP",
 		["Buffs"] = "增益",
-		["Chat/Communication"] = "聊天/交談",
+		["Chat/Communication"] = "聊天/通訊",
 		["Druid"] = "德魯伊",
 		["Hunter"] = "獵人",
 		["Mage"] = "法師",
@@ -324,8 +324,28 @@ end
 _G.Rock = Rock
 
 local L = setmetatable({}, {__index=function(self,key) self[key] = key; return key end})
+if GetLocale() == "zhCN" then
+	L["Advanced options"] = "高级选项"
+	L["Advanced options for developers and power users."] = "开发者与高级用户的高级选项"
+	L["Unit tests"] = "框体测试"
+	L["Enable unit tests to be run. This is for developers only.\n\nYou must ReloadUI for changes to take effect."] = "开启框体测试，仅供开发者使用。\n\n需要重载用户界面。"
+	L["Contracts"] = "侦错协定"
+	L["Enable contracts to be run. This is for developers and anyone wanting to file a bug. Do not file a bug unless contracts are enabled. This will slightly slow down your addons if enabled."] = "启用侦错协定，这是给插件作者用来通报错误所使用。"
+	L["Reload UI"] = "重载UI"
+	L["Reload the User Interface for some changes to take effect."] = "部分功能更改需要重载用户界面才会生效。"
+	L["Reload"] = "重载"
+	L["Give donation"] = "捐赠"
+	L["Donate"] = "捐赠"
+	L["Give a much-needed donation to the author of this addon."] = "给插件作者捐赠支持插件开发。"
+	L["File issue"] = "通报错误"
+	L["Report"] = "报告"
+	L["File a bug or request a new feature or an improvement to this addon."] = "发送错误报告或请求新功能及要改进的部分。"
+	L["Press Ctrl-C to copy, then Alt-Tab out of the game, open your favorite web browser, and paste the link into the address bar."] = "Ctrl-C复制网址，Alt-Tab切换到桌面，打开浏览器，在地址栏贴上网址。"
+	L["Press Cmd-C to copy, then Cmd-Tab out of the game, open your favorite web browser, and paste the link into the address bar."] = "Cmd-C复制网址，Cmd-Tab切换到电脑桌面，打开浏览器，在地址栏贴上网址。"
+	L["Enabled"] = "开启"
+	L["Enable or disable this addon."] = "启用这个插件。"	
 
-if GetLocale() == "zhTW" then
+elseif GetLocale() == "zhTW" then
 	L["Advanced options"] = "進階選項"
 	L["Advanced options for developers and power users."] = "插件作者、進階用戶選項"
 	L["Unit tests"] = "單元測試"
@@ -377,8 +397,8 @@ elseif GetLocale() == "frFR" then
 	L["File issue"] = "Problème"
 	L["Report"] = "Signaler"
 	L["File a bug or request a new feature or an improvement to this addon."] = "Permet de signaler un bogue ou de demander une amélioration à cet addon."
-	L["Press Ctrl-C to copy, then Alt-Tab out of the game, open your favorite web browser, and paste the link into the address bar."] = "Faites la combinaison Ctrl-C pour copier, puis Alt-Tab pour sortir du jeu, ouvrez votre navigateur internet favori, et coller le lien dans la barre d'adresse."
-	L["Press Cmd-C to copy, then Cmd-Tab out of the game, open your favorite web browser, and paste the link into the address bar."] = "Faites la combinaison Cmd-C pour copier, puis Alt-Tab pour sortir du jeu, ouvrez votre navigateur internet favori, et coller le lien dans la barre d'adresse."
+	L["Press Ctrl-C to copy, then Alt-Tab out of the game, open your favorite web browser, and paste the link into the address bar."] = "Ctrl-C pour copier, puis Alt-Tab pour sortir du jeu. Ouvrez votre navigateur internet et collez le lien dans la barre d'adresse."
+	L["Press Cmd-C to copy, then Cmd-Tab out of the game, open your favorite web browser, and paste the link into the address bar."] = "Cmd-C pour copier, puis Alt-Tab pour sortir du jeu. Ouvrez votre navigateur internet et collez le lien dans la barre d'adresse."
 	L["Enabled"] = "Activé"
 	L["Enable or disable this addon."] = "Active ou désactive cet addon."
 end
@@ -1895,6 +1915,14 @@ local function embedAce2Mixin(mixin, object)
 	mixin:embed(object)
 end
 
+local function embedLibStubMixin(mixin, object)
+	if not mixinToObject[mixin] then
+		mixinToObject[mixin] = setmetatable(newList(), weakKey)
+	end
+	mixinToObject[mixin][object] = true
+	mixin:Embed(object)
+end
+
 --[[---------------------------------------------------------------------------
 Notes:
 	* create a new addon with the specified name.
@@ -1937,7 +1965,7 @@ function Rock:NewAddon(name, ...)
 		if not library then
 			error(("Bad argument #%d to `NewAddon'. Library %q is not found."):format(i+2, tostring(libName)), 2)
 		end
-
+		
 		local style = 'rock'
 
 		if not exportedMethods[library] then
@@ -1948,6 +1976,10 @@ function Rock:NewAddon(name, ...)
 					good = true
 					style = 'ace2'
 				end
+			end
+			if not good and type(rawget(library, 'Embed')) == "function" then
+				good = true
+				style = 'libstub'
 			end
 			if not good then
 				error(("Bad argument #%d to `NewAddon'. Library %q is not a mixin."):format(i+2, tostring(libName)), 2)
@@ -1962,6 +1994,8 @@ function Rock:NewAddon(name, ...)
 			library:Embed(addon)
 		elseif style == 'ace2' then
 			embedAce2Mixin(library, addon)
+		elseif style == 'libstub' then
+			embedLibStubMixin(library, addon)
 		end
 	end
 
@@ -2186,7 +2220,7 @@ local function makeURLFrame()
 			editBox:SetText(url)
 			editBox:SetFocus()
 			editBox:HighlightText(0)
-			editBox:SetScript("OnTextChanged", function() StaticPopup_EditBoxOnTextChanged() end)
+			editBox:SetScript("OnTextChanged", function(...) StaticPopup_EditBoxOnTextChanged(...) end)
 
 			local button = _G[this:GetName() .. "Button2"]
 			button:ClearAllPoints()

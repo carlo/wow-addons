@@ -1,6 +1,6 @@
 ﻿--[[
 Name: Waterfall-1.0
-Revision: $Revision: 51659 $
+Revision: $Revision: 125 $
 Author(s): Nargiddley (nargiddley@gmail.com)
 Inspired By: Dewdrop by ckknight
 Website: http://www.wowace.com/wiki/Waterfall-1.0
@@ -12,9 +12,10 @@ Dependencies: AceOO-2.0
 ]]
 
 local MAJOR_VERSION = "Waterfall-1.0"
-local MINOR_VERSION = "$Revision: 51659 $"
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 125 $"):match("(%d+)"))
 
 local CONTROL_LIMIT = 250
+local _
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -22,11 +23,6 @@ if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
 if not AceLibrary:HasInstance("AceOO-2.0") then error(MAJOR_VERSION .. " requires AceOO-2.0.") end
 
 local AceOO = AceLibrary("AceOO-2.0")
-
-local BS
-if (AceLibrary:HasInstance("Babble-Spell-2.2")) then
-	BS = AceLibrary:GetInstance("Babble-Spell-2.2")
-end
 
 local Waterfall = {}
 
@@ -47,6 +43,9 @@ elseif GetLocale() == "zhTW" then
 elseif GetLocale() == "koKR" then
 	OPTIONS = "설정"
 	ARE_YOU_SURE = "정말 당신은 `%s'|1을;를; 하시겠습니까?"
+elseif GetLocale() == "ruRU" then
+	OPTIONS = "Опции"
+	ARE_YOU_SURE = "Вы уверены что вы хотите %s?"
 end
 
 local DEFAULT_CONTROL_WIDTH = 180
@@ -543,6 +542,7 @@ function Waterfall:AddControl(...)
 	if not currentframe then
 		error("AddControl must be called from within a children function")
 	end
+	local control
 	local info = self.registry[currentframe.id]
 	local limit = info.controlLimit or CONTROL_LIMIT
 	if currentframe.controlcount > limit then
@@ -559,7 +559,6 @@ function Waterfall:AddControl(...)
 	end
 	local info = tmp2(...)
 
-	local control
 	if info.type == "label" then
 		control = getObj(WaterfallLabel)
 		setCommonAttributes(control,info)
@@ -680,6 +679,7 @@ function Waterfall:AddControl(...)
 		control.max = info.max
 		control.step = info.step
 		control.bigStep = info.bigStep or info.step
+		control.finalSetOnly = info.finalSetOnly
 		if type(info.disabled) == "function" then
 			control:SetFunc("disabled",info.disabled,getArgs(info,"disabledArg",1))
 			control.inverseDisabled = info.inverseDisabled
@@ -919,14 +919,10 @@ function Waterfall:FeedAceOptionsTable(root,path,maxLevels)
 				tinsert(tmpargs,"tooltipTitle")
 				local tooltipTitle = "" .. tostring(v.itemId)
 				tinsert(tmpargs,tooltipTitle)
-				tinsert(tmpargs,"itemType")
-				tinsert(tmpargs,v.itemType or false)
-				tinsert(tmpargs,"itemId")
-				tinsert(tmpargs,v.itemId or false)
-				tinsert(tmpargs,"itemInfo")
-				tinsert(tmpargs,v.itemInfo or false)
+				tinsert(tmpargs,"linkInfo")
+				tinsert(tmpargs,v.linkInfo or {})
 				tinsert(tmpargs,"icon")
-				tinsert(tmpargs,v.icon)
+				tinsert(tmpargs,v.icon or "")
 				tinsert(tmpargs,"iconWidth")
 				tinsert(tmpargs,v.iconWidth or WaterfallDragLink.defaultIconSize)
 				tinsert(tmpargs,"iconHeight")
@@ -1162,6 +1158,8 @@ function Waterfall:FeedAceOptionsTable(root,path,maxLevels)
 				tinsert(tmpargs,v.step or 0)
 				tinsert(tmpargs,"bigStep")
 				tinsert(tmpargs,v.bigStep or v.step or 0)
+				tinsert(tmpargs,"finalSetOnly")
+				tinsert(tmpargs,v.finalSetOnly or false)
 				--if no step is given or there are more than 20 steps possible
 				--local complex = step == 0 or ((max - min) / step) > 20
 				local complex = true
@@ -2580,8 +2578,9 @@ end
 -- DragLink Class --
 -----------------
 
--- Provides an icon and description of an itemType, itemId, itemInfo
--- Dragging onto the linkIcon sets the itemType, itemId, itemInfo
+-- Provides an icon and description of a link based on on its linkInfo.itemType, itemId, itemInfo
+-- Dragging onto the linkIcon sets linkInfo.itemType, linkInfo.itemId, linkInfo.itemInfo
+-- If linkInfo.itemType == "spell" then linkInfo.spellName, linkInfo.spellRank, linkInfo.spellClass (current player class) are also set
 -- Dragging between two DragLink objects will swap their contents
 
 function Waterfall:GetDraggingObject()
@@ -2604,10 +2603,13 @@ local function DragLinkOnReceiveDrag(this)
 	local fromObject = Waterfall:GetDraggingObject()
 	local refreshNeeded = false
 	if (fromObject and fromObject ~= toObject) then
-DEFAULT_CHAT_FRAME:AddMessage("DragLinkOnReceiveDrag toObject " .. tostring(toObject))
+--DEFAULT_CHAT_FRAME:AddMessage("DragLinkOnReceiveDrag toObject " .. tostring(toObject))
 		fromObject.itemType, toObject.itemType = toObject.itemType, fromObject.itemType
 		fromObject.itemId, toObject.itemId = toObject.itemId, fromObject.itemId
 		fromObject.itemInfo, toObject.itemInfo = toObject.itemInfo, fromObject.itemInfo
+		fromObject.spellName, toObject.spellName = toObject.spellName, fromObject.spellName
+		fromObject.spellRank, toObject.spellRank = toObject.spellRank, fromObject.spellRank
+		fromObject.spellClass, toObject.spellClass = toObject.spellClass, fromObject.spellClass
 		if fromObject.causesRefresh or fromObject.fullRefresh then
 			fromObject.parent:Refresh(fromObject.fullRefresh)
 		end
@@ -2616,12 +2618,24 @@ DEFAULT_CHAT_FRAME:AddMessage("DragLinkOnReceiveDrag toObject " .. tostring(toOb
 		local itemType, itemId, itemInfo = GetCursorInfo()
 --DEFAULT_CHAT_FRAME:AddMessage("DragLinkOnReceiveDrag itemType " .. tostring(itemType) .. " itemId " .. tostring(itemId) .. " itemInfo " .. tostring(itemInfo))
 		if (itemType == "item" or itemType == "spell" or itemType == "macro") then
-			self.itemType = itemType
-			self.itemId = itemId
-			self.itemInfo = itemInfo
-			if (self.setFunc and not self.disabled) then
-				self.setFunc(getArgs(self,"setArg",1,itemType,itemId,itemInfo))
+			local linkInfo = self.linkInfo
+			linkInfo.itemType = itemType
+			linkInfo.itemId = itemId
+			linkInfo.itemInfo = itemInfo
+			if (itemType == "spell") then
+				local spellName, spellRank = GetSpellName(itemId, itemInfo)
+				linkInfo.spellName = spellName
+				linkInfo.spellRank = spellRank
+				linkInfo.spellClass = WaterfallDragLink.CLASS
+			else
+				linkInfo.spellName = nil
+				linkInfo.spellRank = nil
+				linkInfo.spellClass = nil
+			end
 --DEFAULT_CHAT_FRAME:AddMessage("DragLinkOnReceiveDrag itemType " .. tostring(itemType) .. " itemId " .. tostring(itemId) .. " itemInfo " .. tostring(itemInfo))
+--DEFAULT_CHAT_FRAME:AddMessage("DragLinkOnReceiveDrag self.setFunc " .. tostring(self.setFunc) .. " self.disabled " .. tostring(self.disabled))
+			if (self.setFunc and not self.disabled) then
+				self.setFunc(getArgs(self,"setArg",1,linkInfo))
 			end
 			refreshNeeded = true
 			ClearCursor()
@@ -2644,15 +2658,62 @@ end
 
 local function DragLinkOnEnter(this)
 	local self = this.obj
-	if (tonumber(self.itemId)) then		-- or self.itemInfo
-		GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
-		if (self.itemId) then
-			GameTooltip:SetHyperlink("item:" .. self.itemId .. ":0:0:0:0:0:0:0")
-		else
-			GameTooltip:SetHyperlink(tostring(self.itemInfo))
+	local linkInfo = self.linkInfo
+	if (linkInfo) then
+		if (linkInfo.itemType == "item") then
+			GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
+			if (linkInfo.itemId) then
+				GameTooltip:SetHyperlink("item:" .. linkInfo.itemId .. ":0:0:0:0:0:0:0")
+			else
+				GameTooltip:SetHyperlink(tostring(linkInfo.itemInfo))
+			end
+		elseif (linkInfo.itemType == "spell") then
+			if (linkInfo.spellName) then
+-- Cannot set this without preserving spell book & spell id.  Even then may be from different class.  So lame.  Awaiting a Blizzard API that doesnt suck.
+--				GameTooltip:SetSpell(linkInfo.spellId, linkInfo.spellTab)
+				GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
+				GameTooltip:AddLine(linkInfo.spellName, 1, 1, 1)
+				local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(linkInfo.spellName)
+				if (name) then
+					if (powerType == 0) then
+						cost = tostring(cost) .. " " .. MANA
+					elseif (powerType == 1) then
+						cost = tostring(cost) .. " " .. RAGE
+					elseif (powerType == 2) then
+						cost = tostring(cost) .. " " .. FOCUS
+					elseif (powerType == 3) then
+						cost = tostring(cost) .. " " .. ENERGY
+					elseif (powerType == 4) then
+						cost = tostring(cost) .. " " .. HAPPINESS
+					end
+					local range = ""
+					if (maxRange) then
+						range = SPELL_RANGE:format(maxRange)
+					end
+					GameTooltip:AddDoubleLine(cost, range, 1, 1, 1, 1, 1, 1)
+					if (castTime and castTime > 0) then
+						GameTooltip:AddLine(SPELL_CAST_TIME_SEC:format(castTime), 1, 1, 1)
+					else
+						GameTooltip:AddLine(SPELL_CAST_TIME_INSTANT, 1, 1, 1)
+					end
+					if (rank) then
+						GameTooltip:AddLine(tostring(rank))
+					end
+					GameTooltip:Show()
+				end
+			end
+		elseif (linkInfo.itemType == "macro") then
+			if (linkInfo.itemId) then
+				local name, icon, body = GetMacroInfo(linkInfo.itemId)
+				if (name) then
+					GameTooltip:SetOwner(this, "ANCHOR_PRESERVE")
+					GameTooltip:AddLine(tostring(name), 0.2, 0.8, 0.8, 1)
+					GameTooltip:AddTexture(icon)
+					GameTooltip:AddLine(tostring(body), 1, 1, 1, 1)
+					GameTooltip:Show()
+				end
+			end
 		end
-	else
-		showGameTooltip(self)
 	end
 end
 
@@ -2661,27 +2722,37 @@ local function DragLinkOnLeave(this)
 end
 
 local function DragLinkGetTexture(self)
-	if (self.itemType == "item") then
-		if (self.itemId and tonumber(self.itemId)) then
-			local _,_,_,_,_,_,_,_,_,texture = GetItemInfo(tonumber(self.itemId))
-			if (texture) then
-				return texture
+	local linkInfo = self.linkInfo
+	local texture
+	if (linkInfo) then
+		if (linkInfo.itemType == "item") then
+			if (linkInfo.itemId and tonumber(linkInfo.itemId)) then
+				_,_,_,_,_,_,_,_,_,texture = GetItemInfo(tonumber(linkInfo.itemId))
+				if (texture) then
+					return texture
+				end
+			end
+		elseif (linkInfo.itemType == "spell") then
+			if (linkInfo.spellName) then
+				_, _, texture = GetSpellInfo(linkInfo.spellName)
+				if (texture) then
+					return texture
+				end
+			end
+		elseif (linkInfo.itemType == "macro") then
+			if (linkInfo.itemId) then
+				_, texture = GetMacroInfo(linkInfo.itemId)
+				if (texture) then
+					return texture
+				end
 			end
 		end
-	elseif (self.itemType == "spell") then
-		if (self.itemId and self.itemInfo and BS) then
--- Sweet!  GetSpellTexture does not support spellName, only spell book index.  So check using BabbleSpell instead.
-			local texture = BS:GetSpellIcon(self.itemId)
-			if (texture) then
-				return texture
-			end
-		end
-	elseif (self.itemType == "macro") then
 	end
 	return "Interface\\Icons\\INV_Misc_Gift_01"
 end
 
 WaterfallDragLink.defaultIconSize = 36
+_, WaterfallDragLink.CLASS = UnitClass("player") -- Use the capitalized english class name
 
 function WaterfallDragLink.prototype:init()
 	WaterfallDragLink.super.prototype.init(self, "Button")
@@ -2764,16 +2835,18 @@ function WaterfallDragLink.prototype:Refresh()
 		self.linkIcon = linkIcon
 	end
 	if self.getFunc then
-		self.itemType, self.itemId, self.itemInfo = self.getFunc(getArgs(self,"getArg",1))
+		self.linkInfo = self.getFunc(getArgs(self,"getArg",1))
+	else
+		assert(self.linkInfo, "wth?")
 	end
 	self.linkIcon:SetTexture(DragLinkGetTexture(self))
 	self.linkIcon:Show()
-	if (self.itemId) then
-		self:SetText((self.itemInfo or "") .. " (" .. tostring(self.itemId) .. ")")
+	if (self.linkInfo.itemId) then
+		self:SetText((self.linkInfo.itemInfo or "") .. " (" .. tostring(self.linkInfo.itemId) .. ")")
 	else
 		self:SetText("")
 	end
---DEFAULT_CHAT_FRAME:AddMessage("WaterfallDragLink.prototype:Refresh texture " .. tostring(DragLinkGetTexture(self)) .. " self.itemId " .. tostring(self.itemId) .. " self.itemInfo " .. tostring(self.itemInfo))
+--DEFAULT_CHAT_FRAME:AddMessage("WaterfallDragLink.prototype:Refresh texture " .. tostring(DragLinkGetTexture(self)) .. " self.linkInfo.itemId " .. tostring(self.linkInfo.itemId) .. " self.linkInfo.itemInfo " .. tostring(self.linkInfo.itemInfo))
 end
 
 -----------------
@@ -2915,6 +2988,12 @@ local function Keybinding_OnKeyDown(this, key)
 					return;
 				end
 				if ( keyPressed == "SHIFT" or keyPressed == "CTRL" or keyPressed == "ALT") then
+					return;
+				end
+				if ( keyPressed == "LSHIFT" or keyPressed == "LCTRL" or keyPressed == "LALT") then
+					return;
+				end
+				if ( keyPressed == "RSHIFT" or keyPressed == "RCTRL" or keyPressed == "RALT") then
 					return;
 				end
 				if ( IsShiftKeyDown() ) then
@@ -3069,7 +3148,11 @@ local function Slider_OnValueChanged(this)
 				self.value = newvalue
 			end
 			if func and not self.isInit then
-				func(getArgs(this.obj,"setArg",1,self.value))
+				if (self.finalSetOnly) then
+					self.finalSetValue = self.value
+				else
+					func(getArgs(this.obj,"setArg",1,self.value))
+				end
 			end
 		end
 		if self.value then
@@ -3080,6 +3163,12 @@ end
 
 local function Slider_OnMouseUp(this)
 	local self = this.obj
+	if (self.finalSetValue) then
+		local func = self.setFunc
+		if func then
+			func(getArgs(this.obj,"setArg",1,self.finalSetValue))
+		end
+	end
 	if self.causesRefresh or self.fullRefresh then
 		self.parent:Refresh(self.fullRefresh)
 	end
@@ -3573,7 +3662,7 @@ function WaterfallDropdown.prototype:BuildPullout()
 		local columnCount = 0
 		self.pullout:ClearAllPoints()
 		if (columns) then
-			columnHeight = math.floor((# ddsort) / columns) + 1
+			columnHeight = math.floor((# ddsort) / columns) + 2
 			columnWidth = self.pullout:GetWidth()
 			self.pullout:SetPoint("TOPLEFT",self.frame,"BOTTOMRIGHT", -1 * DEFAULT_CONTROL_WIDTH * columns - 24,0)
 			self.pullout:SetPoint("TOPRIGHT",self.frame,"BOTTOMRIGHT",-24,0)
@@ -3903,7 +3992,7 @@ end
 
 function WaterfallTreeView.prototype:AddSection(index,line)
 	local sections = self.sections
-
+	local id = line.id
 	if not sections[index] then
 		sections[index] = getObj(WaterfallTreeSection,self)
 		local section = sections[index]
@@ -3991,7 +4080,7 @@ function WaterfallTreeView.prototype:AddLine(index,line,level,disabled)
 	local text, hasChildren, isSelected, isOpen
 	text = line.text or ""
 	hasChildren = #line > 0
-	id = line.id
+	local id = line.id
 	if self.status[id] == nil then
 		self.status[id] = not not line.isOpen
 	end

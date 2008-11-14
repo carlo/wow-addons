@@ -2,7 +2,15 @@
   <Script file="Localization.lua"/>
   <Script file="BindPad.lua"/>
 
-  <Button name="BindPadSlotTemplate" virtual="true">
+  <Frame name="BindPadUpdateFrame" hidden="true">
+    <Scripts>
+      <OnUpdate>
+        BindPadUpdateFrame_OnUpdate(self);
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+
+  <Button name="BindPadIconTemplate" virtual="true">
     <Size>
       <AbsDimension x="36" y="36"/>
     </Size>
@@ -65,30 +73,71 @@
     </NormalTexture>
     <PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
     <HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+  </Button>
+
+  <Button name="BindPadSlotTemplate" inherits="BindPadIconTemplate" virtual="true">
+    <Frames>
+      <Button name="$parentAddButton" alpha="0.7">
+        <Size>
+          <AbsDimension x="16" y="16"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+             <AbsDimension x="0" y="-0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+      	  <OnLoad>          
+            self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+      	  </OnLoad>
+          <OnClick>
+            BindPadMacroAddButton_OnClick(self:GetParent());
+          </OnClick>
+          <OnReceiveDrag>
+            BindPadSlot_OnReceiveDrag(self:GetParent());
+          </OnReceiveDrag>
+          <OnEnter>
+            if not (GetCursorInfo() or BindPadCore.drag.type) then
+              GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+              GameTooltip:SetText(BINDPAD_TOOLTIP_CREATE_MACRO);
+            end
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();    
+          </OnLeave>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-PlusButton-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-PlusButton-Down"/>
+        <DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+      </Button>
+    </Frames>
 
     <Scripts>
       <OnLoad>          
-        this:RegisterForClicks("LeftButtonUp");
-        this:RegisterForDrag("LeftButton");
-        this:RegisterEvent("UPDATE_BINDINGS");
+        self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+        self:RegisterForDrag("LeftButton");
+        self:RegisterEvent("UPDATE_BINDINGS");
       </OnLoad>
       <OnClick>
-        BindPadSlot_OnClick(arg1);
+        BindPadSlot_OnClick(self, arg1);
       </OnClick>
       <OnDragStart>
-        BindPadSlot_OnDragStart();
+        BindPadSlot_OnDragStart(self);
       </OnDragStart>
       <OnReceiveDrag>
-        BindPadSlot_OnReceiveDrag();
+        BindPadSlot_OnReceiveDrag(self);
       </OnReceiveDrag>
       <OnEnter>
-        BindPadSlot_OnEnter();
+        BindPadSlot_OnEnter(self);
       </OnEnter>
       <OnLeave>
         GameTooltip:Hide();
       </OnLeave>
       <OnEvent>
-        BindPadSlot_OnUpdate();
+        BindPadSlot_OnUpdate(self);
       </OnEvent>
     </Scripts>
   </Button>
@@ -556,14 +605,14 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            PanelTemplates_TabResize(-15);
-            getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+            PanelTemplates_TabResize(self, -15);
+            getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
           </OnLoad>
           <OnClick>
-            BindPadFrame_OnShow(this:GetID());
+            BindPadFrame_OnShow(self:GetID());
           </OnClick>
           <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(BINDPAD_TOOLTIP_TAB1, nil, nil, nil, nil, 1);
           </OnEnter>
           <OnLeave>
@@ -581,15 +630,15 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            this:SetFormattedText(BINDPAD_TEXT_SPECIFIC_TAB, UnitName("player"));
-            getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
-            PanelTemplates_TabResize(-15, nil, nil, 150);
+            self:SetFormattedText(BINDPAD_TEXT_SPECIFIC_TAB, UnitName("player"));
+            getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+            PanelTemplates_TabResize(self, -15, nil, 150);
           </OnLoad>
           <OnClick>
-            BindPadFrame_OnShow(this:GetID());
+            BindPadFrame_OnShow(self:GetID());
           </OnClick>
           <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(format(BINDPAD_TOOLTIP_TAB2, UnitName("player")), nil, nil, nil, nil, 1);
           </OnEnter>
           <OnLeave>
@@ -607,15 +656,15 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            this:SetText(BINDPAD_TEXT_SPECIFIC_EXTRA_TAB2);
-            getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
-            PanelTemplates_TabResize(-15, nil, nil, 150);
+            self:SetText(BINDPAD_TEXT_SPECIFIC_EXTRA_TAB2);
+            getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+            PanelTemplates_TabResize(self, -15, nil, 150);
           </OnLoad>
           <OnClick>
-            BindPadFrame_OnShow(this:GetID());
+            BindPadFrame_OnShow(self:GetID());
           </OnClick>
           <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(format(BINDPAD_TOOLTIP_TAB3, UnitName("player")), nil, nil, nil, nil, 1);
           </OnEnter>
           <OnLeave>
@@ -633,15 +682,15 @@
         </Anchors>
         <Scripts>
           <OnLoad>
-            this:SetText(BINDPAD_TEXT_SPECIFIC_EXTRA_TAB3);
-            getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
-            PanelTemplates_TabResize(-15, nil, nil, 150);
+            self:SetText(BINDPAD_TEXT_SPECIFIC_EXTRA_TAB3);
+            getglobal(self:GetName().."HighlightTexture"):SetWidth(self:GetTextWidth() + 31);
+            PanelTemplates_TabResize(self, -15, nil, 150);
           </OnLoad>
           <OnClick>
-            BindPadFrame_OnShow(this:GetID());
+            BindPadFrame_OnShow(self:GetID());
           </OnClick>
           <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(format(BINDPAD_TOOLTIP_TAB4, UnitName("player")), nil, nil, nil, nil, 1);
           </OnEnter>
           <OnLeave>
@@ -665,14 +714,14 @@
             BindPadFrame_ChangeBindingProfile();
           </OnClick>
           <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP, nil, nil, nil, nil, 1);
           </OnEnter>
           <OnLeave>
             GameTooltip:Hide();
           </OnLeave>
         </Scripts>
-  	  </CheckButton>
+      </CheckButton>
       <Button name="$parentExitButton" inherits="UIPanelButtonTemplate" text="BINDPAD_TEXT_EXIT">
         <Size>
           <AbsDimension x="80" y="22"/>
@@ -686,7 +735,7 @@
         </Anchors>
         <Scripts>
           <OnClick>
-            HideUIPanel(this:GetParent());
+            HideUIPanel(self:GetParent());
           </OnClick>
         </Scripts>
       </Button>
@@ -694,9 +743,9 @@
         <Size>
           <AbsDimension x="29" y="58"/>
         </Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="18" bottom="0"/>
-		</HitRectInsets>
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="18" bottom="0"/>
+        </HitRectInsets>
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
             <Offset>
@@ -713,13 +762,13 @@
           <OnClick>
             ShowUIPanel(SpellBookFrame);
           </OnClick>
-	      <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+          <OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(BINDPAD_TOOLTIP_OPENSPELLBOOK, 1.0, 1.0, 1.0);
             GameTooltip:Show();
-	      </OnEnter>
-	      <OnLeave>
-	        GameTooltip:Hide();
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
           </OnLeave>
         </Scripts>
       </Button>
@@ -736,9 +785,9 @@
         <Size>
           <AbsDimension x="29" y="58"/>
         </Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="18" bottom="0"/>
-		</HitRectInsets>
+        <HitRectInsets>
+            <AbsInset left="0" right="0" top="18" bottom="0"/>
+        </HitRectInsets>
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeTo="$parentOpenSpellBookButton" relativePoint="BOTTOMRIGHT">
             <Offset>
@@ -754,13 +803,13 @@
           <OnClick>
             ShowMacroFrame();
           </OnClick>
-	      <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+          <OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(BINDPAD_TOOLTIP_OPENMACRO, 1.0, 1.0, 1.0);
             GameTooltip:Show();
-	      </OnEnter>
-	      <OnLeave>
-	        GameTooltip:Hide();
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
           </OnLeave>
         </Scripts>
       </Button>
@@ -768,9 +817,9 @@
         <Size>
           <AbsDimension x="29" y="58"/>
         </Size>
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="18" bottom="0"/>
-		</HitRectInsets>
+        <HitRectInsets>
+            <AbsInset left="0" right="0" top="18" bottom="0"/>
+        </HitRectInsets>
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeTo="$parentOpenMacroButton" relativePoint="BOTTOMRIGHT">
             <Offset>
@@ -786,28 +835,69 @@
           <OnClick>
             OpenAllBags();
           </OnClick>
-	      <OnEnter>
-            GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+          <OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
             GameTooltip:SetText(BINDPAD_TOOLTIP_OPENBAG, 1.0, 1.0, 1.0);
             GameTooltip:Show();
-	      </OnEnter>
-	      <OnLeave>
-	        GameTooltip:Hide();
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
           </OnLeave>
         </Scripts>
       </Button>
+      <CheckButton name="$parentShowHotkeysButton" inherits="UICheckButtonTemplate">
+        <Size>
+          <AbsDimension x="20" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT" relativeTo="$parentOpenBagButton" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="25" y="10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <HitRectInsets>
+          <AbsInset left="0" right="-60" top="0" bottom="0"/>
+        </HitRectInsets>
+        <Scripts>
+          <OnClick>
+            BindPadFrame_ShowHotkeysToggle(self);
+          </OnClick>
+          <OnLoad>
+            local text = getglobal(self:GetName().."Text");
+            text:SetText(BINDPAD_TEXT_SHOW_HOTKEY);
+            text:SetPoint("LEFT", self, "RIGHT", 2, 1);
+          </OnLoad>
+          <OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+            GameTooltip:SetText(BINDPAD_TOOLTIP_SHOW_HOTKEY, nil, nil, nil, nil, 1);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
     </Frames>
     <Scripts>
       <OnLoad>
-        BindPadFrame_OnLoad();
+        BindPadFrame_OnLoad(self);
       </OnLoad>
+      <OnMouseDown>
+        BindPadFrame_OnMouseDown(self);
+      </OnMouseDown>
+      <OnEnter>
+        BindPadFrame_OnEnter(self);
+      </OnEnter>
+      <OnEvent>
+        BindPadFrame_OnEvent(self);
+      </OnEvent>
       <OnShow>
         PlaySound("igCharacterInfoOpen");
         BindPadFrame_OnShow();
       </OnShow>
       <OnHide>
         PlaySound("igCharacterInfoClose");
-        BindPadFrame_OnHide();
+        BindPadFrame_OnHide(self);
       </OnHide>
     </Scripts>
   </Frame>
@@ -912,7 +1002,7 @@
         </Anchors>
         <Scripts>
           <OnClick>
-            HideUIPanel(this:GetParent());
+            HideUIPanel(self:GetParent());
           </OnClick>
         </Scripts>
       </Button>
@@ -929,7 +1019,7 @@
         </Anchors>
         <Scripts>
           <OnClick>
-            BindPadBindFrame_Unbind();
+            BindPadBindFrame_Unbind(self);
           </OnClick>
         </Scripts>
       </Button>
@@ -937,24 +1027,712 @@
 
     <Scripts>
       <OnLoad>
-        this:RegisterForClicks("AnyUp");
+        self:RegisterForClicks("AnyUp");
       </OnLoad>
       <OnHide>
-        BindPadBindFrame_OnHide();
+        BindPadBindFrame_OnHide(self);
       </OnHide>
       <OnClick>
-        BindPadBindFrame_OnKeyDown(button);
+        BindPadBindFrame_OnKeyDown(self, button);
       </OnClick>
       <OnKeyDown>
-        BindPadBindFrame_OnKeyDown(key);
+        BindPadBindFrame_OnKeyDown(self, key);
       </OnKeyDown>
       <OnMouseWheel>
         if (delta > 0) then
-          BindPadBindFrame_OnKeyDown("MOUSEWHEELUP");
+          BindPadBindFrame_OnKeyDown(self, "MOUSEWHEELUP");
         else
-          BindPadBindFrame_OnKeyDown("MOUSEWHEELDOWN");
+          BindPadBindFrame_OnKeyDown(self, "MOUSEWHEELDOWN");
         end
       </OnMouseWheel>
     </Scripts>
   </Button>
+
+  <CheckButton name="BindPadMacroPopupButtonTemplate" inherits="PopupButtonTemplate" virtual="true">
+    <Scripts>
+      <OnClick>
+        BindPadMacroPopupButton_OnClick(self);
+      </OnClick>
+    </Scripts>
+  </CheckButton>
+  <Frame name="BindPadMacroPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+    <Size>
+      <AbsDimension x="297" y="298"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="BindPadFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-40" y="-40"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+          <Size>
+            <AbsDimension x="64" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="256" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+          <Size>
+            <AbsDimension x="256" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-256"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+          <Size>
+            <AbsDimension x="64" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="256" y="-256"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_TEXT">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="24" y="-21"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="24" y="-69"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <EditBox name="BindPadMacroPopupEditBox" letters="16" historyLines="0">
+        <Size>
+          <AbsDimension x="200" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="29" y="-35"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="BindPadMacroPopupNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+              <Size>
+                <AbsDimension x="12" y="29"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="-11" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture name="BindPadMacroPopupNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+              <Size>
+                <AbsDimension x="175" y="29"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="BindPadMacroPopupNameLeft" relativePoint="RIGHT"/>
+              </Anchors>
+              <TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture name="BindPadMacroPopupNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+              <Size>
+                <AbsDimension x="12" y="29"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="BindPadMacroPopupNameMiddle" relativePoint="RIGHT"/>
+              </Anchors>
+              <TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnTextChanged>
+            BindPadMacroPopupOkayButton_Update(self);
+            BindPadMacroPopupEditBox_OnTextChanged(self);
+          </OnTextChanged>
+          <OnEscapePressed>
+            BindPadMacroPopupFrame_CancelEdit(self);
+          </OnEscapePressed>
+          <OnEnterPressed>
+            if ( BindPadMacroPopupOkayButton:IsEnabled() ~= 0 ) then
+              BindPadMacroPopupOkayButton_OnClick(self);
+            end
+          </OnEnterPressed>
+        </Scripts>
+        <FontString inherits="ChatFontNormal"/>
+      </EditBox>
+      <ScrollFrame name="BindPadMacroPopupScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="296" y="195"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="BindPadMacroPopupFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-39" y="-67"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnVerticalScroll>
+            BindPadMacroPopupFrame_OnScroll(self, offset);
+          </OnVerticalScroll>
+        </Scripts>
+      </ScrollFrame>
+      <CheckButton name="BindPadMacroPopupButton1" inherits="BindPadMacroPopupButtonTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="24" y="-85"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton2" inherits="BindPadMacroPopupButtonTemplate" id="2">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton1" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton3" inherits="BindPadMacroPopupButtonTemplate" id="3">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton2" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton4" inherits="BindPadMacroPopupButtonTemplate" id="4">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton3" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton5" inherits="BindPadMacroPopupButtonTemplate" id="5">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton4" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton6" inherits="BindPadMacroPopupButtonTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroPopupButton1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton7" inherits="BindPadMacroPopupButtonTemplate" id="7">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton6" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton8" inherits="BindPadMacroPopupButtonTemplate" id="8">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton7" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton9" inherits="BindPadMacroPopupButtonTemplate" id="9">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton8" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton10" inherits="BindPadMacroPopupButtonTemplate" id="10">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton9" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton11" inherits="BindPadMacroPopupButtonTemplate" id="11">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroPopupButton6" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton12" inherits="BindPadMacroPopupButtonTemplate" id="12">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton11" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton13" inherits="BindPadMacroPopupButtonTemplate" id="13">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton12" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton14" inherits="BindPadMacroPopupButtonTemplate" id="14">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton13" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton15" inherits="BindPadMacroPopupButtonTemplate" id="15">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton14" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton16" inherits="BindPadMacroPopupButtonTemplate" id="16">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroPopupButton11" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton17" inherits="BindPadMacroPopupButtonTemplate" id="17">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton16" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton18" inherits="BindPadMacroPopupButtonTemplate" id="18">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton17" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton19" inherits="BindPadMacroPopupButtonTemplate" id="19">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton18" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="BindPadMacroPopupButton20" inherits="BindPadMacroPopupButtonTemplate" id="20">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="BindPadMacroPopupButton19" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <Button name="BindPadMacroPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+        <Size>
+          <AbsDimension x="78" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativeTo="BindPadMacroPopupFrame">
+            <Offset>
+              <AbsDimension x="-11" y="13"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            BindPadMacroPopupFrame_CancelEdit(self)
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="BindPadMacroPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+        <Size>
+          <AbsDimension x="78" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="BindPadMacroPopupCancelButton" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-2" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            BindPadMacroPopupOkayButton_OnClick(self);
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        PlaySound("igCharacterInfoOpen");
+        BindPadMacroPopupFrame_OnShow(self);
+      </OnShow>
+      <OnHide>
+        PlaySound("gsTitleOptionOK");
+        BindPadMacroPopupFrame_OnHide(self);
+      </OnHide>
+      <OnMouseWheel>
+        return;
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+
+  <Frame name="BindPadMacroTextFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+    <Size>
+      <AbsDimension x="384" y="512"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="-104"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="34" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentPortrait" file="Interface\MacroFrame\MacroFrame-Icon">
+          <Size>
+            <AbsDimension x="60" y="60"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="7" y="-6"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\MacroFrame\MacroFrame-BotLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\MacroFrame\MacroFrame-BotRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT"/>
+          </Anchors>
+        </Texture>
+        <FontString inherits="GameFontNormal" text="BINDPAD_MACRO_TITLE">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parent">
+              <Offset>
+                <AbsDimension x="0" y="-17"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture name="BindPadMacroTextFrameSelectedMacroBackground" file="Interface\Buttons\UI-EmptySlot">
+          <Size>
+            <AbsDimension x="64" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-72"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString name="BindPadMacroTextFrameSelectedMacroName" inherits="GameFontNormalLarge" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="256" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrameSelectedMacroBackground" relativePoint="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="-4" y="-15"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="BindPadMacroTextFrameEnterMacroText" inherits="GameFontHighlightSmall" text="ENTER_MACRO_LABEL">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="8" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <CheckButton name="BindPadMacroTextFrameSelectedMacroButton" inherits="PopupButtonTemplate" id="0">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrameSelectedMacroBackground">
+            <Offset>
+              <AbsDimension x="14" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <ScrollFrame name="BindPadMacroTextFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="286" y="241"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrameSelectedMacroBackground" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="11" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <ScrollChild>
+          <EditBox name="BindPadMacroTextFrameText" multiLine="true" letters="4000" autoFocus="false">
+            <Size>
+              <AbsDimension x="286" y="241"/>
+            </Size>
+            <Scripts>
+              <OnTextChanged>
+                local scrollBar = getglobal(self:GetParent():GetName().."ScrollBar")
+                local min;
+                local max;
+                min, max = scrollBar:GetMinMaxValues();
+                if ( max > 0 and (self.max ~= max) ) then
+                  self.max = max;
+                  scrollBar:SetValue(max);
+                end
+              </OnTextChanged>
+              <OnEscapePressed>
+                self:ClearFocus();
+              </OnEscapePressed>
+              <OnEditFocusLost>
+                BindPadMacroTextFrame_OnHide(self);
+              </OnEditFocusLost>
+            </Scripts>
+            <FontString inherits="GameFontHighlightSmall"/>
+          </EditBox>
+        </ScrollChild>
+      </ScrollFrame>
+      <Button name="BindPadMacroTextFrameTextButton">
+        <Size>
+          <AbsDimension x="286" y="241"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrameText"/>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            BindPadMacroTextFrameText:SetFocus();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Frame name="BindPadMacroTextFrameTextBackground">
+        <Size>
+          <AbsDimension x="322" y="251"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrame">
+            <Offset>
+              <AbsDimension x="18" y="-149"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+          <EdgeSize>
+            <AbsValue val="16"/>
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16"/>
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5"/>
+          </BackgroundInsets>
+        </Backdrop>
+        <Scripts>
+          <OnLoad>
+            self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+            self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <Button name="BindPadMacroTextFrameEditButton" inherits="UIPanelButtonTemplate" text="CHANGE_MACRO_NAME_ICON">
+        <Size>
+          <AbsDimension x="170" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="BindPadMacroTextFrameSelectedMacroBackground">
+            <Offset>
+              <AbsDimension x="51" y="-30"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            BindPadMacroTextFrameEditButton_OnClick(self);
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="BindPadMacroTextFrameTestButton" inherits="UIPanelButtonTemplate,SecureActionButtonTemplate" text="BINDPAD_TEXT_TEST">
+        <Size>
+          <AbsDimension x="80" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="BindPadMacroTextFrame" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="222" y="-422"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetAttribute("type", "macro");
+          </OnLoad>
+          <OnMouseDown>
+            self:SetAttribute("macrotext", BindPadMacroTextFrameText:GetText());
+          </OnMouseDown>
+        </Scripts>
+      </Button>
+      <Button name="BindPadMacroTextFrameExitButton" inherits="UIPanelButtonTemplate" text="EXIT">
+        <Size>
+          <AbsDimension x="80" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="BindPadMacroTextFrame" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="303" y="-422"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HideUIPanel(self:GetParent());
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="BindPadMacroDeleteButton" inherits="UIPanelButtonGrayTemplate" text="DELETE">
+        <Size>
+          <AbsDimension x="80" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT" relativeTo="BindPadMacroTextFrame">
+            <Offset>
+              <AbsDimension x="17" y="79"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            BindPadMacroDeleteButton_OnClick(self);
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="BindPadMacroTextFrameCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="BindPadMacroTextFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-29" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        PlaySound("igCharacterInfoOpen");
+        BindPadMacroTextFrame_OnShow(self);
+      </OnShow>
+      <OnHide>
+        PlaySound("igCharacterInfoClose");
+        BindPadMacroTextFrame_OnHide(self);
+      </OnHide>
+      <OnMouseWheel>
+        return;
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
 </Ui>

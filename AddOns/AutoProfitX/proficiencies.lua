@@ -1,235 +1,178 @@
+--list of items that classes cannot use
+local BC = LibStub("LibBabble-Class-3.0"):GetLookupTable()
+local BI = LibStub("LibBabble-Inventory-3.0"):GetLookupTable()
+
 AutoProfitX_Proficiencies = {
-	Druid = {
-		Armor = {
-			["Cloth"] = true,
-			["Idols"] = true,
-			["Leather"] = true,
-			["Miscellaneous"] = true
+	[BC["Druid"]] = {
+		[ARMOR] = {
+			[BI["Mail"]] = true,
+			[BI["Shields"]] = true,
+			[BI["Plate"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Daggers"] = true,
-			["Fishing Poles"] = true,
-			["Fist Weapons"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Maces"] = true,
-			["Staves"] = true,
-			["Two-Handed Maces"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Bows"]] = true,
+			[BI["Crossbows"]] = true,
+			[BI["Guns"]] = true,
+			[BI["One-Handed Axes"]] = true,
+			[BI["One-Handed Swords"]] = true,
+			[BI["Polearms"]] = true,
+			[BI["Thrown"]] = true,
+			[BI["Two-Handed Axes"]] = true,
+			[BI["Two-Handed Swords"]] = true,
+			[BI["Wands"]] = true,
+			noOffhand = true
 		}
 	},
-	Hunter = {
-		Armor = {
-			["Cloth"] = true,
-			["Leather"] = true,
-			["Mail"] = true,
-			["Miscellaneous"] = true
+	[BC["Hunter"]] = {
+		[ARMOR] = {
+			[BI["Shields"]] = true,
+			[BI["Plate"]] = true,
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Bows"] = true,
-			["Crossbows"] = true,
-			["Daggers"] = true,
-			["Guns"] = true,
-			["Fishing Poles"] = true,
-			["Fist Weapons"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Axes"] = true,
-			["One-Handed Swords"] = true,
-			["Polearms"] = true,
-			["Staves"] = true,
-			["Thrown"] = true,
-			["Two-Handed Axes"] = true,
-			["Two-Handed Swords"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_WEAPONOFFHAND"] = true,
-				["INVTYPE_RANGED"] = true,
-				["INVTYPE_THROWN"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["One-Handed Maces"]] = true,
+			[BI["Two-Handed Maces"]] = true,
+			[BI["Wands"]] = true,
 		}
 	},
-	Mage = {
-		Armor = {
-			["Cloth"] = true,
-			["Miscellaneous"] = true
+	[BC["Mage"]] = {
+		[ARMOR] = {
+			[BI["Leather"]] = true,
+			[BI["Mail"]] = true,
+			[BI["Shields"]] = true,
+			[BI["Plate"]] = true,
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Daggers"] = true,
-			["Fishing Poles"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Swords"] = true,
-			["Staves"] = true,
-			["Wands"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_RANGEDRIGHT"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Bows"]] = true,
+			[BI["Crossbows"]] = true,
+			[BI["Guns"]] = true,
+			[BI["Fist Weapons"]] = true,
+			[BI["One-Handed Axes"]] = true,
+			[BI["One-Handed Maces"]] = true,
+			[BI["Polearms"]] = true,
+			[BI["Thrown"]] = true,
+			[BI["Two-Handed Axes"]] = true,
+			[BI["Two-Handed Maces"]] = true,
+			[BI["Two-Handed Swords"]] = true,
+			noOffhand = true
 		}
 	},
-	Paladin = {
-		Armor = {
-			["Cloth"] = true,
-			["Leather"] = true,
-			["Librams"] = true,
-			["Mail"] = true,
-			["Miscellaneous"] = true,
-			["Shields"] = true,
-			["Plate"] = true
+	[BC["Paladin"]] = {
+		[ARMOR] = {
+			[BI["Idols"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Daggers"] = true,
-			["Fishing Poles"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Axes"] = true,
-			["One-Handed Maces"] = true,
-			["One-Handed Swords"] = true,
-			["Polearms"] = true,
-			["Staves"] = true,
-			["Two-Handed Axes"] = true,
-			["Two-Handed Maces"] = true,
-			["Two-Handed Swords"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Bows"]] = true,
+			[BI["Crossbows"]] = true,
+			[BI["Guns"]] = true,
+			[BI["Fist Weapons"]] = true,
+			[BI["Thrown"]] = true,
+			[BI["Wands"]] = true,
+			noOffhand = true
 		}
 	},
-	Priest = {
-		Armor = {
-			["Cloth"] = true,
-			["Miscellaneous"] = true
+	[BC["Priest"]] = {
+		[ARMOR] = {
+			[BI["Leather"]] = true,
+			[BI["Mail"]] = true,
+			[BI["Shields"]] = true,
+			[BI["Plate"]] = true,
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Daggers"] = true,
-			["Fishing Poles"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Maces"] = true,
-			["Staves"] = true,
-			["Wands"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_RANGEDRIGHT"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Bows"]] = true,
+			[BI["Crossbows"]] = true,
+			[BI["Guns"]] = true,
+			[BI["Fist Weapons"]] = true,
+			[BI["One-Handed Axes"]] = true,
+			[BI["One-Handed Swords"]] = true,
+			[BI["Polearms"]] = true,
+			[BI["Thrown"]] = true,
+			[BI["Two-Handed Axes"]] = true,
+			[BI["Two-Handed Maces"]] = true,
+			[BI["Two-Handed Swords"]] = true,
+			noOffhand = true
 		}
 	},
-	Rogue = {
-		Armor = {
-			["Cloth"] = true,
-			["Leather"] = true,
-			["Miscellaneous"] = true
+	[BC["Rogue"]] = {
+		[ARMOR] = {
+			[BI["Mail"]] = true,
+			[BI["Shields"]] = true,
+			[BI["Plate"]] = true,
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Bows"] = true,
-			["Crossbows"] = true,
-			["Daggers"] = true,
-			["Guns"] = true,
-			["Fishing Poles"] = true,
-			["Fist Weapons"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Maces"] = true,
-			["One-Handed Swords"] = true,
-			["Thrown"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_WEAPONOFFHAND"] = true,
-				["INVTYPE_RANGED"] = true,
-				["INVTYPE_THROWN"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["One-Handed Axes"]] = true,
+			[BI["Polearms"]] = true,
+			[BI["Staves"]] = true,
+			[BI["Two-Handed Axes"]] = true,
+			[BI["Two-Handed Maces"]] = true,
+			[BI["Two-Handed Swords"]] = true,
+			[BI["Wands"]] = true,
 		}
 	},
-	Shaman = {
-		Armor = {
-			["Cloth"] = true,
-			["Leather"] = true,
-			["Mail"] = true,
-			["Miscellaneous"] = true,
-			["Shields"] = true,
-			["Totems"] = true
+	[BC["Shaman"]] = {
+		[ARMOR] = {
+			[BI["Plate"]] = true,
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
 		},
-		Weapon = {
-			["Daggers"] = true,
-			["Fishing Poles"] = true,
-			["Fist Weapons"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Axes"] = true,
-			["One-Handed Maces"] = true,
-			["Staves"] = true,
-			["Two-Handed Axes"] = true,
-			["Two-Handed Maces"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_WEAPONOFFHAND"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Bows"]] = true,
+			[BI["Crossbows"]] = true,
+			[BI["Guns"]] = true,
+			[BI["One-Handed Swords"]] = true,
+			[BI["Polearms"]] = true,
+			[BI["Thrown"]] = true,
+			[BI["Two-Handed Swords"]] = true,
+			[BI["Wands"]] = true,
 		}
 	},
-	Warlock = {
-		Armor = {
-			["Cloth"] = true,
-			["Miscellaneous"] = true
+	[BC["Warlock"]] = {
+		[ARMOR] = {
+			[BI["Leather"]] = true,
+			[BI["Mail"]] = true,
+			[BI["Shields"]] = true,
+			[BI["Plate"]] = true,
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Daggers"] = true,
-			["Fishing Poles"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Swords"] = true,
-			["Staves"] = true,
-			["Wands"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_RANGEDRIGHT"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Bows"]] = true,
+			[BI["Crossbows"]] = true,
+			[BI["Guns"]] = true,
+			[BI["Fist Weapons"]] = true,
+			[BI["One-Handed Axes"]] = true,
+			[BI["One-Handed Maces"]] = true,
+			[BI["Polearms"]] = true,
+			[BI["Thrown"]] = true,
+			[BI["Two-Handed Axes"]] = true,
+			[BI["Two-Handed Maces"]] = true,
+			[BI["Two-Handed Swords"]] = true,
+			noOffhand = true
 		}
 	},
-	Warrior = {
-		Armor = {
-			["Cloth"] = true,
-			["Leather"] = true,
-			["Mail"] = true,
-			["Miscellaneous"] = true,
-			["Shields"] = true,
-			["Plate"] = true
+	[BC["Warrior"]] = {
+		[ARMOR] = {
+			[BI["Idols"]] = true,
+			[BI["Librams"]] = true,
+			[BI["Totems"]] = true,
 		},
-		Weapon = {
-			["Bows"] = true,
-			["Crossbows"] = true,
-			["Daggers"] = true,
-			["Guns"] = true,
-			["Fishing Poles"] = true,
-			["Fist Weapons"] = true,
-			["Miscellaneous"] = true,
-			["One-Handed Axes"] = true,
-			["One-Handed Maces"] = true,
-			["One-Handed Swords"] = true,
-			["Polearms"] = true,
-			["Staves"] = true,
-			["Thrown"] = true,
-			["Two-Handed Axes"] = true,
-			["Two-Handed Maces"] = true,
-			["Two-Handed Swords"] = true,
-			equipLoc = {
-				["INVTYPE_WEAPON"] = true,
-				["INVTYPE_2HWEAPON"] = true,
-				["INVTYPE_WEAPONMAINHAND"] = true,
-				["INVTYPE_WEAPONOFFHAND"] = true,
-				["INVTYPE_RANGED"] = true,
-				["INVTYPE_THROWN"] = true
-			}
+		[ENCHSLOT_WEAPON] = {
+			[BI["Wands"]] = true,
 		}
 	}
 }

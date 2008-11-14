@@ -53,30 +53,29 @@
 
 	<Scripts>
 		<OnLoad>
-			this.buffFilter = "HELPFUL|HARMFUL";
-			this.timeSinceLastUpdate = 0
-			this:RegisterEvent("PLAYER_AURAS_CHANGED")
+			self.buffFilter = "HELPFUL|HARMFUL";
+			self.timeSinceLastUpdate = 0
+			self:RegisterEvent("UNIT_AURA")
 			Buffalo.printnext=true
 			Buffalo:Test("XML OnLoad")
 		</OnLoad>
 		<OnEvent>
-			Buffalo:BuffaloButton_Update(this)
+			Buffalo:BuffaloButton_Update(self)
 		</OnEvent>
 		<OnUpdate>
-			Buffalo:BuffButton_OnUpdate(arg1, this);
+			Buffalo:BuffButton_OnUpdate(arg1, self);
 		</OnUpdate>
 		<OnClick>
-			Buffalo:BuffButton_OnClick(this);
+			Buffalo:BuffButton_OnClick(self);
 		</OnClick>
 		<OnEnter>
-			GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
-			GameTooltip:SetPlayerBuff(this.buffIndex);
+		        Buffalo:BuffButton_OnEnter(self);
 		</OnEnter>
 		<OnLeave>
 			GameTooltip:Hide();
 		</OnLeave>
 		<OnHide>
-			Buffalo:Debug(this:GetName())
+			Buffalo:Debug(self:GetName())
 		</OnHide>
 	</Scripts>
 
@@ -142,7 +141,7 @@
 <Button name="BuffaloButton" inherits="BuffaloButtonTemplate" virtual="true">
 	<Scripts>
 <!-- 		<OnLoad>
-			this.buffFilter= "HELPFUL"
+			self.buffFilter= "HELPFUL"
 			BuffButton_OnLoad();
 		</OnLoad> -->
 		<OnMouseDown>
@@ -229,12 +228,12 @@
 		<OnUpdate>
 		</OnUpdate>
 		<OnClick>
-			Buffalo:WeaponButton_OnClick(this);
+			Buffalo:WeaponButton_OnClick(self);
 		</OnClick>
 		<OnLoad>
 		</OnLoad>
 		<OnEnter>
-			BuffFrame_EnchantButton_OnEnter();
+			Buffalo:WeaponButton_OnEnter(self);
 		</OnEnter>
 		<OnLeave>
 			GameTooltip:Hide();

@@ -4,10 +4,11 @@
 --]]
 
 BagnonBag = BagnonUtil:CreateWidgetClass('Button')
+local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon')
 
 local SIZE = 32
 local NORMAL_TEXTURE_SIZE = 64 * (SIZE/36)
-local KEY_WIDTH = 18 * (SIZE / 37)
+local KEY_WIDTH = 18 * (SIZE/36)
 local id = 1
 
 function BagnonBag:Create(parent, bagID)
@@ -78,23 +79,22 @@ function BagnonBag:CreateKey()
 	local bag = self:New(CreateFrame('Button', format('BagnonBag%d', id)))
 	local name = bag:GetName()
 
-	bag:SetWidth(KEY_WIDTH)
-	bag:SetHeight(SIZE)
+	bag:SetWidth(KEY_WIDTH); bag:SetHeight(SIZE)
 
 	local normalTexture = bag:CreateTexture(name .. 'NormalTexture')
-	normalTexture:SetTexture('Interface\\Buttons\\UI-Button-KeyRing')
+	normalTexture:SetTexture('Interface/Buttons/UI-Button-KeyRing')
 	normalTexture:SetAllPoints(bag)
 	normalTexture:SetTexCoord(0, 0.5625, 0, 0.609375)
 	bag:SetNormalTexture(normalTexture)
 
 	local pushedTexture = bag:CreateTexture()
-	pushedTexture:SetTexture('Interface\\Buttons\\UI-Button-KeyRing-Down')
+	pushedTexture:SetTexture('Interface/Buttons/UI-Button-KeyRing-Down')
 	pushedTexture:SetAllPoints(bag)
 	pushedTexture:SetTexCoord(0, 0.5625, 0, 0.609375)
 	bag:SetPushedTexture(pushedTexture)
 
 	local highlightTexture = bag:CreateTexture()
-	highlightTexture:SetTexture('Interface\\Buttons\\UI-Button-KeyRing-Highlight')
+	highlightTexture:SetTexture('Interface/Buttons/UI-Button-KeyRing-Highlight')
 	highlightTexture:SetAllPoints(bag)
 	highlightTexture:SetTexCoord(0, 0.5625, 0, 0.609375)
 	bag:SetHighlightTexture(highlightTexture)
@@ -197,10 +197,10 @@ function BagnonBag:UpdateTexture()
 
 		if BagnonUtil:IsCachedBag(bagID, player) then
 			if BagnonDB then
-				local link, count = select(2, BagnonDB:GetBagData(self:GetID(), player))
+				local link, count, texture = select(2, BagnonDB:GetBagData(self:GetID(), player))
 				if link then
 					self.hasItem = true
-					SetItemButtonTexture(self, select(10, GetItemInfo(link)))
+					SetItemButtonTexture(self, texture)
 					SetItemButtonTextureVertexColor(self, 1, 1, 1)
 				else
 					SetItemButtonTexture(self, 'Interface/PaperDoll/UI-PaperDoll-Slot-Bag')
@@ -246,7 +246,7 @@ function BagnonBag:SetCount(count)
 		local count = count or 0
 		if count > 1 then
 			if count > 999 then
-				text:SetText(format('%.1fk', count/1000))
+				text:SetFormattedText('%.1fk', count/1000)
 			else
 				text:SetText(count)
 			end
@@ -270,7 +270,7 @@ end
 function BagnonBag:OnClick()
 	local player = self:GetPlayer()
 	local bagID = self:GetID()
-	
+
 	if BagnonUtil:IsCachedBag(bagID, player) then
 		local frame = self:GetParent():GetParent()
 		frame:ShowBag(bagID, not frame:ShowingBag(bagID))
@@ -357,9 +357,9 @@ function BagnonBag:OnEnter()
 
 	if hasBag then
 		if self:GetParent():GetParent():ShowingBag(bagID) then
-			GameTooltip:AddLine(BAGNON_LOCALS.TipHideBag)
+			GameTooltip:AddLine(L.TipHideBag)
 		else
-			GameTooltip:AddLine(BAGNON_LOCALS.TipShowBag)
+			GameTooltip:AddLine(L.TipShowBag)
 		end
 		BagnonSpot:SetBagSearch(bagID)
 	end
@@ -398,12 +398,12 @@ function BagnonBag:PurchaseSlot()
 			button1 = TEXT(YES),
 			button2 = TEXT(NO),
 
-			OnAccept = function() 
-				PurchaseSlot() 
+			OnAccept = function()
+				PurchaseSlot()
 			end,
 
-			OnShow = function() 
-				MoneyFrame_Update(this:GetName().. 'MoneyFrame', GetBankSlotCost(GetNumBankSlots())) 
+			OnShow = function()
+				MoneyFrame_Update(this:GetName().. 'MoneyFrame', GetBankSlotCost(GetNumBankSlots()))
 			end,
 
 			hasMoneyFrame = 1,

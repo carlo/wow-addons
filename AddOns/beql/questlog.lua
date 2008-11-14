@@ -17,8 +17,33 @@ function beql:InitQuestLog()
 
 	QuestLogTitleText:SetText(L["Bayi's Extended Quest Log"])
 
+
+	beql.ConfigButton = CreateFrame("Button","ConfigButton", QuestLogFrame, "UIPanelButtonTemplate")
+	beql.ConfigButton:SetWidth(15)
+	beql.ConfigButton:SetHeight(19)
+	beql.ConfigButton:SetText("O")
+	beql.ConfigButton:Show()
+	beql.ConfigButton:ClearAllPoints()
+	beql.ConfigButton:SetPoint("RIGHT",QuestLogFrameCloseButton, "LEFT",0,0)
+	beql.ConfigButton:SetScript("OnClick", function()
+		InterfaceOptionsFrame_OpenToCategory(beql3.optionsFrames["main"])
+	end)
+	
+	QuestLogFrame:SetScript("OnDragStart",function() QuestLogFrame:StartMoving() end)
+	QuestLogFrame:SetScript("OnDragStop",function() QuestLogFrame:StopMovingOrSizing() beql:SavePosition() end)
+	QuestLogFrame:SetAlpha(beql.db.profile.QuestLogAlpha)
+	QuestLogFrame:SetScale(beql.db.profile.QuestLogScale)
+	beql:SetQuestLogFontSize(beql.db.profile.QuestLogFontSize)
+	
 	if not beql.db.profile.simplequestlog then
+		beql:ExtendedQuestLog()
+	end
+end
+
+function beql:ExtendedQuestLog()
 		
+		-- Code from DoubleWide by Iriel
+		-- {
 		QuestLogFrame:SetAttribute("UIPanelLayout-width", 680)
 		QuestLogFrame:SetWidth(718)
 		QuestLogFrame:SetHeight(561)
@@ -87,6 +112,8 @@ function beql:InitQuestLog()
 				region:SetTexture(path)
 			end
 		end
+		-- }
+		-- Code from DoubleWide by Iriel
 
 		beql.MinimizeButton = CreateFrame("Button","MinimizeButton", QuestLogFrame, "UIPanelButtonTemplate")
 		beql.MinimizeButton:SetNormalTexture("Interface\\AddOns\\beql\\Images\\minimize_up")
@@ -105,48 +132,8 @@ function beql:InitQuestLog()
 			end 
 		end)
 	
-	end 
-	
-	beql.ConfigButton = CreateFrame("Button","ConfigButton", QuestLogFrame, "UIPanelButtonTemplate")
-	beql.ConfigButton:SetWidth(15)
-	beql.ConfigButton:SetHeight(19)
-	beql.ConfigButton:SetText("O")
-	beql.ConfigButton:Show()
-	beql.ConfigButton:ClearAllPoints()
-	if beql.db.profile.simplequestlog then
-		beql.ConfigButton:SetPoint("RIGHT",QuestLogFrameCloseButton, "LEFT",0,0)
-	else
-		beql.ConfigButton:SetPoint("RIGHT",QuestLogFrameCloseButton, "LEFT",-22,0)
-	end
-	beql.ConfigButton:SetScript("OnClick", function()
-		beqlwaterfall:Close("bEQL")
-		beqlwaterfall:Open("bEQL")
-	end)
-	
-	beql.QHistoryButton = CreateFrame("Button","QHistoryButton", QuestLogFrame, "UIPanelButtonTemplate")
-	beql.QHistoryButton:SetWidth(15)
-	beql.QHistoryButton:SetHeight(19)
-	beql.QHistoryButton:SetText("H")
-	beql.QHistoryButton:Show()
-	beql.QHistoryButton:ClearAllPoints()
-	if beql.db.profile.simplequestlog then
-		beql.QHistoryButton:SetPoint("RIGHT",ConfigButton, "LEFT",0,0)
-	else
-		beql.QHistoryButton:SetPoint("RIGHT",ConfigButton, "LEFT",0,0)
-	end
-	beql.QHistoryButton:SetScript("OnClick", function()
-		beql:HistoryToggle()
-	end)
-	
-	
-	QuestLogFrame:SetScript("OnDragStart",function() QuestLogFrame:StartMoving() end)
-	QuestLogFrame:SetScript("OnDragStop",function() QuestLogFrame:StopMovingOrSizing() beql:SavePosition() end)
-	QuestLogFrame:SetAlpha(beql.db.profile.QuestLogAlpha)
-	QuestLogFrame:SetScale(beql.db.profile.QuestLogScale)
-	beql:SetQuestLogFontSize(beql.db.profile.QuestLogFontSize)
+	beql.ConfigButton:SetPoint("RIGHT",QuestLogFrameCloseButton, "LEFT",-22,0)
 end
-
-
 
 
 function beql:Minimize()
@@ -161,7 +148,6 @@ function beql:Minimize()
 	QuestLogDetailScrollFrame:Hide()
 	QuestLogFrame:SetAttribute("UIPanelLayout-width", 390)
 	QuestLogFrame:SetWidth(387)
-	beql.QHistoryButton:Hide()
 	local regions = { QuestLogFrame:GetRegions() }	
 	for _, region in ipairs(regions) do
 		if region:IsObjectType("Texture") then
@@ -201,7 +187,7 @@ function beql:Maximize()
 	QuestLogDetailScrollFrame:Show()
 	QuestLogFrame:SetAttribute("UIPanelLayout-width", 680)
 	QuestLogFrame:SetWidth(718)
-	beql.QHistoryButton:Show()
+
 	local regions = { QuestLogFrame:GetRegions() }		
 	for _, region in ipairs(regions) do
 		if region:IsObjectType("Texture") then
@@ -287,13 +273,14 @@ end
 -- Hooks
 --
 
-function beql:Hooks_QuestLogTitleButton_OnClick(button)
+function beql:Hooks_QuestLogTitleButton_OnClick(self, button)
 	-- Add control click
 	if beql.db.char.saved.minimized then
 		beql:Maximize()
 	end
 	local questName = this:GetText()
 	local questIndex = this:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame)	
+	
 	if button == "LeftButton" then
 		if not IsShiftKeyDown() and IsControlKeyDown()  then
 			if ChatFrameEditBox:IsVisible() then
@@ -368,7 +355,12 @@ function beql:Hooks_QuestLogTitleButton_OnClick(button)
 		-- Otherwise try to track it or put it into chat
 		if ( ChatFrameEditBox:IsVisible() ) then
 			--ChatFrameEditBox:Insert(strsub(strtrim(this:GetText()),11))
-			ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"))
+			local questLink = GetQuestLink(questIndex);
+			if ( questLink ) then
+				ChatEdit_InsertLink(questLink);
+			else
+				ChatFrameEditBox:Insert(gsub(this:GetText(), " *(.*)", "%1"))
+			end
 		else
 			-- Shift-click toggles quest-watch on this quest.
 			if ( IsQuestWatched(questIndex) ) then
@@ -395,14 +387,14 @@ function beql:Hooks_QuestLogTitleButton_OnClick(button)
 	end	
 	
 	QuestLog_SetSelection(questIndex)
-	if IsAddOnLoaded("Lightheaded") then
-		LightHeaded:QuestLogTitleButton_OnClick(frame, button)
-	end
+--	if IsAddOnLoaded("Lightheaded") then
+--		LightHeaded:QuestLogTitleButton_OnClick(frame, button)
+--	end
 	QuestLog_Update()
 end
 
 function beql:Hooks_QuestLog_OnShow()
-	self.hooks.QuestLog_OnShow()
+	securecall(self.hooks.QuestLog_OnShow)
 	
 	if beql.db.char.saved.qlogposx and beql.db.char.saved.qlogposy then
 		QuestLogFrame:ClearAllPoints()
@@ -450,8 +442,8 @@ function beql:Hooks_GetQuestLogTitle(...)
 	return questLogTitleText, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily
 end
 
-function beql:Hooks_QuestLogCollapseAllButton_OnClick()
-	self.hooks.QuestLogCollapseAllButton_OnClick()
+function beql:Hooks_QuestLogCollapseAllButton_OnClick(this)
+	self.hooks.QuestLogCollapseAllButton_OnClick(this)
 	if beql.db.char.saved.minimized then
 		beql:Minimize()
 	else
@@ -461,7 +453,7 @@ end
 
 function beql:Hooks_QuestLog_Update()
 	beql.AddTags = true
-	self.hooks.QuestLog_Update()
+	securecall(self.hooks.QuestLog_Update)
 	beql.AddTags = false
 	local numEntries, numQuests = GetNumQuestLogEntries()
 	if ( numEntries == 0 ) then
@@ -476,19 +468,71 @@ end
 
 function beql:SetQuestLogFontSize(size)
 	if not size or size == 0 then size = 12 end
-	local font,fontsize,fontflags,button,buttontag
+	local font, fontsize, fontflags, button, buttontag
 	for i = 1, QUESTS_DISPLAYED do
-			button = getglobal("QuestLogTitle" .. (i))
 			buttontag = getglobal("QuestLogTitle"..i.."Tag")
-			font,fontsize,fontflags = button:GetFont()
-			button:SetFont(font,size)
 			font,fontsize,fontflags = buttontag:GetFont()
-			buttontag:SetFont(font,size)			
+			buttontag:SetFont(font,size)
+
+            button = getglobal("QuestLogTitle"..i.."NormalText");
+			font,fontsize,fontflags = button:GetFont()
+            button:SetFont(font,size) 
 	end
-	font,fontsize,fontflags = QuestLogQuestDescription:GetFont()
-	QuestLogQuestDescription:SetFont(font,size)
+
+	font,fontsize,fontflags = QuestLogDummyText:GetFont()
+	QuestLogDummyText:SetFont(font,size + 6)
+	
+
+-- Questdiscrition short
+	-- title
+	font,fontsize,fontflags = QuestLogQuestTitle:GetFont()
+	QuestLogQuestTitle:SetFont(font,size + 6)
+
+	-- description
 	font,fontsize,fontflags = QuestLogObjectivesText:GetFont()
 	QuestLogObjectivesText:SetFont(font,size)
+
+    -- objetives
+	for i = 1, 10 do
+        buttontag = getglobal("QuestLogObjective" .. i);
+        font,fontsize,fontflags = buttontag:GetFont()
+		buttontag:SetFont(font,size)
+	end   
+	
+	-- need money
+	font,fontsize,fontflags = QuestLogRequiredMoneyText:GetFont()
+	QuestLogRequiredMoneyText:SetFont(font,size)
+	
+-- Questdiscrition long
+	-- title
+    font,fontsize,fontflags = QuestLogDescriptionTitle:GetFont()
+	QuestLogDescriptionTitle:SetFont(font,size + 6)
+	
+	-- description
+    font,fontsize,fontflags = QuestLogQuestDescription:GetFont()
+	QuestLogQuestDescription:SetFont(font,size)
+	
+--  Questreward
+	-- title
+	font,fontsize,fontflags = QuestLogRewardTitleText:GetFont()
+	QuestLogRewardTitleText:SetFont(font,size+6)
+	
+	-- items
+    font,fontsize,fontflags = QuestLogItemChooseText:GetFont()
+	QuestLogItemChooseText:SetFont(font,size)
+
+    -- items
+    font,fontsize,fontflags = QuestLogItemReceiveText:GetFont()
+	QuestLogItemReceiveText:SetFont(font,size)
+
+    -- spell 
+    font,fontsize,fontflags = QuestLogSpellLearnText:GetFont()
+	QuestLogSpellLearnText:SetFont(font,size)
+
+    -- titles
+    font,fontsize,fontflags = QuestLogPlayerTitleText:GetFont()
+	QuestLogPlayerTitleText:SetFont(font,size)
+ 
 end
 
 --- EOF ---

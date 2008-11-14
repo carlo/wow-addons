@@ -6,6 +6,30 @@
 			<OnLoad>
 				this:SetOwner(UIParent, "ANCHOR_NONE");
 			</OnLoad>
+			<OnTooltipSetItem>
+				if (self.printHyperlinkID) then
+					local name, link = self:GetItem();
+					if (name ~= "" and link) then
+						local _, _, itemID = string.find(link, "item:(%d+)");
+						if (itemID) then
+							GFWUtils.Print("Item ID "..itemID..": "..link);
+						end
+						self.printHyperlinkID = nil;
+					end
+				end
+			</OnTooltipSetItem>
+			<OnUpdate>
+				if (self.printHyperlinkID) then
+					local name, link = self:GetItem();
+					if (name ~= "" and link) then
+						local _, _, itemID = string.find(link, "item:(%d+)");
+						if (itemID) then
+							GFWUtils.Print("Item ID "..itemID..": "..link);
+						end
+						self.printHyperlinkID = nil;
+					end
+				end
+			</OnUpdate>
 		</Scripts>
 	</GameTooltip>
 

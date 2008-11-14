@@ -1,6 +1,6 @@
 --[[
 Name: Quixote-1.0
-Revision: $Revision: 55571 $
+Revision: $Revision: 151 $
 Author(s): Kemayo (kemayo@gmail.com)
 Website: http://www.wowace.com/wiki/Quixote-1.0
 Documentation: http://www.wowace.com/wiki/Quixote-1.0
@@ -11,7 +11,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "Quixote-1.0"
-local MINOR_VERSION = "$Revision: 55571 $"
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 151 $"):match("(%d+)"))
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -42,11 +42,14 @@ elseif GetLocale() == "zhCN" then
 elseif GetLocale() == "zhTW" then
 	UPGRADEMSG1 = "%s嘗試和你分享任務資訊，但有較新的插件。請更新!"
 	UPGRADEMSG2 = "你的 Quixote 程式庫比%s的舊 -- 請更新你的插件。"
+elseif GetLocale() == "ruRU" then --Translation by Eritnull (StingerSoft aka Шептун)
+	UPGRADEMSG1 = "%s пытается поделиться информацией о задании, но у него более новая версия аддона, пожалуйста обновитесь"
+	UPGRADEMSG2 = "У вас устаревшая версия библиотеки Quixote нежели %s -- пожалуйста обновите аддон, использующий данную библиотеку."
 end
 
 local tag = {
 	[ELITE] = '+',
-	[GROUP] = '+',
+	[GROUP] = 'g',
 	[PVP] = 'p',
 	[RAID] = 'r',
 	[DUNGEON] = 'd',
@@ -170,6 +173,8 @@ local function external(self, major, instance)
 		instance:embed(self)
 		if not self.commPrefix then
 			self:SetCommPrefix("Quixote")
+			--Memoize the handler names
+			self:RegisterMemoizations({"PING", "PONG", "GETQUESTS", "STARTSYNC", "STOPSYNC", "QUESTSTATUS", "QUESTGAINED", "QUESTCOMPLETE", "QUESTLOST", "OLDVERSION",})
 		end
 		self:RegisterComm(self.commPrefix, "PARTY")
 		self:RegisterComm(self.commPrefix, "WHISPER")
@@ -191,13 +196,39 @@ function Quixote:AceEvent_FullyInitialized()
 	self:RegisterEvent("Quixote_Leaderboard_Update")
 	self:RegisterEvent("Quixote_Quest_Gained")
 	self:RegisterEvent("Quixote_Quest_Lost")
+	--self:RegisterEvent("Quixote_Quest_Abandoned")
 	self:RegisterEvent("Quixote_Quest_Complete")
-	self:RegisterBucketEvent("Quixote_SyncTo", 1, "SyncQuests")
+	self:RegisterBucketEvent("Quixote_SyncTo", 5, "SyncQuests")
+	self:RegisterBucketEvent("Quixote_PingResponse", 5)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	self:PARTY_MEMBERS_CHANGED()
 
 	if self:HasAnythingFuckedUpGetQuestLogTitle() then
 		self:error("An addon has broken GetQuestLogTitle. Please make sure all addons involving the quest log are up to date.")
+	end
+end
+
+do
+	local orig_abandon_onaccept, orig_abandon_items_onaccept, abandon_onaccept, abandon_items_onaccept
+	function Quixote:HookDialogs()
+		orig_abandon_onaccept = StaticPopupDialogs["ABANDON_QUEST"].OnAccept
+		orig_abandon_items_onaccept = StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"].OnAccept
+		StaticPopupDialogs["ABANDON_QUEST"].OnAccept = abandon_onaccept
+		StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"].OnAccept = abandon_items_onaccept
+	end
+	function Quixote:UnhookDialogs()
+		StaticPopupDialogs["ABANDON_QUEST"].OnAccept = orig_abandon_onaccept
+		StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"].OnAccept = orig_abandon_items_onaccept
+	end
+	function abandon_onaccept()
+		local name = GetAbandonQuestName()
+		orig_abandon_onaccept()
+		Quixote:TriggerEvent("Quixote_Quest_Abandoned", name, Quixote.quest_names[name])
+	end
+	function abandon_items_onaccept()
+		local name = GetAbandonQuestName()
+		orig_abandon_items_onaccept()
+		Quixote:TriggerEvent("Quixote_Quest_Abandoned", name, Quixote.quest_names[name])
 	end
 end
 
@@ -360,7 +391,7 @@ function Quixote:QUEST_LOG_UPDATE()
 				--have we changed any leaderboards?
 				for l, goal in pairs(quest.leaderboard) do
 					local oldgoal = oldquest.leaderboard[l]
-					if goal.numGot ~= 0 and oldgoal.description == goal.description and oldgoal.numGot ~= goal.numGot then
+					if oldgoal and goal.numGot ~= 0 and oldgoal.description == goal.description and oldgoal.numGot ~= goal.numGot then
 						self:TriggerEvent("Quixote_Leaderboard_Update", name, id, l, goal.description, oldgoal.numGot, goal.numGot, goal.numNeeded, goal.type)
 					end
 				end
@@ -488,55 +519,57 @@ end
 -- AceComm
 ------------------------------------------------
 
---hackish, but a decent solution to a short-lived problem.
---remove in a month or two
-local function leaderboardfixer(l)
-	for desc, status in pairs(l) do
-		local t = type(status)
-		if t == 'number' then
-			l[desc] = new(status, status + 1)
-		elseif t == 'string' then
-			l[desc] = new(status, status)
+local COMM_COMPAT = 2
+local commHandlers = {}
+local warned_of_new_version
+
+function Quixote:OnCommReceive(prefix, sender, distribution, compat, handler, ...)
+	if not (self.SendCommMessage and compat) then return end
+	if compat > COMM_COMPAT then
+		if not warned_of_new_version then
+			DEFAULT_CHAT_FRAME:AddMessage(string.format(UPGRADEMSG1, sender))
+			warned_of_new_version = true
 		end
+	elseif compat == COMM_COMPAT and type(handler) == 'string' and commHandlers[handler] then
+		commHandlers[handler](self, sender, ...)
 	end
-	return l
 end
 
-local COMM_COMPAT = 1
-local commHandlers = {}
+function commHandlers:PING(sender)
+	self:SendCommMessage("PARTY", COMM_COMPAT, "PONG")
+end
 
-function Quixote:OnCommReceive(prefix, sender, distribution, compat, handler, b,c,d,e,f,g,h)
-	if not compat then return end
-	if compat < COMM_COMPAT then
-		self:SendCommMessage("WHISPER", sender, COMM_COMPAT, "OLDVERSION", MAJOR_VERSION, MINOR_VERSION)
-	elseif compat > COMM_COMPAT then
-		print(string.format(UPGRADEMSG1, sender))
-	elseif type(handler) == 'string' and commHandlers[handler] then
-		commHandlers[handler](self, sender, b,c,d,e,f,g,h)
-	end
+function commHandlers:PONG(sender)
+	self:TriggerEvent("Quixote_PingResponse", sender)
 end
 
 function commHandlers:GETQUESTS(sender)
 	self:TriggerEvent("Quixote_SyncTo", sender)
 end
 
-function commHandlers:QUESTSYNC(sender, quests)
+function commHandlers:STARTSYNC(sender)
 	if self.party[sender] then
 		self.party[sender] = deepDel(self.party[sender])
 	end
 	self.party[sender] = new()
-	for title, leaderboard in pairs(quests) do
-		self.party[sender][title] = leaderboardfixer(leaderboard)
-	end
-	self:TriggerEvent("Quixote_Party_Quest_Sync", sender)
+	self.party[sender].__sync = true
 end
 
-function commHandlers:QUESTGAINED(sender, title, leaderboard)
-	if not self.party[sender] or leaderboard[""] or leaderboard[" "] then
+function commHandlers:STOPSYNC(sender)
+	if self.party[sender] then
+		self.party[sender].__sync = nil
+		self:TriggerEvent("Quixote_Party_Quest_Sync", sender)
+	end
+end
+
+function commHandlers:QUESTGAINED(sender, title)
+	if not self.party[sender] then
 		self:SendCommMessage("WHISPER", sender, COMM_COMPAT, "GETQUESTS")
 	else
-		self.party[sender][title] = leaderboardfixer(leaderboard)
-		self:TriggerEvent("Quixote_Party_Quest_Gained", sender, title)
+		self.party[sender][title] = new()
+		if not self.party[sender].__sync then
+			self:TriggerEvent("Quixote_Party_Quest_Gained", sender, title)
+		end
 	end
 end
 
@@ -553,39 +586,41 @@ function commHandlers:QUESTLOST(sender, title)
 	self:TriggerEvent("Quixote_Party_Quest_Lost", sender, title)
 end
 
-function commHandlers:LEADERBOARDUPDATE(sender, title, description, numHad, numGot, numNeeded)
-	if not self.party[sender] or not self.party[sender][title] or not self.party[sender][title][description] then
+function commHandlers:QUESTSTATUS(sender, title, description, numGot, numNeeded)
+	if not self.party[sender] or not self.party[sender][title] then
 		self:SendCommMessage("WHISPER", sender, COMM_COMPAT, "GETQUESTS")
 	else
-		for o,n in pairs(self.party[sender][title]) do
-			if o == description then
-				self.party[sender][title][o][1] = numGot
-				break
+		local numHad
+		if not self.party[sender][title][description] then
+			self.party[sender][title][description] = new(numGot, numNeeded)
+		else
+			for o,n in pairs(self.party[sender][title]) do
+				if o == description then
+					numHad = self.party[sender][title][o][1]
+					self.party[sender][title][o][1] = numGot
+					break
+				end
 			end
 		end
-		self:TriggerEvent("Quixote_Party_Leaderboard_Update", sender, title, description, numHad, numGot, numNeeded)
+		if numHad and (not self.party[sender].__sync) then
+			self:TriggerEvent("Quixote_Party_Leaderboard_Update", sender, title, description, numHad, numGot, numNeeded)
+		end
 	end
-end
-
-function commHandlers:OLDVERSION(sender, major, minor)
-	print(string.format(UPGRADEMSG2, sender))
 end
 
 -- #NODOC
 function Quixote:Quixote_Leaderboard_Update(name, qid, lbid, description, numHad, numGot, numNeeded, lbtype)
 	if type(self.SendCommMessage) == "function" then
-		self:SendCommMessage("PARTY", COMM_COMPAT, "LEADERBOARDUPDATE", name, description, numHad, numGot, numNeeded)
+		self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTSTATUS", name, description, numGot, numNeeded)
 	end
 end
 -- #NODOC
 function Quixote:Quixote_Quest_Gained(title, id, nObj)
 	if type(self.SendCommMessage) == "function" then
-		local l = new()
+		self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTGAINED", title)
 		for _,g in pairs(self.quests[id].leaderboard) do
-			l[g.description] = new(g.numGot, g.numNeeded)
+			self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTSTATUS", title, g.description, g.numGot, g.numNeeded)
 		end
-		self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTGAINED", title, l)
-		l = deepDel(l)
 	end
 end
 -- #NODOC
@@ -603,32 +638,30 @@ end
 -- #NODOC
 function Quixote:PARTY_MEMBERS_CHANGED()
 	if type(self.SendCommMessage) == "function" then
-		local p = new()
-		for i=1,GetNumPartyMembers(),1 do
-			p[UnitName("party"..i)] = true
-		end
-		for name,_ in pairs(self.party) do
-			if not p[name] then
-				self.party[name] = deepDel(self.party[name])
+		self:SendCommMessage("PARTY", COMM_COMPAT, "PING")
+	end
+end
+-- #NODOC
+function Quixote:Quixote_PingResponse(responders)
+	if type(self.SendCommMessage) == "function" then
+		for name in pairs(responders) do
+			if not self.party[name] then
+				self:SendCommMessage("WHISPER", name, COMM_COMPAT, "GETQUESTS")
 			end
 		end
-		self:SendCommMessage("PARTY", COMM_COMPAT, "GETQUESTS")
-		p = del(p)
 	end
 end
 -- #NODOC
 function Quixote:SyncQuests(sender)
 	if type(self.SendCommMessage) == "function" then
-		local q = new()
+		self:SendCommMessage("PARTY", COMM_COMPAT, "STARTSYNC")
 		for quest,id in pairs(self.quest_names) do
-			local l = new()
+			self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTGAINED", quest)
 			for _,g in pairs(self.quests[id].leaderboard) do
-				l[g.description] = new(g.numGot, g.numNeeded)
+				self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTSTATUS", quest, g.description, g.numGot, g.numNeeded)
 			end
-			q[quest] = l
 		end
-		self:SendCommMessage("PARTY", COMM_COMPAT, "QUESTSYNC", q)
-		q = deepDel(q)
+		self:SendCommMessage("PARTY", COMM_COMPAT, "STOPSYNC")
 	end
 end
 

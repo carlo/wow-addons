@@ -15,4 +15,5 @@ BUFFALO_DEFAULT_OPTIONS = {
 	verboseTimers = {buff = nil, debuff = true, weapon = nil},
 	whiteTimers = {buff = nil, debuff = nil, weapon = nil},
 	flashes = {buff = true, debuff = true, weapon = true},
+	skins = { ["*"] = { skin = false, gloss = false, backdrop = false,} },
 }

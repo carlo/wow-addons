@@ -1,6 +1,6 @@
-﻿## Interface: 20300
+﻿## Interface: 30000
 
-## Title: LibRockHook-1.0
+## Title: Lib: RockHook-1.0
 ## Notes: Hooking library
 ## Author: ckknight
 ## X-Website: http://www.wowace.com

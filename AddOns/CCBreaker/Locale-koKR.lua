@@ -91,7 +91,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Show break from warlocks"] = "흑마법사가 해제한 경우 표시",
 	["Show break from warriors"] = "전사가 해제한 경우 표시",
 	["Show break from your pet"] = "소환수가 해제한 경우 표시",
-	["Show break of [spell]"] = "[spell] 주문의 해제 표시",
+	["Show break of "] = " 주문의 해제 표시",
 	["Show break on druids"] = "드루이드가 걸린 군중 제어 효과 표시",
 	["Show break on hunters"] = "사냥꾼이 걸린 군중 제어 효과 표시",
 	["Show break on mages"] = "마법사가 걸린 군중 제어 효과 표시",

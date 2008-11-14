@@ -1,7 +1,7 @@
-local VERSION = 2010001
+local VERSION = 03000001
 if(not rpgo) then rpgo={}; end
 if(not rpgo.db) then rpgo.db={}; end
-rpgo.db.class = {WARRIOR=1,PALADIN=2,HUNTER=3,ROGUE=4,PRIEST=5,SHAMAN=7,MAGE=8,WARLOCK=9,DRUID=11};
+rpgo.db.class = {WARRIOR=1,PALADIN=2,HUNTER=3,ROGUE=4,PRIEST=5,DEATHKNIGHT=6,SHAMAN=7,MAGE=8,WARLOCK=9,DRUID=11};
 rpgo.db.race = {Human=1,Orc=2,Dwarf=3,NightElf=4,Scourge=5,Tauren=6,Gnome=7,Troll=8,BloodElf=10,Draenei=11};
 --[[########################################################
 --## general functions
@@ -18,36 +18,38 @@ rpgo.UnitClass = function(arg1)
 	local unitClass,unitClassEn=UnitClass(arg1);
 	return unitClass,unitClassEn,rpgo.db.class[unitClassEn];
 end
+--[UnitClass] arg1:unit
+rpgo.UnitClassID = function(classEn)
+	return rpgo.db.class[classEn];
+end
 --[UnitRace] arg1:unit
 rpgo.UnitRace = function(arg1)
 	local unitRace,unitRaceEn=UnitRace(arg1);
 	return unitRace,unitRaceEn,rpgo.db.race[unitRaceEn];
 end
-
 --[UnitHasResSickness]
 rpgo.UnitHasResSickness = function(unit)
-	local index=1;
-	if(UnitDebuff(unit,index)) then
-		while(UnitDebuff(unit,index)) do
-			buffTexture=UnitDebuff(unit,index);
+	local idx=1;
+	if(UnitDebuff(unit,idx)) then
+		while(UnitDebuff(unit,idx)) do
+			buffTexture=UnitDebuff(unit,idx);
 			if(buffTexture == "Interface\\Icons\\Spell_Shadow_DeathScream") then
 				return true;
 			end
-			index=index+1;
+			idx=idx+1;
 		end
 	end
 	return nil;
 end
---[GetMoney]
-rpgo.GetMoney = function()
-	local money=GetMoney();
+
+--[parseMoney]
+rpgo.parseMoney = function(money)
 	local gold,silver,copper;
-	local CopperPerGold=COPPER_PER_SILVER * SILVER_PER_GOLD;
-	gold=floor(money/CopperPerGold);
-		money=mod(money,CopperPerGold);
+	local COPPER_PER_GOLD=COPPER_PER_SILVER * SILVER_PER_GOLD;
+	gold=floor(money/COPPER_PER_GOLD);
+		money=mod(money,COPPER_PER_GOLD);
 	silver=floor(money/COPPER_PER_SILVER);
-		money=mod(money,CopperPerGold);
-	copper=mod(money,COPPER_PER_SILVER);
+		copper=mod(money,COPPER_PER_SILVER);
 	return gold,silver,copper;
 end
 --[rpgo.round](num,[digit])
@@ -56,6 +58,7 @@ rpgo.round = function(num,digit)
 	if(digit==nil) then digit=0; end
 --	local shift=10^digit;
 --	return floor( num*shift + 0.5 ) / shift;
+	if(num==0) then return num; end
 	local fmt
 	if(digit<10) then fmt="%.0"..digit.."f";
 	else fmt="%."..digit.."f"; end
@@ -63,12 +66,12 @@ rpgo.round = function(num,digit)
 end
 --[function] str
 rpgo.version = function()
-	local version,buildnum,builddate = GetBuildInfo();
-	local _,_,vVersion,vMajor,vMinor=string.find(version,"(%d+).(%d+).(%d+)");
-	return tonumber(vVersion),tonumber(vMajor),tonumber(vMinor);
+	local version,_,_ = GetBuildInfo();
+	local _,_,version,major,minor=string.find(version,"(%d+).(%d+).(%d+)");
+	return tonumber(version),tonumber(major),tonumber(minor);
 end
 rpgo.versionkey = function()
-	local version,buildnum,builddate = GetBuildInfo();
+	local version,buildnum,_ = GetBuildInfo();
 	return strjoin(":", rpgo.GetSystem(),version,buildnum);
 end
 --[function] str
@@ -76,7 +79,6 @@ rpgo.GetSystem = function()
 	local _,_,sys=string.find(GetCVar("realmList"),"^[%a.]-(%a+).%a+.%a+.%a+$");
 	if(not sys) then sys="" end return sys;
 end
-
 
 --[[########################################################
 --## date functions
@@ -117,36 +119,82 @@ rpgo.GetContainerNumSlots = function(bagID)
 		return GetContainerNumSlots(bagID);
 	end
 end
---[GetItemID] itemlink
-rpgo.GetItemID = function(itemlink)
-	local item,id,rid;
-	if(itemlink) then _,_,item,id,rid=string.find(itemlink,"item:((%d+):[-%d]+:[-%d]+:[-%d]+:[-%d]+:[-%d]+:([-%d]+):[-%d]+)|"); end
-	return item,id,rid;
-end
---[ItemHasGem] itemlink
-rpgo.ItemHasGem = function(itemlink)
+--[ItemHasGem] itemStr
+rpgo.ItemHasGem = function(itemStr)
 	local gid1,gid2,gid3;
-	if(itemlink) then _,_,gid1,gid2,gid3=string.find(itemlink,"item:%d+:[-%d]+:([-%d]+):([-%d]+):([-%d]+):[-%d]+:[-%d]+:[-%d]+|");
+	if(itemStr) then _,_,gid1,gid2,gid3=string.find(itemStr,"|Hitem:%d+:[-%d]+:([-%d]+):([-%d]+):([-%d]+):[-%d]+:[-%d]+:[-%d]+:[%d]+|h");
 		if( gid1 and gid2 and gid3 and gid1+gid2+gid3 ~= 0) then
 			return true;
-		end
-		if(gid1~=0 or gid2~=0 or gid3~=0) then
-			--return true;
 		end
 	end
 	return nil;
 end
---[GetItemInfo] itemlink
-rpgo.GetItemInfo = function(itemlink)
-	if(itemlink) then
+--[GetItemInfo] itemStr
+rpgo.GetItemInfo = function(itemStr)
+	if(itemStr) then
 		local itemColor,itemID;
-		local itemName,itemLink,itemRarity,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,invTexture = GetItemInfo(itemlink);
+		local itemName,itemLink,itemRarity,itemLevel,itemMinLevel,itemType,itemSubType,itemStackCount,itemEquipLoc,invTexture = GetItemInfo(itemStr);
 		if(itemLink) then
-			_,_,itemColor,itemID=string.find(itemLink,"|c(%x+)|Hitem:([-%d:]+)|h%[.-%]|h|r");
+			_,_,itemColor,itemID=string.find(itemLink,"|c(%x+)|Hitem:([-%d:]+)|h%[.-%]|h");
 		end
 		return itemColor,itemLink,itemID,itemName,invTexture;
 	end
 	return nil;
+end
+--[GetItemInfoTT] tooltip
+rpgo.GetItemInfoTT = function(tooltip)
+	local ttName,ttFrame
+	if( tooltip ) then
+		if(type(tooltip)=="string") then
+			ttName=tooltip;
+			ttFrame=getglobal(tooltip);
+		elseif(type(tooltip)=="table" and tooltip:IsObjectType("GameTooltip")) then
+			ttName=UIParent.GetName(tooltip);
+			ttFrame=tooltip;
+		end
+	end
+	local nTT,cTT,r,g,b;
+	if(ttName==nil) then return end
+	ttText=getglobal(ttName.."TextLeft1");
+	if(ttText) then
+		nTT=ttText:GetText();
+	end
+	if(nTT) then r,g,b=ttText:GetTextColor(); cTT=string.format("ff%02x%02x%02x",r*256,g*256,b*256); end
+	return nTT,cTT;
+end
+--[GetItemID] itemStr
+rpgo.GetItemID = function(itemStr)
+	local id,rid;
+	if(itemStr) then _,_,id,rid=string.find(itemStr,"|Hitem:(%d+):[-%d]+:[-%d]+:[-%d]+:[-%d]+:[-%d]+:([-%d]+):[-%d]+:[%d]+|h"); end
+	return tonumber(id),tonumber(rid);
+end
+
+--[GetQuestID] questStr
+rpgo.GetQuestID = function(questStr)
+	local id,lvl;
+	if(questStr) then _,_,id,lvl=string.find(questStr,"|Hquest:(%d+):([-%d]+)|h"); end
+	return tonumber(id);
+end
+
+--[GetSpellID] spellStr
+rpgo.GetSpellID = function(spellStr)
+	local id;
+	if(spellStr) then _,_,id=string.find(spellStr,"|Hspell:(%d+)|h"); end
+	return tonumber(id);
+end
+
+--[GetTalentID] talentStr
+rpgo.GetTalentID = function(talentStr)
+	local id;
+	if(talentStr) then _,_,id=string.find(talentStr,"|Htalent:(%d+):[-%d]+|h"); end
+	return tonumber(id);
+end
+
+--[GetRecipeId] recipeStr
+rpgo.GetRecipeId = function(recipeStr)
+	local id;
+	if(recipeStr) then _,_,id = string.find(recipeStr, "|Henchant:(%d+)|h"); end
+	return tonumber(id);
 end
 
 --[[########################################################
@@ -195,27 +243,6 @@ rpgo.ScanTooltip = function(ttName,ttFrame,isHTML)
 		else return ttText; end
 	end
 	return nil
-end
---[GetItemInfoTT] tooltip
-rpgo.GetItemInfoTT = function(tooltip)
-	local ttName,ttFrame
-	if( tooltip ) then
-		if(type(tooltip)=="string") then
-			ttName=tooltip;
-			ttFrame=getglobal(tooltip);
-		elseif(type(tooltip)=="table" and tooltip:IsObjectType("GameTooltip")) then
-			ttName=UIParent.GetName(tooltip);
-			ttFrame=tooltip;
-		end
-	end
-	local nTT,cTT,r,g,b;
-	if(ttName==nil) then return end
-	ttText=getglobal(ttName.."TextLeft1");
-	if(ttText) then
-		nTT=ttText:GetText();
-	end
-	if(nTT) then r,g,b=ttText:GetTextColor(); cTT=string.format("ff%02x%02x%02x",r*256,g*256,b*256); end
-	return nTT,cTT;
 end
 
 --[[########################################################
@@ -272,8 +299,26 @@ end
 --[Str2Ary] str
 rpgo.Str2Ary = function(str)
 	local tab={};
-	local function S2Ahelper(word) table.insert(tab,word) end
-	string.gsub(str,"%w+",S2Ahelper); return tab; end
+	str = strtrim(str);
+	while( str and str ~="" ) do
+		local word,string;
+		if( strfind(str, '^|c.+|r') ) then
+			_,_,word,string = strfind( str, '^(|c.+|r)(.*)');
+		elseif( strfind(str, '^"[^"]+"') ) then
+			_,_,word,string = strfind( str, '^"([^"]+)"(.*)');
+		else
+			_,_,word,string = strfind( str, '^(%S+)(.*)');
+		end
+		if( word ) then
+			table.insert(tab,word);
+		end
+		if( string ) then
+			string=strtrim(string);
+		end
+		str = string;
+	end
+	return tab;
+end
 --[Str2Abbr] str
 rpgo.Str2Abbr = function(str)
 	local abbr='';

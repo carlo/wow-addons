@@ -10,6 +10,7 @@ L:RegisterTranslations("enUS", function() return {
 
 	["<Touch the unstable rift crystal.>"] = true,
 	["<Place my hand on the orb.>"] = true,
+	["Transport me to the Molten Core, Lothos."] = true,
 	["Thank you, Stable Master. Please take the animal."] = true,
 	["With pleasure. These things stink!"] = true,
 	["Trick or Treat!"] = true,
@@ -20,10 +21,15 @@ L:RegisterTranslations("enUS", function() return {
 	["I'm ready to go to Durholde Keep."] = true,
 	["I require a chrono-beacon, Sa'at."] = true,
 	["Naturalist, please grant me your boon."] = true,
+	["I would be grateful for any aid you can provide, Priestess."] = true,
 
 	-------------
 	-- Quest Text
 	-------------
+
+	-- Fishing
+	["Apprentice Angler"] = true,
+	["Speckled Tastyfish"] = true,
 
 	-- Alterac Valley quests
 	["Empty Stables"] = true,
@@ -260,6 +266,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Arcane Tome"] = true,
 
 	-- Aldor
+	["Strained Supplies"] = true,
+	["Dreadfang Venom Sac"] = true,
 	["More Marks of Sargeras"] = true,
 	["Single Mark of Sargeras"] = true,
 	["Mark of Sargeras"] = true,
@@ -331,5 +339,13 @@ L:RegisterTranslations("enUS", function() return {
 	-- Netherwing Ledge
 	["Accepting All Eggs"] = true,
 	["Netherwing Egg"] = true,
-
+	
+	-- 2.4 Battleground mark turn-in
+  ["Concerted Efforts"] = true,
+  ["For Great Honor"] = true,
+  ["Alterac Valley Mark of Honor"] = true,
+	["Arathi Basin Mark of Honor"] = true,
+	["Warsong Gulch Mark of Honor"] = true,
+	["Eye of the Storm Mark of Honor"] = true,
+			
 } end )

@@ -1,6 +1,6 @@
 --[[
 Name: LibRockEvent-1.0
-Revision: $Rev: 48965 $
+Revision: $Rev: 233 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for event handling and inter-addon communication.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockEvent-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 48965 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 233 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 
@@ -538,22 +538,26 @@ end)
 
 local AceEvent20
 
+local function SetupAceEvents()
+	if not AceEvent20 then
+		local AceLibrary = _G.AceLibrary
+		if AceLibrary and AceLibrary:HasInstance("AceEvent-2.0", false) then
+			AceEvent20 = AceLibrary("AceEvent-2.0")
+			function RockEvent:OnAceEvent(...)
+				local event = AceEvent20.currentEvent
+				if event:match("^[A-Z_]+$") then
+					return
+				end
+				dispatch("AceEvent-2.0", event, ...)
+			end
+			AceEvent20.RegisterAllEvents(RockEvent, "OnAceEvent")
+		end
+	end
+end
+
 frame:SetScript("OnEvent", function(this, event, ...)
 	if event == "ADDON_LOADED" then
-		if not AceEvent20 then
-			local AceLibrary = _G.AceLibrary
-			if AceLibrary and AceLibrary:HasInstance("AceEvent-2.0", false) then
-				AceEvent20 = AceLibrary("AceEvent-2.0")
-				function RockEvent:OnAceEvent(...)
-					local event = AceEvent20.currentEvent
-					if event:match("^[A-Z_]+$") then
-						return
-					end
-					dispatch("AceEvent-2.0", event, ...)
-				end
-				AceEvent20.RegisterAllEvents(RockEvent, "OnAceEvent")
-			end
-		end
+		SetupAceEvents()
 	end
 	return dispatch("Blizzard", event, ...)
 end)
@@ -591,6 +595,7 @@ if not RockEvent.postInit then
 				local major, minor = RockEvent:GetLibraryVersion()
 				if minor == MINOR_VERSION or minor == -MINOR_VERSION then -- HACK, remove the negative thing
 					-- make sure we've not upgraded
+					SetupAceEvents() -- Workaround for broken OptionalDeps
 					RockEvent.postInit = true
 					dispatch(MAJOR_VERSION, "FullyInitialized")
 					collectgarbage('collect')

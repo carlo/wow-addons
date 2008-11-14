@@ -45,13 +45,21 @@ local options = {
           set = function(v) SS.db.profile.channelList[L["yell"]] = v end,
           order = 3,
         },  
+        emote = {
+          type = "toggle",
+          name = L["emote"],
+          desc = L["emote"],
+          get = function() return SS.db.profile.channelList[L["emote"]] end,
+          set = function(v) SS.db.profile.channelList[L["emote"]] = v end,
+          order = 4,
+        },
         general = {
           type = "toggle",
           name = L["general"],
           desc = L["general"],
           get = function() return SS.db.profile.channelList[L["general"]] end,
           set = function(v) SS.db.profile.channelList[L["general"]] = v end ,
-          order = 4,
+          order = 5,
         },
         trade = {
           type = "toggle",
@@ -59,7 +67,7 @@ local options = {
           desc = L["trade"],
           get = function() return SS.db.profile.channelList[L["trade"]] end,
           set = function(v) SS.db.profile.channelList[L["trade"]] = v end,
-          order = 5,
+          order = 6,
         },
         recruit = {
           type = "toggle",
@@ -67,8 +75,24 @@ local options = {
           desc = L["guildrecruitment"],
           get = function() return SS.db.profile.channelList[L["guildrecruitment"]] end,
           set = function(v) SS.db.profile.channelList[L["guildrecruitment"]] = v end,
-          order = 6,
+          order = 7,
         },
+        lfg = {
+          type = "toggle",
+          name = L["lookingforgroup"],
+          desc = L["lookingforgroup"],
+          get = function() return SS.db.profile.channelList[L["lookingforgroup"]] end,
+          set = function(v) SS.db.profile.channelList[L["lookingforgroup"]] = v end,
+          order = 8,
+        },
+        defense = {
+          type = "toggle",
+          name = L["localdefense"],
+          desc = L["localdefense"],
+          get = function() return SS.db.profile.channelList[L["localdefense"]] end,
+          set = function(v) SS.db.profile.channelList[L["localdefense"]] = v end,
+          order = 9,
+        },  
       },
     },
     notification = {
@@ -161,7 +185,6 @@ local options = {
           isRadio = true,
           set = function() 
             SS.dbr.realm.reportLanguage="enUS" 
-            SS:Load("report") 
             SS_Report:ResetTicketText() 
           end,
           get = function() return SS.dbr.realm.reportLanguage=="enUS" end,
@@ -173,7 +196,6 @@ local options = {
           isRadio = true,
           set = function() 
             SS.dbr.realm.reportLanguage="deDE" 
-            SS:Load("report") 
             SS_Report:ResetTicketText() 
           end,
           get = function() return SS.dbr.realm.reportLanguage=="deDE" end,
@@ -185,7 +207,6 @@ local options = {
           isRadio = true,
           set = function() 
             SS.dbr.realm.reportLanguage="frFR" 
-            SS:Load("report") 
             SS_Report:ResetTicketText() 
           end,
           get = function() return SS.dbr.realm.reportLanguage=="frFR" end,
@@ -197,7 +218,6 @@ local options = {
           isRadio = true,
           set = function() 
             SS.dbr.realm.reportLanguage="esES" 
-            SS:Load("report") 
             SS_Report:ResetTicketText() 
           end,
           get = function() return SS.dbr.realm.reportLanguage=="esES" end,
@@ -209,7 +229,6 @@ local options = {
           isRadio = true,
           set = function() 
             SS.dbr.realm.reportLanguage="zhTW" 
-            SS:Load("report") 
             SS_Report:ResetTicketText() 
           end,
           get = function() return SS.dbr.realm.reportLanguage=="zhTW" end,
@@ -221,20 +240,14 @@ local options = {
       name = L["bottext"],
       desc = L["set the text for the bot ticket"],
       order = 13,
-      func = function()
-        SS:Load("report")
-        SS_Report:ShowGUI("editbot")
-      end,
+      func = function() SS_Report:ShowGUI("editbot") end,
     },    
     rptext = {
       type = "execute",
       name = L["naming text"],
       desc = L["set the text for the naming ticket"],
       order = 14,
-      func = function() 
-        SS:Load("report") 
-        SS_Report:ShowGUI("editrp") 
-      end,
+      func = function() SS_Report:ShowGUI("editrp") end,
     },
     spacer2 = {
       type = "header",
@@ -257,7 +270,6 @@ local options = {
       desc = L["toggle the delaying of suspicious messages, to stop multi-message spams from showing"],
       order = 22,
       set = function(v) 
-        SS:Load("report") 
         SS.db.profile.enableDelay=v 
         SS:ToggleChatQueue() 
       end,
@@ -329,10 +341,7 @@ SS.slashcommands = {
           name = L["list"],
           desc = L["lists all reported characters"],
           order = 1,
-          func = function() 
-            SS:Load("report") 
-            SS_Report:ListSpam() 
-          end,
+          func = function() SS_Report:ListSpam() end,
         },
         remove = {
           type = "text",
@@ -341,10 +350,7 @@ SS.slashcommands = {
           usage = "<"..L["character"]..">",
           order = 2,
           get = false,
-          set = function(v) 
-            SS:Load("report") 
-            SS_Report:RemoveSpam(v, true) 
-          end,
+          set = function(v) SS_Report:RemoveSpam(v, true) end,
           validate = function(v) return SS:InList(SS.spamReportList, v) end,
         },
         clear = {
@@ -352,30 +358,21 @@ SS.slashcommands = {
           name = L["clear"],
           desc = L["empties the report list"],
           order = 3,
-          func = function() 
-            SS:Load("report") 
-            SS_Report:ClearSpam(0, true) 
-          end,
+          func = function() SS_Report:ClearSpam(0, true) end,
         },
         report = {
           type = "execute",
           name = L["report"],
           desc = L["report the characters to a GM"],
           order = 4,
-          func = function() 
-            SS:Load("report") 
-            SS_Report:ShowGUI("spam") 
-          end,
+          func = function() SS_Report:ShowGUI("spam") end,
         },
         feedback = {
           type = "execute",
           name = L["feedback"],
           desc = L["FEEDBACK_DESC"],
           order = 5,
-          func = function(v) 
-            SS:Load("report")
-            SS_Report:ShowGUI("feedback") 
-          end,
+          func = function(v) SS_Report:ShowGUI("feedback") end,
         },      
       },
     },
@@ -390,20 +387,14 @@ SS.slashcommands = {
           name = L["add"],
           desc = L["add a character to the reportlist"],
           order = 1,
-          func = function() 
-            SS:Load("bot") 
-            SS_Bot:Mark() 
-          end,
+          func = function() SS_Bot:Mark() end,
         },
         list = {
           type = "execute",
           name = L["list"],
           desc = L["lists all reported characters"],
           order = 2,
-          func = function() 
-            SS:Load("bot") 
-            SS_Bot:List() 
-          end,
+          func = function() SS_Bot:List() end,
         },
         remove = {
           type = "text",
@@ -412,10 +403,7 @@ SS.slashcommands = {
           usage = "<"..L["character"]..">",
           order = 3,
           get = false,
-          set = function(v) 
-            SS:Load("bot") 
-            SS_Bot:Remove(v, true) 
-          end,
+          set = function(v) SS_Bot:Remove(v, true)  end,
           validate = function(v) return SS:InList(SS.dbr.realm.botReportList, v) end,
         },
         clear = {
@@ -423,20 +411,14 @@ SS.slashcommands = {
           name = L["clear"],
           desc = L["empties the report list"],
           order = 4,
-          func = function() 
-            SS:Load("bot") 
-            SS_Bot:Clear(0, true) 
-          end,
+          func = function()  SS_Bot:Clear(0, true) end,
         },
         report = {
           type = "execute",
           name = L["report"],
           desc = L["report the characters to a GM"],
           order = 5,
-          func = function() 
-            SS:Load("report") 
-            SS_Report:ShowGUI("bot") 
-          end,
+          func = function()  SS_Report:ShowGUI("bot") end,
         },
       },
     },
@@ -451,20 +433,14 @@ SS.slashcommands = {
           name = L["add"],
           desc = L["add a character to the reportlist"],
           order = 1,
-          func = function() 
-            SS:Load("rp") 
-            SS_RP:Mark() 
-          end,
+          func = function()  SS_RP:Mark() end,
         },
         list = {
           type = "execute",
           name = L["list"],
           desc = L["lists all reported characters"],
           order = 2,
-          func = function() 
-            SS:Load("rp") 
-            SS_RP:List() 
-          end,
+          func = function() SS_RP:List()  end,
         },
         remove = {
           type = "text",
@@ -473,10 +449,7 @@ SS.slashcommands = {
           usage = "<"..L["character"]..">",
           order = 3,
           get = false,
-          set = function(v) 
-            SS:Load("rp") 
-            SS_RP:Remove(v, true) 
-          end,
+          set = function(v) SS_RP:Remove(v, true) end,
           validate = function(v) return SS:InList(SS.dbr.realm.botReportList, v) end,
         },
         clear = {
@@ -484,24 +457,23 @@ SS.slashcommands = {
           name = L["clear"],
           desc = L["empties the report list"],
           order = 4,
-          func = function() 
-            SS:Load("rp") 
-            SS_RP:Clear(0, true) 
-          end,
+          func = function() SS_RP:Clear(0, true) end,
         },
         report = {
           type = "execute",
           name = L["report"],
           desc = L["report the characters to a GM"],
           order = 5,
-          func = function() 
-            SS:Load("report") 
-            SS_RP:ShowGUI("rp") 
-          end,
+          func = function() SS_RP:ShowGUI("rp") end,
         },
       },
     },
-
+	  statistics = {
+	  	type = "execute",
+	  	name = "statistics",
+	  	desc = "show spamsentry session statistics",
+	  	func = SS.Statistics,
+	  },
   },
 }
   
@@ -525,7 +497,7 @@ function SS:SetupOptions()
 
   -- Register list updates  
   self:RegisterEvent("SPAMSENTRY_REPORTLIST_UPDATED", "OnDataUpdate")
-  self:TriggerEvent("SPAMSENTRY_REPORTLIST_UPDATED")
+  self:OnDataUpdate()
 end
 
 -- Create menu dynamically to avoid default fubar-options
@@ -543,7 +515,6 @@ end
 -- Input functions
 
 function SS:OnClick(button)
-  SS:Load("report")
   if getn(self.spamReportList)>0 then
     SS_Report:ShowGUI("spam")
   elseif getn(self.dbr.realm.botReportList)>0 then
@@ -565,22 +536,22 @@ function SS:OnDataUpdate()
     "spam", 
     self.spamReportList,
     nil,
-    function() SS:Load("report") SS_Report:RemoveSpam(SS.reportIndex["spam"], true) end,
-    function() SS:Load("report") SS_Report:ClearSpam(0, true) end
+    function() SS_Report:RemoveSpam(SS.reportIndex["spam"], true) end,
+    function() SS_Report:ClearSpam(0, true) end
   )
   self.fucommands.args.bot.args = self:GenerateOptionsList(
     "bot", 
     self.dbr.realm.botReportList,
-    function() SS:Load("bot") SS_Bot:Mark() end,
-    function() SS:Load("bot") SS_Bot:Remove(SS.reportIndex["bot"], true) end,
-    function() SS:Load("bot") SS_Bot:Clear(0, true) end
+    function() SS_Bot:Mark() end,
+    function() SS_Bot:Remove(SS.reportIndex["bot"], true) end,
+    function() SS_Bot:Clear(0, true) end
   )
   self.fucommands.args.rp.args = self:GenerateOptionsList(
     "rp", 
     self.dbr.realm.rpReportList,
-    function() SS:Load("rp") SS_RP:Mark() end,
-    function() SS:Load("rp") SS_RP:Remove(SS.reportIndex["rp"], true) end,
-    function() SS:Load("rp") SS_RP:Clear(0, true) end
+    function() SS_RP:Mark() end,
+    function() SS_RP:Remove(SS.reportIndex["rp"], true) end,
+    function() SS_RP:Clear(0, true) end
   )
   self:OnTextUpdate()
 end
@@ -597,6 +568,7 @@ function SS:OnTextUpdate()
   if SS.db.profile.showRPCounter then text3 = string.format("N:|cffffffff%d|r", numrp) end
   
   self:SetText(text1..text2..text3)
+  self:SetIcon(numspam == 0 and true or "Interface\\AddOns\\SpamSentry\\icon_red")
 end
 
 local tablet = AceLibrary("Tablet-2.0")
@@ -684,10 +656,7 @@ function SS:GenerateOptionsList(cat, list, addfunc, removefunc, clearfunc)
     name = L["report"],
     desc = L["report the characters to a GM"],
     order = 101,
-    func = function() 
-      SS:Load("report") 
-      SS_Report:ShowGUI(cat) 
-    end,
+    func = function() SS_Report:ShowGUI(cat) end,
   })
   if cat ~= "spam" then
     tinsert(ret, {

@@ -1,4 +1,4 @@
-local L = AceLibrary("AceLocale-2.2"):new("beql")
+﻿local L = AceLibrary("AceLocale-2.2"):new("beql")
 L:RegisterTranslations("koKR", function() return{
 
 	["Bayi's Extended Quest Log"] = "Bayi의 Extended Quest Log",
@@ -147,6 +147,144 @@ L:RegisterTranslations("koKR", function() return{
 	["Party Member Color"] = "파티원 색상",
 	["Party Member with Quixote Color"] = "Quixote 색상에 따른 파티원 색상",
 	["Sets the color for Party member"] = "파티원의 색상을 설정합니다",	
+
+
+--[[ new with 3.0
+	["Main Options"] = true, -- translate me!!!
+	["Enable Addon"] = true, -- translate me!!!
+	["Enable this Addon"] = true, -- translate me!!!
+	["General Quest Log Options"] = true, -- translate me!!!
+	["No sound"] = true, -- translate me!!!
+	["Don't play a sound"] = true, -- translate me!!!
+	["Watch Options"] = true, -- translate me!!!
+	["Zones"] = true, -- translate me!!!
+	["NPC color"] = true, -- translate me!!!
+	["Title color"] = true, -- translate me!!!
+
+-- Fubar
+	["Show icon"] = true, -- translate me!!!
+	["Show the plugins icon on the panel."] = true, -- translate me!!!
+	["Show text"] = true, -- translate me!!!
+	["Show the plugins text on the panel."] = true, -- translate me!!!
+	["Show colored text"] = true, -- translate me!!!
+	["Allow the plugin to color its text."] = true, -- translate me!!!
+	["Detach tooltip"] = true, -- translate me!!!
+	["Detach the tooltip from the panel."] = true, -- translate me!!!
+	["Lock tooltip"] = true, -- translate me!!!
+	["Lock the tooltips position. When the tooltip is locked, you must use Alt to access it with your mouse."] = true, -- translate me!!!
+	["Position"] = true, -- translate me!!!
+	["Position the plugin on the panel."] = true, -- translate me!!!
+	["Left"] = true, -- translate me!!!
+	["Right"] = true, -- translate me!!!
+	["Center"] = true, -- translate me!!!
+	["Attach to minimap"] = true, -- translate me!!!
+	["Attach the plugin to the minimap instead of the panel."] = true, -- translate me!!!
+	["Hide plugin"] = true, -- translate me!!!
+	["Hidden"] = true, -- translate me!!!
+	["Hide the plugin from the panel or minimap, leaving the addon running."] = true, -- translate me!!!
+	["Other"] = true, -- translate me!!!
+	["Close"] = true, -- translate me!!!
+	["Close the menu."] = true, -- translate me!!!
+	["Minimap position"] = true, -- translate me!!!
+
+-- Profiles
+	["Profiles"] = true, -- translate me!!!
+ 
+-- Achievement Tracker
+	["Achievement Tracker"] = true, -- translate me!!!
+	["Enable Achievement Tracker"] = true, -- translate me!!!
+	["Enables the Achievement Tracker, which can be moved an collapsed."] = true, -- translate me!!!
+	["Makes the achievement tracker unmovable"] = true, -- translate me!!!
+	["Show Achievement Tracker Header"] = true, -- translate me!!!
+	["Shows the header of the Achievementtracker"] = true, -- translate me!!!
+	["Save tracked Achievement"] = true, -- translate me!!!
+	["Save last tracked Achievement and resore it after login"] = true, -- translate me!!!
+	["Remove Completed Achievement"] = true, -- translate me!!!
+	["Automatical remove the completed Achievement from tracker"] = true, -- translate me!!!
+	["Achievement Tracker Alpha"] = true, -- translate me!!!
+	["Sets the Alpha of the Achievement Tracker"] = true, -- translate me!!!
+	["Achievement Tracker Scale"] = true, -- translate me!!!
+	["Sets the Scale of the Achievement Tracker"] = true, -- translate me!!!
+--]]
+-- Profiles
+
+--[[ new with 3.0
+	["Main Options"] = true, -- translate me!!!
+	["Enable Addon"] = true, -- translate me!!!
+	["Enable this Addon"] = true, -- translate me!!!
+	["General Quest Log Options"] = true, -- translate me!!!
+	["No sound"] = true, -- translate me!!!
+	["Don't play a sound"] = true, -- translate me!!!
+	["Watch Options"] = true, -- translate me!!!
+	["Zones"] = true, -- translate me!!!
+	["NPC color"] = true, -- translate me!!!
+	["Title color"] = true, -- translate me!!!
+
+-- Fubar
+	["Show icon"] = true, -- translate me!!!
+	["Show the plugins icon on the panel."] = true, -- translate me!!!
+	["Show text"] = true, -- translate me!!!
+	["Show the plugins text on the panel."] = true, -- translate me!!!
+	["Show colored text"] = true, -- translate me!!!
+	["Allow the plugin to color its text."] = true, -- translate me!!!
+	["Detach tooltip"] = true, -- translate me!!!
+	["Detach the tooltip from the panel."] = true, -- translate me!!!
+	["Lock tooltip"] = true, -- translate me!!!
+	["Lock the tooltips position. When the tooltip is locked, you must use Alt to access it with your mouse."] = true, -- translate me!!!
+	["Position"] = true, -- translate me!!!
+	["Position the plugin on the panel."] = true, -- translate me!!!
+	["Left"] = true, -- translate me!!!
+	["Right"] = true, -- translate me!!!
+	["Center"] = true, -- translate me!!!
+	["Attach to minimap"] = true, -- translate me!!!
+	["Attach the plugin to the minimap instead of the panel."] = true, -- translate me!!!
+	["Hide plugin"] = true, -- translate me!!!
+	["Hidden"] = true, -- translate me!!!
+	["Hide the plugin from the panel or minimap, leaving the addon running."] = true, -- translate me!!!
+	["Other"] = true, -- translate me!!!
+	["Close"] = true, -- translate me!!!
+	["Close the menu."] = true, -- translate me!!!
+	["Minimap position"] = true, -- translate me!!!
+
+-- Profiles
+	["Profiles"] = true, -- translate me!!!
+ 
+-- Achievement Tracker
+	["Achievement Tracker"] = true, -- translate me!!!
+	["Enable Achievement Tracker"] = true, -- translate me!!!
+	["Enables the Achievement Tracker, which can be moved an collapsed."] = true, -- translate me!!!
+	["Makes the achievement tracker unmovable"] = true, -- translate me!!!
+	["Show Achievement Tracker Header"] = true, -- translate me!!!
+	["Shows the header of the Achievementtracker"] = true, -- translate me!!!
+	["Save tracked Achievement"] = true, -- translate me!!!
+	["Save last tracked Achievement and resore it after login"] = true, -- translate me!!!
+	["Remove Completed Achievement"] = true, -- translate me!!!
+	["Automatical remove the completed Achievement from tracker"] = true, -- translate me!!!
+	["Achievement Tracker Alpha"] = true, -- translate me!!!
+	["Sets the Alpha of the Achievement Tracker"] = true, -- translate me!!!
+	["Achievement Tracker Scale"] = true, -- translate me!!!
+	["Sets the Scale of the Achievement Tracker"] = true, -- translate me!!!
+--]]
+-- Profiles
+	["ace2profile_default"] = "기본값",
+	["ace2profile_intro"] = "모든 캐릭터의 다양한 설정과 사용중인 데이터베이스 프로필, 어느것이던지 매우 다루기 쉽게 바꿀수 있습니다." ,
+	["ace2profile_reset_desc"] = "단순히 다시 새롭게 구성을 원하는 경우, 현재 프로필을 기본값으로 초기화 합니다.",
+	["ace2profile_reset"] = "프로필 초기화",
+	["ace2profile_reset_sub"] = "현재의 프로필을 기본값으로 초기화 합니다",
+	["ace2profile_choose_desc"] = "새로운 이름을 입력하거나, 이미 있는 프로필중 하나를 선택하여 새로운 프로필을 만들 수 있습니다.",
+	["ace2profile_new"] = "새로운 프로필",
+	["ace2profile_new_sub"] = "새로운 프로필을 만듭니다.",
+	["ace2profile_choose"] = "프로필 선택",
+	["ace2profile_choose_sub"] = "당신이 현재 이용할수 있는 프로필을 선택합니다.",
+	["ace2profile_copy_desc"] = "현재 사용중인 프로필에, 선택한 프로필의 설정을 복사합니다.",
+	["ace2profile_copy"] = "복사",
+	["ace2profile_delete_desc"] = "데이터베이스에 사용중이거나 저장된 프로파일 삭제로 SavedVariables 파일의 정리와 공간 절약이 됩니다.",
+	["ace2profile_delete"] = "프로필 삭제",
+	["ace2profile_delete_sub"] = "데이터베이스의 프로필을 삭제합니다.",
+	["ace2profile_delete_confirm"] = "정말로 선택한 프로필의 삭제를 원하십니까?",
+	["ace2profile_profiles"] = "프로필",
+	["ace2profile_profiles_sub"] = "프로필 설정",
+
 } end )
 
 if GetLocale() == "koKR" then

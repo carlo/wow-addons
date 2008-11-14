@@ -1,8 +1,7 @@
-EquipCompare 2.10 by Legorol
+EquipCompare 2.13 by Legorol
 Email: legorol@cosmosui.org
-Official web pages:
-http://www.curse-gaming.com/mod.php?addid=308
-http://www.wowinterface.com/downloads/fileinfo.php?s=&id=4392
+Official web page:
+http://www.wowinterface.com/downloads/info4392-EquipCompare.html
 
 NOTE: EquipCompare is part of the Cosmos package. If you have Cosmos, you do not need to download EquipCompare separately.
 
@@ -129,7 +128,7 @@ Thanks goes to:
 Legalese:
 ========
 A) If you have obtained this AddOn as a stand-alone:
-The author holds all copyright to this AddOn. You are free to download, copy, distribute, re-host and so on this AddOn in its original, unmodified form, for non-profit purposes. You are even free to include this AddOn in any compilation, package, distribution etc. in its original form so long as credit is given to the author. If you distribute or re-host this AddOn, either in a compilation or by itself, you must include a link to the AddOn's official page as the author is responsible for maintaining only the official page of the AddOn. You are allowed, for your own personal use only, to make modifications to this AddOn. You may distribute such modified form of this AddOn to your friends and guild members. However, you must NOT publically host or distribute a modified version of this AddOn on the Internet, without express permission of the author. The author reserves the right to deny any of the above to any person or sites for any reasons.
+The author holds all copyright to this AddOn. You are free to download, copy, distribute and re-host this AddOn in its original, unmodified form, for non-profit purposes. You are free to include this AddOn in any compilation, package, distribution etc. in its original form so long as credit is given to the author. If you distribute or re-host this AddOn, either in a compilation or by itself, you must include a link to the AddOn's official page as the author is responsible for maintaining only the official page of the AddOn. You are allowed, for your own personal use only, to make modifications to this AddOn and to privately distribute such modified form to people known to you (such as friends and guild members). However, you must not publically host or distribute a modified version of this AddOn, without express permission of the author. The author reserves the right to deny any of the above to any person or sites for any reasons.
 
 B) If you have obtained this AddOn as part of the Cosmos package:
 The terms and conditions on the use, redistribution etc. of the Cosmos package shall apply to this AddOn as well.

@@ -1,6 +1,6 @@
-﻿## Interface: 20300
+﻿## Interface: 30000
 
-## Title: LibRockConfig-1.0
+## Title: Lib: RockConfig-1.0
 ## Notes: Configuration library
 ## Notes-frFR: Librairie de configuration
 ## Author: ckknight

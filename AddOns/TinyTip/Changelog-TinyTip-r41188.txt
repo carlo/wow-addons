@@ -1,9 +1,0 @@
-------------------------------------------------------------------------
-r41188 | funkydude | 2007-06-21 22:17:34 -0400 (Thu, 21 Jun 2007) | 1 line
-Changed paths:
-   M /trunk/TinyTip
-   M /trunk/TinyTip/TinyTip.toc
-   A /trunk/TinyTip/embeds.xml
-
-TinyTip: use embeds.xml
-------------------------------------------------------------------------

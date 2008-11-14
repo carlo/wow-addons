@@ -1,7 +1,12 @@
-local CCBabble		= AceLibrary("Babble-Spell-2.2")
 local CCLocale		= AceLibrary("AceLocale-2.2"):new("CCBreaker")
 local CCWaterfall	= AceLibrary("Waterfall-1.0")
 
+local PolyId = CCBreaker.PolyId
+local ShackleId = CCBreaker.ShackleId
+local FreezingTrapId = CCBreaker.FreezingTrapId
+local HibernateId = CCBreaker.HibernateId
+local SapId = CCBreaker.SapId
+local SeductionId = CCBreaker.SeductionId
 
 CCBreaker:RegisterDefaults("char",{
 	debug = false;
@@ -53,6 +58,16 @@ CCBreaker:RegisterDefaults("char",{
 		sap = true,
 		seduction = true,
 	},
+	chat = {
+		raid = false,
+		raidwarning = false,
+		party = false,
+		strings={
+			two=CCLocale["[spell] on [target] was removed"],
+			three=CCLocale["[spell] on [target] was removed by [breaker]"],
+			four=CCLocale["[spell] on [target] was removed by [breaker]'s [ability]"],
+		},
+	},
 	display = {
 		fubar = {
 			spell = true,
@@ -91,6 +106,7 @@ CCBreaker:RegisterDefaults("char",{
 				three=CCLocale["[spell] on [target] was removed by [breaker]"],
 				four=CCLocale["[spell] on [target] was removed by [breaker]'s [ability]"],
 			},
+			colors = false;
 		},
 	},
 })
@@ -120,6 +136,71 @@ CCBreaker.OnMenuRequest = {
 			desc = CCLocale["Open config in a Waterall window"],
 			func = function() CCWaterfall:Open("CCBreaker") end,
 		},
+		
+		
+		
+		chat = {
+			type = "group",
+			name = CCLocale["chat"],
+			desc = CCLocale["Chat options"],
+			args = {
+				raid = {
+					type = "toggle",
+					name = CCLocale["raid"],
+					desc = CCLocale["broadcast to raid"],
+					get = function() return CCBreaker.db.char.chat.raid end,
+					set = function(v) CCBreaker.db.char.chat.raid = v end,
+				},
+				raidwarning = {
+					type = "toggle",
+					name = CCLocale["raidwarning"],
+					desc = CCLocale["broadcast as raidwarning"],
+					get = function() return CCBreaker.db.char.chat.raidwarning end,
+					set = function(v) CCBreaker.db.char.chat.raidwarning = v end,
+				},
+				party = {
+					type = "toggle",
+					name = CCLocale["party"],
+					desc = CCLocale["broadcast to party"],
+					get = function() return CCBreaker.db.char.chat.party end,
+					set = function(v) CCBreaker.db.char.chat.party = v end,
+				},
+				text = {
+					type = "group",
+					name = CCLocale["text"],
+					desc = CCLocale["Change the displayed text, leave blank for default"],
+					args ={
+						two = {
+							type = "text",
+							name = CCLocale["two"],
+							desc = CCLocale["text if only spell an target are given"],
+							usage = "[spell], [target]",
+							get = function() return CCBreaker.db.char.chat.strings.two end,
+							set = function(v) CCBreaker.db.char.chat.strings.two = v end,
+						},
+						three = {
+							type = "text",
+							name = CCLocale["three"],
+							desc = CCLocale["text if only spell, target and breaker are given"],
+							usage = "[spell], [target], [breaker]",
+							get = function() return CCBreaker.db.char.display.console.strings.three end,
+							set = function(v) CCBreaker.db.char.chat.strings.three = v end,
+						},
+						four = {
+							type = "text",
+							name = CCLocale["four"],
+							desc = CCLocale["text if spell, target, breaker and ability are given"],
+							usage = "[spell], [target], [breaker], [ability]",
+							get = function() return CCBreaker.db.char.display.console.strings.four end,
+							set = function(v) CCBreaker.db.char.chat.strings.four = v end,
+						},
+					},
+				},
+			},
+		},
+		
+		
+		
 		display = {
 			type = "group",
 			name = CCLocale["display"],
@@ -299,6 +380,7 @@ CCBreaker.OnMenuRequest = {
 			name = CCLocale["filter"],
 			desc = CCLocale["Filter Options"],
 			args = {
+				
 				showon = {
 					type = "group",
 					name = CCLocale["show on"],
@@ -615,45 +697,45 @@ CCBreaker.OnMenuRequest = {
 					args = {
 						freezingtrap = {
 							type = "toggle",
-							name = CCBabble["Freezing Trap"],
-							desc = string.gsub(CCLocale["Show break of [spell]"],"[spell]",CCBabble["Freezing Trap"]),
+							name = GetSpellInfo(3355),
+							desc = CCLocale["Show break of "]..GetSpellInfo(3355),
 							get = function() return CCBreaker.db.char.showeffects.freezingtrap end,
 							set = function(v) CCBreaker.db.char.showeffects.freezingtrap = v end,
 						},
 						hibernate = {
 							type = "toggle",
-							name = CCBabble["Hibernate"],
-							desc = string.gsub(CCLocale["Show break of [spell]"],"[spell]",CCBabble["Hibernate"]),
+							name = GetSpellInfo(2637),
+							desc = CCLocale["Show break of "], GetSpellInfo(2637),
 							get = function() return CCBreaker.db.char.showeffects.hibernate end,
 							set = function(v) CCBreaker.db.char.showeffects.hibernate = v end,
 						},
 						polymorph = {
 							type = "toggle",
-							name = CCBabble["Polymorph"],
-							desc = string.gsub(CCLocale["Show break of [spell]"],"[spell]",CCBabble["Polymorph"]..", "
-								..CCBabble["Polymorph: Pig"].." and "
-								..CCBabble["Polymorph: Turtle"]),
+							name = GetSpellInfo(118),
+							desc = CCLocale["Show break of "]..GetSpellInfo(118)..", "
+								..GetSpellInfo(28271).." and "
+								..GetSpellInfo(28272),
 							get = function() return CCBreaker.db.char.showeffects.polymorph end,
 							set = function(v) CCBreaker.db.char.showeffects.polymorph = v end,
 						},
 						sap = {
 							type = "toggle",
-							name = CCBabble["Sap"],
-							desc = string.gsub(CCLocale["Show break of [spell]"],"[spell]",CCBabble["Sap"]),
+							name = GetSpellInfo(6770),
+							desc = CCLocale["Show break of "]..GetSpellInfo(6770),
 							get = function() return CCBreaker.db.char.showeffects.sap end,
 							set = function(v) CCBreaker.db.char.showeffects.sap = v end,
 						},
 						seduction = {
 							type = "toggle",
-							name = CCBabble["Seduction"],
-							desc = string.gsub(CCLocale["Show break of [spell]"],"[spell]",CCBabble["Seduction"]),
+							name = GetSpellInfo(6358),
+							desc = CCLocale["Show break of "]..GetSpellInfo(6358),
 							get = function() return CCBreaker.db.char.showeffects.seduction end,
 							set = function(v) CCBreaker.db.char.showeffects.seduction = v end,
 						},
 						shackleundead = {
 							type = "toggle",
-							name = CCBabble["Shackle Undead"],
-							desc = string.gsub(CCLocale["Show break of [spell]"],"[spell]",CCBabble["Shackle Undead"]),
+							name = GetSpellInfo(9484),
+							desc = CCLocale["Show break of "]..GetSpellInfo(9484),
 							get = function() return CCBreaker.db.char.showeffects.shackleundead end,
 							set = function(v) CCBreaker.db.char.showeffects.shackleundead = v end,
 						},
@@ -666,7 +748,7 @@ CCBreaker.OnMenuRequest = {
 
 
 
-CCBreaker:RegisterChatCommand(CCLocale["Slash-Commands"],CCBreaker.OnMenuRequest)
+--CCBreaker:RegisterChatCommand(CCLocale["Slash-Commands"],CCBreaker.OnMenuRequest)
 CCWaterfall:Register("CCBreaker","aceOptions",CCBreaker.OnMenuRequest,"title","CCBreaker Options","treeLevels",3) 
 
 

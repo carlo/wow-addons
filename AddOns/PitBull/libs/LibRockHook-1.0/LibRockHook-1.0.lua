@@ -1,6 +1,6 @@
 --[[
 Name: LibRockHook-1.0
-Revision: $Rev: 50342 $
+Revision: $Rev: 228 $
 Developed by: ckknight (ckknight@gmail.com)
 Website: http://www.wowace.com/
 Description: Library to allow for safe hooking of functions, methods, and scripts.
@@ -9,7 +9,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockHook-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 50342 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 228 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 

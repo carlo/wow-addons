@@ -6,6 +6,8 @@ else
 	MetaMap_Locale = "en";
 end
 
+METAMAP_WLK_INFO = "Northrend Dungeon"; --WotLK Dungeon info: needs localization
+
 MetaMap_Colors = {}
 MetaMap_Colors[0] = {r = 1.0, g = 0.82, b = 0.0}
 MetaMap_Colors[1] = {r = 0.55, g = 0.46, b = 0.04}
@@ -40,6 +42,7 @@ MetaMap_MapScale[2][2] = {xscale = 14703.1, yscale = 9825.0};
 MetaMap_MapScale[2][3] = {xscale = 18568.7, yscale = 12472.2};
 MetaMap_MapScale[2][4] = {xscale = 24390.3, yscale = 15628.5};
 MetaMap_MapScale[2][5] = {xscale = 37012.2, yscale = 25130.6};
+--Outlands scaling
 MetaMap_MapScale[3]    = {};
 MetaMap_MapScale[3][0] = {xscale = 10448.3, yscale = 7072.7};
 MetaMap_MapScale[3][1] = {xscale = 12160.5, yscale = 8197.8};
@@ -47,6 +50,14 @@ MetaMap_MapScale[3][2] = {xscale = 14703.1, yscale = 9825.0};
 MetaMap_MapScale[3][3] = {xscale = 18568.7, yscale = 12472.2};
 MetaMap_MapScale[3][4] = {xscale = 24390.3, yscale = 15628.5};
 MetaMap_MapScale[3][5] = {xscale = 37012.2, yscale = 25130.6};
+--Northrend scaling (just copied from Outland values, so it may be wrong)
+MetaMap_MapScale[4]    = {};
+MetaMap_MapScale[4][0] = {xscale = 10448.3, yscale = 7072.7};
+MetaMap_MapScale[4][1] = {xscale = 12160.5, yscale = 8197.8};
+MetaMap_MapScale[4][2] = {xscale = 14703.1, yscale = 9825.0};
+MetaMap_MapScale[4][3] = {xscale = 18568.7, yscale = 12472.2};
+MetaMap_MapScale[4][4] = {xscale = 24390.3, yscale = 15628.5};
+MetaMap_MapScale[4][5] = {xscale = 37012.2, yscale = 25130.6};
 
 --- ZoneName matrix for English/German/French/Spanish exports/imports/data
 MetaMap_ZoneTable = {
@@ -170,7 +181,33 @@ MetaMap_ZoneTable = {
 	[128] = {ztype = "DN", en = "Gruul's Lair", de = "Gruuls Unterschlupf", fr = "Gruul's Lair", es = "Gruul's Lair", Continent = 3, Location = 61, LevelRange = "70+", PlayerLimit = "25",  infoline = METAMAP_GRL_INFO, texture = "GruulsLair"},
 	[129] = {ztype = "DN", en = "Serpentshrine Cavern", de = "H\195\182hle des Schlangenschreins", fr = "Serpentshrine Cavern", es = "Serpentshrine Cavern", Continent = 3, Location = 67, LevelRange = "70+", PlayerLimit = "25",  infoline = METAMAP_CFR_INFO, texture = "Serpentshrine"},
 	[130] = {ztype = "DN", en = "The Eye of Storms", de = "Auge des Sturms", fr = "The Eye of Storms", es = "The Eye of Storms", Continent = 3, Location = 63, LevelRange = "70+", PlayerLimit = "25",  infoline = METAMAP_TTK_INFO, texture = "EyeOfTheStorm"},
-}
+	--WotLK Dungeons
+	[130] = {ztype = "DN", en = "Utgarde Keep", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "UtgardeKeep"},
+	[131] = {ztype = "DN", en = "Azjol-Nerub", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "AzjolNerub"},
+	[132] = {ztype = "DN", en = "Ahn'kahet", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "AhnKahet"},
+	[133] = {ztype = "DN", en = "Ulduar", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "Ulduar"},
+	[134] = {ztype = "DN", en = "Naxxramas II", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "NaxxramasII"},
+	[135] = {ztype = "DN", en = "The Nexus", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "TheNexus"},
+	[136] = {ztype = "DN", en = "Icecrown Citadel", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "IcecrownCitadel"},
+	[137] = {ztype = "DN", en = "Drak'Tharon Keep", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "DrakTharonKeep"},
+	[138] = {ztype = "DN", en = "Chamber of Aspects", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "ChamberOfAspects"},
+	[130] = {ztype = "DN", en = "The Violet Hold", de = "", fr = "", es = "", Continent = 4, Location = 200, LevelRange = "70+", PlayerLimit = "10",  infoline = METAMAP_WLK_INFO, texture = "TheVioletHold"},
+--- Northrend
+	[200] = {ztype = "SZ", en = "The Storm Peaks", de = "The Storm Peaks", fr = "The Storm Peaks", es = "The Storm Peaks", llvl = 76, hlvl = 80, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[201] = {ztype = "SZ", en = "Dragonblight", de = "Dragonblight", fr = "Dragonblight", es = "Dragonblight", llvl = 71, hlvl = 74, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[202] = {ztype = "SZ", en = "Borean Tundra", de = "Borean Tundra", fr = "Borean Tundra", es = "Borean Tundra", llvl = 68, hlvl = 72, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[203] = {ztype = "SZ", en = "Grizzly Hills", de = "Grizzly Hills", fr = "Grizzly Hills", es = "Grizzly Hills", llvl = 73, hlvl = 75, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[204] = {ztype = "SZ", en = "Howling Fjord", de = "Howling Fjord", fr = "Howling Fjord", es = "Howling Fjord", llvl = 68, hlvl = 72, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[205] = {ztype = "SZ", en = "Crystalsong Forest", de = "Crystalsong Forest", fr = "Crystalsong Forest", es = "Crystalsong Forest", llvl = 74, hlvl = 76, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[206] = {ztype = "SZ", en = "Sholazar Basin", de = "Sholazar Basin", fr = "Sholazar Basin", es = "Sholazar Basin", llvl = 75, hlvl = 78, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[207] = {ztype = "SZ", en = "Zul'Drak", de = "Zul'Drak", fr = "Zul'Drak", es = "Zul'Drak", llvl = 74, hlvl = 77, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[208] = {ztype = "SZ", en = "Icecrown", de = "Icecrown", fr = "Icecrown", es = "Icecrown", llvl = 77, hlvl = 80, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[209] = {ztype = "SZ", en = "Wintergrasp", de = "Wintergrasp", fr = "Wintergrasp", es = "Wintergrasp", llvl = 68, hlvl = 80, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	[210] = {ztype = "SZ", en = "Dalaran", de = "Dalaran", fr = "Dalaran", es = "Dalaran", llvl = 68, hlvl = 80, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+	--[211] = {ztype = "SZ", en = "Coldarra", de = "Coldarra", fr = "Coldarra", es = "Coldarra", llvl = 68, hlvl = 72, faction = "Contested", scale = 0.10996723642661, xoffset = 0.51663255550387, yoffset = 0.15624753972085},
+
+	
+	}
 
 for index, zoneTable in pairs(MetaMap_ZoneTable) do
 	if(zoneTable.ztype == "DN") then

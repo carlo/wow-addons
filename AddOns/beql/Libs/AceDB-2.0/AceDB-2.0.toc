@@ -1,4 +1,5 @@
-## Interface: 20200
+## Interface: 30000
+## X-Curse-Packaged-Version: r1093
 
 ## Title: Lib: AceDB-2.0
 ## Notes: AddOn development framework

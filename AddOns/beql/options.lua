@@ -96,7 +96,7 @@ beql.options = {
 					name = L["Simple Quest Log"],
 					desc = L["Uses the default Blizzard Quest Log"].." - "..L["Requires Interface Reload"],
 					get = function() return beql.db.profile.simplequestlog end,
-					set = function(newval) beql.db.profile.simplequestlog = newval ReloadUI() end,
+					set = function(newval) beql.db.profile.simplequestlog = newval end,
 					disabled = function() return beql.db.profile.disabled.simplequestlog end,
 					order = 10,
 				},
@@ -153,7 +153,7 @@ beql.options = {
 			name = L["Disable Tracker"],
 			desc = L["Disable the Tracker"].." - "..L["Requires Interface Reload"],
 			get = function() return beql.db.profile.disabledtracker end,
-			set = function(newval) beql.db.profile.disabledtracker = newval ReloadUI() end,
+			set = function(newval) beql.db.profile.disabledtracker = newval end,
 		},
 		qtrackeroption = {
 			type = 'group',

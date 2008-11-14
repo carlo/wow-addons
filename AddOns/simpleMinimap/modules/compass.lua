@@ -28,12 +28,13 @@ L:RegisterTranslations("zhTW", function() return({
 
 L:RegisterTranslations("deDE", function() return({
 	compass = "Kompass",
+	compass_desc = "NSOW Himmelsrichtungsbuchstaben auf der Minimap",
 	Ncolor = "N Schriftfarbe",
 	Ncolor_desc = "Stellt Kompassfarbe für Norden ein",
 	SEWcolor = "SOW Schriftfarbe",
-	SEWcolor_desc = "Stellt die Schriftfarbe für die S O W Buchstaben ein",
+	SEWcolor_desc = "Stellt die Schriftfarbe für die SOW Buchstaben ein",
 	size = "Größe",
-	size_desc = "Schriftgröße der Himmelrichtungsbuchstaben",
+	size_desc = "Schriftgröße der Himmelsrichtungsbuchstaben",
 	E = "O",
 }) end)
 
@@ -73,6 +74,21 @@ L:RegisterTranslations("esES", function() return({
 	size = "Tamaño",
 	size_desc = "Tamaño de fuente de los marcadores de la br\195\186jula",
 	W = "O"
+}) end)
+-- Russian Translation by Ynitron, hwost, StingerSoft
+L:RegisterTranslations("ruRU", function() return({
+	compass = "Компас",
+	compass_desc = "Отображает путевой знаки С.Ю.В.З на мини-карте",
+	Ncolor = "Цвет шрифта направления С",
+	Ncolor_desc = "Установка шрифта для путевого знака \"Севера\"",
+	SEWcolor = "Цвет шрифта направлений ЮВЗ",
+	SEWcolor_desc = "Установка цвета шрифта остальных путевых знаков исключая \"Севера\"",
+	size = "Размер",
+	size_desc = "Размер шрифта путевых знаков компаса",
+	N = "C",
+	S = "Ю",
+	E = "В",
+	W = "З"
 }) end)
 
 local mod = simpleMinimap:NewModule("compass")
@@ -163,7 +179,6 @@ function mod:OnEnable()
 				f:SetText(L[dir])
 				f:SetShadowOffset(-1, -1)
 				f:SetShadowColor(0, 0, 0, 1)
-				MinimapNorthTag:Hide()
 				frames[dir] = f
 			end
 		end
@@ -175,7 +190,6 @@ function mod:OnDisable()
 	for dir, f in pairs(frames) do
 		f:Hide()
 	end
-	MinimapNorthTag:Show()
 end
 
 function mod:UpdateScreen()
@@ -194,4 +208,3 @@ function mod:UpdateScreen()
 		end
 	end
 end
-

@@ -2,14 +2,14 @@ FLIGHTMAP_MAX_TAXIPATHS = 48;
 FLIGHTMAP_MAX_TAXINODES = 32;
 
 -- Continent number -> TAXIMAPnnn
-local continent_maps = {"1", "0", "530"};
+local continent_maps = {"1", "0", "530", "571"};
 
 function FlightMapTaxi_SetContinent(cont)
     local cname = FlightMapUtil.getContinentName(cont);
     TaxiMerchant:SetText(cname);
     local tname = "Interface\\TaxiFrame\\TAXIMAP" .. continent_maps[cont];
     TaxiMap:SetTexture(tname);
-    FlightMapTaxiFrame_OnEvent(cont);
+    FlightMapTaxiFrame_OnEvent(nil, cont);
 end
 
 function FlightMapTaxi_ShowContinent()
@@ -30,7 +30,7 @@ function FlightMapTaxi_ShowContinent()
 
     -- Must kill "OnShow" handler briefly
     local onshow = TaxiFrame:GetScript("OnShow");
-    TaxiFrame:SetScript("OnShow", function()
+    TaxiFrame:SetScript("OnShow", function(self)
         PlaySound("igMainMenuOpen");
     end);
     ShowUIPanel(TaxiFrame, 1);
@@ -63,14 +63,14 @@ function FlightMapTaxiButton_OnLeave(button)
     GameTooltip:Hide();
 end
 
-function FlightMapTaxiFrame_OnLoad()
-    this:RegisterEvent("TAXIMAP_OPENED");
+function FlightMapTaxiFrame_OnLoad(self)
+    self:RegisterEvent("TAXIMAP_OPENED");
     TaxiButtonTypes["UNKNOWN"] = {
 	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Gray"
     };
 end
 
-function FlightMapTaxiFrame_OnEvent(event)
+function FlightMapTaxiFrame_OnEvent(self, event, ...)
     -- Hide any unused lines left over from a previous flight master visit
     for i = 1, FLIGHTMAP_MAX_TAXIPATHS, 1 do
         getglobal("FlightMapTaxiPath" .. i):Hide();
@@ -173,9 +173,9 @@ function FlightMapTaxiFrame_OnEvent(event)
     end
 end
 
-function FlightMapTaxiContinents_OnLoad()
-    UIDropDownMenu_Initialize(this, FlightMapTaxiContinents_Initialize);
-    UIDropDownMenu_SetWidth(130);
+function FlightMapTaxiContinents_OnLoad(self)
+    UIDropDownMenu_Initialize(self, FlightMapTaxiContinents_Initialize);
+    UIDropDownMenu_SetWidth(self, 130);
 end
 
 function FlightMapTaxiContinents_Initialize()
@@ -193,7 +193,7 @@ function FlightMapTaxiContinents_Initialize()
     init(GetMapContinents());
 end
 
-function FlightMapTaxiContinents_OnClick()
-    UIDropDownMenu_SetSelectedID(FlightMapTaxiContinents, this:GetID());
-    FlightMapTaxi_SetContinent(this:GetID());
+function FlightMapTaxiContinents_OnClick(self)
+    UIDropDownMenu_SetSelectedID(FlightMapTaxiContinents, self:GetID());
+    FlightMapTaxi_SetContinent(self:GetID());
 end

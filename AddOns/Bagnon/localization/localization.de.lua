@@ -3,15 +3,12 @@
 		Credit goes to Sarkan on Curse and ArtureLeCoiffeur on ui.worldofwar.net
 --]]
 
-
-if GetLocale() ~= "deDE" then return end
-
-local L = BAGNON_LOCALS
+local L = LibStub('AceLocale-3.0'):NewLocale('Bagnon', 'deDE')
+if not L then return end
 
 --bindings
-BINDING_HEADER_BAGNON = "Bagnon"
-BINDING_NAME_BAGNON_TOGGLE = "Inventar umschalte"
-BINDING_NAME_BANKNON_TOGGLE = "Bank umschalten"
+L.BagnonToggle = "Inventar umschalte"
+L.BanknonToggle = "Bank umschalten"
 
 --system messages
 L.NewUser = "New user detected, default settings loaded"
@@ -39,14 +36,3 @@ L.TipShowSearch = "<Doppelklick> zum Suchen"
 L.TipShowBag = "<Klick> zum zeigen"
 L.TipHideBag = "<Klick> zum verstecken"
 L.TipGoldOnRealm = "Total on %s"
-
---menu text
-L.FrameSettings = "Einstellungen"
-L.Lock = "Position verriegeln"
-L.Toplevel = "Immer oben"
-L.BackgroundColor = "Hintergrund"
-L.FrameLevel = "Layer"
-L.Opacity = "Abdeckung"
-L.Scale = "Skalierung"
-L.Spacing = "Abstand"
-L.Cols = "Spalten"

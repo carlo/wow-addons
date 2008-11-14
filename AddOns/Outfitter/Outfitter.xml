@@ -4,20 +4,15 @@
 	<Button name="OutfitterTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOpen");
-				PanelTemplates_Tab_OnClick(OutfitterFrame);
-				Outfitter_ShowPanel(OutfitterFrame.selectedTab);
+				PlaySound("igMainMenuOpen")
+				Outfitter:ShowPanel(self:GetID())
 			</OnClick>
 		</Scripts>
 	</Button>
 
-	<Button name="OutfitterDebugFrameScrollBarEntryTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="150" y="16" />
-		</Size>
-		<NormalFont inherits="GameFontHighlight" justifyH="LEFT"/>
-	</Button>
-
+	<CheckButton name="OutfitterCheckboxTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+	</CheckButton>
+	
 	<Frame name="OutfitterInputFrameTemplate" hidden="false" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -86,14 +81,23 @@
 		</Layers>
 	</Frame>
 
-	<EditBox name="OutfitterInputBoxTemplate" inherits="OutfitterInputFrameTemplate" virtual="true">
+	<EditBox name="OutfitterInputBoxTemplate" enableKeyboard="true" inherits="OutfitterInputFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="RIGHT" relativePoint="LEFT">
 							<Offset>
-								<AbsDimension x="-12" y="0" />
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSuffix" inherits="GameFontNormalSmall" text="" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -102,19 +106,20 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				OutfitterInputBox_OnLoad(0);
+				Outfitter.InputBox_OnLoad(self, 0)
 			</OnLoad>
 			<OnTabPressed>
-				OutfitterInputBox_TabPressed();
+				Outfitter.InputBox_TabPressed(self)
 			</OnTabPressed>
 			<OnEscapePressed>
-				this:ClearFocus();
+				MCDebugLib:TestMessage("OnEscapePressed")
+				self:ClearFocus()
 			</OnEscapePressed>
 			<OnEditFocusLost>
-				this:HighlightText(0, 0);
+				-- self:HighlightText(0, 0)
 			</OnEditFocusLost>
 			<OnEditFocusGained>
-				this:HighlightText();
+				self:HighlightText()
 			</OnEditFocusGained>
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
@@ -154,89 +159,50 @@
 		</Layers>
 		<Scripts>
 			<OnSizeChanged>
-				OutfitterScrollbarTrench_SizeChanged(this);
+				Outfitter.ScrollbarTrench_SizeChanged(self);
 			</OnSizeChanged>
 		</Scripts>
 	</Frame>
 
 	<CheckButton name="OutfitterEnableTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="24" y="24" />
+			<AbsDimension x="24" y="24"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture>
 					<Size>
-						<AbsDimension x="14" y="14" />
+						<AbsDimension x="14" y="14"/>
 					</Size>
 					<Anchors>
-						<Anchor point="CENTER" />
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.6" />
+					<Color r="0" g="0" b="0" a="0.6"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnClick>
-				Outfitter_SlotEnableClicked(this, arg1);
-			</OnClick>
-      <OnReceiveDrag>
-          Outfitter_SlotEnableClicked(this, "LeftButton", 1);
-      </OnReceiveDrag>
-      <OnEnter>
-				GameTooltip_AddNewbieTip(Outfitter_cSlotEnableTitle, 1, 1, 1, Outfitter_cSlotEnableDescription, 1);
-      </OnEnter>
-      <OnLeave>
-				GameTooltip:Hide();
-      </OnLeave>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
-	</CheckButton>
-
-	<CheckButton name="OutfitterEnableTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="24" y="24" />
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture>
-					<Size>
-						<AbsDimension x="14" y="14" />
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.6" />
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				Outfitter_SlotEnableClicked(this, arg1);
+				Outfitter:SlotEnableClicked(self, button);
 			</OnClick>
             <OnReceiveDrag>
-                Outfitter_SlotEnableClicked(this, "LeftButton", 1);
+                Outfitter:SlotEnableClicked(self, "LeftButton", 1);
             </OnReceiveDrag>
             <OnEnter>
-				GameTooltip_AddNewbieTip(Outfitter_cSlotEnableTitle, 1, 1, 1, Outfitter_cSlotEnableDescription, 1);
+				Outfitter.AddNewbieTip(self, Outfitter.cSlotEnableTitle, 1, 1, 1, Outfitter.cSlotEnableDescription, 1);
             </OnEnter>
             <OnLeave>
 				GameTooltip:Hide();
             </OnLeave>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 
 	<Slider name="Outfitter_SliderTemplate" virtual="true">
--- modified by jtbalogh
 		<Size>
 			<AbsDimension x="16" y="0"/>
 		</Size>
@@ -247,7 +213,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent()
+						local parent = self:GetParent()
 						parent:SetValue(parent:GetValue() - 1)
 						PlaySound("UChatScrollButton")
 					</OnClick>
@@ -259,7 +225,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						local parent = this:GetParent()
+						local parent = self:GetParent()
 						parent:SetValue(parent:GetValue() + 1)
 						PlaySound("UChatScrollButton")
 					</OnClick>
@@ -268,7 +234,7 @@
 		</Frames>
 		<Scripts>
 			<OnValueChanged>
-				this:GetParent():SetVerticalScroll(arg1)
+				self:GetParent():SetVerticalScroll(value)
 			</OnValueChanged>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
@@ -278,7 +244,6 @@
 		</ThumbTexture>
 	</Slider>
 	<ScrollFrame name="Outfitter_ScrollFrameTemplate" virtual="true">
--- modified by jtbalogh
 		<Frames>
 			<Slider name="$parentScrollBar" inherits="Outfitter_SliderTemplate">
 				<Anchors>
@@ -297,14 +262,14 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				getglobal(this:GetName().."ScrollBar"):SetValueStep(1);
+				getglobal(self:GetName().."ScrollBar"):SetValueStep(1);
 			</OnLoad>
 			<OnVerticalScroll>
-				local scrollbar = getglobal(this:GetName().."ScrollBar");
+				local scrollbar = getglobal(self:GetName().."ScrollBar");
 				local val = scrollbar:GetValue()
 				local min, max = scrollbar:GetMinMaxValues();
 
-				if arg1 == min then
+				if offset == min then
 					getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
 				else
 					getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
@@ -315,13 +280,12 @@
 					getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
 				end
 
-				Outfitter_OnScroll(this)
+				Outfitter:OnScroll(self)
 			</OnVerticalScroll>
 		</Scripts>
 	</ScrollFrame>
 
 	<Button name="Outfitter_ListButtonTemplate" hidden="false" virtual="true">
--- modified by jtbalogh
 		<Size>
 			<AbsDimension x="140" y="16"/>
 		</Size>
@@ -337,28 +301,28 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				self:SetFrameLevel(self:GetFrameLevel() + 1);
 
-				this.Number = tonumber(string.sub(this:GetName(), string.len(this:GetName())-1)) -- assuming 2 digits
-				if not this.Number then
-					this.Number = tonumber(string.sub(this:GetName(), string.len(this:GetName()))) -- assuming one digit
+				self.Number = tonumber(string.sub(self:GetName(), string.len(self:GetName())-1)) -- assuming 2 digits
+				if not self.Number then
+					self.Number = tonumber(string.sub(self:GetName(), string.len(self:GetName()))) -- assuming one digit
 				end
 			</OnLoad>
 			<OnClick>
-				Outfitter_ListButton_OnClick(this);
+				Outfitter:ListButton_OnClick(self);
 			</OnClick>
 			<OnEnter>
-				Outfitter_ListButton_OnEnter(this)
+				Outfitter:ListButton_OnEnter(self)
 			</OnEnter>
 			<OnLeave>
-				Outfitter_ListButton_OnLeave(this)
+				Outfitter:ListButton_OnLeave(self)
 			</OnLeave>
 			<OnMouseWheel>
-				local scrollbar = getglobal(this:GetParent():GetName().."ScrollFrameScrollBar")
-				local scrollbarupbutton = getglobal(this:GetParent():GetName().."ScrollFrameScrollBarScrollUpButton")
-				local scrollbardownbutton = getglobal(this:GetParent():GetName().."ScrollFrameScrollBarScrollDownButton")
+				local scrollbar = getglobal(self:GetParent():GetName().."ScrollFrameScrollBar")
+				local scrollbarupbutton = getglobal(self:GetParent():GetName().."ScrollFrameScrollBarScrollUpButton")
+				local scrollbardownbutton = getglobal(self:GetParent():GetName().."ScrollFrameScrollBarScrollDownButton")
 				if not scrollbar:IsVisible() then
-				elseif arg1 > 0 then -- up,down = 1,-1
+				elseif delta > 0 then -- up,down = 1,-1
 					local parent = scrollbarupbutton:GetParent()
 					parent:SetValue(parent:GetValue() - 1)
 					PlaySound("UChatScrollButton")
@@ -367,139 +331,24 @@
 					parent:SetValue(parent:GetValue() + 1)
 					PlaySound("UChatScrollButton")
 				end
-				Outfitter_ListButton_OnLeave(this)
-				Outfitter_ListButton_OnEnter(this)
+				Outfitter:ListButton_OnLeave(self)
+				Outfitter:ListButton_OnEnter(self)
 			</OnMouseWheel>
 		</Scripts>
 	</Button>
-	<Frame name="Outfitter_ListBoxTemplate" virtual="true">
-		-- modified by jtbalogh
-		<Size>
-			<AbsDimension x="200" y="180"/> -- size for 10 buttons
-		</Size>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" >
-			<EdgeSize>
-				<AbsValue val="16" />
-			</EdgeSize>
-			<Color r="0" g="0" b="0" a="1" />
-			<BorderColor r="1" g="0.8" b="0" a="1" />
-		</Backdrop>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOP"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentHighlight" hidden="true">
-				<Size>
-					<AbsDimension x="180" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="5" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentTexture" file="Interface\Buttons\UI-Listbox-Highlight2"/>
-					</Layer>
-				</Layers>
-			</Frame>
-			<Button name="$parentButton1" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="5" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton2" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton3" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton4" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton5" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton4" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton6" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton7" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton8" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton7" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton9" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton8" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentButton10" inherits="Outfitter_ListButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentButton9" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<ScrollFrame name="$parentScrollFrame" inherits="Outfitter_ScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="10"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-13" y="-2"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-13" y="2"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</ScrollFrame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				--UIDropDownMenu_SetWidth(50, this);
-				getglobal(this:GetName().."HighlightTexture"):SetVertexColor(0.75, 0.75, 0.25);
-				Outfitter_ListBox_OnLoad(this);
-			</OnLoad>
-			<OnShow>
-				Outfitter_ListBox_OnShow(this);
-			</OnShow>
-		</Scripts>
-	</Frame>
-
 	<Button name="OutfitterSmallButtonTemplate" virtual="true">
-		<ButtonText name="$parentText"/>
-		<NormalFont inherits="GameFontNormalSmall"/>
-		<HighlightFont inherits="GameFontHighlightSmall"/>
-		<DisabledFont inherits="GameFontDisableSmall"/>
+		<ButtonText name="$parentText">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall" inherits="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall" inherits="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall" inherits="GameFontDisableSmall"/>
 		<NormalTexture inherits="UIPanelButtonUpTexture"/>
 		<PushedTexture inherits="UIPanelButtonDownTexture"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
@@ -511,20 +360,22 @@
 		</Size>
 		<Scripts>
 			<OnClick>
-				ToggleDropDownMenu(nil, nil, this, this);
+				ToggleDropDownMenu(nil, nil, self, self);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 			<OnHide>
 				CloseDropDownMenus();
 			</OnHide>
 			<OnLoad>
-				this.SavedHeight = this:GetHeight();
-				this.ChangedValueFunc = Outfitter_OutfitItemSelected;
+				self.SavedHeight = self:GetHeight()
+				self.ChangedValueFunc = Outfitter.OutfitItemSelected
+				self.initialize = Outfitter.ItemDropDown_Initialize
 			</OnLoad>
-			<OnShow>
-				OutfitterItemDropDown_OnLoad();
-			</OnShow>
 		</Scripts>
+		<Frames>
+			<Frame name="$parentLeft" setAllPoints ="true">
+			</Frame>
+		</Frames>
 		<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
 			<TexCoords left="0.09375" top="0.09375" right="0.90625" bottom="0.90625"/>
 		</NormalTexture>
@@ -538,7 +389,7 @@
 	</Button>
 	<Frame name="OutfitterItemTemplate" hidden="true" virtual="true">
 		<Size>
-			<AbsDimension x="224" y="18" />
+			<AbsDimension x="224" y="18"/>
 		</Size>
 		<Frames>
 			<Frame name="$parentItem" hidden="true" setAllPoints="true">
@@ -546,12 +397,12 @@
 					<Layer level="OVERLAY">
 						<Texture name="$parentIcon" file="">
 							<Size>
-								<AbsDimension x="16" y="16" />
+								<AbsDimension x="16" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="28" y="-1" />
+										<AbsDimension x="28" y="-1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -559,12 +410,12 @@
 						<FontString name="$parentName" text="Outfit name" inherits="GameFontNormal" justifyH="LEFT"
 							justifyV="BOTTOM">
 							<Size>
-								<AbsDimension x="175" y="16" />
+								<AbsDimension x="175" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT">
 									<Offset>
-										<AbsDimension x="3" y="2" />
+										<AbsDimension x="3" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -578,46 +429,58 @@
 						<FontString name="$parentName" text="Outfit name" inherits="GameFontNormal" justifyH="LEFT"
 							justifyV="BOTTOM">
 							<Size>
-								<AbsDimension x="175" y="16" />
+								<AbsDimension x="159" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="28" y="1" />
+										<AbsDimension x="28" y="1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<Texture name="$parentScriptIcon" file="">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
 					<CheckButton name="$parentSelected" hidden="false">
 						<Size>
-							<AbsDimension x="24" y="24" />
+							<AbsDimension x="24" y="24"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="5" y="-3" />
+									<AbsDimension x="5" y="-3"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								OutfitterItem_CheckboxClicked(this:GetParent():GetParent());
+								Outfitter.Item_CheckboxClicked(self:GetParent():GetParent());
 							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
-						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
-						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
-						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
-						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 					</CheckButton>
 					<Button name="$parentMenu" inherits="OutfitterItemMenuTemplate">
 						<Anchors>
-							<Anchor point="CENTER" relativeTo="$parentName" relativePoint="RIGHT">
+							<Anchor point="LEFT" relativeTo="$parentScriptIcon" relativePoint="RIGHT">
 								<Offset>
-									<AbsDimension x="10" y="-2" />
+									<AbsDimension x="0" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -629,58 +492,60 @@
 					<Layer level="OVERLAY">
 						<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM">
 							<Size>
-								<AbsDimension x="200" y="16" />
+								<AbsDimension x="200" y="16"/>
 							</Size>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT">
 									<Offset>
-										<AbsDimension x="21" y="3" />
+										<AbsDimension x="21" y="3"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
-							<Color r="1" g="1" b="1" />
+							<Color r="1" g="1" b="1"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button name="$parentExpand">
 						<Size>
-							<AbsDimension x="16" y="16" />
+							<AbsDimension x="16" y="16"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="5" y="1" />
+									<AbsDimension x="5" y="1"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+								self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 							</OnLoad>
 							<OnClick>
-								OutfitterItem_OnClick(this:GetParent():GetParent(), arg1);
+								Outfitter.Item_OnClick(self:GetParent():GetParent(), button)
 							</OnClick>
 						</Scripts>
-						<NormalTexture setAllPoints="true" file="Interface\Buttons\UI-MinusButton-UP" />
+						<NormalTexture setAllPoints="true" file="Interface\Buttons\UI-MinusButton-UP"/>
 						<HighlightTexture setAllPoints="true" name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight"
-							alphaMode="ADD" />
+							alphaMode="ADD"/>
 					</Button>
 				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+				self.OutfitMenu = getglobal(self:GetName().."OutfitMenu")
+				self.UpdateTooltip = Outfitter.Item_OnEnter
 			</OnLoad>
 			<OnClick>
-				OutfitterItem_OnClick(this, arg1);
+				Outfitter.Item_OnClick(self, button)
 			</OnClick>
 			<OnEnter>
-				OutfitterItem_OnEnter(this);
+				Outfitter.Item_OnEnter(self)
 			</OnEnter>
 			<OnLeave>
-				OutfitterItem_OnLeave(this);
+				Outfitter.Item_OnLeave(self)
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -688,68 +553,46 @@
 		<Frames>
 			<Button name="OutfitterButton" hidden="false">
 				<Size>
-					<AbsDimension x="64" y="32" />
+					<AbsDimension x="64" y="32"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-32" y="-40" />
+							<AbsDimension x="-32" y="-40"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						Outfitter_ToggleOutfitterFrame();
+						Outfitter:ToggleOutfitterFrame();
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Addons\Outfitter\Textures\Outfitter-Button">
-					<TexCoords left="0" right="1" top="0" bottom="0.5" />
+					<TexCoords left="0" right="1" top="0" bottom="0.5"/>
 				</NormalTexture>
 				<PushedTexture file="Interface\Addons\Outfitter\Textures\Outfitter-Button">
-					<TexCoords left="0" right="1" top="0.5" bottom="1" />
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
 				</PushedTexture>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Frame name="OutfitterFrame" frameStrata="HIGH" enableMouse="true" hidden="true">
+			<Frame name="OutfitterFrame" enableMouse="true" hidden="true">
 				<Size>
-					<AbsDimension x="256" y="344" />
+					<AbsDimension x="256" y="344"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-33" y="-40" />
+							<AbsDimension x="-33" y="-40"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="BORDER">
-						<Texture file="Interface\AddOns\Outfitter\Textures\OutfitterFrame-Top">
-							<Size>
-								<AbsDimension x="256" y="256" />
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" />
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\AddOns\Outfitter\Textures\OutfitterFrame-Bottom">
-							<Size>
-								<AbsDimension x="256" y="128" />
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="-256" />
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
 						<FontString name="$parentTitle" text="Outfitter_cTitleVersion" inherits="GameFontHighlight">
 							<Anchors>
 								<Anchor point="TOP">
 									<Offset>
-										<AbsDimension x="-10" y="-6" />
+										<AbsDimension x="-10" y="-6"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -760,9 +603,7 @@
 					<Button name="OutfitterCloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
 							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="5" y="4" />
-								</Offset>
+								<Offset x="5" y="5"/>
 							</Anchor>
 						</Anchors>
 					</Button>
@@ -770,13 +611,11 @@
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="$parentHighlight" hidden="true" alphaMode="ADD" file="Interface\HelpFrame\HelpFrameButton-Highlight">
-									<Size>
-										<AbsDimension x="224" y="18" />
-									</Size>
+									<Size x="224" y="18"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" />
+										<Anchor point="TOPLEFT"/>
 									</Anchors>
-									<TexCoords left="0" right="1.0" top="0" bottom="0.578125" />
+									<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
 								</Texture>
 								<FontString text="Outfitter_cTitle" inherits="GameFontNormalLarge">
 									<Anchors>
@@ -832,74 +671,74 @@
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
-											<AbsDimension x="1" y="-63" />
+											<AbsDimension x="1" y="-63"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem1" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem0" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem0" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem2" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem1" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem1" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem3" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem2" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem2" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem4" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem3" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem3" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem5" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem4" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem4" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem6" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem5" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem5" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem7" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem6" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem6" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem8" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem7" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem7" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem9" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem8" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem8" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem10" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem9" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem9" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem11" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem10" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem10" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem12" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem11" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem11" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<Button name="OutfitterItem13" inherits="OutfitterItemTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterItem12" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPLEFT" relativeTo="OutfitterItem12" relativePoint="BOTTOMLEFT"/>
 								</Anchors>
 							</Button>
 							<ScrollFrame name="$parentScrollFrame" hidden="false" inherits="FauxScrollFrameTemplate">
@@ -915,25 +754,25 @@
 								</Anchors>
 								<Scripts>
 									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(OutfitterItem0:GetHeight(), Outfitter_OnVerticalScroll);
+										FauxScrollFrame_OnVerticalScroll(self, offset, OutfitterItem0:GetHeight(), Outfitter.OnVerticalScroll)
 									</OnVerticalScroll>
 								</Scripts>
 							</ScrollFrame>
 							<Button name="OutfitterNewButton" inherits="UIPanelButtonTemplate" text="Outfitter_cNewOutfit">
 								<Size>
-									<AbsDimension x="115" y="21" />
+									<AbsDimension x="115" y="21"/>
 								</Size>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="-7" y="6" />
+											<AbsDimension x="-7" y="6"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 								<Scripts>
 									<OnClick>
 										PlaySound("igMainMenuOptionCheckBoxOn");
-										Outfitter_CreateNewOutfit();
+										Outfitter:CreateNewOutfit();
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -974,7 +813,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<CheckButton name="OutfitterShowMinimapButton" inherits="OptionsCheckButtonTemplate">
+							<CheckButton name="OutfitterAutoSwitch" inherits="OptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT">
 										<Offset>
@@ -984,16 +823,16 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(Outfitter_cShowMinimapButton);
+										getglobal(self:GetName().."Text"):SetText(Outfitter.cAutoSwitch);
 									</OnLoad>
 									<OnClick>
-										Outfitter_SetShowMinimapButton(this:GetChecked());
+										Outfitter:SetAutoSwitch(not self:GetChecked());
 									</OnClick>
 									<OnEnter>
-										if this:GetChecked() then
-											GameTooltip_AddNewbieTip(Outfitter_cShowMinimapButton, 1.0, 1.0, 1.0, Outfitter_cShowMinimapButtonOnDescription, 1);
+										if self:GetChecked() then
+											Outfitter.AddNewbieTip(self, Outfitter.cAutoSwitch, 1.0, 1.0, 1.0, Outfitter.cAutoSwitchOnDescription, 1);
 										else
-											GameTooltip_AddNewbieTip(Outfitter_cShowMinimapButton, 1.0, 1.0, 1.0, Outfitter_cShowMinimapButtonOffDescription, 1);
+											Outfitter.AddNewbieTip(self, Outfitter.cAutoSwitch, 1.0, 1.0, 1.0, Outfitter.cAutoSwitchOffDescription, 1);
 										end
 									</OnEnter>
 									<OnLeave>
@@ -1001,34 +840,7 @@
 									</OnLeave>
 								</Scripts>
 							</CheckButton>
-							<CheckButton name="OutfitterAutoSwitch" inherits="OptionsCheckButtonTemplate">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterShowMinimapButton" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(Outfitter_cAutoSwitch);
-									</OnLoad>
-									<OnClick>
-										Outfitter_SetAutoSwitch(this:GetChecked());
-									</OnClick>
-									<OnEnter>
-										if this:GetChecked() then
-											GameTooltip_AddNewbieTip(Outfitter_cAutoSwitch, 1.0, 1.0, 1.0, Outfitter_cAutoSwitchOnDescription, 1);
-										else
-											GameTooltip_AddNewbieTip(Outfitter_cAutoSwitch, 1.0, 1.0, 1.0, Outfitter_cAutoSwitchOffDescription, 1);
-										end
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide();
-									</OnLeave>
-								</Scripts>
-							</CheckButton>
-							<CheckButton name="OutfitterTooltipInfo" inherits="OptionsCheckButtonTemplate">
+							<CheckButton name="OutfitterShowOutfitBar" inherits="OptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="OutfitterAutoSwitch" relativePoint="BOTTOMLEFT">
 										<Offset>
@@ -1038,16 +850,41 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(Outfitter_cTooltipInfo);
+										getglobal(self:GetName().."Text"):SetText(Outfitter.cShowOutfitBar)
 									</OnLoad>
 									<OnClick>
-										Outfitter_SetTooltipInfo(this:GetChecked());
+										if Outfitter.OutfitBar then
+											Outfitter.OutfitBar:SetShowOutfitBar(self:GetChecked())
+										end
 									</OnClick>
 									<OnEnter>
-										if this:GetChecked() then
-											GameTooltip_AddNewbieTip(Outfitter_cAutoSwitch, 1.0, 1.0, 1.0, Outfitter_cTooltipInfoOnDescription, 1);
+										Outfitter.AddNewbieTip(self, Outfitter.cShowOutfitBar, 1.0, 1.0, 1.0, Outfitter.cShowOutfitBarDescription, 1)
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide()
+									</OnLeave>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="OutfitterShowMinimapButton" inherits="OptionsCheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="OutfitterShowOutfitBar" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(self:GetName().."Text"):SetText(Outfitter.cShowMinimapButton);
+									</OnLoad>
+									<OnClick>
+										Outfitter:SetShowMinimapButton(self:GetChecked());
+									</OnClick>
+									<OnEnter>
+										if self:GetChecked() then
+											Outfitter.AddNewbieTip(self, Outfitter.cShowMinimapButton, 1.0, 1.0, 1.0, Outfitter.cShowMinimapButtonOnDescription, 1);
 										else
-											GameTooltip_AddNewbieTip(Outfitter_cAutoSwitch, 1.0, 1.0, 1.0, Outfitter_cTooltipInfoOffDescription, 1);
+											Outfitter.AddNewbieTip(self, Outfitter.cShowMinimapButton, 1.0, 1.0, 1.0, Outfitter.cShowMinimapButtonOffDescription, 1);
 										end
 									</OnEnter>
 									<OnLeave>
@@ -1057,24 +894,24 @@
 							</CheckButton>
 							<CheckButton name="OutfitterShowHotkeyMessages" inherits="OptionsCheckButtonTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterTooltipInfo" relativePoint="BOTTOMLEFT">
+									<Anchor point="TOPLEFT" relativeTo="OutfitterShowMinimapButton" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="-10"/>
+											<AbsDimension x="0" y="-5"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText(Outfitter_cShowHotkeyMessages);
+										getglobal(self:GetName().."Text"):SetText(Outfitter.cShowHotkeyMessages);
 									</OnLoad>
 									<OnClick>
-										Outfitter_SetShowHotkeyMessages(this:GetChecked());
+										Outfitter:SetShowHotkeyMessages(self:GetChecked());
 									</OnClick>
 									<OnEnter>
-										if this:GetChecked() then
-											GameTooltip_AddNewbieTip(Outfitter_cShowHotkeyMessages, 1.0, 1.0, 1.0, Outfitter_cShowHotkeyMessagesOnDescription, 1);
+										if self:GetChecked() then
+											Outfitter.AddNewbieTip(self, Outfitter.cShowHotkeyMessages, 1.0, 1.0, 1.0, Outfitter.cShowHotkeyMessagesOnDescription, 1);
 										else
-											GameTooltip_AddNewbieTip(Outfitter_cShowHotkeyMessages, 1.0, 1.0, 1.0, Outfitter_cShowHotkeyMessagesOffDescription, 1);
+											Outfitter.AddNewbieTip(self, Outfitter.cShowHotkeyMessages, 1.0, 1.0, 1.0, Outfitter.cShowHotkeyMessagesOffDescription, 1);
 										end
 									</OnEnter>
 									<OnLeave>
@@ -1082,29 +919,33 @@
 									</OnLeave>
 								</Scripts>
 							</CheckButton>
-							<CheckButton name="OutfitterDebug" inherits="OptionsCheckButtonTemplate" hidden="true">
+							<CheckButton name="OutfitterTooltipInfo" inherits="OptionsCheckButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="OutfitterShowHotkeyMessages" relativePoint="BOTTOMLEFT">
 										<Offset>
-											<AbsDimension x="0" y="-10"/>
+											<AbsDimension x="0" y="-5"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										getglobal(this:GetName().."Text"):SetText('Debug');
+										getglobal(self:GetName().."Text"):SetText(Outfitter.cTooltipInfo);
 									</OnLoad>
 									<OnClick>
-										Outfitter_SetDebug(this:GetChecked());
+										Outfitter:SetShowTooltipInfo(self:GetChecked());
 									</OnClick>
 									<OnEnter>
-											GameTooltip_AddNewbieTip('Display Debugging', 1.0, 1.0, 1.0, 'Displays debug information', 1);
+										if self:GetChecked() then
+											Outfitter.AddNewbieTip(self, Outfitter.cTooltipInfo, 1.0, 1.0, 1.0, Outfitter.cTooltipInfoOnDescription, 1);
+										else
+											Outfitter.AddNewbieTip(self, Outfitter.cTooltipInfo, 1.0, 1.0, 1.0, Outfitter.cTooltipInfoOffDescription, 1);
+										end
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
 									</OnLeave>
 								</Scripts>
-							</CheckButton>							
+							</CheckButton>
 						</Frames>
 						<Scripts>
 							<OnLoad>
@@ -1130,21 +971,25 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString text="Outfitter_cAboutTitle" inherits="GameFontNormalLarge">
+								<FontString name="OutfitterAboutTitle" text="Outfitter_cAboutTitle" inherits="GameFontNormalLarge">
+									<Size>
+										<AbsDimension x="230" y="0"/>
+									</Size>
 									<Anchors>
 										<Anchor point="TOP">
 											<Offset>
-												<AbsDimension x="0" y="-36"/>
+												<AbsDimension x="-4" y="-36"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
 								</FontString>
 								<FontString name="OutfitterAboutTitleVersion" text="Outfitter_cTitleVersion" inherits="GameFontNormalLarge">
+									<Size>
+										<AbsDimension x="230" y="0"/>
+									</Size>
 									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-65"/>
-											</Offset>
+										<Anchor point="TOP" relativeTo="OutfitterAboutTitle" relativePoint="BOTTOM">
+											<Offset><AbsDimension x="0" y="-15"/></Offset>
 										</Anchor>
 									</Anchors>
 								</FontString>
@@ -1154,9 +999,7 @@
 									</Size>
 									<Anchors>
 										<Anchor point="TOP" relativeTo="OutfitterAboutTitleVersion" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
+											<Offset><AbsDimension x="0" y="-5"/></Offset>
 										</Anchor>
 									</Anchors>
 								</FontString>
@@ -1165,9 +1008,9 @@
 										<AbsDimension x="230" y="0"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="OutfitterAboutTitleVersion" relativePoint="TOP">
+										<Anchor point="TOP" relativeTo="OutfitterAboutAuthor" relativePoint="BOTTOM">
 											<Offset>
-												<AbsDimension x="0" y="-75"/>
+												<AbsDimension x="0" y="-10"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1189,14 +1032,14 @@
 										<AbsDimension x="230" y="0"/>
 									</Size>
 									<Anchors>
-										<Anchor point="TOP" relativeTo="OutfitterTestersNames" relativePoint="TOP">
+										<Anchor point="TOP" relativeTo="OutfitterTestersNames" relativePoint="BOTTOM">
 											<Offset>
-												<AbsDimension x="0" y="-50"/>
+												<AbsDimension x="0" y="-10"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="OutfitterSpecialThanksNames" text="Outfitter_cSpecialThanksNames" inherits="GameFontHighlight">
+								<FontString name="OutfitterSpecialThanksNames" text="Outfitter_cSpecialThanksNames" inherits="GameFontHighlightSmall">
 									<Size>
 										<AbsDimension x="230" y="0"/>
 									</Size>
@@ -1208,38 +1051,26 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="OutfitterGuildURL" text="Outfitter_cGuildURL" inherits="GameFontHighlightSmall">
+								<FontString name="OutfitterURL" text="Outfitter_cURL" inherits="GameFontHighlightSmall">
 									<Size>
-										<AbsDimension x="230" y="13"/>
+										<AbsDimension x="230" y="0"/>
 									</Size>
 									<Anchors>
 										<Anchor point="BOTTOM">
 											<Offset>
-												<AbsDimension x="0" y="30"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="OutfitterGuildURL2" text="Outfitter_cGuildURL2" inherits="GameFontHighlightSmall">
-									<Size>
-										<AbsDimension x="230" y="13"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="OutfitterGuildURL" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
+												<AbsDimension x="0" y="20"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
 								</FontString>
 								<FontString name="OutfitterTranslationCredit" text="Outfitter_cTranslationCredit" inherits="GameFontHighlightSmall">
 									<Size>
-										<AbsDimension x="230" y="13"/>
+										<AbsDimension x="230" y="0"/>
 									</Size>
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="OutfitterGuildURL">
+										<Anchor point="BOTTOM" relativeTo="OutfitterURL" relativePoint="TOP">
 											<Offset>
-												<AbsDimension x="0" y="20"/>
+												<AbsDimension x="0" y="10"/>
 											</Offset>
 										</Anchor>
 									</Anchors>
@@ -1250,497 +1081,283 @@
 					<Button name="OutfitterFrameTab1" inherits="OutfitterTabTemplate" id="1" text="Outfitter_cOutfitterTabTitle">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-7" y="-29"/>
-								</Offset>
+								<Offset x="-7" y="-31"/>
 							</Anchor>
 						</Anchors>
 					</Button>
 					<Button name="OutfitterFrameTab2" inherits="OutfitterTabTemplate" id="2" text="Outfitter_cOptionsTabTitle">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="OutfitterFrameTab1" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="16" y="0"/>
-								</Offset>
+								<Offset x="16" y="0"/>
 							</Anchor>
 						</Anchors>
 					</Button>
 					<Button name="OutfitterFrameTab3" inherits="OutfitterTabTemplate" id="3" text="Outfitter_cAboutTabTitle">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="OutfitterFrameTab2" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="16" y="0"/>
-								</Offset>
+								<Offset x="16" y="0"/>
 							</Anchor>
 						</Anchors>
 					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						Outfitter_OnLoad();
+						Outfitter:OnLoad()
 					</OnLoad>
 					<OnShow>
-						Outfitter_OnShow();
+						Outfitter:OnShow()
 					</OnShow>
 					<OnHide>
-						Outfitter_OnHide();
+						Outfitter:OnHide()
 					</OnHide>
-					<OnEvent>
-						Outfitter_OnEvent(event);
-					</OnEvent>
 				</Scripts>
 			</Frame>
 			<Frame name="OutfitterSlotEnables" hidden="true" setAllPoints="true">
 				<Frames>
 					<Button name="OutfitterEnableAll" inherits="OutfitterSmallButtonTemplate" text="Outfitter_cEnableNone">
-						<Size>
-							<AbsDimension x="80" y="18" />
-						</Size>
+						<Size x="80" y="18"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="PaperDollFrame">
-								<Offset>
-									<AbsDimension x="-45" y="-53" />
-								</Offset>
+								<Offset x="-45" y="-53"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
 								PlaySound("igMainMenuOptionCheckBoxOn");
-								Outfitter_SetAllSlotEnables(false);
+								Outfitter:SetAllSlotEnables(false);
 							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="OutfitterEnableNone" inherits="OutfitterSmallButtonTemplate" text="Outfitter_cEnableAll">
-						<Size>
-							<AbsDimension x="80" y="18" />
-						</Size>
+						<Size x="80" y="18"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="PaperDollFrame">
-								<Offset>
-									<AbsDimension x="45" y="-53" />
-								</Offset>
+								<Offset x="45" y="-53"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnClick>
 								PlaySound("igMainMenuOptionCheckBoxOn");
-								Outfitter_SetAllSlotEnables(true);
+								Outfitter:SetAllSlotEnables(true);
 							</OnClick>
 						</Scripts>
 					</Button>
 					<CheckButton name="OutfitterEnableHeadSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterHeadSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "HeadSlot";</OnLoad>
+							<OnLoad>self.SlotName = "HeadSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableNeckSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterNeckSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "NeckSlot";</OnLoad>
+							<OnLoad>self.SlotName = "NeckSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableShoulderSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterShoulderSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "ShoulderSlot";</OnLoad>
+							<OnLoad>self.SlotName = "ShoulderSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableBackSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterBackSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "BackSlot";</OnLoad>
+							<OnLoad>self.SlotName = "BackSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableChestSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterChestSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "ChestSlot";</OnLoad>
+							<OnLoad>self.SlotName = "ChestSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableShirtSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterShirtSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "ShirtSlot";</OnLoad>
+							<OnLoad>self.SlotName = "ShirtSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableTabardSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterTabardSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "TabardSlot";</OnLoad>
+							<OnLoad>self.SlotName = "TabardSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableWristSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterWristSlot">
-								<Offset>
-									<AbsDimension x="-4" y="4" />
-								</Offset>
+								<Offset x="-4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "WristSlot";</OnLoad>
+							<OnLoad>self.SlotName = "WristSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableHandsSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterHandsSlot">
-								<Offset>
-									<AbsDimension x="4" y="4" />
-								</Offset>
+								<Offset x="4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "HandsSlot";</OnLoad>
+							<OnLoad>self.SlotName = "HandsSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableWaistSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterWaistSlot">
-								<Offset>
-									<AbsDimension x="4" y="4" />
-								</Offset>
+								<Offset x="4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "WaistSlot";</OnLoad>
+							<OnLoad>self.SlotName = "WaistSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableLegsSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterLegsSlot">
-								<Offset>
-									<AbsDimension x="4" y="4" />
-								</Offset>
+								<Offset x="4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "LegsSlot";</OnLoad>
+							<OnLoad>self.SlotName = "LegsSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableFeetSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterFeetSlot">
-								<Offset>
-									<AbsDimension x="4" y="4" />
-								</Offset>
+								<Offset x="4" y="4"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "FeetSlot";</OnLoad>
+							<OnLoad>self.SlotName = "FeetSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableFinger0Slot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterFinger0Slot">
 								<Offset>
-									<AbsDimension x="4" y="4" />
+									<AbsDimension x="4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "Finger0Slot";</OnLoad>
+							<OnLoad>self.SlotName = "Finger0Slot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableFinger1Slot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterFinger1Slot">
 								<Offset>
-									<AbsDimension x="4" y="4" />
+									<AbsDimension x="4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "Finger1Slot";</OnLoad>
+							<OnLoad>self.SlotName = "Finger1Slot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableTrinket0Slot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterTrinket0Slot">
 								<Offset>
-									<AbsDimension x="4" y="4" />
+									<AbsDimension x="4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "Trinket0Slot";</OnLoad>
+							<OnLoad>self.SlotName = "Trinket0Slot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableTrinket1Slot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterTrinket1Slot">
 								<Offset>
-									<AbsDimension x="4" y="4" />
+									<AbsDimension x="4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "Trinket1Slot";</OnLoad>
+							<OnLoad>self.SlotName = "Trinket1Slot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableMainHandSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot">
 								<Offset>
-									<AbsDimension x="-4" y="4" />
+									<AbsDimension x="-4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "MainHandSlot";</OnLoad>
+							<OnLoad>self.SlotName = "MainHandSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableSecondaryHandSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterSecondaryHandSlot">
 								<Offset>
-									<AbsDimension x="-4" y="4" />
+									<AbsDimension x="-4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "SecondaryHandSlot";</OnLoad>
+							<OnLoad>self.SlotName = "SecondaryHandSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableRangedSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterRangedSlot">
 								<Offset>
-									<AbsDimension x="-4" y="4" />
+									<AbsDimension x="-4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "RangedSlot";</OnLoad>
+							<OnLoad>self.SlotName = "RangedSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="OutfitterEnableAmmoSlot" inherits="OutfitterEnableTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterAmmoSlot">
 								<Offset>
-									<AbsDimension x="-4" y="4" />
+									<AbsDimension x="-4" y="4"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>this.SlotName = "AmmoSlot";</OnLoad>
+							<OnLoad>self.SlotName = "AmmoSlot";</OnLoad>
 						</Scripts>
 					</CheckButton>
-
-					<Frame name="Outfitter_Arrange_ListBoxOuterFrame">
-						-- modified by jtbalogh
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="OutfitterFrame" relativePoint="TopRight">
-								<Offset>
-									<AbsDimension x="-20" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Size>
-							<AbsDimension x="300" y="344"/> -- size for 10 buttons
-						</Size>
-						<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
-							<BackgroundInsets>
-								<AbsInset left="4" right="4" top="4" bottom="4" />
-							</BackgroundInsets>
-							<EdgeSize>
-								<AbsValue val="16" />
-							</EdgeSize>
-						</Backdrop>
-						<Layers>
-						<Layer level="BORDER">
-								<Texture file="Interface\AddOns\Outfitter\Textures\OutfitterFrame-Top">
-									<Size>
-										<AbsDimension x="300" y="256" />
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" />
-									</Anchors>
-								</Texture>
-								<Texture file="Interface\AddOns\Outfitter\Textures\OutfitterFrame-Bottom">
-									<Size>
-										<AbsDimension x="300" y="128" />
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-256" />
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<FontString name="$parentTitle" text="Outfitter_cSlotPriorityTitle" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-10" y="-6" />
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="Outfitter_Arrange_ListBoxCloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="Outfitter_Arrange_ListBoxOuterFrame" relativePoint="TopRight">
-										<Offset>
-											<AbsDimension x="1" y="4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										OutfitterFrame:Hide()
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame name="Outfitter_Arrange_ListBox" inherits="Outfitter_ListBoxTemplate">
-								-- modified by jtbalogh
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="OutfitterFrame" relativePoint="TopRight">
-										<Offset>
-											<AbsDimension x="0" y="-90"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-										GameTooltip:SetText("", nil, nil, nil, nil, 1)
-									</OnEnter>
-									<OnLeave>
-										GameTooltip:Hide()
-									</OnLeave>
-								</Scripts>
-							</Frame>
-						</Frames>
-					</Frame>
-					
-					<Button name="Outfitter_Arrange_ButtonUp" inherits="UIPanelButtonTemplate" text="">
-						-- modified by jtbalogh
-						<Size>
-							<AbsDimension x="16" y="16" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="Outfitter_Arrange_ListBox" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="25" y="-72"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								Outfitter_ListButtonUp_OnClick()
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-								GameTooltip:SetText("", nil, nil, nil, nil, 1)
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide()
-							</OnLeave>
-						</Scripts>
-						<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
-						<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
-						<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
-						<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
-					</Button>
-					<Button name="Outfitter_Arrange_ButtonDown" inherits="UIPanelButtonTemplate" text="">
-						-- modified by jtbalogh
-						<Size>
-							<AbsDimension x="16" y="16" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="Outfitter_Arrange_ButtonUp" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="" y="-5"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOff");
-								Outfitter_ListButtonDown_OnClick()
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-								GameTooltip:SetText("", nil, nil, nil, nil, 1)
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide()
-							</OnLeave>
-						</Scripts>
-						<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
-						<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
-						<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
-						<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
-					</Button>
-					<Button name="Outfitter_Arrange_ButtonReset" inherits="UIPanelButtonTemplate" text="Reset">
-						-- modified by jtbalogh
-						<Size>
-							<AbsDimension x="50" y="21" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="Outfitter_Arrange_ListBox" relativePoint="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="0" y="-15"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOff");
-								Outfitter_ListButtonReset_OnClick()
-							</OnClick>
-						</Scripts>
-					</Button>
-
 				</Frames>
 				<Scripts>
 					<OnShow>
@@ -1756,34 +1373,34 @@
 		</Frames>
 	</Frame>
 	<Frame name="OutfitterNameOutfitDialog" toplevel="true" frameStrata="DIALOG" enableMouse="true"
-		hidden="true" parent="OutfitterFrame">
+		hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="315" y="172" />
+			<AbsDimension x="315" y="207"/>
 		</Size>
 		<Anchors>
-			<Anchor point="CENTER" />
+			<Anchor point="CENTER" relativeTo="OutfitterFrame" relativePoint="CENTER"/>
 		</Anchors>
 		<Backdrop bgFile="Interface\Addons\Outfitter\Textures\DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
 			</BackgroundInsets>
 			<TileSize>
-				<AbsValue val="32" />
+				<AbsValue val="32"/>
 			</TileSize>
 			<EdgeSize>
-				<AbsValue val="32" />
+				<AbsValue val="32"/>
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
 					<Size>
-						<AbsDimension x="256" y="64" />
+						<AbsDimension x="256" y="64"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOP">
 							<Offset>
-								<AbsDimension x="0" y="12" />
+								<AbsDimension x="0" y="12"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1792,7 +1409,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentFrameHeader">
 							<Offset>
-								<AbsDimension x="0" y="-14" />
+								<AbsDimension x="0" y="-14"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -1819,32 +1436,62 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="115" y="-40" />
+							<AbsDimension x="115" y="-40"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						OutfitterInputBox_OnLoad(0);
-						getglobal(this:GetName().."Label"):SetText(Outfitter_cNameLabel);
+						Outfitter.InputBox_OnLoad(self, 0);
+						getglobal(self:GetName().."Label"):SetText(Outfitter.cNameLabel);
 					</OnLoad>
 					<OnTextChanged>
-						OutfitterNameOutfit_Update()
+						Outfitter.NameOutfit_Update()
 					</OnTextChanged>
 					<OnEscapePressed>
-						this:ClearFocus();
+						self:ClearFocus();
 					</OnEscapePressed>
 					<OnEnterPressed>
-						OutfitterNameOutfit_Done();
+						Outfitter.NameOutfit_Done();
 					</OnEnterPressed>
 				</Scripts>
-				<FontString inherits="ChatFontNormal" />
+				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<Frame name="$parentCreateUsing" inherits="UIDropDownMenuTemplate" hidden="false">
+			<Frame name="$parentAutomation" inherits="UIDropDownMenuTemplate" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentName">
 						<Offset>
 							<AbsDimension x="-24" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitle" text="Outfitter_cAutomationLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="14" y="13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						Outfitter.AutomationDropDown_OnLoad(self)
+					</OnLoad>
+					<OnShow>
+						Outfitter.AutomationDropDown_OnLoad(self)
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentCreateUsing" inherits="UIDropDownMenuTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutomation">
+						<Offset>
+							<AbsDimension x="0" y="-35"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1863,56 +1510,56 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						OutfitterStatDropdown_OnLoad();
+						Outfitter.StatDropDown_OnLoad(self)
 					</OnLoad>
 					<OnShow>
-						OutfitterStatDropdown_OnLoad();
+						Outfitter.StatDropDown_OnLoad(self)
 					</OnShow>
 				</Scripts>
 			</Frame>
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
-					<AbsDimension x="80" y="21" />
+					<AbsDimension x="80" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-15" y="20" />
+							<AbsDimension x="-15" y="20"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						OutfitterNameOutfit_Cancel();
+						Outfitter.NameOutfit_Cancel();
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parentDoneButton" inherits="UIPanelButtonTemplate" text="OKAY">
 				<Size>
-					<AbsDimension x="80" y="21" />
+					<AbsDimension x="80" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="-7" y="0" />
+							<AbsDimension x="-7" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						OutfitterNameOutfit_Done();
+						Outfitter.NameOutfit_Done();
 					</OnClick>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				this.baseHeight = this:GetHeight();
+				self.baseHeight = self:GetHeight();
 			</OnLoad>
 			<OnShow>
-				OutfitterNameOutfit_Update();
+				Outfitter.NameOutfit_Update();
 			</OnShow>
 		</Scripts>
 	</Frame>
@@ -1927,32 +1574,32 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				this:RegisterForDrag("LeftButton");
+				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart>
-				OutfitterMinimapButton_DragStart();
+				Outfitter.MinimapButton_DragStart(self)
 			</OnDragStart>
 			<OnDragStop>
-				OutfitterMinimapButton_DragEnd();
+				Outfitter.MinimapButton_DragEnd(self)
 			</OnDragStop>
 			<OnMouseDown>
-				OutfitterMinimapButton_MouseDown();
+				Outfitter.MinimapButton_MouseDown(self)
 			</OnMouseDown>
 			<OnMouseUp>
-				OutfitterMinimapDropDown_OnLoad();
-				this.ChangedValueFunc = OutfitterMinimapButton_ItemSelected;
-				ToggleDropDownMenu(nil, nil, this, this);
+				Outfitter.MinimapDropDown_OnLoad(self)
+				self.ChangedValueFunc = Outfitter.MinimapButton_ItemSelected;
+				ToggleDropDownMenu(nil, nil, self, self, 22, 1);
 				
 				-- Hack to force the menu to position correctly.  UIDropDownMenu code
 				-- keeps thinking that it's off the screen and trying to reposition
 				-- it, which it does very poorly
 				
-				OutfitterMinimapDropDown_AdjustScreenPosition(this);
+				Outfitter.MinimapDropDown_AdjustScreenPosition(self);
 				
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnMouseUp>
 			<OnEnter>
-				GameTooltip_AddNewbieTip(Outfitter_cMinimapButtonTitle, 1, 1, 1, Outfitter_cMinimapButtonDescription, 1);
+				Outfitter.AddNewbieTip(self, Outfitter.cMinimapButtonTitle, 1, 1, 1, Outfitter.cMinimapButtonDescription, 1);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -1961,12 +1608,16 @@
 		<NormalTexture file="Interface\Addons\Outfitter\Textures\MinimapButton"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 	</Button>
+	
 	<GameTooltip name="OutfitterTooltip" parent="UIParent" hidden="true" inherits="GameTooltipTemplate">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 	</GameTooltip>
 	
+	<Frame name="OutfitterQuickSlotsTemplate" enableMouse="true" frameStrata="DIALOG" hidden="true" virtual="true">
+	</Frame>
+
 	<Frame name="OutfitterQuickSlotItemTemplate" hidden="true" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>
@@ -1974,157 +1625,25 @@
 		<Frames>
 			<Button name="$parentItem1" hidden="false" inherits="ContainerFrameItemButtonTemplate">
 				<Scripts>
+					<OnLoad>
+						self.UpdateTooltip = Outfitter.QuickSlotItemButton_OnEnter
+					</OnLoad>
 					<OnEnter>
-						OutfitterQuickSlotItemButton_OnEnter(this);
+						Outfitter.QuickSlotItemButton_OnEnter(self)
 					</OnEnter>
-					<OnUpdate>
-						if GameTooltip:IsOwned(this) then
-							OutfitterQuickSlotItemButton_OnEnter(this);
-						end
-					</OnUpdate>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnEvent>
-				OutfitterQuickSlotItem_OnEvent();
-			</OnEvent>
 			<OnLoad>
-				OutfitterQuickSlotItem_OnLoad();
+				self.size = 1
 			</OnLoad>
 			<OnShow>
-				OutfitterQuickSlotItem_OnShow();
+				self:OnShow()
 			</OnShow>
 			<OnHide>
-				OutfitterQuickSlotItem_OnHide();
+				self:OnHide()
 			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="OutfitterQuickSlots" enableMouse="true" frameStrata="DIALOG" parent="PaperDollFrame" hidden="true">
-		<Size>
-			<AbsDimension x="95" y="51"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT"/>
-		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBack0" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="26" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-					<TexCoords left="0" top="0" right="0.203125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack1" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack0" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack2" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack1" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack3" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack2" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack4" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack3" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack5" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack4" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack6" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack5" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack7" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack6" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBack8" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="42" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack7" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.203125" top="0" right="0.53125" bottom="0.796875"/>
-				</Texture>
-				<Texture name="$parentBackEnd" file="Interface\Addons\Outfitter\Textures\QuickSlotsBackground">
-					<Size>
-						<AbsDimension x="27" y="51"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentBack8" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.53125" top="0" right="0.7421875" bottom="0.796875"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentItem1" id="1" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem2" id="2" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem3" id="3" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem4" id="4" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem5" id="5" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem6" id="6" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem7" id="7" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem8" id="8" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-			<Frame name="$parentItem9" id="9" hidden="true" inherits="OutfitterQuickSlotItemTemplate"/>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				OutfitterQuickSlots_OnLoad();
-			</OnLoad>
-			<OnShow>
-				OutfitterQuickSlots_OnShow();
-			</OnShow>
-			<OnHide>
-				OutfitterQuickSlots_OnHide();
-			</OnHide>
-			<OnEvent>
-				OutfitterQuickSlots_OnEvent(event);
-			</OnEvent>
 		</Scripts>
 	</Frame>
 	
@@ -2151,13 +1670,13 @@
 				</Anchors>
 				<Scripts>
 					<OnMouseUp>
-						this.EditBox:SetFocus();
+						self.EditBox:SetFocus();
 					</OnMouseUp> 
 					<OnShow>
-						local	vFrameLevel = this:GetParent():GetFrameLevel();
+						local	vFrameLevel = self:GetParent():GetFrameLevel();
 						
-						this:SetFrameLevel(vFrameLevel + 5);
-						this.EditBox:SetFrameLevel(vFrameLevel + 6);
+						self:SetFrameLevel(vFrameLevel + 5);
+						self.EditBox:SetFrameLevel(vFrameLevel + 6);
 					</OnShow>
 				</Scripts>
 				<Frames>
@@ -2166,30 +1685,30 @@
 						<Size><AbsDimension x="400" y="0"/></Size>
 						<Scripts>
 							<OnLoad>
-								this:GetParent().EditBox = this;
-								OutfitterInputBox_OnLoad(3);
+								self:GetParent().EditBox = self
+								Outfitter.InputBox_OnLoad(self, 3)
 							</OnLoad>
 							<OnTextChanged>
-								ScrollingEdit_OnTextChanged(this:GetParent():GetParent());
+								ScrollingEdit_OnTextChanged(self, self:GetParent():GetParent())
 								
-								if this.TextChanged then
-									this:TextChanged();
+								if self.TextChanged then
+									self:TextChanged()
 								end
 							</OnTextChanged>
 							<OnEditFocusLost>
-								this:HighlightText(0, 0);
+								self:HighlightText(0, 0)
 							</OnEditFocusLost>
 							<OnCursorChanged>
-								ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+								ScrollingEdit_OnCursorChanged(self, x, y - 10, w, h)
 							</OnCursorChanged>
 							<OnUpdate>
-								ScrollingEdit_OnUpdate(this:GetParent():GetParent());
+								ScrollingEdit_OnUpdate(self, elapsed, self:GetParent():GetParent())
 							</OnUpdate>
 							<OnTabPressed>
-								OutfitterInputBox_TabPressed();
+								Outfitter.InputBox_TabPressed(self)
 							</OnTabPressed>
 							<OnEscapePressed>
-								this:ClearFocus();
+								self:ClearFocus();
 							</OnEscapePressed>
 						</Scripts>
 						<TextInsets left="2" top="2" right="2" bottom="2"/>
@@ -2202,28 +1721,28 @@
 	
 	<Button name="OutfitterZoneListButton" virtual="true" inherits="UIPanelButtonTemplate">
 		<Size>
-			<AbsDimension x="150" y="21" />
+			<AbsDimension x="150" y="21"/>
 		</Size>
 		<Scripts>
 			<OnShow>
-				this:SetText(string.format(Outfitter_cInsertFormat, this.GetTextFunc()));
+				self:SetText(string.format(Outfitter.cInsertFormat, self.GetTextFunc()));
 				
-				this:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-				this:RegisterEvent("ZONE_CHANGED_INDOORS");
-				this:RegisterEvent("ZONE_CHANGED");
+				self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+				self:RegisterEvent("ZONE_CHANGED_INDOORS");
+				self:RegisterEvent("ZONE_CHANGED");
 			</OnShow>
 			<OnHide>
-				this:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
-				this:UnregisterEvent("ZONE_CHANGED_INDOORS");
-				this:UnregisterEvent("ZONE_CHANGED");
+				self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
+				self:UnregisterEvent("ZONE_CHANGED_INDOORS");
+				self:UnregisterEvent("ZONE_CHANGED");
 			</OnHide>
 			<OnEvent>
-				this:SetText(string.format(Outfitter_cInsertFormat, this.GetTextFunc()));
+				self:SetText(string.format(Outfitter.cInsertFormat, self.GetTextFunc()));
 			</OnEvent>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
-				local	vEditBox = getglobal(this:GetParent():GetName().."EditBox");
-				vEditBox:Insert(this.GetTextFunc().."\n");
+				local	vEditBox = getglobal(self:GetParent():GetName().."EditBox");
+				vEditBox:Insert(self.GetTextFunc().."\n");
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -2234,13 +1753,13 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="25" y="0" />
+							<AbsDimension x="25" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						this.GetTextFunc = GetRealZoneText;
+						self.GetTextFunc = GetRealZoneText;
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -2250,9 +1769,11 @@
 	<Button name="OutfitterScriptTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
-				PlaySound("igMainMenuOpen");
-				PanelTemplates_Tab_OnClick(this:GetParent());
-				OutfitterEditScriptDialog_SetPanelIndex(this:GetParent(), this:GetParent().selectedTab);
+				local vTab = self:GetParent()
+				
+				PlaySound("igMainMenuOpen")
+				PanelTemplates_Tab_OnClick(self, vTab)
+				vTab:SetPanelIndex(vTab.selectedTab)
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -2276,37 +1797,21 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="9" y="-6"/>
+								<AbsDimension x="-5" y="7"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
-				</Texture>
-				<Texture name="$parentBackgroundTL" file="Interface\Addons\Outfitter\Textures\ScriptEditorTopLeft">
-					<Size><AbsDimension x="256" y="256"/></Size>
-					<Anchors><Anchor point="TOPLEFT"/></Anchors>
-				</Texture>
-				<Texture file="Interface\Addons\Outfitter\Textures\ScriptEditorTopRight">
-					<Size><AbsDimension x="256" y="256"/></Size>
-					<Anchors><Anchor point="TOPLEFT" relativeTo="$parentBackgroundTL" relativePoint="TOPRIGHT"/></Anchors>
-				</Texture>
-				<Texture file="Interface\Addons\Outfitter\Textures\ScriptEditorBottomLeft">
-					<Size><AbsDimension x="256" y="256"/></Size>
-					<Anchors><Anchor point="TOPLEFT" relativeTo="$parentBackgroundTL" relativePoint="BOTTOMLEFT"/></Anchors>
-				</Texture>
-				<Texture file="Interface\Addons\Outfitter\Textures\ScriptEditorBottomRight">
-					<Size><AbsDimension x="256" y="256"/></Size>
-					<Anchors><Anchor point="TOPLEFT" relativeTo="$parentBackgroundTL" relativePoint="BOTTOMRIGHT"/></Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentButtonBarLeft" file="Interface\Addons\Outfitter\Textures\ScriptButtonBar">
 					<Size><AbsDimension x="8" y="24"/></Size>
-					<Anchors><Anchor point="BOTTOMLEFT"><Offset><AbsDimension x="17" y="12"/></Offset></Anchor></Anchors>
+					<Anchors><Anchor point="BOTTOMLEFT"><Offset x="5" y="7"/></Anchor></Anchors>
 					<TexCoords left="0" right="0.03125" top="0" bottom="1"/>
 				</Texture>
 				<Texture name="$parentButtonBarRight" file="Interface\Addons\Outfitter\Textures\ScriptButtonBar">
 					<Size><AbsDimension x="8" y="24"/></Size>
-					<Anchors><Anchor point="BOTTOMRIGHT"><Offset><AbsDimension x="-8" y="12"/></Offset></Anchor></Anchors>
+					<Anchors><Anchor point="BOTTOMRIGHT"><Offset x="-7" y="7"/></Anchor></Anchors>
 					<TexCoords left="0.96875" right="1" top="0" bottom="1"/>
 				</Texture>
 				<Texture file="Interface\Addons\Outfitter\Textures\ScriptButtonBar">
@@ -2322,9 +1827,7 @@
 				<FontString name="$parentTitle" text="Outfitter_cEditScript" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="17" y="-18"/>
-							</Offset>
+							<Offset x="17" y="-5"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
@@ -2335,7 +1838,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="315" y="-41"/>
+							<AbsDimension x="303" y="-28"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2354,20 +1857,20 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						OutfitterPresetScriptDropdown_OnLoad();
+						Outfitter.PresetScriptDropDown_OnLoad(self)
 					</OnLoad>
 					<OnShow>
-						OutfitterPresetScriptDropdown_OnLoad();
+						Outfitter.PresetScriptDropDown_OnLoad(self)
 					</OnShow>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentSettings" hidden="true" setAllPoints="true">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
-							<Size><AbsDimension x="300" y="0"/></Size>
+						<FontString name="$parentDescription" inherits="GameFontHighlightLarge" justifyH="CENTER">
+							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOP"><Offset><AbsDimension x="10" y="-90"/></Offset></Anchor>
+								<Anchor point="TOP"><Offset><AbsDimension x="10" y="-78"/></Offset></Anchor>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -2375,39 +1878,16 @@
 			</Frame>
 			<Frame name="$parentSource" hidden="true" setAllPoints="true">
 				<Frames>
-					<EditBox name="$parentEvents" autoFocus="false" inherits="OutfitterInputBoxTemplate">
-						<Size>
-							<AbsDimension x="380" y="18"/>
-						</Size>
+					<ScrollFrame name="$parentScript" inherits="OutfitterScrollableEditBox">
+						<Size x="380" y="300"/>
 						<Anchors>
 							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-85"/>
-								</Offset>
+								<Offset x="90" y="-85"/>
 							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								OutfitterInputBox_OnLoad(1);
-								getglobal(this:GetName().."Label"):SetText(Outfitter_cEventsLabel);
-							</OnLoad>
-						</Scripts>
-					</EditBox>
-					
-					<ScrollFrame name="$parentScript" inherits="OutfitterScrollableEditBox">
-						<Size>
-							<AbsDimension x="380" y="270"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentEvents" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="0" y="-15"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								getglobal(this:GetName().."Label"):SetText(Outfitter_cScriptLabel);
+								getglobal(self:GetName().."Label"):SetText(Outfitter.cScriptLabel);
 							</OnLoad>
 						</Scripts>
 					</ScrollFrame>
@@ -2444,37 +1924,37 @@
 			
 			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size>
-					<AbsDimension x="80" y="21" />
+					<AbsDimension x="80" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
 						<Offset>
-							<AbsDimension x="-20" y="12" />
+							<AbsDimension x="-20" y="7"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						this:GetParent():Cancel();
+						PlaySound("igMainMenuOptionCheckBoxOn")
+						self:GetParent():Close()
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parentDoneButton" inherits="UIPanelButtonTemplate" text="OKAY">
 				<Size>
-					<AbsDimension x="80" y="21" />
+					<AbsDimension x="80" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="LEFT">
 						<Offset>
-							<AbsDimension x="-7" y="0" />
+							<AbsDimension x="-7" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						this:GetParent():Done();
+						PlaySound("igMainMenuOptionCheckBoxOn")
+						self:GetParent():Done()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -2482,7 +1962,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="18" y="7"/>
+							<AbsDimension x="6" y="2"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2499,8 +1979,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				OutfitterEditScriptDialog_OnLoad(this);
+				Outfitter:ConstructFrame(self, Outfitter._EditScriptDialog)
 			</OnLoad>
 		</Scripts>
 	</Frame>
+
 </Ui>

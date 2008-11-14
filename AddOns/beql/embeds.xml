@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
+<!--Ace2 Libraries-->
 <Script file="Libs\AceLibrary\AceLibrary.lua"/>
 <Script file="Libs\AceOO-2.0\AceOO-2.0.lua"/>
 <Script file="Libs\AceEvent-2.0\AceEvent-2.0.lua"/>
@@ -16,6 +17,21 @@
 <Script file="Libs\Waterfall-1.0\Waterfall-1.0.lua"/>
 <Script file="Libs\Deformat-2.0\Deformat-2.0.lua"/>
 <Script file="Libs\Quixote-1.0\Quixote-1.0.lua"/>
+
+<!-- Libraries for 3.0 Options -->
+<!--Ace3 Libraries-->
+
+<Script file="Libs\LibStub\LibStub.lua"/>
+
+<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+
+<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml"/>
+<Include file="Libs\AceEvent-3.0\AceEvent-3.0.xml"/>
+<Include file="Libs\AceGUI-3.0\AceGUI-3.0.xml"/>
+<Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml"/>
+<Include file="Libs\AceConsole-3.0\AceConsole-3.0.xml"/>
+
+<Include file="Libs\LibAboutPanel\lib.xml"/>
 
 </Ui>
 

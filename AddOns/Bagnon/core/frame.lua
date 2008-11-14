@@ -8,7 +8,7 @@
 
 
 BagnonFrame = BagnonUtil:CreateWidgetClass('Frame')
-local L = BAGNON_LOCALS
+local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon')
 local DEFAULT_COLS = 8
 local DEFAULT_SPACING = 1
 local DEFAULT_STRATA = 'HIGH'
@@ -21,15 +21,8 @@ local TitleFrame = {}
 do
 	function TitleFrame:Create(parent)
 		local title = CreateFrame('Button', nil, parent)
-
-		local text = title:CreateFontString()
-		text:SetAllPoints(title)
-		text:SetJustifyH('LEFT')
-		text:SetFontObject('GameFontNormal')
-		title:SetFontString(text)
-
-		title:SetHighlightTextColor(1, 1, 1)
-		title:SetTextColor(1, 0.82, 0)
+		title:SetNormalFontObject('GameFontNormalLeft')
+		title:SetHighlightFontObject('GameFontHighlightLeft')
 		title:RegisterForClicks('anyUp')
 
 		title:SetScript('OnClick', self.OnClick)
@@ -44,7 +37,13 @@ do
 
 	function TitleFrame:OnClick(button)
 		if button == 'RightButton' then
-			BagnonMenu:Show(self:GetParent())
+			if not BagnonMenu then
+				LoadAddOn('Bagnon_Options')
+			end
+
+			if BagnonMenu then
+				BagnonMenu:Display(self:GetParent())
+			end
 		end
 	end
 
@@ -78,7 +77,9 @@ do
 		end
 
 		GameTooltip:SetText(self:GetText(), 1, 1, 1)
-		GameTooltip:AddLine(L.TipShowMenu)
+		if select(4, GetAddOnInfo('Bagnon_Options')) then --enable check
+			GameTooltip:AddLine(L.TipShowMenu)
+		end
 		GameTooltip:AddLine(L.TipShowSearch)
 		GameTooltip:Show()
 	end
@@ -190,9 +191,10 @@ function BagnonFrame:OnShow()
 end
 
 function BagnonFrame:OnHide()
-	if BagnonMenu:GetAnchor() == self then
+	if BagnonMenu and BagnonMenu.parent == self then
 		BagnonMenu:Hide()
 	end
+
 	if BagnonSpot:GetAnchor() == self then
 		BagnonSpot:Hide()
 	end
@@ -594,11 +596,16 @@ end
 --[[ coloring ]]--
 
 function BagnonFrame:GetBackgroundColor()
-	local sets = self.sets
-	if sets then
-		local bg = sets.bg
-		return bg.r, bg.g, bg.b, bg.a
-	end
+	local bg = self.sets.bg
+	return bg.r, bg.g, bg.b, bg.a
+end
+
+function BagnonFrame:SetBackgroundColor(r, g, b, a)
+	local bg = self.sets.bg
+	bg.r = r; bg.g = g; bg.b = b; bg.a = a
+	
+	self:SetBackdropColor(r, g, b, a)
+	self:SetBackdropBorderColor(1, 1, 1, a)
 end
 
 

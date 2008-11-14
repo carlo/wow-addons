@@ -1,11 +1,14 @@
 ﻿--[[
 Name: RatingBuster enUS locale
-Revision: $Revision: 1 $
+Revision: $Revision: 177 $
 Translated by: 
-- Whitetooth@Cenarius (hotdogee@bahamut.twbbs.org)
+- Whitetooth (hotdogee [at] gmail [dot] com)
 ]]
 
 local L = AceLibrary("AceLocale-2.2"):new("RatingBuster")
+if not CR_ARMOR_PENETRATION then
+	CR_ARMOR_PENETRATION = 25
+end
 ----
 -- This file is coded in UTF-8
 -- If you don't have a editor that can save in UTF-8, I recommend Ultraedit
@@ -22,12 +25,15 @@ L:RegisterTranslations("enUS", function() return {
 	---------------------------
 	-- Slash Command Options --
 	---------------------------
-	-- /rb optionswin
+	-- /rb win
 	["Options Window"] = true,
 	["Shows the Options Window"] = true,
 	-- /rb statmod
 	["Enable Stat Mods"] = true,
 	["Enable support for Stat Mods"] = true,
+	-- /rb avoidancedr
+	["Enable avoidance diminishing returns"] = true,
+	["Dodge, Parry, Hit Avoidance values will be calculated using the avoidance deminishing return formula with your current stats"] = true,			
 	-- /rb itemid
 	["Show ItemID"] = true,
 	["Show the ItemID in tooltips"] = true,
@@ -37,24 +43,22 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb usereqlv
 	["Use required level"] = true,
 	["Calculate using the required level if you are below the required level"] = true,
-	-- /rb setlevel
+	-- /rb level
 	["Set level"] = true,
 	["Set the level used in calculations (0 = your level)"] = true,
-	-- /rb color
-	["Change text color"] = true,
-	["Changes the color of added text"] = true,
-	-- /rb color pick
-	["Pick color"] = true,
-	["Pick a color"] = true,
-	-- /rb color enable
-	["Enable color"] = true,
-	["Enable colored text"] = true,
+	---------------------------------------------------------------------------
 	-- /rb rating
 	["Rating"] = true,
 	["Options for Rating display"] = true,
 	-- /rb rating show
 	["Show Rating conversions"] = true,
 	["Show Rating conversions in tooltips"] = true,
+	-- /rb rating spell
+	["Show Spell Hit"] = true,
+	["Show Spell Hit from Hit Rating"] = true,
+	-- /rb rating physical
+	["Show Physical Hit"] = true,
+	["Show Physical Hit from Hit Rating"] = true,
 	-- /rb rating detail
 	["Show detailed conversions text"] = true,
 	["Show detailed text for Resiliance and Expertise conversions"] = true,
@@ -64,16 +68,27 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb rating wpn
 	["Weapon Skill breakdown"] = true,
 	["Convert Weapon Skill into Crit, Hit, Dodge Neglect, Parry Neglect and Block Neglect"] = true,
-	-- /rb rating exp -- 2.3.0
+	-- /rb rating exp
 	["Expertise breakdown"] = true,
 	["Convert Expertise into Dodge Neglect and Parry Neglect"] = true,
-	
+	---------------------------------------------------------------------------
+	-- /rb rating color
+	["Change text color"] = true,
+	["Changes the color of added text"] = true,
+	-- /rb rating color pick
+	["Pick color"] = true,
+	["Pick a color"] = true,
+	-- /rb rating color enable
+	["Enable color"] = true,
+	["Enable colored text"] = true,
+	---------------------------------------------------------------------------
 	-- /rb stat
-	["Stat"] = true,
+	["Stat Breakdown"] = true,
 	["Changes the display of base stats"] = true,
 	-- /rb stat show
 	["Show base stat conversions"] = true,
 	["Show base stat conversions in tooltips"] = true,
+	---------------------------------------------------------------------------
 	-- /rb stat str
 	["Strength"] = true,
 	["Changes the display of Strength"] = true,
@@ -83,10 +98,16 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb stat str block
 	["Show Block Value"] = true,
 	["Show Block Value from Strength"] = true,
+	-- /rb stat str dmg
+	["Show Spell Damage"] = true,
+	["Show Spell Damage from Strength"] = true,
 	-- /rb stat str heal
 	["Show Healing"] = true,
 	["Show Healing from Strength"] = true,
-	
+	-- /rb stat str parry
+	["Show Parry"] = true,
+	["Show Parry from Strength"] = true,
+	---------------------------------------------------------------------------
 	-- /rb stat agi
 	["Agility"] = true,
 	["Changes the display of Agility"] = true,
@@ -105,7 +126,10 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb stat agi armor
 	["Show Armor"] = true,
 	["Show Armor from Agility"] = true,
-	
+	-- /rb stat agi heal
+	["Show Healing"] = true,
+	["Show Healing from Agility"] = true,
+	---------------------------------------------------------------------------
 	-- /rb stat sta
 	["Stamina"] = true,
 	["Changes the display of Stamina"] = true,
@@ -115,7 +139,13 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb stat sta dmg
 	["Show Spell Damage"] = true,
 	["Show Spell Damage from Stamina"] = true,
-	
+	-- /rb stat sta heal
+	["Show Healing"] = true,
+	["Show Healing from Stamina"] = true,
+	-- /rb stat sta ap
+	["Show Attack Power"] = true,
+	["Show Attack Power from Stamina"] = true,
+	---------------------------------------------------------------------------
 	-- /rb stat int
 	["Intellect"] = true,
 	["Changes the display of Intellect"] = true,
@@ -134,13 +164,19 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb stat int mp5
 	["Show Mana Regen"] = true,
 	["Show Mana Regen while casting from Intellect"] = true,
+	-- /rb stat int mp5nc
+	["Show Mana Regen while NOT casting"] = true,
+	["Show Mana Regen while NOT casting from Intellect"] = true,
 	-- /rb stat int rap
 	["Show Ranged Attack Power"] = true,
 	["Show Ranged Attack Power from Intellect"] = true,
 	-- /rb stat int armor
 	["Show Armor"] = true,
 	["Show Armor from Intellect"] = true,
-	
+	-- /rb stat int ap
+	["Show Attack Power"] = true,
+	["Show Attack Power from Intellect"] = true,
+	---------------------------------------------------------------------------
 	-- /rb stat spi
 	["Spirit"] = true,
 	["Changes the display of Spirit"] = true,
@@ -159,7 +195,7 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb stat spi heal
 	["Show Healing"] = true,
 	["Show Healing from Spirit"] = true,
-	
+	---------------------------------------------------------------------------
 	-- /rb sum
 	["Stat Summary"] = true,
 	["Options for stat summary"] = true,
@@ -208,160 +244,258 @@ L:RegisterTranslations("enUS", function() return {
 	-- /rb sum calcdiff
 	["Calculate stat diff"] = true,
 	["Calculate the stat difference for the item and equipped items"] = true,
-	-- /rb sum stat
-	["Stat - Base"] = true,
-	["Choose base stats for summary"] = true,
-	-- /rb sum stat hp
+	-- /rb sum sort
+	["Sort StatSummary alphabetically"] = true,
+	["Enable to sort StatSummary alphabetically, disable to sort according to stat type(basic, physical, spell, tank)"] = true,
+	-- /rb sum avoidhasblock
+	["Include block chance in Avoidance summary"] = true,
+	["Enable to include block chance in Avoidance summary, Disable for only dodge, parry, miss"] = true,
+	---------------------------------------------------------------------------
+	-- /rb sum basic
+	["Stat - Basic"] = true,
+	["Choose basic stats for summary"] = true,
+	-- /rb sum basic hp
 	["Sum Health"] = true,
 	["Health <- Health, Stamina"] = true,
-	-- /rb sum stat mp
+	-- /rb sum basic mp
 	["Sum Mana"] = true,
 	["Mana <- Mana, Intellect"] = true,
-	-- /rb sum stat ap
-	["Sum Attack Power"] = true,
-	["Attack Power <- Attack Power, Strength, Agility"] = true,
-	-- /rb sum stat rap
-	["Sum Ranged Attack Power"] = true,
-	["Ranged Attack Power <- Ranged Attack Power, Intellect, Attack Power, Strength, Agility"] = true,
-	-- /rb sum stat fap
-	["Sum Feral Attack Power"] = true,
-	["Feral Attack Power <- Feral Attack Power, Attack Power, Strength, Agility"] = true,
-	-- /rb sum stat dmg
-	["Sum Spell Damage"] = true,
-	["Spell Damage <- Spell Damage, Intellect, Spirit, Stamina"] = true,
-	-- /rb sum stat dmgholy
-	["Sum Holy Spell Damage"] = true,
-	["Holy Spell Damage <- Holy Spell Damage, Spell Damage, Intellect, Spirit"] = true,
-	-- /rb sum stat dmgarcane
-	["Sum Arcane Spell Damage"] = true,
-	["Arcane Spell Damage <- Arcane Spell Damage, Spell Damage, Intellect"] = true,
-	-- /rb sum stat dmgfire
-	["Sum Fire Spell Damage"] = true,
-	["Fire Spell Damage <- Fire Spell Damage, Spell Damage, Intellect, Stamina"] = true,
-	-- /rb sum stat dmgnature
-	["Sum Nature Spell Damage"] = true,
-	["Nature Spell Damage <- Nature Spell Damage, Spell Damage, Intellect"] = true,
-	-- /rb sum stat dmgfrost
-	["Sum Frost Spell Damage"] = true,
-	["Frost Spell Damage <- Frost Spell Damage, Spell Damage, Intellect"] = true,
-	-- /rb sum stat dmgshadow
-	["Sum Shadow Spell Damage"] = true,
-	["Shadow Spell Damage <- Shadow Spell Damage, Spell Damage, Intellect, Spirit, Stamina"] = true,
-	-- /rb sum stat heal
-	["Sum Healing"] = true,
-	["Healing <- Healing, Intellect, Spirit, Strength"] = true,
-	-- /rb sum stat hit
-	["Sum Hit Chance"] = true,
-	["Hit Chance <- Hit Rating, Weapon Skill Rating"] = true,
-	-- /rb sum stat hitspell
-	["Sum Spell Hit Chance"] = true,
-	["Spell Hit Chance <- Spell Hit Rating"] = true,
-	-- /rb sum stat crit
-	["Sum Crit Chance"] = true,
-	["Crit Chance <- Crit Rating, Agility, Weapon Skill Rating"] = true,
-	-- /rb sum stat critspell
-	["Sum Spell Crit Chance"] = true,
-	["Spell Crit Chance <- Spell Crit Rating, Intellect"] = true,
-	-- /rb sum stat mp5
+	-- /rb sum basic mp5
 	["Sum Mana Regen"] = true,
 	["Mana Regen <- Mana Regen, Spirit"] = true,
-	-- /rb sum stat mp5nc
+	-- /rb sum basic mp5nc
 	["Sum Mana Regen while not casting"] = true,
 	["Mana Regen while not casting <- Spirit"] = true,
-	-- /rb sum stat hp5
+	-- /rb sum basic hp5
 	["Sum Health Regen"] = true,
 	["Health Regen <- Health Regen"] = true,
-	-- /rb sum stat hp5oc
+	-- /rb sum basic hp5oc
 	["Sum Health Regen when out of combat"] = true,
 	["Health Regen when out of combat <- Spirit"] = true,
-	-- /rb sum stat armor
-	["Sum Armor"] = true,
-	["Armor <- Armor from items, Armor from bonuses, Agility, Intellect"] = true,
-	-- /rb sum stat blockvalue
-	["Sum Block Value"] = true,
-	["Block Value <- Block Value, Strength"] = true,
-	-- /rb sum stat dodge
-	["Sum Dodge Chance"] = true,
-	["Dodge Chance <- Dodge Rating, Agility, Defense Rating"] = true,
-	-- /rb sum stat parry
-	["Sum Parry Chance"] = true,
-	["Parry Chance <- Parry Rating, Defense Rating"] = true,
-	-- /rb sum stat block
-	["Sum Block Chance"] = true,
-	["Block Chance <- Block Rating, Defense Rating"] = true,
-	-- /rb sum stat avoidhit
-	["Sum Hit Avoidance"] = true,
-	["Hit Avoidance <- Defense Rating"] = true,
-	-- /rb sum stat avoidcrit
-	["Sum Crit Avoidance"] = true,
-	["Crit Avoidance <- Defense Rating, Resilience"] = true,
-	-- /rb sum stat neglectdodge
-	["Sum Dodge Neglect"] = true,
-	["Dodge Neglect <- Expertise, Weapon Skill Rating"] = true, -- 2.3.0
-	-- /rb sum stat neglectparry
-	["Sum Parry Neglect"] = true,
-	["Parry Neglect <- Expertise, Weapon Skill Rating"] = true, -- 2.3.0
-	-- /rb sum stat neglectblock
-	["Sum Block Neglect"] = true,
-	["Block Neglect <- Weapon Skill Rating"] = true,
-	-- /rb sum stat resarcane
-	["Sum Arcane Resistance"] = true,
-	["Arcane Resistance Summary"] = true,
-	-- /rb sum stat resfire
-	["Sum Fire Resistance"] = true,
-	["Fire Resistance Summary"] = true,
-	-- /rb sum stat resnature
-	["Sum Nature Resistance"] = true,
-	["Nature Resistance Summary"] = true,
-	-- /rb sum stat resfrost
-	["Sum Frost Resistance"] = true,
-	["Frost Resistance Summary"] = true,
-	-- /rb sum stat resshadow
-	["Sum Shadow Resistance"] = true,
-	["Shadow Resistance Summary"] = true,
-	-- /rb sum stat maxdamage
-	["Sum Weapon Max Damage"] = true,
-	["Weapon Max Damage Summary"] = true,
-	-- /rb sum stat weapondps
-	--["Sum Weapon DPS"] = true,
-	--["Weapon DPS Summary"] = true,
-	-- /rb sum statcomp
-	["Stat - Composite"] = true,
-	["Choose composite stats for summary"] = true,
-	-- /rb sum statcomp str
+	-- /rb sum basic str
 	["Sum Strength"] = true,
 	["Strength Summary"] = true,
-	-- /rb sum statcomp agi
+	-- /rb sum basic agi
 	["Sum Agility"] = true,
 	["Agility Summary"] = true,
-	-- /rb sum statcomp sta
+	-- /rb sum basic sta
 	["Sum Stamina"] = true,
 	["Stamina Summary"] = true,
-	-- /rb sum statcomp int
+	-- /rb sum basic int
 	["Sum Intellect"] = true,
 	["Intellect Summary"] = true,
-	-- /rb sum statcomp spi
+	-- /rb sum basic spi
 	["Sum Spirit"] = true,
 	["Spirit Summary"] = true,
-	-- /rb sum statcomp def
-	["Sum Defense"] = true,
-	["Defense <- Defense Rating"] = true,
-	-- /rb sum statcomp wpn
+	---------------------------------------------------------------------------
+	-- /rb sum physical
+	["Stat - Physical"] = true,
+	["Choose physical damage stats for summary"] = true,
+	-- /rb sum physical ap
+	["Sum Attack Power"] = true,
+	["Attack Power <- Attack Power, Strength, Agility"] = true,
+	-- /rb sum physical rap
+	["Sum Ranged Attack Power"] = true,
+	["Ranged Attack Power <- Ranged Attack Power, Intellect, Attack Power, Strength, Agility"] = true,
+	-- /rb sum physical fap
+	["Sum Feral Attack Power"] = true,
+	["Feral Attack Power <- Feral Attack Power, Attack Power, Strength, Agility"] = true,
+	-- /rb sum physical hit
+	["Sum Hit Chance"] = true,
+	["Hit Chance <- Hit Rating, Weapon Skill Rating"] = true,
+	-- /rb sum physical hitrating
+	["Sum Hit Rating"] = true,
+	["Hit Rating Summary"] = true,
+	-- /rb sum physical crit
+	["Sum Crit Chance"] = true,
+	["Crit Chance <- Crit Rating, Agility, Weapon Skill Rating"] = true,
+	-- /rb sum physical critrating
+	["Sum Crit Rating"] = true,
+	["Crit Rating Summary"] = true,
+	-- /rb sum physical haste
+	["Sum Haste"] = true,
+	["Haste <- Haste Rating"] = true,
+	-- /rb sum physical hasterating
+	["Sum Haste Rating"] = true,
+	["Haste Rating Summary"] = true,
+	-- /rb sum physical rangedhit
+	["Sum Ranged Hit Chance"] = true,
+	["Ranged Hit Chance <- Hit Rating, Weapon Skill Rating, Ranged Hit Rating"] = true,
+	-- /rb sum physical rangedhitrating
+	["Sum Ranged Hit Rating"] = true,
+	["Ranged Hit Rating Summary"] = true,
+	-- /rb sum physical rangedcrit
+	["Sum Ranged Crit Chance"] = true,
+	["Ranged Crit Chance <- Crit Rating, Agility, Weapon Skill Rating, Ranged Crit Rating"] = true,
+	-- /rb sum physical rangedcritrating
+	["Sum Ranged Crit Rating"] = true,
+	["Ranged Crit Rating Summary"] = true,
+	-- /rb sum physical rangedhaste
+	["Sum Ranged Haste"] = true,
+	["Ranged Haste <- Haste Rating, Ranged Haste Rating"] = true,
+	-- /rb sum physical rangedhasterating
+	["Sum Ranged Haste Rating"] = true,
+	["Ranged Haste Rating Summary"] = true,
+	-- /rb sum physical maxdamage
+	["Sum Weapon Max Damage"] = true,
+	["Weapon Max Damage Summary"] = true,
+	-- /rb sum physical ignorearmor
+	["Sum Ignore Armor"] = true,
+	["Ignore Armor Summary"] = true,
+	-- /rb sum physical arp
+	["Sum Armor Penetration"] = true,
+	["Armor Penetration Summary"] = true,
+	-- /rb sum physical weapondps
+	--["Sum Weapon DPS"] = true,
+	--["Weapon DPS Summary"] = true,
+	-- /rb sum physical wpn
 	["Sum Weapon Skill"] = true,
 	["Weapon Skill <- Weapon Skill Rating"] = true,
-	-- /rb sum statcomp exp -- 2.3.0
+	-- /rb sum physical exp
 	["Sum Expertise"] = true,
 	["Expertise <- Expertise Rating"] = true,
-	-- /rb sum statcomp tp
+	-- /rb sum physical arprating
+	["Sum Armor Penetration Rating"] = true,
+	["Armor Penetration Rating Summary"] = true,
+	---------------------------------------------------------------------------
+	-- /rb sum spell
+	["Stat - Spell"] = true,
+	["Choose spell damage and healing stats for summary"] = true,
+	-- /rb sum spell dmg
+	["Sum Spell Damage"] = true,
+	["Spell Damage <- Spell Damage, Intellect, Spirit, Stamina"] = true,
+	-- /rb sum spell dmgholy
+	["Sum Holy Spell Damage"] = true,
+	["Holy Spell Damage <- Holy Spell Damage, Spell Damage, Intellect, Spirit"] = true,
+	-- /rb sum spell dmgarcane
+	["Sum Arcane Spell Damage"] = true,
+	["Arcane Spell Damage <- Arcane Spell Damage, Spell Damage, Intellect"] = true,
+	-- /rb sum spell dmgfire
+	["Sum Fire Spell Damage"] = true,
+	["Fire Spell Damage <- Fire Spell Damage, Spell Damage, Intellect, Stamina"] = true,
+	-- /rb sum spell dmgnature
+	["Sum Nature Spell Damage"] = true,
+	["Nature Spell Damage <- Nature Spell Damage, Spell Damage, Intellect"] = true,
+	-- /rb sum spell dmgfrost
+	["Sum Frost Spell Damage"] = true,
+	["Frost Spell Damage <- Frost Spell Damage, Spell Damage, Intellect"] = true,
+	-- /rb sum spell dmgshadow
+	["Sum Shadow Spell Damage"] = true,
+	["Shadow Spell Damage <- Shadow Spell Damage, Spell Damage, Intellect, Spirit, Stamina"] = true,
+	-- /rb sum spell heal
+	["Sum Healing"] = true,
+	["Healing <- Healing, Intellect, Spirit, Agility, Strength"] = true,
+	-- /rb sum spell crit
+	["Sum Spell Crit Chance"] = true,
+	["Spell Crit Chance <- Spell Crit Rating, Intellect"] = true,
+	-- /rb sum spell hit
+	["Sum Spell Hit Chance"] = true,
+	["Spell Hit Chance <- Spell Hit Rating"] = true,
+	-- /rb sum spell haste
+	["Sum Spell Haste"] = true,
+	["Spell Haste <- Spell Haste Rating"] = true,
+	-- /rb sum spell pen
+	["Sum Penetration"] = true,
+	["Spell Penetration Summary"] = true,
+	-- /rb sum spell hitrating
+	["Sum Spell Hit Rating"] = true,
+	["Spell Hit Rating Summary"] = true,
+	-- /rb sum spell critrating
+	["Sum Spell Crit Rating"] = true,
+	["Spell Crit Rating Summary"] = true,
+	-- /rb sum spell hasterating
+	["Sum Spell Haste Rating"] = true,
+	["Spell Haste Rating Summary"] = true,
+	---------------------------------------------------------------------------
+	-- /rb sum tank
+	["Stat - Tank"] = true,
+	["Choose tank stats for summary"] = true,
+	-- /rb sum tank armor
+	["Sum Armor"] = true,
+	["Armor <- Armor from items, Armor from bonuses, Agility, Intellect"] = true,
+	-- /rb sum tank blockvalue
+	["Sum Block Value"] = true,
+	["Block Value <- Block Value, Strength"] = true,
+	-- /rb sum tank dodge
+	["Sum Dodge Chance"] = true,
+	["Dodge Chance <- Dodge Rating, Agility, Defense Rating"] = true,
+	-- /rb sum tank parry
+	["Sum Parry Chance"] = true,
+	["Parry Chance <- Parry Rating, Defense Rating"] = true,
+	-- /rb sum tank block
+	["Sum Block Chance"] = true,
+	["Block Chance <- Block Rating, Defense Rating"] = true,
+	-- /rb sum tank avoidhit
+	["Sum Hit Avoidance"] = true,
+	["Hit Avoidance <- Defense Rating"] = true,
+	-- /rb sum tank avoidcrit
+	["Sum Crit Avoidance"] = true,
+	["Crit Avoidance <- Defense Rating, Resilience"] = true,
+	-- /rb sum tank neglectdodge
+	["Sum Dodge Neglect"] = true,
+	["Dodge Neglect <- Expertise, Weapon Skill Rating"] = true, -- 2.3.0
+	-- /rb sum tank neglectparry
+	["Sum Parry Neglect"] = true,
+	["Parry Neglect <- Expertise, Weapon Skill Rating"] = true, -- 2.3.0
+	-- /rb sum tank neglectblock
+	["Sum Block Neglect"] = true,
+	["Block Neglect <- Weapon Skill Rating"] = true,
+	-- /rb sum tank resarcane
+	["Sum Arcane Resistance"] = true,
+	["Arcane Resistance Summary"] = true,
+	-- /rb sum tank resfire
+	["Sum Fire Resistance"] = true,
+	["Fire Resistance Summary"] = true,
+	-- /rb sum tank resnature
+	["Sum Nature Resistance"] = true,
+	["Nature Resistance Summary"] = true,
+	-- /rb sum tank resfrost
+	["Sum Frost Resistance"] = true,
+	["Frost Resistance Summary"] = true,
+	-- /rb sum tank resshadow
+	["Sum Shadow Resistance"] = true,
+	["Shadow Resistance Summary"] = true,
+	-- /rb sum tank dodgerating
+	["Sum Dodge Rating"] = true,
+	["Dodge Rating Summary"] = true,
+	-- /rb sum tank parryrating
+	["Sum Parry Rating"] = true,
+	["Parry Rating Summary"] = true,
+	-- /rb sum tank blockrating
+	["Sum Block Rating"] = true,
+	["Block Rating Summary"] = true,
+	-- /rb sum tank res
+	["Sum Resilience"] = true,
+	["Resilience Summary"] = true,
+	-- /rb sum tank def
+	["Sum Defense"] = true,
+	["Defense <- Defense Rating"] = true,
+	-- /rb sum tank tp
 	["Sum TankPoints"] = true,
 	["TankPoints <- Health, Total Reduction"] = true,
-	-- /rb sum statcomp tr
+	-- /rb sum tank tr
 	["Sum Total Reduction"] = true,
 	["Total Reduction <- Armor, Dodge, Parry, Block, Block Value, Defense, Resilience, MobMiss, MobCrit, MobCrush, DamageTakenMods"] = true,
-	-- /rb sum statcomp avoid
+	-- /rb sum tank avoid
 	["Sum Avoidance"] = true,
-	["Avoidance <- Dodge, Parry, MobMiss"] = true,
-	
+	["Avoidance <- Dodge, Parry, MobMiss, Block(Optional)"] = true,
+	---------------------------------------------------------------------------
+	-- /rb sum gem
+	["Gems"] = true,
+	["Auto fill empty gem slots"] = true,
+	-- /rb sum gem red
+	["Red Socket"] = EMPTY_SOCKET_RED,
+	["ItemID or Link of the gem you would like to auto fill"] = true,
+	["<ItemID|Link>"] = true,
+	["%s is now set to %s"] = true,
+	["Queried server for Gem: %s. Try again in 5 secs."] = true,
+	-- /rb sum gem yellow
+	["Yellow Socket"] = EMPTY_SOCKET_YELLOW,
+	-- /rb sum gem blue
+	["Blue Socket"] = EMPTY_SOCKET_BLUE,
+	-- /rb sum gem meta
+	["Meta Socket"] = EMPTY_SOCKET_META,
+
 	-----------------------
 	-- Item Level and ID --
 	-----------------------
@@ -417,13 +551,15 @@ L:RegisterTranslations("enUS", function() return {
 	-- Tip2: The strings are passed into string.find, so you should escape the magic characters ^$()%.[]*+-? with a %
 	["numberPatterns"] = {
 		{pattern = " by (%d+)", addInfo = "AfterNumber",},
-		{pattern = "%+(%d+)", addInfo = "AfterStat",},
-		{pattern = "grant.-(%d+)", addInfo = "AfterNumber",}, -- for "grant you xx stat" type pattern, ex: Quel'Serrar, Assassination Armor set
-		{pattern = "add.-(%d+)", addInfo = "AfterNumber",}, -- for "add xx stat" type pattern, ex: Adamantite Sharpening Stone
-		{pattern = "(%d+)([^%d]+)", addInfo = "AfterStat",}, -- [發光的暗影卓奈石] +6法術傷害及5耐力
+		{pattern = "([%+%-]%d+)", addInfo = "AfterStat",},
+		--{pattern = "grant.-(%d+)", addInfo = "AfterNumber",}, -- for "grant you xx stat" type pattern, ex: Quel'Serrar ID:18348, Assassination Armor set
+		--{pattern = "add.-(%d+)", addInfo = "AfterNumber",}, -- for "add xx stat" type pattern, ex: Adamantite Sharpening Stone ID:23529
+		-- Added [^%%] so that it doesn't match strings like "Increases healing by up to 10% of your total Intellect." [Whitemend Pants] ID:24261
+		-- Added [^|] so that it doesn't match enchant strings (JewelTips)
+		{pattern = "(%d+)([^%d%%|]+)", addInfo = "AfterStat",}, -- [發光的暗影卓奈石] +6法術傷害及5耐力
 	},
 	["separators"] = {
-		"/", " and ", ",", "%. ", " for ", "&"
+		"/", " and ", ",", "%. ", " for ", "&", ":"
 	},
 	--[[ Rating ID
 	CR_WEAPON_SKILL = 1;
@@ -473,11 +609,13 @@ L:RegisterTranslations("enUS", function() return {
 		{pattern = "spell critical rating", id = CR_CRIT_SPELL},
 		{pattern = "spell crit rating", id = CR_CRIT_SPELL},
 		{pattern = "ranged critical strike rating", id = CR_CRIT_RANGED},
+		{pattern = "ranged critical strike", id = CR_CRIT_RANGED}, -- [Heartseeker Scope]
 		{pattern = "ranged critical hit rating", id = CR_CRIT_RANGED},
 		{pattern = "ranged critical rating", id = CR_CRIT_RANGED},
 		{pattern = "ranged crit rating", id = CR_CRIT_RANGED},
 		{pattern = "critical strike rating", id = CR_CRIT_MELEE},
 		{pattern = "critical hit rating", id = CR_CRIT_MELEE},
+		{pattern = "critical rating", id = CR_CRIT_MELEE},
 		{pattern = "crit rating", id = CR_CRIT_MELEE},
 		
 		{pattern = "spell hit rating", id = CR_HIT_SPELL},
@@ -495,6 +633,7 @@ L:RegisterTranslations("enUS", function() return {
 		{pattern = "expertise rating", id = CR_EXPERTISE},
 		
 		{pattern = "hit avoidance rating", id = CR_HIT_TAKEN_MELEE},
+		{pattern = "armor penetration rating", id = CR_ARMOR_PENETRATION},
 		--[[
 		{pattern = "dagger skill rating", id = CR_WEAPON_SKILL},
 		{pattern = "sword skill rating", id = CR_WEAPON_SKILL},
@@ -536,6 +675,11 @@ L:RegisterTranslations("enUS", function() return {
 	["$value to be Crit"] = true,
 	["$value Crit Dmg Taken"] = true,
 	["$value DOT Dmg Taken"] = true,
+	["$value% Parry"] = true,
+	-- for hit rating showing both physical and spell conversions
+	-- (+1.21%, S+0.98%)
+	-- (+1.21%, +0.98% S)
+	["$value Spell"] = true,
 	
 	------------------
 	-- Stat Summary --

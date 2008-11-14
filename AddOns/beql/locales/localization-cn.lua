@@ -149,6 +149,85 @@ L:RegisterTranslations("zhCN", function() return{
 	["Party Member with Quixote Color"] = "使用Quixote库的队友颜色",
 	["Sets the color for Party member"] = "为队友设置颜色",		
 	
+--[[ new with 3.0
+	["Main Options"] = true, -- translate me!!!
+	["Enable Addon"] = true, -- translate me!!!
+	["Enable this Addon"] = true, -- translate me!!!
+	["General Quest Log Options"] = true, -- translate me!!!
+	["No sound"] = true, -- translate me!!!
+	["Don't play a sound"] = true, -- translate me!!!
+	["Watch Options"] = true, -- translate me!!!
+	["Zones"] = true, -- translate me!!!
+	["NPC color"] = true, -- translate me!!!
+	["Title color"] = true, -- translate me!!!
+
+-- Fubar
+	["Show icon"] = true, -- translate me!!!
+	["Show the plugins icon on the panel."] = true, -- translate me!!!
+	["Show text"] = true, -- translate me!!!
+	["Show the plugins text on the panel."] = true, -- translate me!!!
+	["Show colored text"] = true, -- translate me!!!
+	["Allow the plugin to color its text."] = true, -- translate me!!!
+	["Detach tooltip"] = true, -- translate me!!!
+	["Detach the tooltip from the panel."] = true, -- translate me!!!
+	["Lock tooltip"] = true, -- translate me!!!
+	["Lock the tooltips position. When the tooltip is locked, you must use Alt to access it with your mouse."] = true, -- translate me!!!
+	["Position"] = true, -- translate me!!!
+	["Position the plugin on the panel."] = true, -- translate me!!!
+	["Left"] = true, -- translate me!!!
+	["Right"] = true, -- translate me!!!
+	["Center"] = true, -- translate me!!!
+	["Attach to minimap"] = true, -- translate me!!!
+	["Attach the plugin to the minimap instead of the panel."] = true, -- translate me!!!
+	["Hide plugin"] = true, -- translate me!!!
+	["Hidden"] = true, -- translate me!!!
+	["Hide the plugin from the panel or minimap, leaving the addon running."] = true, -- translate me!!!
+	["Other"] = true, -- translate me!!!
+	["Close"] = true, -- translate me!!!
+	["Close the menu."] = true, -- translate me!!!
+	["Minimap position"] = true, -- translate me!!!
+
+-- Profiles
+	["Profiles"] = true, -- translate me!!!
+ 
+-- Achievement Tracker
+	["Achievement Tracker"] = true, -- translate me!!!
+	["Enable Achievement Tracker"] = true, -- translate me!!!
+	["Enables the Achievement Tracker, which can be moved an collapsed."] = true, -- translate me!!!
+	["Makes the achievement tracker unmovable"] = true, -- translate me!!!
+	["Show Achievement Tracker Header"] = true, -- translate me!!!
+	["Shows the header of the Achievementtracker"] = true, -- translate me!!!
+	["Save tracked Achievement"] = true, -- translate me!!!
+	["Save last tracked Achievement and resore it after login"] = true, -- translate me!!!
+	["Remove Completed Achievement"] = true, -- translate me!!!
+	["Automatical remove the completed Achievement from tracker"] = true, -- translate me!!!
+	["Achievement Tracker Alpha"] = true, -- translate me!!!
+	["Sets the Alpha of the Achievement Tracker"] = true, -- translate me!!!
+	["Achievement Tracker Scale"] = true, -- translate me!!!
+	["Sets the Scale of the Achievement Tracker"] = true, -- translate me!!!
+--]]
+-- Profiles
+
+	["ace2profile_default"] = "默认",
+	["ace2profile_intro"] = "你可以选择一个活动的数据配置文件，这样你的每个角色就可以拥有不同的设置值，可以给你的插件配置带来极大的灵活性。" ,
+	["ace2profile_reset_desc"] = "将当前的配置文件恢复到它的默认值，用于你的配置文件损坏，或者你只是想重来的情况。",
+	["ace2profile_reset"] = "重置配置文件",
+	["ace2profile_reset_sub"] = "将当前的配置文件恢复为默认值",
+	["ace2profile_choose_desc"] = "你可以通过在文本框内输入一个名字创立一个新的配置文件，也可以选择一个已经存在的配置文件。",
+	["ace2profile_new"] = "新建",
+	["ace2profile_new_sub"] = "新建一个空的配置文件。",
+	["ace2profile_choose"] = "现有的配置文件",
+	["ace2profile_choose_sub"] = "从当前可用的配置文件里面选择一个。",
+	["ace2profile_copy_desc"] = "从当前某个已保存的配置文件复制到当前正使用的配置文件。",
+	["ace2profile_copy"] = "复制自",
+	["ace2profile_delete_desc"] = "从数据库里删除不再使用的配置文件，以节省空间，并且清理SavedVariables文件。",
+	["ace2profile_delete"] = "删除一个配置文件",
+	["ace2profile_delete_sub"] = "从数据库里删除一个配置文件。",
+	["ace2profile_delete_confirm"] = "你确定要删除所选择的配置文件么？",
+	["ace2profile_profiles"] = "配置文件",
+	["ace2profile_profiles_sub"] = "管理配置文件",
+
+
 } end )
 
 if GetLocale() == "zhCN" then

@@ -1,4 +1,4 @@
-## Interface: 20200
+## Interface: 30000
 
 ## Title: Lib: AceOO-2.0
 ## Notes: AddOn development framework

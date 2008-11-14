@@ -8,12 +8,15 @@ L:RegisterTranslations("frFR", function() return {
   ["general"] = "commerce",
   ["trade"] = "g\195\169n\195\169ral",
   ["guildrecruitment"] = "recrutementdeguilde",
+  ["emote"] = "emote",
+  ["lookingforgroup"] = "recherchedegroupe",
+  ["localdefense"] = "d\195\169fenselocale",
   
   -- Welcome message 
   ["SpamSentry v%s by Anea. Type |cffffffff/sentry|r or right-click the icon for options."] = "SpamSentry v%s par Anea. Tapez |cffffffff/sentry|r pour les options",
   
   -- Alerts
-  ["%s has been added to the feedback list"] = "Le message de %s \195\160 \195\169t\195\169 ajout\195\169 au rapport.",
+  ["%s has been added to the SpamSentry feedback list"] = "SpamSentry: Le message de %s \195\160 \195\169t\195\169 ajout\195\169 au rapport.",
   ["* Alert: %s tried to send you %s (%s). Click %s to report."] = "Alerte: %s essaye de vous envoyer %s (%s). Cliquez|r %s |cffff9977pour envoyer un rapport.",
   ["this message"] = "ce message",
   ["One or more characters are on the reportlist. Click %s to report them to a GM."] = "Un ou plusieurs spammers ont \195\169t\195\169 bloqu\195\169s. Cliquez|r %s |cffff9977pour envoyer un rapport \195\160 un MJ.",
@@ -61,11 +64,11 @@ L:RegisterTranslations("frFR", function() return {
   ["report the characters to a GM"] = "Rapporter les joueurs rapport\195\169s \195\160 un MJ",
 
   -- Options: Channels
-  ["channel"] = "Cannaux",
+  ["channel"] = "Canaux",
   ["check the channels you want the addon to monitor"] = "V\195\169rifier les canaux \195\160 surveiller",
 
   -- Options: Counters
-  ["counters"] = "counters",
+  ["counters"] = "compteurs",
   ["set which counters you would like to see on FuBar/Titan"] = "set which counters you would like to see on FuBar/Titan",
 
   -- Options: Ticket texts    
@@ -99,7 +102,7 @@ L:RegisterTranslations("frFR", function() return {
   ["automatically clear the reportlist on login"] = "Nettoyer la liste de rapport automatiquement \195\160 chaque connexion",
 
   -- Options: Ignore party invites
-  ["ignore party invite"] = "ignore party invite",
+  ["ignore party invite"] = "ignorer le groupage sauvage",
   ["ignore party invites from people you don't know"] = "ignore party invites from people you don't know",
   ["Player unknown, party invite cancelled"] = "Player unknown, party invite cancelled",
 
@@ -108,7 +111,7 @@ L:RegisterTranslations("frFR", function() return {
   ["FEEDBACK_DESC"] = "Utilisez cette fonction pour faire un rapport quand un spam n'a pas \195\169t\195\169 automatiquement d\195\169tect\195\169. Le rapport peut alors \195\170tre soumis \195\160 l'auteur du mod.",
 
   -- Options: Ignore by level
-  ["ignore by level"] = "ignore by level",
+  ["ignore by level"] = "ignorer par niveau",
   ["hide whispers from characters below the set level"] = "hide whispers from characters below the set level",
 
   -- Tickets: No reply

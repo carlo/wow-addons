@@ -1,6 +1,6 @@
 ﻿--[[
 Name: LibRockConfig-1.0
-Revision: $Rev: 52879 $
+Revision: $Rev: 392 $
 Developed by: ckknight (ckknight@gmail.com)
 Credits: Nargiddley, inspiration and some code taken from Waterfall-1.0
 Website: http://www.wowace.com/
@@ -10,7 +10,7 @@ License: LGPL v2.1
 ]]
 
 local MAJOR_VERSION = "LibRockConfig-1.0"
-local MINOR_VERSION = tonumber(("$Revision: 52879 $"):match("(%d+)")) - 100000
+local MINOR_VERSION = tonumber(("$Revision: 392 $"):match("(%d+)")) + 90000
 
 if not Rock then error(MAJOR_VERSION .. " requires LibRock-1.0") end
 
@@ -18,6 +18,10 @@ local RockConfig, oldLib = Rock:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not RockConfig then
 	return
 end
+
+local WotLK = not not ToggleAchievementFrame
+
+local SET_NORMAL_FONT_OBJECT = WotLK and "SetNormalFontObject" or "SetTextFontObject"
 
 local KEY_BUTTON1 = "Left Mouse"
 local KEY_BUTTON2 = "Right Mouse"
@@ -31,10 +35,13 @@ local SCALE = "Scale"
 local SCALE_DESC = "Set the scale of the preferences window."
 local COPY = "Copy"
 local PASTE = "Paste"
+local SAVE = "Save"
 local FADEOUT_TRANSPARENCY = "Fadeout transparency"
 local FADEOUT_TRANSPARENCY_DESC = "The transparency for when your mouse is not over the preferences window."
 local FADEIN_TRANSPARENCY = "Fadein transparency"
 local FADEIN_TRANSPARENCY_DESC = "The transparency for when your mouse is over the preferences window."
+local HIDE_IN_COMBAT = "Hide in combat"
+local HIDE_IN_COMBAT_DESC = "Hide preferences window in combat and prevent misclicks in "
 if GetLocale() == "deDE" then
 	KEY_BUTTON1 = "Linke Maustaste"
 	KEY_BUTTON2 = "Rechte Maustaste"
@@ -55,35 +62,39 @@ elseif GetLocale() == "koKR" then
 	FADEOUT_TRANSPARENCY_DESC = "당신의 마우스가 선택 창 위에 있지 않을때의 투명도를 설정합니다."
 	FADEIN_TRANSPARENCY = "밝아짐 투명도"
 	FADEIN_TRANSPARENCY_DESC = "당신의 마우스가 선택 창 위에 있을때의 투명도를 설정합니다."
+	HIDE_IN_COMBAT = "전투중 숨김"
+	HIDE_IN_COMBAT_DESC = "전투중 선택 창을 숨겨 클릭실수를 방지합니다."
 elseif GetLocale() == "frFR" then
 	KEY_BUTTON1 = "Clic gauche"
 	KEY_BUTTON2 = "Clic droit"
-	KEYBINDING_COLON = "Raccourci: "
+	KEYBINDING_COLON = "Raccourci : "
 	ADDON_PREFERENCES = "Préférences"
 	FUBAR_OPTIONS = "Options FuBar"
-	USAGE_COLON = "Utilisation: "
-	SHOW_MINIMAP_ICON = "Afficher l'icône sur la minimap"
-	SHOW_MINIMAP_ICON_DESC = "Affiche ou cache l'icône sur la minimap."
-	SCALE = "Taille"
-	SCALE_DESC = "Modifie la taille de la fenêtre de configuration."
+	USAGE_COLON = "Utilisation : "
+	SHOW_MINIMAP_ICON = "Afficher l'icône sur la minicarte"
+	SHOW_MINIMAP_ICON_DESC = "Affiche ou cache l'icône sur la minicarte."
+	SCALE = "Échelle"
+	SCALE_DESC = "Modifie l'échelle de la fenêtre de configuration."
 	COPY = "Copier"
 	PASTE = "Coller"
 	FADEOUT_TRANSPARENCY = "Transparence de fenêtre inactive"
 	FADEOUT_TRANSPARENCY_DESC = "La transparence de la fenêtre lorsque votre souris ne la survole pas."
 	FADEIN_TRANSPARENCY = "Transparence de fenêtre active"
 	FADEIN_TRANSPARENCY_DESC = "La transparence de la fenêtre lorsque votre souris la survole."
+	HIDE_IN_COMBAT = "Masquer en combat"
+	HIDE_IN_COMBAT_DESC = "Masque la fenêtre des préférences en combat afin d'éviter les fausses manœuvres."
 elseif GetLocale() == "esES" then
 	KEY_BUTTON1 = "Clic Izquierdo"
 	KEY_BUTTON2 = "Clic Derecho"
 elseif GetLocale() == "zhTW" then
-	KEY_BUTTON1 = "滑鼠左鍵"
-	KEY_BUTTON2 = "滑鼠右鍵"
-	
 	--*******************************
 	-- zhTW Chinses Traditional localiation
 	-- 2007/Oct/8 addded huge zhTW updates
 	-- by 蕾艾莎塔@奧妮克希亞
 	--*******************************
+
+    KEY_BUTTON1 = "滑鼠左鍵"
+	KEY_BUTTON2 = "滑鼠右鍵"
 	KEYBINDING_COLON = "快捷鍵設定: "
 	ADDON_PREFERENCES = "插件設定"
 	FUBAR_OPTIONS = "FuBar 選項"
@@ -94,19 +105,17 @@ elseif GetLocale() == "zhTW" then
 	SCALE_DESC = "調整設定視窗的縮放比例。"
 	COPY = "複製"
 	PASTE = "貼上"
+	SAVE = "儲存"
 	FADEOUT_TRANSPARENCY = "移出時透明度"
 	FADEOUT_TRANSPARENCY_DESC = "當你的游標不在設定視窗上時的透明度。"
 	FADEIN_TRANSPARENCY = "移入時透明度"
 	FADEIN_TRANSPARENCY_DESC = "當你的游標在設定視窗上時的透明度。"
+	HIDE_IN_COMBAT = "戰鬥中隱藏"
+	HIDE_IN_COMBAT_DESC = "進入戰鬥時隱藏設定視窗，避免誤按。"
 elseif GetLocale() == "zhCN" then
-	--***************************************
-	-- zhCN Chinese Simplify
-	-- 2007/10/04 CN3羽月 雪夜之狼
-	-- 请保留本翻译作者名 谢谢
-	-- E=mail:xionglingfeng@Gmail.com
-	--***************************************
 	KEY_BUTTON1 = "鼠标左键"
 	KEY_BUTTON2 = "鼠标右键"
+
 	KEYBINDING_COLON = "按键绑定: "
 	ADDON_PREFERENCES = "插件参数"
 	FUBAR_OPTIONS = "FuBar 选项"
@@ -121,6 +130,8 @@ elseif GetLocale() == "zhCN" then
 	FADEOUT_TRANSPARENCY_DESC = "当你的鼠标移出参数窗口时的透明度。"
 	FADEIN_TRANSPARENCY = "移入时透明度"
 	FADEIN_TRANSPARENCY_DESC = "当你的鼠标移入参数窗口时的透明度。"
+	HIDE_IN_COMBAT = "战斗中隐藏"
+	HIDE_IN_COMBAT_DESC = "进入战斗时隐藏设置窗口以避免错误点击"
 end
 
 --[[---------------------------------------------------------------------------
@@ -345,7 +356,7 @@ The choice type allows you to select a value from a list of values.
 : function - function that will set the current value. ''This works in tandem with get, which should return said value.''
 : string - method name that will set the  current value.
 ; choices
-: table - table in dictionary in backendValue = "value to show the user" format.
+: table - dictionary in backendValue = "value to show the user" format.
 : function - function which returns a choices dictionary.
 : string - method name which returns a choices dictionary.
 ; [choiceType]
@@ -354,24 +365,29 @@ The choice type allows you to select a value from a list of values.
 : "dict" - the choices is a dictionary, sort alphabetically and treat the keys as the backend values.
 ; [choiceDescs]
 : nil - no description for each choice.
-: table - table in dictionary in backendValue = "Description for choice" format.
+: table - dictionary in backendValue = "Description for choice" format.
 : function - function which returns choiceDescs dictionary.
 : string - method name which returns choiceDescs dictionary.
 ; [choiceIcons]
 : nil - no icons for choices.
-: table - table in dictionary in backendValue = "Icon\\path" format.
+: table - dictionary in backendValue = "Icon\\path" format.
 : function - function which returns choiceIcons dictionary.
 : string - method name which returns choiceIcons dictionary.
 ; [choiceFonts]
 : nil - default font. (default)
-: table - table in dictionary in backendValue = "Font\\path" format.
+: table - dictionary in backendValue = "Font\\path" format.
 : function - function which returns choiceFonts dictionary.
 : string - method name which returns choiceFonts dictionary.
 ; [choiceTextures]
 : nil - no textures for choices.
-: table - table in dictionary in backendValue = "Texture\\path" format.
+: table - dictionary in backendValue = "Texture\\path" format.
 : function - function which returns choiceTextures dictionary.
 : string - method name which returns choiceTextures dictionary.
+; [choiceOrder]
+: nil - no predefined order
+: table - list of backendValues, specifying the order of the choices.
+: function - function which returns choiceOrder list.
+: string - method name which returns choiceOrder list.
 ==== Example ====
  local choice = "alpha"
  {
@@ -389,6 +405,7 @@ The choice type allows you to select a value from a list of values.
  		bravo = "Bravo",
  		charlie = "Charlie",
  	},
+	choiceOrder = { "alpha", "bravo", "charlie" },
  }
 
 === multichoice ===
@@ -401,7 +418,7 @@ The multichoice type allows you to select multiple values from a list of values.
 : function - function that will set a boolean for the given key. ''This works in tandem with get, which should return said boolean for the given key.''
 : string - method name that will set a boolean for the given key.
 ; choices
-: table - table in dictionary in backendValue = "value to show the user" format.
+: table - dictionary inbackendValue = "value to show the user" format.
 : function - function which returns a choices dictionary.
 : string - method name which returns a choices dictionary.
 ; [choiceType]
@@ -410,30 +427,35 @@ The multichoice type allows you to select multiple values from a list of values.
 : "dict" - the choices is a dictionary, sort alphabetically and treat the keys as the backend values.
 ; [choiceDescs]
 : nil - no description for each choice.
-: table - table in dictionary in backendValue = "Description for choice" format.
+: table - dictionary inbackendValue = "Description for choice" format.
 : function - function which returns choiceDescs dictionary.
 : string - method name which returns choiceDescs dictionary.
 ; [choiceIcons]
 : nil - no icons for choices.
-: table - table in dictionary in backendValue = "Icon\\path" format.
+: table - dictionary inbackendValue = "Icon\\path" format.
 : function - function which returns choiceIcons dictionary.
 : string - method name which returns choiceIcons dictionary.
 ; [choiceFonts]
 : nil - default font. (default)
-: table - table in dictionary in backendValue = "Font\\path" format.
+: table - dictionary inbackendValue = "Font\\path" format.
 : function - function which returns choiceFonts dictionary.
 : string - method name which returns choiceFonts dictionary.
 ; [choiceTextures]
 : nil - no textures for choices.
-: table - table in dictionary in backendValue = "Texture\\path" format.
+: table - dictionary inbackendValue = "Texture\\path" format.
 : function - function which returns choiceTextures dictionary.
 : string - method name which returns choiceTextures dictionary.
+; [choiceOrder]
+: nil - no predefined order
+: table - list of backendValues, specifying the order of the choices.
+: function - function which returns choiceOrder list.
+: string - method name which returns choiceOrder list.
 ==== Example ====
  local choices = {}
  {
  	name = "Choices, choices",
  	desc = "Here's a description for the choices",
- 	type = 'choice',
+ 	type = 'multichoice',
  	get = function(key)
  		return choices[key]
  	end,
@@ -445,6 +467,7 @@ The multichoice type allows you to select multiple values from a list of values.
  		bravo = "Bravo",
  		charlie = "Charlie",
  	},
+	choiceOrder = { "alpha", "bravo", "charlie" },
  }
 
 === string ===
@@ -461,7 +484,7 @@ The string type allows you to enter arbitrary text.
 : nil - do not call a function when the text changes.
 : function - function that is called when the text changes.
 : string - method name that is called when the text changes.
-; [multiline] -- TODO- Actually implement this
+; [multiline]
 : nil or false - just a single line. (default)
 : true - use multiple lines.
 : function - function that will return whether multiple lines are used.
@@ -473,6 +496,10 @@ The string type allows you to enter arbitrary text.
 ; usage
 : string - usage text to be displayed.
 : function - function to return usage text.
+; [syntaxHighlighter]
+: nil - no highlighting (default)
+: function - function that will be passed the string and should return a new string with colors embedded.
+: string - method name that will be passed the string and should return a new string with colors embedded.
 ==== Example ====
  local text = "Hello"
  {
@@ -723,6 +750,11 @@ function RockConfig:OpenConfigMenu(...)
 	elseif base:IsShown() then
 		base:Hide()
 	end
+	
+	if RockConfig.hideInCombat and InCombatLockdown() then
+		base:Hide()
+		return
+	end
 
 	if UIParent:IsShown() then
 		base:SetParent(UIParent)
@@ -818,6 +850,27 @@ precondition(RockConfig, 'RefreshConfigMenu', function(self, object)
 end)
 
 --[[---------------------------------------------------------------------------
+Arguments:
+	[optional] table - addon which the config menu could be open to
+Returns:
+	boolean - whether the config menu is open to the given addon
+Example:
+	local isOpen = Rock("LibRockConfig-1.0"):IsConfigMenuOpen(MyAddon)
+-----------------------------------------------------------------------------]]
+function RockConfig:IsConfigMenuOpen(object)
+	if not data[object] and object then
+		return false
+	end
+	if not base or not base:IsShown() then
+		return false
+	end
+	return base.addonChooser.value == object or not object
+end
+precondition(RockConfig, 'IsConfigMenuOpen', function(self, object)
+	argCheck(object, 2, "table", "nil")
+end)
+
+--[[---------------------------------------------------------------------------
 Notes:
 	* Creates slash commands that link to the addon's configuration menu.
 Example:
@@ -869,12 +922,96 @@ precondition(RockConfig, 'SetConfigSlashCommand', function(self, ...)
 	end
 end)
 
+
+local caches = {}
+local cacheFuncs = {}
+local function getCachedPath(path)
+	for k,v in pairs(caches) do
+		if #k == #path then
+			local good = true
+			for i = 1, #path do
+				if path[i] ~= k[i] then
+					good = false
+					break
+				end
+			end
+			if good then
+				return newList(true, unpack(v))
+			end
+		end
+	end
+end
+
+local cacheTimes = setmetatable({}, {__mode = 'k'})
+local function setCachedPath(path, ...)
+	for k,v in pairs(caches) do
+		if #k == #path then
+			local good = true
+			for i = 1, #path do
+				if path[i] ~= k[i] then
+					good = false
+					break
+				end
+			end
+			if good then
+				caches[k] = del(v)
+				del(k)
+			end
+		end
+	end
+	local k = newList(unpack(path))
+	caches[k] = newList(...)
+	if not cacheTimes[path[1]] then
+		cacheTimes[path[1]] = GetTime()
+	end
+	if #path == 2 and select('#', ...) == 1 and type(...) == "table" and type(data[path[1]][path[2]]) == "function" then
+		cacheFuncs[k] = data[path[1]][path[2]]
+		data[path[1]][path[2]] = (...)
+	end
+end
+
+local cacheFrame = CreateFrame("Frame")
+local nextTime = 0
+cacheFrame:SetScript("OnUpdate", function(this, elapsed)
+	local currentTime = GetTime()
+	if currentTime < nextTime then
+		return
+	end
+	nextTime = currentTime + 1
+	local shouldGC = false
+	for k, v in pairs(caches) do
+		local addon = k[1]
+		if RockConfig:IsConfigMenuOpen(addon) then
+			cacheTimes[addon] = currentTime
+		else
+			if cacheTimes[addon] + 180 < currentTime and not InCombatLockdown() then
+				if cacheFuncs[k] then
+					data[k[1]][k[2]] = cacheFuncs[k]
+					cacheFuncs[k] = nil
+					shouldGC = true
+				end
+				caches[k] = del(v)
+				del(k)
+			end
+		end
+	end
+	if shouldGC then
+		collectgarbage('collect')
+	end
+end)
+
 local transformReturnTable
 do
 	local temporaryPool = setmetatable({}, {__mode='k'})
 
-	function transformReturnTable(tmp)
-		if tmp[2] == "@dict" then
+	function transformReturnTable(path, tmp)
+		if tmp[2] == "@cache" then
+--			Rock("LibRockConsole-1.0"):Print("Add cache", unpack(path))
+--			Rock("LibRockConsole-1.0"):Print(unpack(tmp))
+			table.remove(tmp, 2)
+			transformReturnTable(path, tmp)
+			setCachedPath(path, tmp[2])
+		elseif tmp[2] == "@dict" then
 			local t = newDict(unpack(tmp, 3, #tmp))
 			tmp[2] = t
 			temporaryPool[t] = true
@@ -977,6 +1114,24 @@ function getConfigTable(path)
 			return nil
 		end
 	end
+	if type(configTable) == "function" then
+		local tmpPath = newList(path[1])
+		local tmp = getCachedPath(tmpPath)
+		if not tmp then
+			tmp = newList(pcall(configTable))
+			if not tmp[1] then
+				geterrorhandler()(tmp[2])
+				tmp = del(tmp)
+				tmpPath = del(tmpPath)
+				return nil
+			end
+			
+			transformReturnTable(tmpPath, tmp)
+		end
+		tmpPath = del(tmpPath)
+		configTable = tmp[2]
+		tmp = del(tmp)
+	end
 	local t = newList(configTable)
 	for i = 2, #path do
 		if configTable.type ~= "group" then
@@ -1013,19 +1168,54 @@ function getConfigTable(path)
 			end
 		end
 		if type(configTable_args) == "function" then
-			local tmp = newList(pcall(configTable_args, __getPassValues(t)))
-			if not tmp[1] then
-				geterrorhandler()(tmp[2])
-				tmp = del(tmp)
-				return nil
+			local tmpPath = newList()
+			for j = 1, i-1 do
+				tmpPath[j*2-1] = path[j]
+				tmpPath[j*2] = 'args'
 			end
-
-			transformReturnTable(tmp)
+			local tmp = getCachedPath(tmpPath)
+			if not tmp then
+				tmp = newList(pcall(configTable_args, __getPassValues(t)))
+				if not tmp[1] then
+					geterrorhandler()(tmp[2])
+					tmp = del(tmp)
+					tmpPath = del(tmpPath)
+					return nil
+				end
+				
+				transformReturnTable(tmpPath, tmp)
+			end
 			configTable_args = tmp[2]
 			tmp = del(tmp)
+			tmpPath = del(tmpPath)
 		end
 		local v = path[i]
 		configTable = configTable_args[v]
+		
+		if type(configTable) == "function" then
+			local tmpPath = newList()
+			for j = 1, i-1 do
+				tmpPath[i*2 - 1] = path[j]
+				tmpPath[i*2] = 'args'
+			end
+			tmpPath[#tmpPath+1] = path[i]
+			local tmp = getCachedPath(tmpPath)
+			if not tmp then
+				tmp = newList(pcall(configTable))
+				if not tmp[1] then
+					geterrorhandler()(tmp[2])
+					tmp = del(tmp)
+					tmpPath = del(tmpPath)
+					return nil
+				end
+
+				transformReturnTable(tmpPath, tmp)
+			end
+			tmpPath = del(tmpPath)
+			configTable = tmp[2]
+			tmp = del(tmp)
+		end
+		
 		table_insert(t, 1, configTable)
 		if not configTable then
 			t = del(t)
@@ -1079,6 +1269,31 @@ function getConfigTable(path)
 		end
 		local v = path[i]
 		configTable = configTable_args[v]
+		
+		if type(configTable) == "function" then
+			local tmpPath = newList()
+			for j = 1, i-1 do
+				tmpPath[i*2 - 1] = path[j]
+				tmpPath[i*2] = 'args'
+			end
+			tmpPath[#tmpPath+1] = path[i]
+			local tmp = getCachedPath(tmpPath)
+			if not tmp then
+				tmp = newList(pcall(configTable))
+				if not tmp[1] then
+					geterrorhandler()(tmp[2])
+					tmp = del(tmp)
+					tmpPath = del(tmpPath)
+					return nil
+				end
+
+				transformReturnTable(tmpPath, tmp)
+			end
+			tmpPath = del(tmpPath)
+			configTable = tmp[2]
+			tmp = del(tmp)
+		end
+		
 		table_insert(t, 1, configTable)
 		if not configTable then
 			t = del(t)
@@ -1264,6 +1479,7 @@ do
 		checks[#checks+1] = newList('order', false, true, "number")
 		checks[#checks+1] = newList('icon', true, true, "string")
 		checks[#checks+1] = newList('iconSize', false, true, "number")
+		checks[#checks+1] = newList('iconTexCoord', false, true, "table")
 
 		if configTable_type == "execute" then
 			checks[#checks+1] = newList('func', false, false, "function")
@@ -1293,8 +1509,10 @@ do
 			checks[#checks+1] = newList('choiceType', true, true, "string")
 			checks[#checks+1] = newList('choiceDescs', false, true, "table")
 			checks[#checks+1] = newList('choiceIcons', false, true, "table")
+			checks[#checks+1] = newList('choiceIconTexCoords', false, true, "table")
 			checks[#checks+1] = newList('choiceFonts', false, true, "table")
 			checks[#checks+1] = newList('choiceTextures', false, true, "table")
+			checks[#checks+1] = newList('choiceOrder', false, true, "table")
 		elseif configTable_type == "multichoice" then
 			checks[#checks+1] = newList('get', false, false, "function")
 			checks[#checks+1] = newList('set', false, false, "function")
@@ -1302,13 +1520,16 @@ do
 			checks[#checks+1] = newList('choiceType', true, true, "string")
 			checks[#checks+1] = newList('choiceDescs', false, true, "table")
 			checks[#checks+1] = newList('choiceIcons', false, true, "table")
+			checks[#checks+1] = newList('choiceIconTexCoords', false, true, "table")
 			checks[#checks+1] = newList('choiceFonts', false, true, "table")
 			checks[#checks+1] = newList('choiceTextures', false, true, "table")
+			checks[#checks+1] = newList('choiceOrder', false, true, "table")
 		elseif configTable_type == "string" then
 			checks[#checks+1] = newList('get', false, false, "string;boolean;number")
 			checks[#checks+1] = newList('set', false, false, "function")
 			checks[#checks+1] = newList('multiline', false, true, "boolean")
 			checks[#checks+1] = newList('validate', false, true, "function")
+			checks[#checks+1] = newList('syntaxHighlighter', false, true, "function")
 			checks[#checks+1] = newList('usage', true, false, "string")
 		elseif configTable_type == "keybinding" then
 			checks[#checks+1] = newList('get', false, false, "string;boolean")
@@ -1500,14 +1721,27 @@ function getConfigField(path, field, canBeString, optional, typecheck, dontTrans
 				return nil
 			end
 		end
-		local tmp = newList(pcall(handler_func, handler, getPassValues(path)))
-		if not tmp[1] then
-			geterrorhandler()(tmp[2])
-			tmp = del(tmp)
-			return nil
+		
+		local tmpPath = newList()
+		for i = 1, #path-1 do
+			tmpPath[i*2 - 1] = path[i]
+			tmpPath[i*2] = 'args'
 		end
-
-		transformReturnTable(tmp)
+		tmpPath[#tmpPath+1] = path[#path]
+		tmpPath[#tmpPath+1] = field
+		local tmp = getCachedPath(tmpPath)
+		if not tmp then
+			tmp = newList(pcall(handler_func, handler, getPassValues(path)))
+			if not tmp[1] then
+				geterrorhandler()(tmp[2])
+				tmp = del(tmp)
+				tmpPath = del(tmpPath)
+				return nil
+			end
+		
+			transformReturnTable(tmpPath, tmp)
+		end
+		tmpPath = del(tmpPath)
 		if not dontTransform then
 			transformConfigField(path, field, canBeString, optional, typecheck, tmp)
 		end
@@ -1551,14 +1785,27 @@ function getConfigField(path, field, canBeString, optional, typecheck, dontTrans
 		if getType then
 			return "function"
 		end
-		local tmp = newList(pcall(func, getPassValues(path)))
-		if not tmp[1] then
-			geterrorhandler()(tmp[2])
-			tmp = del(tmp)
-			return nil
+		
+		local tmpPath = newList()
+		for i = 1, #path-1 do
+			tmpPath[i*2 - 1] = path[i]
+			tmpPath[i*2] = 'args'
 		end
+		tmpPath[#tmpPath+1] = path[#path]
+		tmpPath[#tmpPath+1] = field
+		local tmp = getCachedPath(tmpPath)
+		if not tmp then
+			tmp = newList(pcall(func, getPassValues(path)))
+			if not tmp[1] then
+				geterrorhandler()(tmp[2])
+				tmp = del(tmp)
+				tmpPath = del(tmpPath)
+				return nil
+			end
 
-		transformReturnTable(tmp)
+			transformReturnTable(tmpPath, tmp)
+		end
+		tmpPath = del(tmpPath)
 		if not dontTransform then
 			transformConfigField(path, field, canBeString, optional, typecheck, tmp)
 		end
@@ -1722,14 +1969,27 @@ local function callConfigField(path, field, values, optional)
 				return nil
 			end
 		end
-		local tmp = newList(pcall(handler_func, handler, getPassValues(path, values)))
-		if not tmp[1] then
-			geterrorhandler()(tmp[2])
-			tmp = del(tmp)
-			return nil
+		
+		local tmpPath = newList()
+		for i = 1, #path-1 do
+			tmpPath[i*2 - 1] = path[i]
+			tmpPath[i*2] = 'args'
 		end
+		tmpPath[#tmpPath+1] = path[#path]
+		tmpPath[#tmpPath+1] = field
+		local tmp = getCachedPath(tmpPath)
+		if not tmp then
+			tmp = newList(pcall(handler_func, handler, getPassValues(path, values)))
+			if not tmp[1] then
+				geterrorhandler()(tmp[2])
+				tmp = del(tmp)
+				tmpPath = del(tmpPath)
+				return nil
+			end
 
-		transformReturnTable(tmp)
+			transformReturnTable(tmpPath, tmp)
+		end
+		tmpPath = del(tmpPath)
 
 		if negate then
 			tmp[2] = not tmp[2]
@@ -1739,15 +1999,27 @@ local function callConfigField(path, field, values, optional)
 		end
 
 		return true, unpackListAndDel(tmp, 2, #tmp)
-	elseif type(func) == "function" then
-		local tmp = newList(pcall(func, getPassValues(path, values)))
-		if not tmp[1] then
-			geterrorhandler()(tmp[2])
-			tmp = del(tmp)
-			return nil
+	elseif type(func) == "function" then	
+		local tmpPath = newList()
+		for i = 1, #path-1 do
+			tmpPath[i*2 - 1] = path[i]
+			tmpPath[i*2] = 'args'
 		end
+		tmpPath[#tmpPath+1] = path[#path]
+		tmpPath[#tmpPath+1] = field
+		local tmp = getCachedPath(tmpPath)
+		if not tmp then
+			tmp = newList(pcall(func, getPassValues(path, values)))
+			if not tmp[1] then
+				geterrorhandler()(tmp[2])
+				tmp = del(tmp)
+				tmpPath = del(tmpPath)
+				return nil
+			end
 
-		transformReturnTable(tmp)
+			transformReturnTable(tmpPath, tmp)
+		end
+		tmpPath = del(tmpPath)
 
 		return true, unpackListAndDel(tmp, 2, #tmp)
 	else
@@ -1778,7 +2050,7 @@ local function recheckThirdPartyOptions()
 		end
 	end
 	local FuBarPlugin20 = Rock("FuBarPlugin-2.0", true, true)
-	if FuBarPlugin20 then
+	if FuBarPlugin20 and FuBarPlugin20.registry then
 		for k in pairs(FuBarPlugin20.registry) do
 			if type(k) == "table" and k.OnMenuRequest then
 				list[k.OnMenuRequest] = true
@@ -1850,6 +2122,16 @@ local function recheckThirdPartyOptions()
 
 	if base.treeView then
 		RockConfig:RefreshConfigMenu(false)
+	end
+end
+
+local function base_OnEvent(base, event)
+	if event == "ADDON_LOADED" then
+		recheckThirdPartyOptions()
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		if RockConfig.hideInCombat then
+			base:Hide()
+		end
 	end
 end
 
@@ -2149,13 +2431,16 @@ function buildPullout(this)
 
 	local isAddonChooser = this == base.addonChooser
 
-	local choices, choiceType
+	local choices, choiceType, choiceOrder
 	if not isAddonChooser then
 		choices = getConfigField(this, 'choices', false, false, "table")
 		choiceType = getConfigField(this, 'choiceType', true, isList(choices) and "list" or "dict", "string")
+		if choiceType == "dict" then
+			choiceOrder = getConfigField(this, 'choiceOrder', false, true, "table")
+		end
 	end
 
-	local choiceIcons, choiceFonts, choiceTextures
+	local choiceIcons, choiceIconTexCoords, choiceFonts, choiceTextures
 
 	local keys = newList()
 	if isAddonChooser then
@@ -2168,19 +2453,25 @@ function buildPullout(this)
 			choiceIcons[k] = getConfigField(t, 'icon', true, true, "string")
 			t = del(t)
 		end
-
+		
 		choiceSort__choices = choices
 		table_sort(keys, choiceSort)
 		choiceSort__choices = nil
 		choiceType = "dict"
 	else
 		if choiceType == "dict" then
-			for k,v in pairs(choices) do
-				keys[#keys+1] = k
+			if choiceOrder then
+				for i,k in ipairs(choiceOrder) do
+					keys[#keys+1] = k
+				end
+			else
+				for k,v in pairs(choices) do
+					keys[#keys+1] = k
+				end
+				choiceSort__choices = choices
+				table_sort(keys, choiceSort)
+				choiceSort__choices = nil
 			end
-			choiceSort__choices = choices
-			table_sort(keys, choiceSort)
-			choiceSort__choices = nil
 		else
 			for i,v in ipairs(choices) do
 				keys[#keys+1] = v
@@ -2188,6 +2479,7 @@ function buildPullout(this)
 		end
 
 		choiceIcons = getConfigField(this, 'choiceIcons', false, true, "table")
+		choiceIconTexCoords = getConfigField(this, 'choiceIconTexCoords', false, true, "table")
 		choiceFonts = getConfigField(this, 'choiceFonts', false, true, "table")
 		choiceTextures = getConfigField(this, 'choiceTextures', false, true, "table")
 	end
@@ -2207,10 +2499,15 @@ function buildPullout(this)
 			button.icon:SetWidth(16)
 			local icon = choiceIcons[k]
 			button.icon:SetTexture(icon)
-			if icon and icon:find([[^Interface\Icons\]]) then
-				button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+			local texCoord = choiceIconTexCoords and choiceIconTexCoords[k]
+			if texCoord then
+				button.icon:SetTexCoord(unpack(texCoord))
 			else
-				button.icon:SetTexCoord(0, 1, 0, 1)
+				if icon and icon:find([[^Interface\Icons\]]) then
+					button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+				else
+					button.icon:SetTexCoord(0, 1, 0, 1)
+				end
 			end
 		else
 			button.icon:SetWidth(epsilon)
@@ -2281,7 +2578,8 @@ function createBase()
 	base = CreateFrame("Frame", MAJOR_VERSION .. "_Frame", UIParent)
 	RockConfig.base = base
 	base:RegisterEvent("ADDON_LOADED")
-	base:SetScript("OnEvent", recheckThirdPartyOptions)
+	base:RegisterEvent("PLAYER_REGEN_DISABLED")
+	base:SetScript("OnEvent", base_OnEvent)
 	local currentAlpha = 1
 	local hasEntered = false
 	local isDragging = false
@@ -3655,6 +3953,13 @@ do
 			local size = getConfigField(path, 'iconSize', false, 1, "number")
 			line.icon:SetWidth(size*16)
 			line.icon:SetHeight(size*16)
+			
+			local texCoord = getConfigField(path, 'iconTexCoord', false, true, "table")
+			if texCoord then
+				line.icon:SetTexCoord(unpack(texCoord))
+			else
+				line.icon:SetTexCoord(0, 1, 0, 1)
+			end
 		else
 			line.icon:SetWidth(epsilon)
 		end
@@ -3809,6 +4114,13 @@ do
 				local size = getConfigField(frame, 'iconSize', false, 1, "number")
 				frame.icon:SetWidth(16*size)
 				frame.icon:SetHeight(16*size)
+				
+				local texCoord = getConfigField(frame, 'iconTexCoord', false, true, "table")
+				if texCoord then
+					frame.icon:SetTexCoord(unpack(texCoord))
+				else
+					frame.icon:SetTexCoord(0, 1, 0, 1)
+				end
 			else
 				frame.icon:Hide()
 			end
@@ -3840,33 +4152,34 @@ do
 	end
 
 	local function styleEditBox(editBox)
-		local line1 = editBox:CreateTexture(editBox:GetName() .. "_Line1", "BACKGROUND")
+		local isMultiLine = editBox:IsMultiLine()
+		local line1 = editBox.line1 or editBox:CreateTexture(editBox:GetName() .. "_Line1", "BACKGROUND")
 		editBox.line1 = line1
 		line1:SetTexture([[Interface\Buttons\WHITE8X8]])
 		line1:SetHeight(1)
 		line1:SetPoint("TOPLEFT", editBox, "BOTTOMLEFT", 0, 1)
 		line1:SetPoint("TOPRIGHT", editBox, "BOTTOMRIGHT", 0, 1)
 
-		local line2 = editBox:CreateTexture(editBox:GetName() .. "_Line2", "BACKGROUND")
+		local line2 = editBox.line2 or editBox:CreateTexture(editBox:GetName() .. "_Line2", "BACKGROUND")
 		editBox.line2 = line2
 		line2:SetTexture([[Interface\Buttons\WHITE8X8]])
 		line2:SetWidth(1)
-		line2:SetPoint("TOPLEFT", editBox, "TOPRIGHT", -1, 0)
-		line2:SetPoint("BOTTOMLEFT", editBox, "BOTTOMRIGHT", -1, 0)
+		line2:SetPoint("TOPLEFT", editBox, "TOPRIGHT", 0, isMultiLine and 3 or 0)
+		line2:SetPoint("BOTTOMLEFT", editBox, "BOTTOMRIGHT", 0, 0)
 
-		local line3 = editBox:CreateTexture(editBox:GetName() .. "_Line3", "BACKGROUND")
+		local line3 = editBox.line3 or editBox:CreateTexture(editBox:GetName() .. "_Line3", "BACKGROUND")
 		editBox.line3 = line3
 		line3:SetTexture([[Interface\Buttons\WHITE8X8]])
 		line3:SetHeight(1)
-		line3:SetPoint("BOTTOMLEFT", editBox, "TOPLEFT", 0, -1)
-		line3:SetPoint("BOTTOMRIGHT", editBox, "TOPRIGHT", 0, -1)
+		line3:SetPoint("BOTTOMLEFT", editBox, "TOPLEFT", 0, isMultiLine and 2 or -1)
+		line3:SetPoint("BOTTOMRIGHT", editBox, "TOPRIGHT", 0, isMultiLine and 2 or -1)
 
-		local line4 = editBox:CreateTexture(editBox:GetName() .. "_Line4", "BACKGROUND")
+		local line4 = editBox.line4 or editBox:CreateTexture(editBox:GetName() .. "_Line4", "BACKGROUND")
 		editBox.line4 = line4
 		line4:SetTexture([[Interface\Buttons\WHITE8X8]])
 		line4:SetWidth(1)
-		line4:SetPoint("TOPRIGHT", editBox, "TOPLEFT", 1, 0)
-		line4:SetPoint("BOTTOMRIGHT", editBox, "BOTTOMLEFT", 1, 0)
+		line4:SetPoint("TOPRIGHT", editBox, "TOPLEFT", 0, isMultiLine and 3 or 0)
+		line4:SetPoint("BOTTOMRIGHT", editBox, "BOTTOMLEFT", 0, 0)
 
 		recolorEditBoxStyle(editBox, 1, 1, 1, 1)
 	end
@@ -4025,7 +4338,7 @@ do
 			text:SetPoint("LEFT", button, "LEFT", 7, 0)
 			text:SetPoint("RIGHT", button, "RIGHT", -7, 0)
 
-			button:SetTextFontObject(GameFontNormal)
+			button[SET_NORMAL_FONT_OBJECT](button, GameFontNormal)
 			button:SetHighlightFontObject(GameFontHighlight)
 			button:SetDisabledFontObject(GameFontDisable)
 			local highlight = button:CreateTexture(button:GetName() .. "_Highlight", "OVERLAY", "UIPanelButtonHighlightTexture")
@@ -4501,12 +4814,12 @@ do
 			frame.editBox = editBox
 			editBox:SetFontObject(ChatFontNormal)
 			editBox:SetHeight(17)
-			editBox:SetPoint("TOPRIGHT")
+			editBox:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -1, 0)
 			editBox:SetText("50%")
 			editBox:SetJustifyH("CENTER")
 			editBox:SetWidth(48)
 
-			slider:SetPoint("RIGHT", editBox, "LEFT")
+			slider:SetPoint("RIGHT", editBox, "LEFT", -1, 0)
 
 			styleEditBox(editBox)
 
@@ -4845,11 +5158,11 @@ do
 				t = newList(r, g, b, a)
 			elseif colorType == "hex:rgba" or colorType == "hex:argb" or colorType == "hex" then
 				if colorType == "hex" then
-					t = newList("%02x%02x%02x"):format(r*255, g*255, b*255)
+					t = newList(("%02x%02x%02x"):format(r*255, g*255, b*255))
 				elseif colorType == "hex:rgba" then
-					t = newList("%02x%02x%02x%02x"):format(r*255, g*255, b*255, a*255)
+					t = newList(("%02x%02x%02x%02x"):format(r*255, g*255, b*255, a*255))
 				else
-					t = newList("%02x%02x%02x%02x"):format(a*255, r*255, g*255, b*255)
+					t = newList(("%02x%02x%02x%02x"):format(a*255, r*255, g*255, b*255))
 				end
 			elseif colorType == "number" then
 				t = newList(math_floor(r*255 * 256^2 + 0.5) + math_floor(g*255 * 256 + 0.5) + math_floor(b * 256 + 0.5))
@@ -5235,7 +5548,7 @@ do
 				text:SetPoint("LEFT", button, "LEFT", 7, 0)
 				text:SetPoint("RIGHT", button, "RIGHT", -7, 0)
 
-				button:SetTextFontObject(GameFontNormal)
+				button[SET_NORMAL_FONT_OBJECT](button, GameFontNormal)
 				button:SetHighlightFontObject(GameFontHighlight)
 				button:SetDisabledFontObject(GameFontDisable)
 
@@ -5586,6 +5899,7 @@ do
 		-- fetch and set up a choice dropdown
 		function getChoiceControl(path, isMulti, parent)
 			local frame = _getChoiceControl()
+			frame.text.texture:SetTexture(nil)
 
 			local controls = parent.controls
 			controls[#controls+1] = frame
@@ -5630,8 +5944,6 @@ do
 					local choiceTextures = getConfigField(frame, 'choiceTextures', false, true, "table")
 					if choiceTextures and choiceTextures[ret] then
 						frame.text.texture:SetTexture(choiceTextures[ret])
-					else
-						frame.text.texture:SetTexture(nil)
 					end
 				end
 			else
@@ -5678,6 +5990,8 @@ do
 				else
 			 		s = table_concat(t, ", ")
 				end
+				frame.text.icon:SetWidth(epsilon)
+				frame.text.fs:SetFont(ChatFontNormal:GetFont())
 				frame.text.fs:SetText(s)
 			end
 			return frame
@@ -5692,6 +6006,20 @@ do
 			frame:Hide()
 			frame:Enable()
 			frame:ClearAllPoints()
+			local editBox = frame.editBox
+			if editBox:IsMultiLine() then
+				editBox:SetMultiLine(false)
+				editBox:SetScript("OnTextChanged", editBox_OnTextChanged)
+				editBox:SetScript("OnEnterPressed", editBox_OnEnterPressed)
+				editBox:ClearAllPoints()
+				editBox:SetPoint("LEFT")
+				editBox:SetPoint("TOP")
+				editBox:SetPoint("BOTTOM")
+				editBox:SetPoint("RIGHT")
+				frame.saveButton:Hide()
+				frame:SetHeight(24)
+				frame.warning:Hide()
+			end
 			for i = 1, #frame do
 				frame[i] = nil
 			end
@@ -5745,17 +6073,86 @@ do
 			this.editBox:EnableMouse(true)
 			this.label:Enable()
 		end
+		
+		local hasFocus, lastText
 		-- set the text back to default if focus is lost
 		local function editBox_OnEditFocusLost(this)
-			this:SetText(this:GetParent().value)
+			if hasFocus == this then
+				hasFocus = nil
+				lastText = nil
+			end
+			this:SetText(tostring(this:GetParent().value or ''))
+		end
+		local function editBox_OnEditFocusGained(this)
+			hasFocus = this
+			lastText = this:GetText()
 		end
 		-- clear focus on escape, reset to default
 		local function editBox_OnEscapePressed(this)
 			this:ClearFocus()
 		end
+		local dontCall = false
+		
+		local function stripColors__handler(x, y)
+			if #x%2 == 0 then
+				return x
+			else
+				return x .. y
+			end
+		end
+		local function stripColors(text)
+			return text:gsub("(|*)(|c%x%x%x%x%x%x%x%x)", stripColors__handler):gsub("(|*)(|r)", stripColors__handler)
+		end
+		
+		local function highlight(this, text)
+			if hasFocus == this and lastText ~= this:GetText() then
+				dontCall = true
+				local tmp = newList(text)
+				local success, ret, problem = callConfigField(this:GetParent(), 'syntaxHighlighter', tmp, true)
+				tmp = del(tmp)
+				if success and ret then
+					lastText = ret:gsub("(|*)|r", stripColors__handler)
+					local position = this:GetCursorPosition()
+					local skip = 0
+					local colorText = this:GetText()
+					for i = 1, position do
+						if colorText:byte(i) == ("|"):byte() then
+							if colorText:byte(i+1) == ("c"):byte() then
+								skip = skip + 10
+							elseif colorText:byte(i+1) == ("r"):byte() then
+								skip = skip + 2
+							end
+						end
+					end
+					position = position - skip
+					this:SetText(lastText)
+					
+					local betterPosition = 0
+					for i = 1, position do
+						betterPosition = betterPosition + 1
+						while lastText:byte(betterPosition) == ("|"):byte() do
+							if lastText:byte(betterPosition+1) == ("c"):byte() then
+								betterPosition = betterPosition + 10
+							elseif lastText:byte(betterPosition+1) == ("r"):byte() then
+								betterPosition = betterPosition + 2
+							else
+								break
+							end
+						end
+					end
+					
+					this:SetCursorPosition(betterPosition)
+				end
+				dontCall = false
+			end
+		end
 		local function editBox_OnTextChanged(this, ...)
+			if dontCall then
+				return
+			end
 			local parent = this:GetParent()
-			local tmp = newList(this:GetText())
+			local text = stripColors(this:GetText() or '')
+			local tmp = newList(text)
 			local success, ret, problem = callConfigField(parent, 'validate', tmp, true)
 			tmp = del(tmp)
 			if success then
@@ -5772,21 +6169,69 @@ do
 					parent:GetScript("OnEnter")(parent)
 				end
 			end
-			local tmp = newList(this:GetText())
+			local tmp = newList(text)
 			callConfigField(parent, 'onChange', tmp, true)
 			tmp = del(tmp)
+			
+			highlight(this, text)
+		end
+		local fs = UIParent:CreateFontString(nil, "ARTWORK")
+		local function editBox_OnMultilineTextChanged(this, ...)
+			if dontCall then
+				return
+			end
+			local parent = this:GetParent()
+			local text = stripColors(this:GetText() or '')
+			fs:SetFontObject(this:GetFontObject())
+			fs:SetWidth(parent:GetWidth())
+			fs:SetText(text)
+			local height = fs:GetHeight() + 6
+			if height < 42 then
+				height = 42
+			end
+			parent:SetHeight(height + 18)
+			local tmp = newList(text)
+			local success, ret, problem = callConfigField(parent, 'validate', tmp, true)
+			tmp = del(tmp)
+			if success then
+				if ret then
+					parent.validationIssue = nil
+					this:SetPoint("RIGHT", parent, "RIGHT")
+					parent.warning:Hide()
+				else
+					parent.validationIssue = problem
+					this:SetPoint("RIGHT", parent.warning, "LEFT")
+					parent.warning:Show()
+				end
+				if GameTooltip:IsOwned(parent) then
+					parent:GetScript("OnEnter")(parent)
+				end
+			end
+			if parent.validationIssue then
+				return
+			end
+			local tmp = newList(text)
+			callConfigField(parent, 'onChange', tmp, true)
+			tmp = del(tmp)
+			
+			highlight(this, text)
+			if this.inlineGroup and this.inlineGroup.label then
+				this.inlineGroup:Reposition()
+			end
 		end
 		-- on enter, save the data, clear focus
 		local function editBox_OnEnterPressed(this)
 			local parent = this:GetParent()
-			if parent.value == this:GetText() then
+			local text = this:GetText()
+			if parent.value == text then
 				this:ClearFocus()
 				return
 			end
 			if parent.validationIssue then
 				return
 			end
-			local tmp = newList(this:GetText())
+			text = stripColors(text)
+			local tmp = newList(text)
 			callConfigField(parent, 'set', tmp)
 			tmp = del(tmp)
 
@@ -5816,6 +6261,58 @@ do
 			end
 		end
 
+		local function button_Disable(this)
+			this.left:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
+			this.middle:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
+			this.right:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
+			this:__Disable()
+			this:EnableMouse(false)
+		end
+
+		local function button_Enable(this)
+			this.left:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+			this.middle:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+			this.right:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+			this:__Enable()
+			this:EnableMouse(true)
+		end
+
+		-- when pressed, the button should look pressed
+		local function button_OnMouseDown(this)
+			if this:IsEnabled() == 1 then
+				this.left:SetTexture([[Interface\Buttons\UI-Panel-Button-Down]])
+				this.middle:SetTexture([[Interface\Buttons\UI-Panel-Button-Down]])
+				this.right:SetTexture([[Interface\Buttons\UI-Panel-Button-Down]])
+			end
+		end
+		-- when depressed, return to normal
+		local function button_OnMouseUp(this)
+			if this:IsEnabled() == 1 then
+				this.left:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+				this.middle:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+				this.right:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+			end
+		end
+
+		local function saveButton_OnClick(this)
+			local parent = this:GetParent()
+			local editBox = parent.editBox
+			local text = editBox:GetText()
+			if parent.value == text then
+				editBox:ClearFocus()
+				return
+			end
+			if parent.validationIssue then
+				return
+			end
+			text = stripColors(text)
+			local tmp = newList(text)
+			callConfigField(parent, 'set', tmp)
+			tmp = del(tmp)
+
+			refreshConfigMenu(parent[1])
+		end
+
 		local stringControlNum = 0
 		-- create a preliminary edit box
 		-- TODO: support multi-line
@@ -5843,23 +6340,17 @@ do
 			editBox:SetAutoFocus(false)
 			editBox:SetFontObject(ChatFontNormal)
 
-			editBox:SetPoint("LEFT")
-			editBox:SetPoint("TOP")
-			editBox:SetPoint("BOTTOM")
-			editBox:SetPoint("RIGHT")
-
 			editBox:SetScript("OnEscapePressed", editBox_OnEscapePressed)
 			editBox:SetScript("OnTextChanged", editBox_OnTextChanged)
 			editBox:SetScript("OnEnterPressed", editBox_OnEnterPressed)
 			editBox:SetScript("OnEditFocusLost", editBox_OnEditFocusLost)
+			editBox:SetScript("OnEditFocusGained", editBox_OnEditFocusGained)
 			editBox:SetScript("OnReceiveDrag", editBox_OnReceiveDrag)
 			editBox:SetScript("OnMouseDown", editBox_OnMouseDown)
 			frame:SetScript("OnEnter", frame_OnEnter)
 			frame:SetScript("OnLeave", Control_OnLeave)
 			editBox:SetScript("OnEnter", SubControl_OnEnter)
 			editBox:SetScript("OnLeave", SubControl_OnLeave)
-
-			styleEditBox(editBox)
 
 			local warning = frame:CreateTexture(frame:GetName() .. "_Warning", "ARTWORK")
 			frame.warning = warning
@@ -5881,9 +6372,102 @@ do
 			for i,v in ipairs(path) do
 				frame[i] = v
 			end
+			local editBox = frame.editBox
+			if getConfigField(frame, 'multiline', false, true, "boolean") then
+				editBox:SetMultiLine(true)
+				editBox:ClearAllPoints()
+				editBox:SetPoint("LEFT", frame, "LEFT", 1, 0)
+				editBox:SetPoint("TOP", frame, "TOP", 0, -3)
+				editBox:SetPoint("BOTTOM", frame, "BOTTOM", 0, 18)
+				editBox:SetPoint("RIGHT", frame, "RIGHT", -1, 0)
+				frame:SetHeight(42)
+				editBox:SetScript("OnTextChanged", editBox_OnMultilineTextChanged)
+				editBox:SetScript("OnEnterPressed", nil)
+				if parent:GetName():match("Inline") then
+					editBox.inlineGroup = parent
+				end
+
+				if not frame.saveButton then
+					local button = CreateFrame("Button", frame:GetName() .. (i == 1 and "_button" or "_PasteButton"), frame)
+					frame.saveButton = button
+					local left = button:CreateTexture(button:GetName() .. "_LeftTexture", "BACKGROUND")
+					button.left = left
+					local middle = button:CreateTexture(button:GetName() .. "_MiddleTexture", "BACKGROUND")
+					button.middle = middle
+					local right = button:CreateTexture(button:GetName() .. "_RightTexture", "BACKGROUND")
+					button.right = right
+					left:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+					middle:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+					right:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
+
+					left:SetPoint("TOPLEFT")
+					left:SetPoint("BOTTOMLEFT")
+					left:SetWidth(12)
+					left:SetTexCoord(0, 0.09375, 0, 0.6875)
+
+					right:SetPoint("TOPRIGHT")
+					right:SetPoint("BOTTOMRIGHT")
+					right:SetWidth(12)
+					right:SetTexCoord(0.53125, 0.625, 0, 0.6875)
+
+					middle:SetPoint("TOPLEFT", left, "TOPRIGHT")
+					middle:SetPoint("BOTTOMRIGHT", right, "BOTTOMLEFT")
+					middle:SetTexCoord(0.09375, 0.53125, 0, 0.6875)
+
+					button:SetScript("OnMouseDown", button_OnMouseDown)
+					button:SetScript("OnMouseUp", button_OnMouseUp)
+
+					local text = button:CreateFontString(button:GetName() .. "_FontString", "ARTWORK")
+					button:SetFontString(text)
+					button.text = text
+					text:SetPoint("LEFT", button, "LEFT", 7, 0)
+					text:SetPoint("RIGHT", button, "RIGHT", -7, 0)
+
+					button[SET_NORMAL_FONT_OBJECT](button, GameFontNormal)
+					button:SetHighlightFontObject(GameFontHighlight)
+					button:SetDisabledFontObject(GameFontDisable)
+
+					text:SetText(SAVE)
+
+					local highlight = button:CreateTexture(button:GetName() .. "_Highlight", "OVERLAY", "UIPanelButtonHighlightTexture")
+					button:SetHighlightTexture(highlight)
+
+					button:SetScript("OnClick", saveButton_OnClick)
+					button:SetScript("OnEnter", SubControl_OnEnter)
+					button:SetScript("OnLeave", SubControl_OnLeave)
+
+					button.__Disable = button.Disable
+					button.__Enable = button.Enable
+					button.Disable = button_Disable
+					button.Enable = button_Enable
+
+					button:SetPoint("TOPRIGHT", editBox, "BOTTOMRIGHT", 0, 0)
+					button:SetWidth(100)
+					button:SetHeight(18)
+				else
+					local button = frame.saveButton
+					button:Show()
+				end
+			else
+				editBox:SetScript("OnTextChanged", editBox_OnTextChanged)
+				editBox:SetScript("OnEnterPressed", editBox_OnEnterPressed)
+				editBox:SetPoint("LEFT", frame, "LEFT", 1, 0)
+				editBox:SetPoint("TOP", frame, "TOP", 0, 0)
+				editBox:SetPoint("BOTTOM", frame, "BOTTOM", 0, 0)
+				editBox:SetPoint("RIGHT", frame, "RIGHT", -1, 0)
+			end
+
+			styleEditBox(editBox)
+			
 			local ret = getConfigField(frame, 'get', false, false, "string;boolean;number") or ''
-			frame.value = ret
+			local tmp = newList(ret)
+			local success, r = callConfigField(frame, 'syntaxHighlighter', tmp, true)
+			if success then
+				ret = r
+			end
+			ret = tostring(ret or '')
 			frame.editBox:SetText(ret)
+			frame.value = ret
 
 			return frame
 		end
@@ -5991,8 +6575,8 @@ do
 			if currentLock ~= this then
 				return
 			end
-
-			if key == "SHIFT" or key == "ALT" or key == "CTRL" or key == "UNKNOWN" then
+			
+			if key == "SHIFT" or key == "ALT" or key == "CTRL" or key == "LSHIFT" or key == "RSHIFT" or key == "LALT" or key == "RALT" or key == "LCTRL" or key == "RCTRL" or key == "UNKNOWN" then
 				return
 			end
 
@@ -6110,7 +6694,7 @@ do
 			text:SetPoint("LEFT", button, "LEFT", 7, 0)
 			text:SetPoint("RIGHT", button, "RIGHT", -7, 0)
 
-			button:SetTextFontObject(GameFontNormal)
+			button[SET_NORMAL_FONT_OBJECT](button, GameFontNormal)
 			button:SetHighlightFontObject(GameFontHighlight)
 			button:SetDisabledFontObject(GameFontDisable)
 			local highlight = button:CreateTexture(button:GetName() .. "_Highlight", "OVERLAY", "UIPanelButtonHighlightTexture")
@@ -6286,6 +6870,9 @@ do
 				yOffset = -3
 			end
 			this:SetHeight(height)
+			if this.parent:GetName():match("Inline") then
+				this.parent:Reposition()
+			end
 		end
 
 		local function frame_SizeChanged(this, paneWidth)
@@ -6497,7 +7084,7 @@ do
 					-- HACK
 					-- pass
 				else
-					local _, ret = pcall(error, ("Config error: type %q is not valid for path `%s'"):format(v_type, getPathString(t)))
+					local _, ret = pcall(error, ("Config error: type %s is not valid for path `%s'"):format(toliteral(v_type), getPathString(t)))
 					geterrorhandler()(ret)
 				end
 				if frame then
@@ -6664,6 +7251,20 @@ RockConfig.rockOptions = {
 			bigStep = 0.05,
 			stepBasis = 0,
 		},
+		hideInCombat = {
+			type = 'boolean',
+			name = HIDE_IN_COMBAT,
+			desc = HIDE_IN_COMBAT_DESC,
+			get = function()
+				return RockConfig.hideInCombat
+			end,
+			set = function(value)
+				RockConfig.hideInCombat = value
+				if InCombatLockdown() then
+					base:Hide()
+				end
+			end,
+		}
 	},
 }
 if oldLib and oldLib.rockOptions then
@@ -6804,7 +7405,11 @@ do
 		if this.dragged then
 			return
 		end
-		RockConfig:OpenConfigMenu()
+		if base and base:IsShown() then
+			base:Hide()
+		else
+			RockConfig:OpenConfigMenu()
+		end
 	end)
 
 	frame:SetScript("OnMouseDown", function(this, button)
@@ -6962,18 +7567,19 @@ do
 			end
 			if type(var) == "string" then
 				local sv = newList()
-				local hidden, framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha
-				hidden, framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha, sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = var:match("^1;(H?)(%-?%d+),(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+);(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$")
+				local hidden, framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha, hideInCombat
+				hidden, framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha, hideInCombat, sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = var:match("^1;(H?)(%-?%d+),(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+);([01]);(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$")
 				if not hidden then
-					hidden, framePositionX, x, y, width, height, scale, minAlpha, maxAlpha, sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = var:match("^1;(H?)(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+);(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$")
+					hidden, framePositionX, x, y, width, height, scale, minAlpha, maxAlpha, hideInCombat, sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = var:match("^1;(H?)(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+);([01]);(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$")
 					if not hidden then
-						sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = "", "", "", "", "", "", "", "", ""
-						hidden, framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha = var:match("^1;(H?)(%-?%d+),(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+)$")
+						hideInCombat = "0"
+						hidden, framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha, sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = var:match("^1;(H?)(%-?%d+),(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+);(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$")
 						if not hidden then
-							hidden, framePositionX, x, y, width, height, scale, minAlpha, maxAlpha = var:match("^1;(H?)(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+)$")
+							hidden, framePositionX, x, y, width, height, scale, minAlpha, maxAlpha, sv[1], sv[2], sv[3], sv[4], sv[5], sv[6], sv[7], sv[8], sv[9] = var:match("^1;(H?)(%-?%d+);(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+);(%d+),(%d+);(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)$")
 						end
 					end
 				end
+				hideInCombat = hideInCombat == "1"
 				if framePositionX then
 					framePositionX, framePositionY, x, y, width, height, scale, minAlpha, maxAlpha = tonumber(framePositionX), tonumber(framePositionY), tonumber(x), tonumber(y), tonumber(width), tonumber(height), tonumber(scale), tonumber(minAlpha), tonumber(maxAlpha)
 					if scale then
@@ -7011,6 +7617,7 @@ do
 					RockConfig.scale = scale
 					RockConfig.minAlpha = minAlpha
 					RockConfig.maxAlpha = maxAlpha
+					RockConfig.hideInCombat = hideInCombat
 				end
 				for i,v in ipairs(sv) do
 					if v == "" then
@@ -7037,6 +7644,7 @@ do
 			local minAlpha = RockConfig.minAlpha or 0.25
 			local maxAlpha = RockConfig.maxAlpha or 1
 			local framePosition, framePositionX, framePositionY
+			local hideInCombat = RockConfig.hideInCombat and "1" or "0"
 			if usingFuBarPlugin then
 				if not RockConfig.minimapPositionWild then
 					framePosition = RockConfig.minimapPosition
@@ -7060,9 +7668,9 @@ do
 				hidden = not this:IsShown()
 			end
 			if framePosition then
-				TALENT_FRAME_WAS_SHOWN = ("1;%s%.0f;%.0f,%.0f,%.0f,%.0f,%.0f;%.0f,%.0f;%s,%s,%s,%s,%s,%s,%s,%s,%s"):format(hidden and "H" or "", framePosition, x, y, width, height, scale*100, minAlpha*100, maxAlpha*100, tostring(RockConfig.sv1 or ""), tostring(RockConfig.sv2 or ""), tostring(RockConfig.sv3 or ""), tostring(RockConfig.sv4 or ""), tostring(RockConfig.sv5 or ""), tostring(RockConfig.sv6 or ""), tostring(RockConfig.sv7 or ""), tostring(RockConfig.sv8 or ""), tostring(RockConfig.sv9 or ""))
+				TALENT_FRAME_WAS_SHOWN = ("1;%s%.0f;%.0f,%.0f,%.0f,%.0f,%.0f;%.0f,%.0f;%s;%s,%s,%s,%s,%s,%s,%s,%s,%s"):format(hidden and "H" or "", framePosition, x, y, width, height, scale*100, minAlpha*100, maxAlpha*100, hideInCombat, tostring(RockConfig.sv1 or ""), tostring(RockConfig.sv2 or ""), tostring(RockConfig.sv3 or ""), tostring(RockConfig.sv4 or ""), tostring(RockConfig.sv5 or ""), tostring(RockConfig.sv6 or ""), tostring(RockConfig.sv7 or ""), tostring(RockConfig.sv8 or ""), tostring(RockConfig.sv9 or ""))
 			else
-				TALENT_FRAME_WAS_SHOWN = ("1;%s%.0f,%.0f;%.0f,%.0f,%.0f,%.0f,%.0f;%.0f,%.0f;%s,%s,%s,%s,%s,%s,%s,%s,%s"):format(hidden and "H" or "", framePositionX, framePositionY, x, y, width, height, scale*100, tostring(RockConfig.sv1 or ""), tostring(RockConfig.sv2 or ""), tostring(RockConfig.sv3 or ""), tostring(RockConfig.sv4 or ""), tostring(RockConfig.sv5 or ""), tostring(RockConfig.sv6 or ""), tostring(RockConfig.sv7 or ""), tostring(RockConfig.sv8 or ""), tostring(RockConfig.sv9 or ""))
+				TALENT_FRAME_WAS_SHOWN = ("1;%s%.0f,%.0f;%.0f,%.0f,%.0f,%.0f,%.0f;%.0f,%.0f;%s;%s,%s,%s,%s,%s,%s,%s,%s,%s"):format(hidden and "H" or "", framePositionX, framePositionY, x, y, width, height, scale*100, minAlpha*100, maxAlpha*100, hideInCombat, tostring(RockConfig.sv1 or ""), tostring(RockConfig.sv2 or ""), tostring(RockConfig.sv3 or ""), tostring(RockConfig.sv4 or ""), tostring(RockConfig.sv5 or ""), tostring(RockConfig.sv6 or ""), tostring(RockConfig.sv7 or ""), tostring(RockConfig.sv8 or ""), tostring(RockConfig.sv9 or ""))
 			end
 		end
 	end)

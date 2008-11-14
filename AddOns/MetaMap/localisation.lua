@@ -285,3 +285,5 @@ METAMAP_KZN_INFO = "Between Duskwood and the Swamp of Sorrows lies the desolate 
 METAMAP_GRL_INFO = "";
 ---Caverns of Time
 METAMAP_COT_INFO = "";
+---Others TBD
+METAMAP_TBD_INFO = "";
