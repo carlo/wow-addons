@@ -1,0 +1,13 @@
+## Interface: 20400
+## Title: Lib: TalentQuery 1.0
+## Notes: Library to help with querying unit talents.
+## Author: Peragor
+## Version: $Rev: 52 $
+## X-Category: Library
+## X-ReleaseDate: $Date: 2008-10-12 11:40:19 +0000 (Sun, 12 Oct 2008) $
+## X-Website: http://wowace.com/wiki/LibTalentQuery-1.0
+## X-License: LGPL v2.1
+
+LibStub\LibStub.lua
+CallbackHandler-1.0\CallbackHandler-1.0.lua
+lib.xml

@@ -1,0 +1,17 @@
+## Interface: 30000
+## Title: PitBull |r[|cffeda55fHappinessIcon|r]
+## Notes: Show an icon on the pet frame to indicate its happiness.
+## Notes-koKR: ¼ÒÈ¯¼ö ÇÁ·¹ÀÓ¿¡ ¼ÒÈ¯¼öÀÇ ¸¸Á·µµ¸¦ ³ªÅ¸³»±â À§ÇØ ¾ÆÀÌÄÜÀ» º¸¿©ÁÝ´Ï´Ù.
+## Author: Ellipsis
+## X-PitBull-Condition: return select(2, UnitClass("player")) == "HUNTER"
+## DefaultState: enabled
+## LoadOnDemand: 1
+## Dependencies: PitBull
+## OptionalDeps: Ace2
+## X-Category: UnitFrame
+## X-eMail: ckknight@gmail.com
+## X-Website: http://ckknight.wowinterface.com/
+## X-License: GPL v2 or later
+## Version: 2.0
+
+HappinessIcon.lua

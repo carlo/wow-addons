@@ -1,0 +1,9 @@
+-- Default Alliance data set for FlightMap
+--
+-- Some default flight times thanks to Krwaz, author of FlightPath.
+-- Some default flight times provided by Thorarin
+-- 
+-- This file is loaded after the localizations
+
+FLIGHTMAP_ALLIANCE_FLIGHTS = {
+};
