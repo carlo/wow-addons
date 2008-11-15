@@ -1,0 +1,12 @@
+## Title: Auc:Util:ItemSuggest
+## Interface: 30000
+## OptionalDependencies: Auc-Util-Appraiser Enchantrix BtmScan
+## Dependancies: Auc-Advanced
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Auc-Util-ItemSuggest.toc 3573 2008-10-09 11:25:57Z Norganna $
+## URL: http://auctioneeraddon.com/
+##
+## SavedVariables: Auc-Util-ItemSuggest.lua
+
+Embed.xml

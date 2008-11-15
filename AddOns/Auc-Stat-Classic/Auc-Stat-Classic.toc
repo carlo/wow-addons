@@ -1,0 +1,10 @@
+## Title: Auc:Stat:Classic
+## Interface: 30000
+## Dependancies: Auc-Advanced
+## OptionalDeps: Auctioneer
+##
+## SavedVariables: AucAdvancedStatClassicData
+## Version: 5.1.3824 (SnaggleTooth)
+## URL: http://auctioneeraddon.com/
+##
+StatClassic.lua

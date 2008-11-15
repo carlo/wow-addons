@@ -1,0 +1,13 @@
+## Title: Auc:Filter:Outlier
+## Notes: Allows filtering of outlier auctions so that they don't contaminate the regular prices.
+##
+## Interface: 30000
+## LoadOnDemand: 0
+## Disabled: 0
+## Dependencies: Auc-Advanced
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Auc-Filter-Outlier.toc 3573 2008-10-09 11:25:57Z Norganna $
+## URL: http://auctioneeraddon.com/
+##
+OutlierFilter.lua
