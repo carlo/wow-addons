@@ -1,0 +1,11 @@
+## Title: Babylonian |cff224477(lib)
+## Notes: A localization library that allows localization in languages other than those supported by the client locale.
+##
+## Interface: 30000
+## LoadOnDemand: 0
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Babylonian.toc 145 2008-11-05 17:53:28Z Norganna $
+## URL: http://auctioneeraddon.com/dl/
+##
+Load.xml

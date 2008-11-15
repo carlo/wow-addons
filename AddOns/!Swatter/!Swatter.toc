@@ -1,0 +1,12 @@
+## Interface: 30000
+## Title: Swatter
+## Notes: Debugging tool for handling and displaying of error messages in a useful way.
+## SavedVariables: SwatterData
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: !Swatter.toc 131 2008-10-11 16:50:56Z Norganna $
+## URL: http://auctioneeraddon.com/dl/Swatter/
+##
+Support\Load.xml
+Libs\Load.xml
+Swatter.lua

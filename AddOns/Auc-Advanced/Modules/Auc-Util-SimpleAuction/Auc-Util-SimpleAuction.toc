@@ -1,0 +1,9 @@
+## Title: Auc:Util:SimpleAuction
+## Interface: 30000
+## Dependancies: Auc-Advanced
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id$
+## URL: http://auctioneeraddon.com/
+##
+Embed.xml

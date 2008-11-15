@@ -1,0 +1,11 @@
+## Title: Configator |cff224477(lib)
+## Notes: Easily construct a GUI configuration editor.
+##
+## Interface: 30000
+## LoadOnDemand: 0
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Configator.toc 145 2008-11-05 17:53:28Z Norganna $
+## URL: http://auctioneeraddon.com/dl/Swatter/
+##
+Load.xml

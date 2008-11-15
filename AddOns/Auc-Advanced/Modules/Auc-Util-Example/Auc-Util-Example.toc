@@ -1,0 +1,9 @@
+## Title: Auctioneer:Util:Example
+## Interface: 20400
+## Dependancies: Auc-Advanced
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Auc-Util-Example.toc 2952 2008-03-25 03:29:55Z MentalPower $
+## URL: http://auctioneeraddon.com/
+##
+Embed.xml

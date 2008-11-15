@@ -1,0 +1,30 @@
+## Title: Informant
+## Notes: Displays detailed item information in tooltips, and can produce item reports by binding an information window to a keypress [5.1.3824] This AddOn is licensed under the GNU GPL, see GPL.txt for details.
+##
+## Interface: 30000
+## LoadOnDemand: 1
+## Dependencies: Stubby
+## OptionalDeps: !nLog, Babylonian, DebugLib, Configator, SlideBar, LibExtraTip, TipHelper
+## SavedVariables: InformantConfig, InformantLocalUpdates
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Informant.toc 3767 2008-11-05 17:57:29Z Norganna $
+## URL: http://auctioneeraddon.com/dl/Informant
+Support\Load.xml
+InfManifest.lua
+
+Libs\Load.xml
+
+InfStrings.lua
+InfLocale.lua
+
+InfMain.lua
+
+Data\InfQuests.lua
+
+InfCommand.lua
+InfSettings.lua
+InfTooltip.lua
+InfData.lua
+
+Informant.xml

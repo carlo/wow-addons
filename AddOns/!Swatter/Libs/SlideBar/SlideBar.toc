@@ -1,0 +1,13 @@
+## Title: SlideBar |cff224477(lib)
+## Notes: Allows alternative placement of minimap icons into an expanding bar tab that sits on the side of the screen.
+## OptionalDeps: !Swatter
+##
+## Interface: 30000
+## LoadOnDemand: 0
+## SavedVariables: SlideBarConfig
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: SlideBar.toc 145 2008-11-05 17:53:28Z Norganna $
+## URL: http://auctioneeraddon.com/dl/
+##
+Load.xml

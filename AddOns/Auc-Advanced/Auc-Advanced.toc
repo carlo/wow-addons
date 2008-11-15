@@ -1,0 +1,32 @@
+## Title: Auc-Auctioneer |cff774422(core)
+## Notes: Auctioneer, An addon to help keep track of items values. You must at least enable a statistics extension (like Auc:Stats:Simple) to start tracking stats.
+##
+## Interface: 30000
+## LoadOnDemand: 0
+## Dependencies: Stubby
+## OptionalDependencies: !nLog, SlideBar, Configator, Babylonian, DebugLib, TipHelper, LibExtraTip
+## SavedVariables: AucAdvancedConfig, AucAdvancedData
+## SavedVariablesPerCharacter: AucAdvancedLocal
+##
+## Version: 5.1.3824 (SnaggleTooth)
+## Revision: $Id: Auc-Advanced.toc 3767 2008-11-05 17:57:29Z Norganna $
+## URL: http://auctioneeraddon.com/
+##
+Support\Load.xml
+CoreManifest.lua
+Libs\Load.xml
+
+CoreStrings.lua
+CoreLocale.lua
+
+CoreMain.lua
+CoreUtil.lua
+CoreConst.lua
+CoreConfig.lua
+CorePost.lua
+CoreSettings.lua
+CoreBuy.lua
+CoreScan.lua
+CoreAPI.lua
+
+Modules\Active.xml
