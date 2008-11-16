@@ -1,9 +1,0 @@
-## Title: Auc:Util:Search UI
-## Interface: 30000
-## Dependancies: Auc-Advanced
-##
-## Version: 5.1.3824 (SnaggleTooth)
-## Revision: $Id: Auc-Util-SearchUI.toc 3767 2008-11-05 17:57:29Z Norganna $
-## URL: http://auctioneeraddon.com/
-##
-Embed.xml

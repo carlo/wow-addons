@@ -1,7 +1,0 @@
-## Title: Auc:Util:AutoMagic
-## Interface: 30000
-## Dependancies: Auc-Advanced
-## OptionalDependencies: Auc-Util-Appraiser Enchantrix BtmScan Auc-Util-ItemSuggest
-##
-## Version: 5.1.3824 (SnaggleTooth)
-Embed.xml
