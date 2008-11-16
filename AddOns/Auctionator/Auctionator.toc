@@ -1,0 +1,6 @@
+## Interface: 30000
+## Title: Auctionator
+## Notes: A lightweight addon designed to help manage auctions
+## SavedVariablesPerCharacter: AUCTIONATOR_ENABLE_ALT, AUCTIONATOR_OPEN_FIRST, AUCTIONATOR_OPEN_ALL_BAGS, AUCTIONATOR_DEF_DURATION
+## SavedVariables: AUCTIONATOR_SAVEDVARS, AUCTIONATOR_PRICING_HISTORY
+Auctionator.xml
