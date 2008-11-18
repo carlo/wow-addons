@@ -1,6 +1,0 @@
-## Interface: 30000
-## Title: AuctionMeOff
-## Author: Shintu Bloodtusk
-## Notes: Remembers the price of your items that you put in to the Auction House (Based off of Choppedliver's addon, EasyAuction)
-## SavedVariables: AuctionMeOff_Prices
-AuctionMeOff.xml
