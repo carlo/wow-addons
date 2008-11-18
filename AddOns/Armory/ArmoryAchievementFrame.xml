@@ -1,0 +1,785 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryAchievementFrame.lua"/>
+  <Button name="ArmoryAchievementBarTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="295" y="20"/>
+    </Size>
+    <Frames>
+      <Button name="$parentExpandOrCollapseButton">
+        <Size>
+          <AbsDimension x="13" y="13"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="3" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <HitRectInsets>
+          <AbsInset left="1" right="-4" top="-2" bottom="-2"/>
+        </HitRectInsets>
+        <Scripts>
+          <OnClick>
+            if (self:GetParent().isCollapsed) then
+              Armory:ExpandAchievementHeader(ArmoryAchievementFrame.selected == "achievements", self:GetParent().index);
+            else
+              Armory:CollapseAchievementHeader(ArmoryAchievementFrame.selected == "achievements", self:GetParent().index);
+            end
+            ArmoryAchievementFrame_Update();
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="3" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </NormalTexture>
+        <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="3" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </HighlightTexture>
+      </Button>
+      <StatusBar name="$parentAchievementBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
+        <Size>
+          <AbsDimension x="101" y="13"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="$parentLeftTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+              <Size>
+                <AbsDimension x="62" y="21"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.691" right="1.0" top="0.047" bottom="0.281"/>
+            </Texture>
+            <Texture name="$parentRightTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+              <Size>
+                <AbsDimension x="42" y="21"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeftTexture" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.0" right="0.164" top="0.3906" bottom="0.625"/>
+            </Texture>
+            <FontString name="$parentQuantity" inherits="GameFontHighlightSmall">
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+          <Layer level="OVERLAY">
+            <Texture name="$parentHighlight2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
+              <Size>
+                <AbsDimension x="17" y="28"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT">
+                  <Offset x="4" y="0"/>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.06640625" top="0.4375" bottom="0.875"/>
+            </Texture>
+            <Texture name="$parentHighlight1" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar-Highlight" alphaMode="ADD" hidden="true">
+              <Size>
+                <AbsDimension x="0" y="28"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" relativeTo="$parentHighlight2" relativePoint="LEFT"/>
+              </Anchors>
+              <TexCoords left="0" right="1" top="0" bottom="0.4375"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+        <BarColor r=".25" g=".25" b=".75"/>
+      </StatusBar>
+    </Frames>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentBackground" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+          <Size>
+            <AbsDimension x="0" y="21"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset x="0" y="0"/>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.0" right="0.7578125" top="0.0" bottom="0.328125"/>
+        </Texture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <Texture name="$parentLeftLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+          <Size>
+            <AbsDimension x="0" y="2"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset x="0" y="0"/>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="2" top="0" bottom="2"/>
+        </Texture>
+        <Texture name="$parentBottomLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+          <Size>
+            <AbsDimension x="2" y="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset x="0" y="0"/>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="2" top="0" bottom="2"/>
+        </Texture>
+        <FontString name="$parentAchievementName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+          <Size x="135" y="10"/>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        getglobal(self:GetName().."AchievementBarHighlight1"):SetPoint("TOPLEFT",self,"TOPLEFT",-2, 4);
+        getglobal(self:GetName().."AchievementBarHighlight1"):SetPoint("BOTTOMRIGHT",self,"BOTTOMRIGHT",-10, -4);
+        getglobal(self:GetName().."Background"):SetPoint("TOPRIGHT", self:GetName().."AchievementBarLeftTexture", "TOPLEFT", 0, 0);
+        getglobal(self:GetName().."LeftLine"):SetWidth(0);
+        getglobal(self:GetName().."BottomLine"):SetHeight(0);
+        getglobal(self:GetName().."BottomLine"):SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
+      </OnLoad>
+      <OnClick>
+        ArmoryAchievementBar_OnClick(self);
+      </OnClick>
+      <OnEnter>
+        if (self.tooltip) then
+          getglobal(self:GetName().."AchievementBarQuantity"):SetText(self.tooltip);
+        end
+        if (self.link) then
+          GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 5);
+          GameTooltip:SetHyperlink(self.link);
+        elseif (self.name) then
+          GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 5);
+          GameTooltip:AddDoubleLine(self.name, self.quantity, nil, nil, nil, .5, .5, .5);
+          if (self.desc) then
+            GameTooltip:AddLine(self.desc, 1, 1, 1);
+          end
+          GameTooltip:Show();
+        end
+        getglobal(self:GetName().."AchievementBarHighlight1"):Show();
+        getglobal(self:GetName().."AchievementBarHighlight2"):Show();
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+        if (not self.quantity) then
+          getglobal(self:GetName().."AchievementBarQuantity"):SetText("");
+        end
+        if ( self.selectedAchievement ~= self.index ) then
+          getglobal(self:GetName().."AchievementBarHighlight1"):Hide();
+          getglobal(self:GetName().."AchievementBarHighlight2"):Hide();
+        end
+      </OnLeave>
+    </Scripts>
+  </Button>
+
+  <Frame name="ArmoryAchievementFrame" movable="true" parent="ArmoryFrame" enableMouse="true" hidden="true">
+    <Size>
+      <AbsDimension x="384" y="512"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="ArmoryFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="ArmoryAchievementFramePortrait">
+          <Size>
+            <AbsDimension x="60" y="60"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="8" y="-4"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT"/>
+          </Anchors>
+        </Texture>
+        <FontString name="ArmoryAchievementFrameTitleText" inherits="GameFontNormal" text="ACHIEVEMENTS">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryAchievementFrame" relativePoint="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-17"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+      <Layer level="OVERLAY">
+        <Texture name="ArmoryAchievementFrameTopTreeTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+          <Size>
+            <AbsDimension x="2" y="4"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryAchievementFrame" relativePoint="TOPLEFT">
+              <Offset x="35" y="-76"/>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="2" top="0" bottom="2"/>
+        </Texture>
+        <Texture name="ArmoryAchievementFrameTopTreeTexture2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
+          <Size>
+            <AbsDimension x="2" y="4"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryAchievementFrame" relativePoint="TOPLEFT">
+              <Offset x="53" y="-76"/>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="2" top="0" bottom="2"/>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="AchievementFramePoints">
+        <Size>
+          <AbsDimension x="24" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOP">
+            <Offset x="-55" y="-30"/>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-Progressive-Shield">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="12" y="-12"/>
+                  </Offset>
+                </Anchor>
+                <Anchor point="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="16" y="-16"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.75" top="0" bottom="0.75"/>
+            </Texture>
+          </Layer>
+          <Layer level="OVERLAY">
+            <FontString name="$parentText" inherits="GameFontWhiteSmall" text="1000" justifyV="BOTTOM">
+              <Size>
+                <AbsDimension x="28" y="18"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentShield" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-8" y="4"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <EditBox name="ArmoryAchievementFrameEditBox" autoFocus="false">
+        <Size>
+          <AbsDimension x="128" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset x="-45" y="-45"/>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset x="-5" y="0"/>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT">
+                  <Offset x="0" y="0"/>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="0" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnEnterPressed>
+            self:ClearFocus();
+          </OnEnterPressed>
+          <OnEscapePressed>
+            self:ClearFocus();
+          </OnEscapePressed>
+          <OnTextChanged>
+            ArmoryAchievementFilter_OnTextChanged(self);
+          </OnTextChanged>
+          <OnEditFocusLost>
+            self:HighlightText(0, 0);
+            if ( self:GetText() == "" ) then
+              self:SetText(SEARCH);
+            end
+          </OnEditFocusLost>
+          <OnEditFocusGained>
+            self:HighlightText();
+              if ( self:GetText() == SEARCH ) then
+            self:SetText("");
+            end
+          </OnEditFocusGained>
+        </Scripts>
+        <FontString inherits="ChatFontSmall"/>
+      </EditBox>
+      <Frame name="ArmoryAchievementExpandButtonFrame">
+        <Size>
+          <AbsDimension x="54" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="70" y="-48"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Button name="ArmoryAchievementCollapseAllButton" hidden="false" text="ALL">
+            <Size>
+              <AbsDimension x="40" y="22"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-2"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture name="ArmoryAchievementExpandTabLeft" file="Interface\QuestFrame\UI-QuestLogSortTab-Left">
+                  <Size>
+                    <AbsDimension x="8" y="32"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT">
+                      <Offset>
+                        <AbsDimension x="-6" y="8"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="ArmoryAchievementExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+                  <Size>
+                    <AbsDimension x="38" y="32"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativeTo="ArmoryAchievementExpandTabLeft" relativePoint="RIGHT">
+                      <Offset>
+                        <AbsDimension x="0" y="0"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+                  <Size>
+                    <AbsDimension x="8" y="32"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativeTo="ArmoryAchievementExpandTabMiddle" relativePoint="RIGHT"/>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>
+                ArmoryAchievementCollapseAllButtonNormalText:SetWidth(0);
+                ArmoryAchievementExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
+              </OnLoad>
+              <OnClick>
+                ArmoryAchievementCollapseAllButton_OnClick(self);
+              </OnClick>
+             </Scripts>
+            <NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+              <Size>
+                <AbsDimension x="16" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+                  <Offset>
+                    <AbsDimension x="3" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </NormalTexture>
+            <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+              <Size>
+                <AbsDimension x="16" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+                  <Offset>
+                    <AbsDimension x="3" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </HighlightTexture>
+            <ButtonText name="$parentNormalText" nonspacewrap="true">
+              <Size>
+                <AbsDimension x="0" y="10"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+                  <Offset>
+                    <AbsDimension x="20" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </ButtonText>
+            <NormalFont style="GameFontNormalLeft" />
+            <HighlightFont style="GameFontHighlightLeft" />
+          </Button>
+        </Frames>
+      </Frame>
+      <Button name="ArmoryAchievementFrameCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-30" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar1" inherits="ArmoryAchievementBarTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-68" y="-83"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar2" inherits="ArmoryAchievementBarTemplate" id="2">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar1" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar3" inherits="ArmoryAchievementBarTemplate" id="3">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar2" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar4" inherits="ArmoryAchievementBarTemplate" id="4">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar3" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar5" inherits="ArmoryAchievementBarTemplate" id="5">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar4" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar6" inherits="ArmoryAchievementBarTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar5" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar7" inherits="ArmoryAchievementBarTemplate" id="7">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar6" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar8" inherits="ArmoryAchievementBarTemplate" id="8">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar7" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar9" inherits="ArmoryAchievementBarTemplate" id="9">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar8" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar10" inherits="ArmoryAchievementBarTemplate" id="10">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar9" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar11" inherits="ArmoryAchievementBarTemplate" id="11">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar10" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar12" inherits="ArmoryAchievementBarTemplate" id="12">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar11" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar13" inherits="ArmoryAchievementBarTemplate" id="13">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar12" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar14" inherits="ArmoryAchievementBarTemplate" id="14">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar13" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryAchievementBar15" inherits="ArmoryAchievementBarTemplate" id="15">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryAchievementBar14" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <ScrollFrame name="ArmoryAchievementListScrollFrame" inherits="FauxScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="296" y="354"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-66" y="-76"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="108"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="-4"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.515625" right="1.0" top="0" bottom="0.421875"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, ARMORY_ACHIEVEMENTFRAME_ACHIEVEMENTHEIGHT, ArmoryAchievementFrame_Update);
+          </OnVerticalScroll>
+          <OnShow>
+            ArmoryAchievementBar1:SetPoint("TOPRIGHT", ArmoryAchievementFrame, "TOPRIGHT", -70, -83);
+          </OnShow>
+          <OnHide>
+            ArmoryAchievementBar1:SetPoint("TOPRIGHT", ArmoryAchievementFrame, "TOPRIGHT", -46, -83);
+          </OnHide>
+        </Scripts>
+      </ScrollFrame>
+      
+      <Button name="ArmoryAchievementFrameTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
+        <Anchors>
+          <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="72" y="61"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            ArmoryAchievementFrameTab_OnClick(self);
+            PlaySound("igCharacterInfoTab");
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryAchievementFrameTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="STATISTICS">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryAchievementFrameTab1" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-16" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            ArmoryAchievementFrameTab_OnClick(self);
+            PlaySound("igCharacterInfoTab");
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmoryAchievementFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmoryAchievementFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnShow>
+        PlaySound("igCharacterInfoTab");
+        ArmoryAchievementFrame_OnShow(self);
+      </OnShow>
+      <OnMouseWheel>
+        return;
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+</Ui>

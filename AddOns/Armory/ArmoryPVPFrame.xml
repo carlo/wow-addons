@@ -1,0 +1,844 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryPVPFrame.lua"/>
+  <Button name="ArmoryPVPTeamBorderTemplate" inherits="PVPTeamBorderTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        ArmoryPVPTeam_OnEnter(self);
+      </OnEnter>
+      <OnClick>
+        ArmoryPVPTeam_OnClick(self, self:GetID());
+      </OnClick>
+      <OnMouseDown>
+        ArmoryPVPTeam_OnMouseDown(self);
+      </OnMouseDown>
+      <OnMouseUp>
+        ArmoryPVPTeam_OnMouseUp(self);
+      </OnMouseUp>
+    </Scripts>
+  </Button>
+  <Button name="ArmoryPVPTeamDetailsFrameColumnHeaderTemplate" inherits="PVPTeamDetailsFrameColumnHeaderTemplate" virtual="true">
+    <Scripts>
+      <OnClick>
+        --
+      </OnClick>
+    </Scripts>
+    <HighlightTexture />
+  </Button>
+  <Button name="ArmoryPVPTeamMemberButtonTemplate" inherits="PVPTeamMemberButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        --
+      </OnLoad>
+      <OnClick>
+        --
+      </OnClick>
+    </Scripts>
+  </Button>
+  <Frame name="ArmoryPVPFrame" setAllPoints="true" enableMouse="true" movable="true" parent="ArmoryFrame" hidden="true" id="4">
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="2" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="258" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="2" y="-257"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="258" y="-257"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture name="ArmoryPVPFrameBackground" file="Interface\PVPFrame\UI-Character-PVP">
+          <Size>
+            <AbsDimension x="512" y="512"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="14" y="-36"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="ArmoryPVPFrameHonor" hidden="false">
+        <Size>
+          <AbsDimension x="300" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPFrameBackground" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="118" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="PVP_LABEL_HONOR">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentPoints" inherits="GameFontNormal" justifyH="RIGHT">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="15" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <Texture name="$parentIcon">
+              <Size>
+                <AbsDimension x="28" y="28"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="4" y="-6"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnEnter>
+            GameTooltip_SetDefaultAnchor(GameTooltip, self);
+            GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+            GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1);
+            GameTooltip:Show();
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Frame>
+      <Frame name="ArmoryPVPFrameArena">
+        <Size>
+          <AbsDimension x="300" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPFrameBackground" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="120" y="-95"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlightSmall" text="PVP_LABEL_ARENA">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentPoints" inherits="GameFontNormal" justifyH="RIGHT">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLabel" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="15" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <Texture name="$parentIcon" file="Interface\PVPFrame\PVP-ArenaPoints-Icon">
+              <Size>
+                <AbsDimension x="17" y="15"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentPoints" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="5" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnEnter>
+            GameTooltip_SetDefaultAnchor(GameTooltip, self);
+            GameTooltip:SetText(ARENA_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+            GameTooltip:AddLine(TOOLTIP_ARENA_POINTS, nil, nil, nil, 1);
+            GameTooltip:Show();
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Frame>
+      <!-- Individual -->
+      <Frame name="ArmoryPVPHonor">
+        <Size>
+          <AbsDimension x="300" y="100"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPFrameBackground" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="15" y="-28"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentKillsLabel" inherits="GameFontDisableSmall" text="KILLS_PVP">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPVPHonor">
+                  <Offset>
+                    <AbsDimension x="25" y="-24"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentHonorLabel" inherits="GameFontDisableSmall" text="HONOR">
+              <Anchors>
+                <Anchor point="TOPRIGHT" relativeTo="$parentKillsLabel" relativePoint="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <Texture name="ArmoryPVPFrameLine1" file="Interface\PVPFrame\UI-Character-PVP-Elements">
+              <Size>
+                <AbsDimension x="250" y="5"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativeTo="$parentKillsLabel" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-10" y="4"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.4140625" top="0.76171875" bottom="0.765625"/>
+            </Texture>
+            <!-- Today Begin -->
+            <FontString name="$parentTodayLabel" inherits="GameFontDisableSmall" text="HONOR_TODAY">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativeTo="$parentKillsLabel" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="30" y="10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentTodayKills" inherits="GameFontHighlightSmall">
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parentTodayLabel" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentTodayHonor" inherits="GameFontHighlightSmall">
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parentTodayKills" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <!-- Today End -->
+            <!-- Yesterday Begin -->
+            <FontString name="$parentYesterdayLabel" inherits="GameFontDisableSmall" text="HONOR_YESTERDAY">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentTodayLabel" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="30" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentYesterdayKills" inherits="GameFontHighlightSmall">
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parentYesterdayLabel" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentYesterdayHonor" inherits="GameFontHighlightSmall" >
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parentYesterdayKills" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <!-- Yesterday End -->
+            <!-- Lifetime Begin -->
+            <FontString name="$parentLifetimeLabel" inherits="GameFontDisableSmall" text="HONOR_LIFETIME">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentYesterdayLabel" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="30" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentLifetimeKills" inherits="GameFontHighlightSmall">
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parentLifetimeLabel" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentLifetimeHonor" inherits="GameFontDisableSmall" text="-">
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parentLifetimeKills" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-10"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <!-- Lifetime End -->
+          </Layer>
+        </Layers>
+      </Frame>
+      <!-- Arena Teams -->
+      <Frame name="ArmoryPVPTeam1Standard" inherits="PVPTeamStandardTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPFrameBackground">
+            <Offset>
+              <AbsDimension x="16" y="85"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Button name="ArmoryPVPTeam1" inherits="ArmoryPVPTeamBorderTemplate" id="1">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeam1Standard">
+            <Offset>
+              <AbsDimension x="33" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="-8" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT"/>
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Button>
+      <Frame name="ArmoryPVPTeam2Standard" inherits="PVPTeamStandardTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPFrameBackground">
+            <Offset>
+              <AbsDimension x="16" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Button name="ArmoryPVPTeam2" inherits="ArmoryPVPTeamBorderTemplate" id="2">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeam2Standard">
+            <Offset>
+              <AbsDimension x="33" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="-8" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT"/>
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Button>
+      <Frame name="ArmoryPVPTeam3Standard" inherits="PVPTeamStandardTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPFrameBackground">
+            <Offset>
+              <AbsDimension x="16" y="-85"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Button name="ArmoryPVPTeam3" inherits="ArmoryPVPTeamBorderTemplate" id="3">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeam3Standard">
+            <Offset>
+              <AbsDimension x="33" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTeamType" inherits="GameFontDisableLarge" hidden="true">
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="-8" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Frame name="$parentData" inherits="PVPTeamDataTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT"/>
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmoryPVPFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmoryPVPFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnShow>
+        ArmoryPVPFrame_OnShow(self);
+      </OnShow>
+      <OnHide>
+        ArmoryPVPFrame_OnHide(self);
+      </OnHide>
+      <OnMouseUp>
+        ArmoryChildWindow_OnMouseUp(self, button);
+      </OnMouseUp>
+      <OnMouseDown>
+        ArmoryChildWindow_OnMouseDown(self, button);
+      </OnMouseDown>
+    </Scripts>
+  </Frame>
+  <Frame name="ArmoryPVPTeamDetails" parent="ArmoryPVPFrame" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="365" y="355"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="ArmoryPVPFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="0" y="-40"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\PVPFrame\UI-Character-PVP-Elements">
+          <Size>
+            <AbsDimension x="365" y="355"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="0.703125" top="0" bottom="0.693359375"/>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <FontString name="$parentName" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetails" relativePoint="TOPLEFT">
+              <Offset>
+                <AbsDimension x="22" y="-20"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSize" inherits="GameFontHighlightSmall">
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="5" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture file="Interface\PVPFrame\UI-Character-PVP-Elements">
+          <Size>
+            <AbsDimension x="280" y="3"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+              <Offset>
+                <AbsDimension x="3" y="-40"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="0.4140625" top="0.76171875" bottom="0.765625"/>
+        </Texture>
+        <FontString name="$parentStatsType" inherits="GameFontHighlightSmall" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="100" y="50"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-10"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentGamesLabel" inherits="GameFontDisableSmall" text="GAMES">
+          <Anchors>
+            <Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
+              <Offset>
+                <AbsDimension x="-30" y="-55"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentGames" inherits="GameFontHighlightSmall" text="45">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parentGamesLabel" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="0" y="-6"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentWinLossLabel" inherits="GameFontDisableSmall" text="WIN_LOSS">
+          <Anchors>
+            <Anchor point="CENTER" relativeTo="$parentGamesLabel" relativePoint="CENTER">
+              <Offset>
+                <AbsDimension x="52" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parent-" inherits="GameFontHighlightSmall" text=" - ">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parentWinLossLabel" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="-2" y="-6"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentWins" inherits="GameFontHighlightSmall">
+          <Anchors>
+            <Anchor point="RIGHT" relativeTo="$parent-" relativePoint="LEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentLoss" inherits="GameFontHighlightSmall">
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parent-" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentRankLabel" inherits="GameFontDisableSmall" text="RANK">
+          <Anchors>
+            <Anchor point="CENTER" relativeTo="$parentWinLossLabel" relativePoint="CENTER">
+              <Offset>
+                <AbsDimension x="52" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentRank" inherits="GameFontHighlightSmall">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parentRankLabel" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="0" y="-6"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentRatingLabel" inherits="GameFontDisableSmall" text="ARENA_TEAM_RATING">
+          <Anchors>
+            <Anchor point="CENTER" relativeTo="$parentRankLabel" relativePoint="CENTER">
+              <Offset>
+                <AbsDimension x="52" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentRating" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parentRatingLabel" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="0" y="-6"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="ArmoryPVPTeamDetailsCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryPVPTeamDetails" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="1" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsFrameColumnHeader1" inherits="ArmoryPVPTeamDetailsFrameColumnHeaderTemplate" text="NAME">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentStatsType" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            WhoFrameColumn_SetWidth(self, 96);
+            self.sortType = "name";
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsFrameColumnHeader2" inherits="ArmoryPVPTeamDetailsFrameColumnHeaderTemplate" text="CLASS">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeamDetailsFrameColumnHeader1" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-2" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            WhoFrameColumn_SetWidth(self, 62);
+            self.sortType = "class";
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsFrameColumnHeader3" inherits="ArmoryPVPTeamDetailsFrameColumnHeaderTemplate" text="PLAYED">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeamDetailsFrameColumnHeader2" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-2" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            WhoFrameColumn_SetWidth(self, 55);
+            self.sortType = "seasonplayed";
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsFrameColumnHeader4" inherits="ArmoryPVPTeamDetailsFrameColumnHeaderTemplate" text="WIN_LOSS">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeamDetailsFrameColumnHeader3" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-2" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            WhoFrameColumn_SetWidth(self, 75);
+            self:GetFontString():SetWidth(75);	--Deal with a problem of size in Russian client
+            self.sortType = "seasonwon";
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsFrameColumnHeader5" inherits="ArmoryPVPTeamDetailsFrameColumnHeaderTemplate" text="RATING">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryPVPTeamDetailsFrameColumnHeader4" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-2" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            WhoFrameColumn_SetWidth(self, 55);
+            self.sortType = "rating";
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton1" inherits="ArmoryPVPTeamMemberButtonTemplate" id="1" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetails">
+            <Offset>
+              <AbsDimension x="15" y="-115"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton2" inherits="ArmoryPVPTeamMemberButtonTemplate" id="2" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton3" inherits="ArmoryPVPTeamMemberButtonTemplate" id="3" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton2" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton4" inherits="ArmoryPVPTeamMemberButtonTemplate" id="4" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton3" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton5" inherits="ArmoryPVPTeamMemberButtonTemplate" id="5" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton4" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton6" inherits="ArmoryPVPTeamMemberButtonTemplate" id="6" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton5" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton7" inherits="ArmoryPVPTeamMemberButtonTemplate" id="7" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton6" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton8" inherits="ArmoryPVPTeamMemberButtonTemplate" id="8" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton7" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton9" inherits="ArmoryPVPTeamMemberButtonTemplate" id="9" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton8" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryPVPTeamDetailsButton10" inherits="ArmoryPVPTeamMemberButtonTemplate" id="10" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPVPTeamDetailsButton9" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        ArmoryPVPTeamDetails_OnShow(self);
+      </OnShow>
+      <OnHide>
+        ArmoryPVPTeamDetails_OnHide(self);
+      </OnHide>
+    </Scripts>
+  </Frame>
+</Ui>

@@ -1,0 +1,553 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmorySkillFrame.lua"/>
+  <StatusBar name="ArmorySkillStatusBarTemplate" hidden="true" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0">
+    <Size>
+      <AbsDimension x="271" y="15"/>
+    </Size>
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentSkillName" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+                <AbsDimension x="6" y="1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSkillRank" inherits="GameFontHighlightSmall">
+          <Size>
+            <AbsDimension x="128" y="0"/>
+          </Size>
+        </FontString>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture name="$parentFillBar">
+          <Size>
+            <AbsDimension x="0" y="15"/>
+          </Size>
+          <Color r="1.0" g="1.0" b="1.0" a="0.5"/>
+        </Texture>
+      </Layer>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentBackground">
+          <Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentBorder">
+        <Size>
+          <AbsDimension x="281" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="-5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="7" bottom="7"/>
+        </HitRectInsets>
+        <Scripts>
+          <OnClick>
+            ArmorySkillBar_OnClick(self);
+          </OnClick>
+          <OnUpdate>
+            if ( self.tooltip and GameTooltip:IsOwned(self) ) then
+              GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltip, 1);
+            end
+          </OnUpdate>
+          <OnEnter>
+            if ( self.tooltip ) then
+              GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltip, 1);
+            end
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+        <NormalTexture name="$parentNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder"/>
+        <HighlightTexture name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorderHighlight"/>
+      </Button>
+    </Frames>
+    <BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+    <BarColor r="0.25" g="0.25" b="0.75"/>
+  </StatusBar>
+  <Button name="ArmorySkillLabelTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="285" y="14"/>
+    </Size>
+    <Scripts>
+      <OnClick>
+        if (self.isExpanded) then
+          Armory:CollapseSkillHeader(self.skillIndex);
+        else
+          Armory:ExpandSkillHeader(self.skillIndex);
+        end
+        ArmorySkillFrame_Update();
+      </OnClick>
+    </Scripts>
+    <NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-MinusButton-UP">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalTexture>
+    <HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </HighlightTexture>
+    <DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </DisabledTexture>
+    <ButtonText>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="25" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </ButtonText>
+    <NormalFont style="GameFontHighlightLeft" />
+  </Button>
+  <Frame name="ArmorySkillFrame" setAllPoints="true" enableMouse="true" movable="true" parent="ArmoryOtherFrame" hidden="true" id="2">
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Frames>
+      <Button name="ArmorySkillTypeLabel1" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="22" y="-86"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel2" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel1">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel3" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel2">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel4" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel3">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel5" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel4">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel6" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel5">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel7" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel6">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel8" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel7">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel9" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel8">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel10" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel9">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel11" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel10">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel12" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel11">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel13" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel12">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel14" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel13">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel15" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel14">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel16" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel15">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel17" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel16">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel18" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel17">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySkillTypeLabel19" inherits="ArmorySkillLabelTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySkillTypeLabel18">
+            <Offset>
+              <AbsDimension x="0" y="-18"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <ScrollFrame name="ArmorySkillListScrollFrame" inherits="FauxScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="296" y="354"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmorySkillFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-64" y="-76"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="108"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="-4"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.515625" right="1.0" top="0" bottom="0.421875"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, ARMORY_SKILLFRAME_SKILL_HEIGHT, ArmorySkillFrame_Update)
+          </OnVerticalScroll>
+        </Scripts>
+      </ScrollFrame>
+      <StatusBar name="ArmorySkillRankFrame1" inherits="ArmorySkillStatusBarTemplate" minValue="0" maxValue="1" defaultValue="1" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="38" y="-79"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame2" inherits="ArmorySkillStatusBarTemplate" id="2">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame3" inherits="ArmorySkillStatusBarTemplate" id="3">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame2" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame4" inherits="ArmorySkillStatusBarTemplate" id="4">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame3" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame5" inherits="ArmorySkillStatusBarTemplate" id="5">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame4" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame6" inherits="ArmorySkillStatusBarTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame5" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame7" inherits="ArmorySkillStatusBarTemplate" id="7">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame6" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame8" inherits="ArmorySkillStatusBarTemplate" id="8">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame7" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame9" inherits="ArmorySkillStatusBarTemplate" id="9">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame8" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame10" inherits="ArmorySkillStatusBarTemplate" id="10">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame9" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame11" inherits="ArmorySkillStatusBarTemplate" id="11">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame10" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame12" inherits="ArmorySkillStatusBarTemplate" id="12">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame11" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame13" inherits="ArmorySkillStatusBarTemplate" id="13">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame12" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame14" inherits="ArmorySkillStatusBarTemplate" id="14">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame13" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame15" inherits="ArmorySkillStatusBarTemplate" id="15">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame14" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame16" inherits="ArmorySkillStatusBarTemplate" id="16">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame15" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame17" inherits="ArmorySkillStatusBarTemplate" id="17">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame16" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame18" inherits="ArmorySkillStatusBarTemplate" id="18">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame17" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="ArmorySkillRankFrame19" inherits="ArmorySkillStatusBarTemplate" id="19">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySkillRankFrame18" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        ArmorySkillFrame_OnShow(self);
+      </OnShow>
+      <OnLoad>
+        ArmorySkillFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmorySkillFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnMouseUp>
+        ArmoryChildWindow_OnMouseUp(self, button);
+      </OnMouseUp>
+      <OnMouseDown>
+        ArmoryChildWindow_OnMouseDown(self, button);
+      </OnMouseDown>
+    </Scripts>
+  </Frame>
+</Ui>

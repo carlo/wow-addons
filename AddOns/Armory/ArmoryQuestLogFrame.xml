@@ -1,0 +1,845 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryQuestLogFrame.lua"/>
+  <Button name="ArmoryQuestLogTitleButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="300" y="16"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentTag" inherits="GameFontNormal" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="0" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-2" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+        ArmoryQuestLogTitleButton_OnClick(self, button);
+      </OnClick>
+      <OnEnter>
+        ArmoryQuestLogTitleButton_OnEnter(self);
+      </OnEnter>
+      <OnLeave>
+        if ( ArmoryQuestLogFrame.selectedButtonID and (self:GetID() ~= (ArmoryQuestLogFrame.selectedButtonID - FauxScrollFrame_GetOffset(ArmoryQuestLogListScrollFrame))) ) then
+          getglobal(self:GetName().."Tag"):SetTextColor(self.r, self.g, self.b);
+        end
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalTexture>
+    <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </HighlightTexture>
+    <ButtonText name="$parentNormalText" nonspacewrap="true">
+      <Size>
+        <AbsDimension x="0" y="10"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="20" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </ButtonText>
+    <NormalFont style="GameFontNormalLeft" />
+    <HighlightFont style="GameFontHighlightLeft" />
+    <DisabledFont style="GameFontHighlightLeft" />
+  </Button>
+  <Button name="ArmoryQuestLogRewardItemTemplate" inherits="QuestItemTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+        if ( self.rewardType == "item" ) then
+          Armory:SetQuestLogItem(self.type, self:GetID());
+          GameTooltip_ShowCompareItem();
+        elseif ( self.rewardType == "spell" ) then
+          Armory:SetQuestLogRewardSpell();
+        end
+      </OnEnter>
+      <OnClick>
+        if ( self.rewardType == "spell" ) then
+          if ( IsModifiedClick("CHATLINK") ) then
+            ChatEdit_InsertLink(Armory:GetQuestLogSpellLink());
+          end
+        else
+          HandleModifiedItemClick(self.link);
+        end
+      </OnClick>
+    </Scripts>
+  </Button>
+  <Frame name="ArmoryQuestLogFrame" enableMouse="true" movable="true" parent="ArmoryFrame" hidden="true">
+    <Size>
+      <AbsDimension x="384" y="512"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="ArmoryFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="35" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="ArmoryQuestLogDummyText" inherits="GameFontNormal" hidden="true">
+          <Size>
+            <AbsDimension x="0" y="13"/>
+          </Size>
+        </FontString>
+        <Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+          <Size>
+            <AbsDimension x="64" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="4" y="-4"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture file="Interface\QuestFrame\UI-QuestLog-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\QuestFrame\UI-QuestLog-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\QuestFrame\UI-QuestLog-BotLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\QuestFrame\UI-QuestLog-BotRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT"/>
+          </Anchors>
+        </Texture>
+        <FontString name="ArmoryQuestLogTitleText" inherits="GameFontNormal" text="QUEST_LOG">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryQuestLogFrame" relativePoint="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-17"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="ArmoryQuestLogExpandButtonFrame">
+        <Size>
+          <AbsDimension x="54" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="70" y="-48"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Button name="ArmoryQuestLogCollapseAllButton" hidden="false" inherits="ArmoryQuestLogTitleButtonTemplate" text="ALL">
+            <Size>
+              <AbsDimension x="40" y="22"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-2"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture name="ArmoryQuestLogExpandTabLeft" file="Interface\QuestFrame\UI-QuestLogSortTab-Left">
+                  <Size>
+                    <AbsDimension x="8" y="32"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT">
+                      <Offset>
+                        <AbsDimension x="-6" y="8"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="ArmoryQuestLogExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+                  <Size>
+                    <AbsDimension x="38" y="32"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativeTo="ArmoryQuestLogExpandTabLeft" relativePoint="RIGHT">
+                      <Offset>
+                        <AbsDimension x="0" y="0"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+                  <Size>
+                    <AbsDimension x="8" y="32"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativeTo="ArmoryQuestLogExpandTabMiddle" relativePoint="RIGHT"/>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>
+                ArmoryQuestLogCollapseAllButtonNormalText:SetWidth(0);
+                ArmoryQuestLogExpandTabMiddle:SetWidth(self:GetTextWidth() + 24);
+              </OnLoad>
+              <OnClick>
+                ArmoryQuestLogCollapseAllButton_OnClick(self);
+              </OnClick>
+              <OnEnter>
+                --
+              </OnEnter>
+              <OnLeave>
+                --
+              </OnLeave>
+            </Scripts>
+          </Button>
+        </Frames>
+      </Frame>
+      <Frame name="ArmoryEmptyQuestLogFrame" hidden="true">
+        <Size>
+          <AbsDimension x="384" y="512"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="19" y="-73"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture file="Interface\QuestFrame\UI-QuestLog-Empty-TopLeft">
+              <Size>
+                <AbsDimension x="256" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT"/>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface\QuestFrame\UI-QuestLog-Empty-TopRight">
+              <Size>
+                <AbsDimension x="64" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-64" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface\QuestFrame\UI-QuestLog-Empty-BotLeft">
+              <Size>
+                <AbsDimension x="256" y="128"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="128"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture file="Interface\QuestFrame\UI-QuestLog-Empty-BotRight">
+              <Size>
+                <AbsDimension x="64" y="128"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="-64" y="128"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <FontString name="ArmoryQuestLogNoQuestsText" inherits="GameFontHighlight" text="QUESTLOG_NO_QUESTS_TEXT">
+              <Size>
+                <AbsDimension x="200" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOP" relativeTo="ArmoryQuestLogTitleText">
+                  <Offset>
+                    <AbsDimension x="-20" y="-90"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <Frame name="ArmoryQuestLogCount">
+        <Size>
+          <AbsDimension x="380" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT" relativeTo="ArmoryQuestLogFrame">
+            <Offset>
+              <AbsDimension x="30" y="51"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="ArmoryQuestLogQuestCount" inherits="GameFontNormalSmall">
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+              </Anchors>
+            </FontString>
+            <FontString name="ArmoryQuestLogDailyQuestCount" inherits="GameFontNormalSmall" text="Daily: 25/25">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="123" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <Button name="ArmoryQuestLogFrameCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryQuestLogFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-30" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Frame name="ArmoryQuestLogHighlightFrame" hidden="true">
+        <Size>
+          <AbsDimension x="293" y="16"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT"/>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="ArmoryQuestLogSkillHighlight" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
+          </Layer>
+        </Layers>
+      </Frame>
+      <Button name="ArmoryQuestLogTitle1" inherits="ArmoryQuestLogTitleButtonTemplate" id="1" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogFrame">
+            <Offset>
+              <AbsDimension x="19" y="-75"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryQuestLogTitle2" inherits="ArmoryQuestLogTitleButtonTemplate" id="2" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogTitle1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryQuestLogTitle3" inherits="ArmoryQuestLogTitleButtonTemplate" id="3" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogTitle2" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryQuestLogTitle4" inherits="ArmoryQuestLogTitleButtonTemplate" id="4" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogTitle3" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryQuestLogTitle5" inherits="ArmoryQuestLogTitleButtonTemplate" id="5" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogTitle4" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryQuestLogTitle6" inherits="ArmoryQuestLogTitleButtonTemplate" id="6" hidden="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogTitle5" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <ScrollFrame name="ArmoryQuestLogListScrollFrame" inherits="FauxScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="300" y="93"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogFrame">
+            <Offset>
+              <AbsDimension x="19" y="-75"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, ARMORY_QUESTLOG_QUEST_HEIGHT, ArmoryQuestLog_Update);
+          </OnVerticalScroll>
+        </Scripts>
+      </ScrollFrame>
+      <ScrollFrame name="ArmoryQuestLogDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="300" y="261"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogListScrollFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-7"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <ScrollChild>
+          <Frame name="ArmoryQuestLogDetailScrollChildFrame">
+            <Size>
+              <AbsDimension x="300" y="261"/>
+            </Size>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <FontString name="ArmoryQuestLogQuestTitle" inherits="QuestTitleFont" justifyH="LEFT" text="Quest title">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT">
+                      <Offset>
+                        <AbsDimension x="5" y="-5"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjectivesText" inherits="QuestFont" justifyH="LEFT">
+                  <Size>
+                    <AbsDimension x="275" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogQuestTitle" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-5"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogTimerText" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjectivesText" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-10"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective1" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogTimerText" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-10"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective2" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective1" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective3" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective2" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective4" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective3" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective5" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective4" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective6" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective5" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective7" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective6" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective8" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective7" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective9" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective8" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogObjective10" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective9" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-2"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY">
+                  <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogSuggestedGroupNum" inherits="QuestFont">
+                  <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogDescriptionTitle" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_DESCRIPTION">
+                  <Size>
+                    <AbsDimension x="285" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogObjective10" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-10"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogQuestDescription" inherits="QuestFont" justifyH="LEFT">
+                  <Size>
+                    <AbsDimension x="270" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogDescriptionTitle" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-5"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogRewardTitleText" inherits="QuestTitleFont" text="QUEST_REWARDS" justifyH="LEFT">
+                  <Size>
+                    <AbsDimension x="300" y="18"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogQuestDescription" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-15"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogItemChooseText" inherits="QuestFont" text="REWARD_CHOICES" hidden="true" justifyH="LEFT">
+                  <Size>
+                    <AbsDimension x="295" y="0"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogRewardTitleText" relativePoint="BOTTOMLEFT">
+                      <Offset>
+                        <AbsDimension x="0" y="-5"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogItemReceiveText" inherits="QuestFont" hidden="true" justifyH="LEFT">
+                  <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogSpellLearnText" inherits="QuestFont" hidden="true" justifyH="LEFT">
+                  <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                  </Anchors>
+                </FontString>
+                <FontString name="ArmoryQuestLogPlayerTitleText" inherits="QuestFont" hidden="true" justifyH="LEFT">
+                  <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+            <Frames>
+              <Button name="ArmoryQuestLogItem1" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem2" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem3" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem4" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem5" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem6" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem7" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem8" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem9" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Button name="ArmoryQuestLogItem10" inherits="ArmoryQuestLogRewardItemTemplate" hidden="true">
+                <Anchors>
+                  <Anchor point="TOPLEFT"/>
+                </Anchors>
+              </Button>
+              <Frame name="ArmoryQuestLogMoneyFrame" inherits="MoneyFrameTemplate">
+                <Anchors>
+                  <Anchor point="LEFT" relativeTo="ArmoryQuestLogItemReceiveText" relativePoint="RIGHT">
+                    <Offset>
+                      <AbsDimension x="15" y="0"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Scripts>
+                  <OnLoad>
+                    MoneyFrame_SetType(self, "STATIC");
+                  </OnLoad>
+                </Scripts>
+              </Frame>
+              <Frame name="ArmoryQuestLogHonorFrame" inherits="QuestHonorFrameTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-5"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ArmoryQuestLogTalentFrame" inherits="QuestTalentFrameTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-5"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ArmoryQuestLogPlayerTitleFrame" inherits="QuestPlayerTitleFrameTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ArmoryQuestLogItemReceiveText" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-5"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ArmoryQuestLogRequiredMoneyFrame" inherits="MoneyFrameTemplate">
+                <Anchors>
+                  <Anchor point="LEFT" relativeTo="ArmoryQuestLogRequiredMoneyText" relativePoint="RIGHT">
+                    <Offset>
+                      <AbsDimension x="10" y="0"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Scripts>
+                  <OnLoad>
+                    self.small = 1;
+                    MoneyFrame_SetType(self, "STATIC");
+                  </OnLoad>
+                </Scripts>
+              </Frame>
+              <Frame name="ArmoryQuestLogSpacerFrame">
+                <Size>
+                  <AbsDimension x="5" y="25"/>
+                </Size>
+                <Anchors>
+                  <Anchor point="TOP">
+                    <Offset>
+                      <AbsDimension x="0" y="0"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+            </Frames>
+          </Frame>
+        </ScrollChild>
+      </ScrollFrame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmoryQuestLogFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmoryQuestLogFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnShow>
+        ArmoryQuestLogFrame_OnShow(self);
+      </OnShow>
+      <OnHide>
+        ArmoryQuestLogFrame_OnHide(self);
+      </OnHide>
+      <OnUpdate>
+        ArmoryQuestLogFrame_OnUpdate(self, elapsed);
+      </OnUpdate>
+      <OnMouseWheel>
+        return;
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+</Ui>

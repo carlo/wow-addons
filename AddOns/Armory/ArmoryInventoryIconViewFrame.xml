@@ -1,0 +1,281 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryInventoryIconViewFrame.lua"/>
+  <Button name="ArmoryInventoryFrameItemButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <Frames>
+      <Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+      <Frame name="$parentShine" inherits="AutoCastShineTemplate">
+        <Anchors>
+          <Anchor point="CENTER">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Size>
+          <AbsDimension x="28" y="28"/>
+        </Size>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnClick>
+        if ( IsModifiedClick("CHATLINK") and self.link ) then
+          HandleModifiedItemClick(self.link);
+        end
+      </OnClick>
+      <OnEnter>
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+        ArmoryInventoryContainerItemButton_OnEnter(self);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+  <Frame name="ArmoryInventoryContainerTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="281" y="206"/>
+    </Size>
+    <Frames>
+      <Button name="$parentLabel" inherits="ArmoryInventoryLabelTemplate" hidden="false">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <!--<Button name="$parentItem1" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem2" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem3" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem4" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem5" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem6" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem7" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem8" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem9" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem10" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem11" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem12" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem13" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem14" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem15" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem16" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem17" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem18" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem19" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem20" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem21" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem22" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem23" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem24" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem25" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem26" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem27" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem28" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem29" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem30" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem31" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem32" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem33" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem34" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem35" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem36" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem37" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem38" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem39" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem40" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem41" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem42" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem43" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem44" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem45" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem46" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem47" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem48" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem49" inherits="ArmoryInventoryFrameItemButtonTemplate"/>
+      <Button name="$parentItem50" inherits="ArmoryInventoryFrameItemButtonTemplate"/>-->
+    </Frames>
+  </Frame>
+  <ScrollFrame name="ArmoryInventoryIconViewFrame" parent="ArmoryInventoryFrame" inherits="UIPanelScrollFrameTemplate" hidden="true">
+    <Size>
+      <AbsDimension x="296" y="331"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-66" y="-98"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+          <Size>
+            <AbsDimension x="31" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="-2" y="5"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+        </Texture>
+        <Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+          <Size>
+            <AbsDimension x="31" y="106"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="-2" y="-2"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        ArmoryInventoryIconViewFrame_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryInventoryIconViewFrame_OnShow(self);
+      </OnShow>
+    </Scripts>
+    <Frames>
+      <CheckButton name="ArmoryInventoryIconViewFrameLayoutCheckButton" inherits="UICheckButtonTemplate">
+        <Size>
+          <AbsDimension x="24" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryMoneyBackgroundFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            ArmoryInventoryIconViewFrameLayoutCheckButtonText:SetText(ARMORY_INVENTORY_BAGLAYOUT);
+          </OnLoad>
+          <OnClick>
+            ArmoryInventoryIconViewBagLayout(self:GetChecked());
+          </OnClick>
+          <OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+            GameTooltip:SetText(ARMORY_INVENTORY_BAGLAYOUT_TOOLTIP, nil, nil, nil, nil, 1);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+        <HitRectInsets>
+          <AbsInset left="0" right="-75" top="0" bottom="0"/>
+        </HitRectInsets>
+      </CheckButton>
+    </Frames>
+    <ScrollChild>
+      <Frame name="ArmoryInventoryIconViewChildFrame">
+        <Size>
+          <AbsDimension x="296" y="50"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT"/>
+        </Anchors>
+        <Frames>
+          <Frame name="ArmoryInventoryContainer1" inherits="ArmoryInventoryContainerTemplate" id="1">
+            <Anchors>
+              <Anchor point="TOPLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer2" inherits="ArmoryInventoryContainerTemplate" id="2">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer1" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer3" inherits="ArmoryInventoryContainerTemplate" id="3">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer2" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer4" inherits="ArmoryInventoryContainerTemplate" id="4">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer3" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer5" inherits="ArmoryInventoryContainerTemplate" id="5">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer4" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer6" inherits="ArmoryInventoryContainerTemplate" id="6">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer5" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer7" inherits="ArmoryInventoryContainerTemplate" id="7">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer6" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer8" inherits="ArmoryInventoryContainerTemplate" id="8">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer7" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer9" inherits="ArmoryInventoryContainerTemplate" id="9">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer8" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer10" inherits="ArmoryInventoryContainerTemplate" id="10">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer9" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer11" inherits="ArmoryInventoryContainerTemplate" id="11">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer10" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer12" inherits="ArmoryInventoryContainerTemplate" id="12">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer11" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer13" inherits="ArmoryInventoryContainerTemplate" id="13">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer12" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer14" inherits="ArmoryInventoryContainerTemplate" id="14">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer13" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer15" inherits="ArmoryInventoryContainerTemplate" id="15">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer14" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer16" inherits="ArmoryInventoryContainerTemplate" id="16">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer15" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryInventoryContainer17" inherits="ArmoryInventoryContainerTemplate" id="17">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryContainer16" relativePoint="BOTTOMLEFT" />
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Frame>
+    </ScrollChild>
+  </ScrollFrame>
+</Ui>
+

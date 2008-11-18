@@ -1,0 +1,474 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryTalentFrame.lua"/>
+  <Button name="ArmoryTalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <Anchors>
+      <Anchor point="TOPLEFT"/>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentSlot" file="Interface\Buttons\UI-EmptySlot-White">
+          <Size>
+            <AbsDimension x="64" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <Texture name="$parentRankBorder" file="Interface\TalentFrame\TalentFrame-RankBorder">
+          <Size>
+            <AbsDimension x="32" y="32"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString name="$parentRank" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="CENTER" relativeTo="$parentRankBorder">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        self:RegisterEvent("CHARACTER_POINTS_CHANGED");
+      </OnLoad>
+      <OnEvent>
+        ArmoryTalentFrameTalent_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnClick>
+        ArmoryTalentFrameTalent_OnClick(self);
+      </OnClick>
+      <OnUpdate>
+        if ( GameTooltip:IsOwned(self) ) then
+          ArmoryTalentTooltip(self);
+        end
+      </OnUpdate>
+      <OnEnter>
+        ArmoryTalentTooltip(self);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+  <Button name="ArmoryTalentTabTemplate" inherits="TabButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="10" y="24"/>
+    </Size>
+    <Scripts>
+      <OnClick>
+        ArmoryTalentFrameTab_OnClick(self);
+      </OnClick>
+    </Scripts>
+  </Button>
+  <Texture name="ArmoryTalentBranchTemplate" file="Interface\TalentFrame\UI-TalentBranches" virtual="true">
+    <Size>
+      <AbsDimension x="32" y="32"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT"/>
+    </Anchors>
+  </Texture>
+  <Texture name="ArmoryTalentArrowTemplate" file="Interface\TalentFrame\UI-TalentArrows" virtual="true">
+    <Size>
+      <AbsDimension x="32" y="32"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT"/>
+    </Anchors>
+  </Texture>
+  <Frame name="ArmoryTalentFrame" setAllPoints="true" enableMouse="true" movable="true" parent="ArmoryFrame" hidden="true" id="3">
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="2" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="258" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="2" y="-257"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="258" y="-257"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture name="ArmoryTalentFrameBackgroundTopLeft">
+          <Size>
+            <AbsDimension x="256" y="270"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="23" y="-77"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture name="ArmoryTalentFrameBackgroundTopRight">
+          <Size>
+            <AbsDimension x="64" y="270"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="ArmoryTalentFrameBackgroundTopLeft" relativePoint="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture name="ArmoryTalentFrameBackgroundBottomLeft">
+          <Size>
+            <AbsDimension x="256" y="145"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="ArmoryTalentFrameBackgroundTopLeft" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture name="ArmoryTalentFrameBackgroundBottomRight">
+          <Size>
+            <AbsDimension x="64" y="145"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="ArmoryTalentFrameBackgroundTopLeft" relativePoint="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="ArmoryTalentFrameTab1" inherits="ArmoryTalentTabTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="70" y="-49"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            PanelTemplates_SelectTab(self);
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryTalentFrameTab2" inherits="ArmoryTalentTabTemplate" id="2">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryTalentFrameTab1" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryTalentFrameTab3" inherits="ArmoryTalentTabTemplate" id="3">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryTalentFrameTab2" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryTalentFrameTab4" inherits="ArmoryTalentTabTemplate" id="4">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryTalentFrameTab3" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryTalentFrameTab5" inherits="ArmoryTalentTabTemplate" id="5">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryTalentFrameTab4" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <ScrollFrame name="ArmoryTalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="296" y="354"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-65" y="-77"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="106"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="-2"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <ScrollChild>
+          <Frame name="ArmoryTalentFrameScrollChildFrame">
+            <Size>
+              <AbsDimension x="320" y="50"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture name="ArmoryTalentFrameBranch1" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch2" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch3" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch4" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch5" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch6" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch7" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch8" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch9" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch10" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch11" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch12" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch13" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch14" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch15" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch16" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch17" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch18" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch19" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch20" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch21" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch22" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch23" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch24" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch25" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch26" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch27" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch28" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch29" inherits="ArmoryTalentBranchTemplate"/>
+                <Texture name="ArmoryTalentFrameBranch30" inherits="ArmoryTalentBranchTemplate"/>
+              </Layer>
+            </Layers>
+            <Frames>
+              <Button name="ArmoryTalentFrameTalent1" inherits="ArmoryTalentButtonTemplate" id="1"/>
+              <Button name="ArmoryTalentFrameTalent2" inherits="ArmoryTalentButtonTemplate" id="2"/>
+              <Button name="ArmoryTalentFrameTalent3" inherits="ArmoryTalentButtonTemplate" id="3"/>
+              <Button name="ArmoryTalentFrameTalent4" inherits="ArmoryTalentButtonTemplate" id="4"/>
+              <Button name="ArmoryTalentFrameTalent5" inherits="ArmoryTalentButtonTemplate" id="5"/>
+              <Button name="ArmoryTalentFrameTalent6" inherits="ArmoryTalentButtonTemplate" id="6"/>
+              <Button name="ArmoryTalentFrameTalent7" inherits="ArmoryTalentButtonTemplate" id="7"/>
+              <Button name="ArmoryTalentFrameTalent8" inherits="ArmoryTalentButtonTemplate" id="8"/>
+              <Button name="ArmoryTalentFrameTalent9" inherits="ArmoryTalentButtonTemplate" id="9"/>
+              <Button name="ArmoryTalentFrameTalent10" inherits="ArmoryTalentButtonTemplate" id="10"/>
+              <Button name="ArmoryTalentFrameTalent11" inherits="ArmoryTalentButtonTemplate" id="11"/>
+              <Button name="ArmoryTalentFrameTalent12" inherits="ArmoryTalentButtonTemplate" id="12"/>
+              <Button name="ArmoryTalentFrameTalent13" inherits="ArmoryTalentButtonTemplate" id="13"/>
+              <Button name="ArmoryTalentFrameTalent14" inherits="ArmoryTalentButtonTemplate" id="14"/>
+              <Button name="ArmoryTalentFrameTalent15" inherits="ArmoryTalentButtonTemplate" id="15"/>
+              <Button name="ArmoryTalentFrameTalent16" inherits="ArmoryTalentButtonTemplate" id="16"/>
+              <Button name="ArmoryTalentFrameTalent17" inherits="ArmoryTalentButtonTemplate" id="17"/>
+              <Button name="ArmoryTalentFrameTalent18" inherits="ArmoryTalentButtonTemplate" id="18"/>
+              <Button name="ArmoryTalentFrameTalent19" inherits="ArmoryTalentButtonTemplate" id="19"/>
+              <Button name="ArmoryTalentFrameTalent20" inherits="ArmoryTalentButtonTemplate" id="20"/>
+              <Button name="ArmoryTalentFrameTalent21" inherits="ArmoryTalentButtonTemplate" id="21"/>
+              <Button name="ArmoryTalentFrameTalent22" inherits="ArmoryTalentButtonTemplate" id="22"/>
+              <Button name="ArmoryTalentFrameTalent23" inherits="ArmoryTalentButtonTemplate" id="23"/>
+              <Button name="ArmoryTalentFrameTalent24" inherits="ArmoryTalentButtonTemplate" id="24"/>
+              <Button name="ArmoryTalentFrameTalent25" inherits="ArmoryTalentButtonTemplate" id="25"/>
+              <Button name="ArmoryTalentFrameTalent26" inherits="ArmoryTalentButtonTemplate" id="26"/>
+              <Button name="ArmoryTalentFrameTalent27" inherits="ArmoryTalentButtonTemplate" id="27"/>
+              <Button name="ArmoryTalentFrameTalent28" inherits="ArmoryTalentButtonTemplate" id="28"/>
+              <Button name="ArmoryTalentFrameTalent29" inherits="ArmoryTalentButtonTemplate" id="29"/>
+              <Button name="ArmoryTalentFrameTalent30" inherits="ArmoryTalentButtonTemplate" id="30"/>
+              <Button name="ArmoryTalentFrameTalent31" inherits="ArmoryTalentButtonTemplate" id="31"/>
+              <Button name="ArmoryTalentFrameTalent32" inherits="ArmoryTalentButtonTemplate" id="32"/>
+              <Button name="ArmoryTalentFrameTalent33" inherits="ArmoryTalentButtonTemplate" id="33"/>
+              <Button name="ArmoryTalentFrameTalent34" inherits="ArmoryTalentButtonTemplate" id="34"/>
+              <Button name="ArmoryTalentFrameTalent35" inherits="ArmoryTalentButtonTemplate" id="35"/>
+              <Button name="ArmoryTalentFrameTalent36" inherits="ArmoryTalentButtonTemplate" id="36"/>
+              <Button name="ArmoryTalentFrameTalent37" inherits="ArmoryTalentButtonTemplate" id="37"/>
+              <Button name="ArmoryTalentFrameTalent38" inherits="ArmoryTalentButtonTemplate" id="38"/>
+              <Button name="ArmoryTalentFrameTalent39" inherits="ArmoryTalentButtonTemplate" id="39"/>
+              <Button name="ArmoryTalentFrameTalent40" inherits="ArmoryTalentButtonTemplate" id="40"/>
+
+              <Frame name="ArmoryTalentFrameArrowFrame" setAllPoints="true">
+                <Layers>
+                  <Layer level="OVERLAY">
+                    <Texture name="ArmoryTalentFrameArrow1" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow2" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow3" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow4" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow5" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow6" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow7" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow8" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow9" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow10" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow11" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow12" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow13" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow14" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow15" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow16" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow17" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow18" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow19" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow20" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow21" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow22" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow23" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow24" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow25" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow26" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow27" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow28" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow29" inherits="ArmoryTalentArrowTemplate"/>
+                    <Texture name="ArmoryTalentFrameArrow30" inherits="ArmoryTalentArrowTemplate"/>
+                  </Layer>
+                </Layers>
+              </Frame>
+            </Frames>
+          </Frame>
+        </ScrollChild>
+      </ScrollFrame>
+      <Frame name="ArmoryTalentScrollButtonOverlay" parent="ArmoryTalentFrameScrollFrameScrollBarScrollDownButton" hidden="true">
+        <Size>
+          <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <Texture file="Interface\Buttons\UI-ScrollBar-Button-Overlay" setAllPoints="true" alphaMode="ADD"/>
+          </Layer>
+        </Layers>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        ArmoryTalentFrame_OnShow(self);
+      </OnShow>
+      <OnLoad>
+        ArmoryTalentFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmoryTalentFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnMouseUp>
+        ArmoryChildWindow_OnMouseUp(self, button);
+      </OnMouseUp>
+      <OnMouseDown>
+        ArmoryChildWindow_OnMouseDown(self, button);
+      </OnMouseDown>
+    </Scripts>
+  </Frame>
+</Ui>

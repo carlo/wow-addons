@@ -1,0 +1,576 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmorySpellBookFrame.lua"/>
+  <CheckButton name="ArmorySpellBookSkillLineTabTemplate" virtual="true" hidden="true">
+    <Size>
+      <AbsDimension x="32" y="32"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+          <Size>
+            <AbsDimension x="64" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="-3" y="11"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+        ArmorySpellBookSkillLineTab_OnClick(self);
+      </OnClick>
+      <OnEnter>
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+        GameTooltip:SetText(self.tooltip);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture/>
+    <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+    <CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+  </CheckButton>
+  <Button name="ArmorySpellBookFrameTabButtonTemplate" virtual="true" hidden="true">
+    <Size>
+      <AbsDimension x="128" y="64"/>
+    </Size>
+    <HitRectInsets>
+      <AbsInset left="15" right="14" top="13" bottom="15"/>
+    </HitRectInsets>
+    <Scripts>
+      <OnClick>
+        ArmoryToggleSpellBook(self.bookType);
+      </OnClick>
+      <OnEnter>
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+        GameTooltip:SetText(MicroButtonTooltipText(self:GetText(), self.binding), 1.0,1.0,1.0 );
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <ButtonText>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="3"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </ButtonText>
+    <NormalFont style="GameFontNormalSmall"/>
+    <HighlightFont style="GameFontHighlightSmall"/>
+    <DisabledFont style="GameFontHighlightSmall"/>
+    <NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
+    <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight" alphaMode="ADD"/>
+  </Button>
+  <CheckButton name="ArmorySpellButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="37" y="37"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentBackground" file="Interface\Spellbook\UI-Spellbook-SpellBackground">
+          <Size>
+            <AbsDimension x="64" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="-3" y="3"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
+        <FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="3" hidden="true" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="103" y="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="4" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubSpellName" inherits="SubSpellFont" hidden="true" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="79" y="18"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentSpellName" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="4"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+      <Layer level="OVERLAY">
+        <Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
+          <Size>
+            <AbsDimension x="60" y="60"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+        if ( IsModifiedClick("CHATLINK") and self.link ) then
+          HandleModifiedItemClick(self.link);
+        end
+      </OnClick>
+      <OnEnter>
+        ArmorySpellButton_OnEnter(self);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+      <Size>
+        <AbsDimension x="64" y="64"/>
+      </Size>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalTexture>
+    <HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+  </CheckButton>
+  <Frame name="ArmorySpellBookFrame" enableMouse="true" movable="true" parent="ArmoryFrame" hidden="true">
+    <Size>
+      <AbsDimension x="384" y="512"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="ArmoryFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="70"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentIcon" file="Interface\Spellbook\Spellbook-Icon">
+          <Size>
+            <AbsDimension x="58" y="58"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="10" y="-8"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <Texture name="$parentTopLeft" file="Interface\Spellbook\UI-SpellbookPanel-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture name="$parentTopRight" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT"/>
+          </Anchors>
+        </Texture>
+        <Texture name="$parentBotLeft" file="Interface\Spellbook\UI-SpellbookPanel-BotLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture name="$parentBotRight" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT"/>
+          </Anchors>
+        </Texture>
+        <FontString name="ArmorySpellBookTitleText" inherits="GameFontNormal" text="SPELLBOOK">
+          <Anchors>
+            <Anchor point="CENTER">
+              <Offset>
+                <AbsDimension x="6" y="230"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="ArmorySpellBookPageText" inherits="GameFontNormal">
+          <Size>
+            <AbsDimension x="102" y="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOM">
+              <Offset>
+                <AbsDimension x="-14" y="96"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="ArmorySpellBookFrameTabButton1" inherits="ArmorySpellBookFrameTabButtonTemplate">
+        <Anchors>
+          <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="79" y="61"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <DisabledTexture file="Interface\SpellBook\UI-SpellBook-Tab1-Selected"/>
+      </Button>
+      <Button name="ArmorySpellBookFrameTabButton2" inherits="ArmorySpellBookFrameTabButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySpellBookFrameTabButton1" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-20" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <DisabledTexture file="Interface\SpellBook\UI-SpellBook-Tab1-Selected"/>
+      </Button>
+      <Button name="ArmorySpellBookFrameTabButton3" inherits="ArmorySpellBookFrameTabButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmorySpellBookFrameTabButton2" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-20" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <DisabledTexture file="Interface\SpellBook\UI-SpellBook-Tab3-Selected"/>
+      </Button>
+      <Button name="ArmorySpellBookPrevPageButton">
+        <Size>
+          <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="ArmorySpellBookFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="50" y="105"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="ArmorySpellBookPrevPageButton" relativePoint="RIGHT"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            ArmorySpellBookPrevPageButton_OnClick(self);
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+      </Button>
+      <Button name="ArmorySpellBookNextPageButton">
+        <Size>
+          <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="ArmorySpellBookFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="314" y="105"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+              <Anchors>
+                <Anchor point="RIGHT" relativeTo="ArmorySpellBookNextPageButton" relativePoint="LEFT"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            ArmorySpellBookNextPageButton_OnClick(self);
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+      </Button>
+      <Button name="ArmorySpellBookCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="ArmorySpellBookFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-44" y="-25"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetFrameLevel(self:GetFrameLevel() + 1);
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <CheckButton name="ArmoryShowAllSpellRanksCheckBox" inherits="OptionsSmallCheckButtonTemplate">
+        <Size>
+          <AbsDimension x="26" y="26"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="74" y="-38"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0"/>
+        </HitRectInsets>
+        <Scripts>
+          <OnLoad>
+            getglobal(self:GetName().."Text"):SetText(SHOW_ALL_SPELL_RANKS);
+          </OnLoad>
+          <OnShow>
+            self:SetChecked( Armory:GetShowAllSpellRanks() );
+          </OnShow>
+          <OnClick>
+            PlaySound("igMainMenuOptionCheckBoxOn");
+            Armory:SetShowAllSpellRanks(self:GetChecked());
+            ArmorySpellBook_UpdateSpells();
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton1" inherits="ArmorySpellButtonTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="34" y="-85"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton2" inherits="ArmorySpellButtonTemplate" id="7">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton1">
+            <Offset>
+              <AbsDimension x="157" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton3" inherits="ArmorySpellButtonTemplate" id="2">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton4" inherits="ArmorySpellButtonTemplate" id="8">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton3">
+            <Offset>
+              <AbsDimension x="157" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton5" inherits="ArmorySpellButtonTemplate" id="3">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton3" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton6" inherits="ArmorySpellButtonTemplate" id="9">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton5">
+            <Offset>
+              <AbsDimension x="157" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton7" inherits="ArmorySpellButtonTemplate" id="4">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton5" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton8" inherits="ArmorySpellButtonTemplate" id="10">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton7">
+            <Offset>
+              <AbsDimension x="157" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton9" inherits="ArmorySpellButtonTemplate" id="5">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton7" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton10" inherits="ArmorySpellButtonTemplate" id="11">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton9">
+            <Offset>
+              <AbsDimension x="157" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton11" inherits="ArmorySpellButtonTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton9" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellButton12" inherits="ArmorySpellButtonTemplate" id="12">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellButton11">
+            <Offset>
+              <AbsDimension x="157" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab1" inherits="ArmorySpellBookSkillLineTabTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-32" y="-65"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab2" inherits="ArmorySpellBookSkillLineTabTemplate" id="2">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab3" inherits="ArmorySpellBookSkillLineTabTemplate" id="3">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab2" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab4" inherits="ArmorySpellBookSkillLineTabTemplate" id="4">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab3" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab5" inherits="ArmorySpellBookSkillLineTabTemplate" id="5">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab4" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab6" inherits="ArmorySpellBookSkillLineTabTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab5" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab7" inherits="ArmorySpellBookSkillLineTabTemplate" id="7">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab6" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <CheckButton name="ArmorySpellBookSkillLineTab8" inherits="ArmorySpellBookSkillLineTabTemplate" id="8">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySpellBookSkillLineTab7" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-17"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmorySpellBookFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmorySpellBookFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnShow>
+        ArmorySpellBookFrame_OnShow(self);
+      </OnShow>
+      <OnHide>
+        ArmorySpellBookFrame_OnHide(self);
+      </OnHide>
+    </Scripts>
+  </Frame>
+</Ui>

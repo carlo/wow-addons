@@ -1,0 +1,938 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryOptionsPanel.lua"/>
+  <CheckButton name="ArmoryOptionsCheckButtonTemplate" virtual="true" inherits="InterfaceOptionsCheckButtonTemplate">
+    <HitRectInsets>
+      <AbsInset left="0" right="-300" top="0" bottom="0"/>
+    </HitRectInsets>
+    <Scripts>
+      <OnClick>
+        if ( self:GetChecked() ) then
+          PlaySound("igMainMenuOptionCheckBoxOn");
+        else
+          PlaySound("igMainMenuOptionCheckBoxOff");
+        end
+        ArmoryOptionsPanel_CheckButton_OnClick(self);
+      </OnClick>
+    </Scripts>
+  </CheckButton>
+  <Frame name="ArmoryOptionsCheckBoxWithSwatchTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="385" y="26"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentText" text="ARMORY_FONT_COLOR" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset x="-20" y="1"/>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <CheckButton name="$parentCheck" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset x="0" y="0"/>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <Button name="$parentColorSwatch" hidden="false">
+        <Size>
+          <AbsDimension x="16" y="16"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentSwatchBg">
+              <Size>
+                <AbsDimension x="14" y="14"/>
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <Color r="1.0" g="1.0" b="1.0"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            ArmoryOptionsPanel_OpenColorPicker(self);
+          </OnClick>
+        </Scripts>
+        <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+      </Button>
+    </Frames>
+  </Frame>
+  <Button name="ArmoryOptionsPanelButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        if ( self.tooltipText ) then
+          GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+          GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+        end
+        if ( self.tooltipRequirement ) then
+          GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
+          GameTooltip:Show();
+        end
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+  <Slider name="ArmoryOptionsPanelSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+    <Scripts>
+      <OnValueChanged>
+        self.value = value; 
+        self.setFunc(value);
+      </OnValueChanged>
+    </Scripts>
+  </Slider>
+  <Frame name="ArmoryOptionsPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ARMORY_TITLE" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="ARMORY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        self.name = ARMORY_TITLE;
+        ArmoryOptionsPanel_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryOptionsPanel_Refresh(self);
+      </OnShow>
+    </Scripts>
+    <Frames>
+      <CheckButton name="$parentSearchAll" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SEARCHALL";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentLastViewed" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSearchAll" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_LASTVIEWED";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentPerCharacter" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentLastViewed" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_PERCHARACTER";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShowAltEquip" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentPerCharacter" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHOWALTEQUIP";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShowUnequip" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShowAltEquip" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="16" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHOWUNEQUIP";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+            ArmoryOptionsPanel_SetupDependentControl(ArmoryOptionsPanelShowAltEquip, self);
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShowEqcTooltips" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShowUnequip" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-16" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHOWEQCTOOLTIPS";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Frame name="$parentShowItemCount" inherits="ArmoryOptionsCheckBoxWithSwatchTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShowEqcTooltips" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            local control = getglobal(self:GetName().."Check");
+            control.type = CONTROLTYPE_CHECKBOX;
+            control.label = "ARMORY_CMD_SET_SHOWITEMCOUNT";
+            control.colorSet = function(r, g, b) Armory:SetConfigItemCountColor(r, g, b); end;
+            control.colorGet = function(default) return Armory:GetConfigItemCountColor(default); end;
+            ArmoryOptionsPanel_RegisterControl(control, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <Frame name="$parentShowQuestAlts" inherits="ArmoryOptionsCheckBoxWithSwatchTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShowItemCount" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            local control = getglobal(self:GetName().."Check");
+            control.type = CONTROLTYPE_CHECKBOX;
+            control.label = "ARMORY_CMD_SET_SHOWQUESTALTS";
+            control.colorSet = function(r, g, b) Armory:SetConfigQuestAltsColor(r, g, b); end;
+            control.colorGet = function(default) return Armory:GetConfigQuestAltsColor(default); end;
+            ArmoryOptionsPanel_RegisterControl(control, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <CheckButton name="$parentFilterAllMessages" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShowQuestAlts" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_FILTERALL";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Slider name="$parentExpDaysSlider" inherits="ArmoryOptionsPanelSliderTemplate">
+        <Size>
+          <AbsDimension x="335" y="16"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentFilterAllMessages" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_SLIDER;
+            self.label = "ARMORY_CMD_SET_EXPDAYS";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+          <OnShow>
+            getglobal(self:GetName().."Low"):SetText(tostring(self.minValue));
+            getglobal(self:GetName().."High"):SetText(tostring(self.maxValue));
+          </OnShow>
+          <OnValueChanged>
+            self.value = value;
+            self.setFunc(value);
+            if ( self.value == 0 ) then
+              self.text = "("..OFF..")";
+            else
+              self.text = format(DAYS_ABBR, floor(self.value));
+            end
+            self.text = Armory:Proper(ARMORY_CMD_SET_EXPDAYS_TEXT)..": "..self.text;
+            getglobal(self:GetName().."Text"):SetText(self.text);
+          </OnValueChanged>
+          <OnEnter>
+            if ( not self.disabled ) then
+              if ( self.tooltipText ) then
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+              end
+              if ( self.tooltipRequirement ) then
+                GameTooltip:AddLine(self.tooltipRequirement, "", 1.0, 1.0, 1.0);
+                GameTooltip:Show();
+              end
+            end
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+      <Button name="$parentResetScreen" inherits="ArmoryOptionsPanelButtonTemplate" text="ARMORY_CMD_RESET_FRAME_MENUTEXT">
+        <Size>
+          <AbsDimension x="175" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="16" y="16"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.tooltipText = Armory:Proper(ARMORY_CMD_RESET_FRAME_TEXT);
+          </OnLoad>
+          <OnClick>
+            PlaySound("gsTitleOptionOK");
+            Armory:Reset(ARMORY_CMD_RESET_FRAME, true);
+          </OnClick>
+        </Scripts>
+        <NormalFont style="GameFontNormalSmall"/>
+        <HighlightFont style="GameFontHighlightSmall"/>
+      </Button>
+    </Frames>
+  </Frame>
+  <Frame name="ArmoryOptionsMinimapPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ARMORY_MINIMAP_TITLE" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="ARMORY_MINIMAP_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        self.name = ARMORY_MINIMAP_LABEL;
+        self.parent = ARMORY_TITLE;
+        ArmoryOptionsPanel_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryMinimapButton:Show();
+        ArmoryOptionsPanel_Refresh(self);
+      </OnShow>
+      <OnHide>
+        ArmoryMinimapButton_Init();
+      </OnHide>
+    </Scripts>
+    <Frames>
+      <CheckButton name="$parentMinimapButton" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHOWMINIMAP";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentHideIfToolbar" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentMinimapButton" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_HIDEMMTOOLBAR";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+            ArmoryOptionsPanel_SetupDependentControl(ArmoryOptionsMinimapPanelMinimapButton, self);
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <Slider name="$parentAngleSlider" inherits="ArmoryOptionsPanelSliderTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentHideIfToolbar" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-25"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_SLIDER;
+            self.label = "ARMORY_CMD_SET_MMB_ANGLE";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+            ArmoryOptionsPanel_SetupDependentControl(ArmoryOptionsMinimapPanelMinimapButton, self);
+          </OnLoad>
+          <OnShow>
+            getglobal(self:GetName().."Low"):SetText("");
+            getglobal(self:GetName().."High"):SetText("");
+          </OnShow>
+          <OnValueChanged>
+            self.value = value;
+            self.setFunc(value);
+            ArmoryMinimapButton_Move();
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+      <Slider name="$parentRadiusSlider" inherits="ArmoryOptionsPanelSliderTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAngleSlider" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-25"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_SLIDER;
+            self.label = "ARMORY_CMD_SET_MMB_RADIUS";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+            ArmoryOptionsPanel_SetupDependentControl(ArmoryOptionsMinimapPanelMinimapButton, self);
+          </OnLoad>
+          <OnShow>
+            getglobal(self:GetName().."Low"):SetText("");
+            getglobal(self:GetName().."High"):SetText("");
+          </OnShow>
+          <OnValueChanged>
+            self.value = value;
+            self.setFunc(value);
+            ArmoryMinimapButton_Move();
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+    </Frames>
+  </Frame>
+  <Frame name="ArmoryOptionsModulePanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ARMORY_MODULES_TITLE" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="ARMORY_MODULES_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        self.name = ARMORY_MODULES_LABEL;
+        self.parent = ARMORY_TITLE;
+        ArmoryOptionsPanel_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryOptionsPanel_Refresh(self);
+      </OnShow>
+    </Scripts>
+    <Frames>
+      <CheckButton name="$parentInventory" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.text = INVENTORY_TOOLTIP;
+            self.defaultValue = true;
+            self.GetValue = function(self) return Armory:HasInventory(); end
+            self.SetValue = function(self, value) self.value = value; self:SetChecked(value); Armory:HasInventory(value); end
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentQuestLog" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentInventory" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.text = QUESTLOG_BUTTON;
+            self.defaultValue = true;
+            self.GetValue = function(self) return Armory:HasQuestLog(); end
+            self.SetValue = function(self, value) self.value = value; self:SetChecked(value); Armory:HasQuestLog(value); end
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentSpellBook" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentQuestLog" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.text = SPELLBOOK_BUTTON;
+            self.defaultValue = true;
+            self.GetValue = function(self) return Armory:HasSpellBook(); end
+            self.SetValue = function(self, value) self.value = value; self:SetChecked(value); Armory:HasSpellBook(value); end
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentAchievements" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSpellBook" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.text = ACHIEVEMENTS;
+            self.defaultValue = true;
+            self.GetValue = function(self) return Armory:HasAchievements(); end
+            self.SetValue = function(self, value) self.value = value; self:SetChecked(value); Armory:HasAchievements(value); end
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentTradeSkills" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentAchievements" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.text = TRADE_SKILLS;
+            self.defaultValue = true;
+            self.GetValue = function(self) return Armory:HasTradeSkills(); end
+            self.SetValue = function(self, value) self.value = value; self:SetChecked(value); Armory:HasTradeSkills(value); end
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentSharing" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentTradeSkills" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.text = ARMORY_SHARE_TITLE;
+            self.defaultValue = true;
+            self.GetValue = function(self) return Armory:HasDataSharing(); end
+            self.SetValue = function(self, value) self.value = value; self:SetChecked(value); Armory:HasDataSharing(value); end
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+    </Frames>
+  </Frame>
+  <Frame name="ArmoryOptionsSharePanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ARMORY_SHARE_TITLE" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText1" text="ARMORY_SHARE_SUBTEXT1" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText2" text="ARMORY_SHARE_SUBTEXT2" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="18" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentSubText1" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-145"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        self.name = ARMORY_SHARE_LABEL;
+        self.parent = ARMORY_TITLE;
+        ArmoryOptionsPanel_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryOptionsPanel_Refresh(self);
+      </OnShow>
+    </Scripts>
+    <Frames>
+      <CheckButton name="$parentShareProfessions" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText1" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHARESKILLS";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareQuests" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShareProfessions" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHAREQUESTS";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareCharacter" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShareQuests" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHARECHARACTER";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareAsAlt" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShareCharacter" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHAREALT";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareInInstance" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText2" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHAREININSTANCE";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareInCombat" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShareInInstance" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHAREINCOMBAT";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShowShareMessages" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShareInCombat" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHOWSHAREMSG";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareAll" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShowShareMessages" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHAREALL";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentShareGuild" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentShareAll" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_SHAREGUILD";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+            ArmoryOptionsPanel_SetupDependentControl(ArmoryOptionsSharePanelShareAll, self, true);
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+    </Frames>
+  </Frame>
+  <Frame name="ArmoryOptionsMiscPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+    <Layers>
+      <Layer level="ARTWORK">
+        <FontString name="$parentTitle" text="ARMORY_MISC_TITLE" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="16" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentSubText" text="ARMORY_MISC_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+          <Size>
+            <AbsDimension y="32" x="0"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-32" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        self.name = ARMORY_MISC_LABEL;
+        self.parent = ARMORY_TITLE;
+        ArmoryOptionsPanel_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryOptionsPanel_Refresh(self);
+      </OnShow>
+    </Scripts>
+    <Frames>
+      <CheckButton name="$parentSearchRealms" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-2" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_GLOBALSEARCH";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>
+      <!--<CheckButton name="$parentUpdateCriteria" inherits="ArmoryOptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentSearchRealms" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self.type = CONTROLTYPE_CHECKBOX;
+            self.label = "ARMORY_CMD_SET_UPDATECRITERIA";
+            ArmoryOptionsPanel_RegisterControl(self, self:GetParent());
+          </OnLoad>
+        </Scripts>
+      </CheckButton>-->
+    </Frames>
+  </Frame>
+</Ui>

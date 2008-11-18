@@ -1,0 +1,19 @@
+<!-- Our own little section in the Key Bindings menu -->
+<Bindings>
+  <!-- See Localization.lua for constants -->
+  <Binding name="ARMORY_TOGGLE" header="ARMORY">
+    Armory:Toggle();
+  </Binding>
+  <Binding name="CURRENT_CHARACTER">
+    ArmoryFrameSelectCharacter({character=Armory.player, realm=Armory.playerRealm});
+  </Binding>
+  <Binding name="PREVIOUS_CHARACTER">
+    ArmoryFrameCharacterCycle(false);
+  </Binding>
+  <Binding name="NEXT_CHARACTER">
+    ArmoryFrameCharacterCycle(true);
+  </Binding>
+  <Binding name="LOOKUP">
+    ArmoryLookupFrame_Toggle();
+  </Binding>
+</Bindings>

@@ -1,0 +1,43 @@
+## Interface: 30000
+## Title: Armory
+## Version: 5.2.9
+## Notes: Provides an overview of equipment, stats, inventory, professions, quests and spells for all your characters
+## Author: Warmexx [Neighbours]
+## OptionalDeps: EnhTooltip, oGlow, GFW_ReagentCost
+## SavedVariables: ArmoryDB, ArmorySettings, ArmoryModules
+## SavedVariablesPerCharacter: ArmoryLocalSettings
+## X-Donate: PayPal:digimexx AT hotmail DOT com
+## X-Website: http://www.wow-neighbours.com/
+## X-Feedback: http://www.curse.com/downloads/details/10061/
+## X-Category: Inventory
+Embeds.xml
+
+Localization.lua
+ArmoryDropDownMenu.xml
+ArmoryBackgroundUpdater.lua
+ArmoryDbEntry.lua
+ArmoryCmd.lua
+ArmoryChat.lua
+Armory.lua
+ArmoryFrame.xml
+ArmoryItemFilter.xml
+ArmoryPaperDollFrame.xml
+ArmoryPetPaperDollFrame.xml
+ArmoryTalentFrame.xml
+ArmoryPVPFrame.xml
+ArmoryOtherFrame.xml
+ArmoryReputationFrame.xml
+ArmorySkillFrame.xml
+ArmoryRaidInfoFrame.xml
+ArmoryTokenFrame.xml
+ArmoryTradeSkillFrame.xml
+ArmoryInventoryFrame.xml
+ArmoryInventoryIconViewFrame.xml
+ArmoryInventoryListViewFrame.xml
+ArmoryQuestLogFrame.xml
+ArmorySpellBookFrame.xml
+ArmoryGlyphFrame.xml
+ArmoryAchievementFrame.xml
+ArmoryAddonMessageFrame.xml
+ArmoryLookupFrame.xml
+ArmoryOptionsPanel.xml

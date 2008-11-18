@@ -1,0 +1,1248 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryPaperDollFrame.lua"/>
+  <Font name="ArmoryFontHighlightExtraSmall" inherits="GameFontHighlightExtraSmall" virtual="true">
+    <FontHeight>
+      <AbsValue val="8"/>
+    </FontHeight>
+  </Font>
+  <Button name="ArmoryPaperDollItemSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <Frames>
+      <Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+    </Frames>
+    <Scripts>
+      <OnClick>
+        if ( IsModifiedClick("CHATLINK") and self.link ) then
+          HandleModifiedItemClick(self.link);
+        end
+      </OnClick>
+      <OnLoad>
+        ArmoryPaperDollItemSlotButton_OnLoad(self);
+      </OnLoad>
+      <OnUpdate>
+        if ( GameTooltip:IsOwned(self) ) then
+          ArmoryPaperDollItemSlotButton_OnEnter(self);
+        end
+      </OnUpdate>
+      <OnEnter>
+        ArmoryPaperDollItemSlotButton_OnEnter(self)
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture file="Interface\Buttons\UI-Quickslot2">
+      <Size>
+        <AbsDimension x="64" y="64"/>
+      </Size>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="-1"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalTexture>
+  </Button>
+  <Frame name="ArmoryPaperDollTradeSkillFrameTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="200" y="30"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="skill">
+          <Size>
+            <AbsDimension x="140" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="40" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentButton">
+        <Size>
+          <AbsDimension x="15" y="15"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="$parentIcon" setAllPoints="true"/>
+          </Layer>
+          <Layer level="OVERLAY">
+            <Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+              <Size>
+                <AbsDimension x="17" y="17"/>
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.28125" top="0" bottom="0.5625" />
+            </Texture>
+          </Layer>
+        </Layers>
+      </Button>
+      <StatusBar name="$parentBackgroundBar" drawLayer="BACKGROUND">
+        <Size>
+          <AbsDimension x="140" y="12"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentLabel" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <BarTexture file="Interface\CharacterFrame\BarFill" />
+      </StatusBar>
+      <StatusBar name="$parentBar">
+        <Size>
+          <AbsDimension x="140" y="12"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentLabel" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <FontString name="$parentText" inherits="GameFontHighlightSmall" text="100 / 100">
+              <Size>
+                <AbsDimension x="140" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+        <BarColor r="0" g="0" b="1.0"/>
+      </StatusBar>
+    </Frames>
+  </Frame>
+  <Frame name="ArmoryHealthFrameTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="232" y="16"/>
+    </Size>
+    <Anchors>
+      <Anchor point="LEFT">
+        <Offset x="0" y="-5"/>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <StatusBar name="$parentBackgroundBar" drawLayer="BACKGROUND">
+        <Size>
+          <AbsDimension x="145" y="12"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="78" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <BarTexture file="Interface\CharacterFrame\BarFill" />
+      </StatusBar>
+      <StatusBar name="$parentBar">
+        <Size>
+          <AbsDimension x="145" y="12"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset>
+              <AbsDimension x="78" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <FontString name="$parentText" inherits="GameFontHighlightSmall" text="0">
+              <Size>
+                <AbsDimension x="145" y="12"/>
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+      </StatusBar>
+      <Frame name="$parentTextFrame">
+        <Size>
+          <AbsDimension x="68" y="12"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT">
+            <Offset x="0" y="0"/>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontHighlightSmall" justifyH="RIGHT" text="label">
+              <Anchors>
+                <Anchor point="RIGHT"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnEnter>
+        GameTooltip_SetDefaultAnchor(GameTooltip, self);
+        if ( self.tooltipTitle ) then
+          GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+        end
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Frame>
+  <Frame name="ArmoryStatFrameTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="104" y="13"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="LEFT"/>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="$parentStat">
+        <Size>
+          <AbsDimension x="30" y="13"/>
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT"/>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+              <Anchors>
+                <Anchor point="RIGHT"/>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnUpdate>
+        if ( GameTooltip:IsOwned(self) ) then
+          PaperDollStatTooltip(self, "player");
+        end
+      </OnUpdate>
+      <OnEnter>
+        PaperDollStatTooltip(self, "player");
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Frame>
+  <Frame name="ArmoryMagicResistanceFrameTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="32" y="29"/>
+    </Size>
+    <Scripts>
+      <OnUpdate>
+        if ( GameTooltip:IsOwned(self) ) then
+          ArmoryPaperDollResistanceTooltip(self);
+        end
+      </OnUpdate>
+      <OnEnter>
+        ArmoryPaperDollResistanceTooltip(self);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Frame>
+  <Frame name="ArmoryPaperDollFrame" setAllPoints="true" enableMouse="true" movable="true" parent="ArmoryFrame" id="1">
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-L1">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-R1">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="256" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="0" y="-256"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-CharacterTab-BottomRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="256" y="-256"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString name="ArmoryLevelText" inherits="GameFontNormalSmall" text="Level level race class">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryNameText" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="0" y="-8"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="ArmoryGuildText" inherits="GameFontNormalSmall" text="title of guild" hidden="true">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryLevelText" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="0" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="ArmoryZoneText" inherits="GameFontNormalSmall" text="zone of the player">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryGuildText" relativePoint="BOTTOM">
+              <Offset>
+                <AbsDimension x="0" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="ArmoryVersionText" inherits="ArmoryFontHighlightExtraSmall" text="version">
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="-45" y="85"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="ArmoryNewVersionText" inherits="ArmoryFontHighlightExtraSmall" text="new version" hidden="true">
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT" relativeTo="ArmoryVersionText" relativePoint="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="3"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="ArmoryPaperDollTalentFrame">
+        <Size>
+          <AbsDimension x="200" y="59"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="65" y="-77"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="ArmoryPaperDollTalentLeftTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="200" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+            </Texture>
+            <Texture name="ArmoryPaperDollTalentLeftMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="200" y="27"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTalentLeftTop" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+            </Texture>
+            <Texture name="ArmoryPaperDollTalentLeftBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="200" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTalentLeftMiddle" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+            </Texture>
+            <FontString name="ArmoryPaperDollTalentLabel" inherits="GameFontHighlightSmall" text="ARMORY_TALENTS">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="10" y="-8"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="ArmoryPaperDollTalentText" inherits="GameFontNormalSmall" text="specialization">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTalentLabel" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="40" y="-5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="ArmoryPaperDollTalentPoints" inherits="GameFontHighlightSmall" text="0 / 0 / 0">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTalentText" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="-5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Button name="ArmoryPaperDollTalentButton">
+            <Size>
+              <AbsDimension x="13" y="13"/>
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT">
+                <Offset>
+                  <AbsDimension x="20" y="-7"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="ARTWORK">
+                <Texture name="ArmoryPaperDollTalentButtonIcon" setAllPoints="true"/>
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="ArmoryPaperDollTalentButtonBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+                  <Size>
+                    <AbsDimension x="17" y="17"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER">
+                      <Offset>
+                        <AbsDimension x="0" y="0"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                  <TexCoords left="0" right="0.28125" top="0" bottom="0.5625" />
+                </Texture>
+              </Layer>
+            </Layers>
+          </Button>
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            ArmoryPaperDollTalentFrame_OnLoad(self);
+          </OnLoad>
+          <OnEvent>
+            ArmoryPaperDollTalentFrame_OnEvent(self, event, ...);
+          </OnEvent>
+        </Scripts>
+      </Frame>
+      <Frame name="ArmoryPaperDollTradeSkillFrame">
+        <Size>
+          <AbsDimension x="200" y="88"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTalentFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="ArmoryPaperDollTradeSkillLeftTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="200" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+            </Texture>
+            <Texture name="ArmoryPaperDollTradeSkillLeftMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="200" y="56"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTradeSkillLeftTop" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+            </Texture>
+            <Texture name="ArmoryPaperDollTradeSkillLeftBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="200" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTradeSkillLeftMiddle" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+            </Texture>
+            <FontString name="ArmoryPaperDollTradeSkillLabel" inherits="GameFontHighlightSmall" text="ARMORY_TRADE_SKILLS">
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="10" y="-8"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Frame name="ArmoryPaperDollTradeSkillFrame1" inherits="ArmoryPaperDollTradeSkillFrameTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTradeSkillLabel" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPaperDollTradeSkillFrame2" inherits="ArmoryPaperDollTradeSkillFrameTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTradeSkillFrame1" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="ArmoryHealthFrame">
+        <Size>
+          <AbsDimension x="232" y="40"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryPaperDollTradeSkillFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="ArmoryHealthLeftTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="232" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+            </Texture>
+            <Texture name="ArmoryHealthLeftMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="232" y="10"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryHealthLeftTop" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+            </Texture>
+            <Texture name="ArmoryHealthLeftBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="232" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryHealthLeftMiddle" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+            </Texture>
+         </Layer>
+        </Layers>
+        <Frames>
+          <Frame name="ArmoryHealth" inherits="ArmoryHealthFrameTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset x="0" y="-6"/>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                ArmoryHealth_OnLoad(self);
+              </OnLoad>
+              <OnEvent>
+                ArmoryHealth_OnEvent(self, event, ...);
+              </OnEvent>
+            </Scripts>
+          </Frame>
+          <Frame name="ArmoryMana" inherits="ArmoryHealthFrameTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryHealth" relativePoint="BOTTOMLEFT">
+                <Offset x="0" y="0"/>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                ArmoryMana_OnLoad(self);
+              </OnLoad>
+              <OnEvent>
+                ArmoryMana_OnEvent(self, event, ...);
+              </OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="ArmoryAttributesFrame">
+        <Size>
+          <AbsDimension x="230" y="78"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="67" y="-291"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="ArmoryPlayerStatLeftTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="115" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+            </Texture>
+            <Texture name="ArmoryPlayerStatLeftMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="115" y="53"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatLeftTop" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+            </Texture>
+            <Texture name="ArmoryPlayerStatLeftBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="115" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatLeftMiddle" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+            </Texture>
+            <Texture name="ArmoryPlayerStatRightTop" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="115" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatLeftTop" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0" bottom="0.125"/>
+            </Texture>
+            <Texture name="ArmoryPlayerStatRightMiddle" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="115" y="53"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatRightTop" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.125" bottom="0.1953125"/>
+            </Texture>
+            <Texture name="ArmoryPlayerStatRightBottom" file="Interface\PaperDollInfoFrame\UI-Character-StatBackground">
+              <Size>
+                <AbsDimension x="115" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatRightMiddle" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.8984375" top="0.484375" bottom="0.609375"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Frame name="ArmoryPlayerStatFrameLeft1" inherits="ArmoryStatFrameTemplate" id="1">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="6" y="-3"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameLeft2" inherits="ArmoryStatFrameTemplate" id="2">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameLeft1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameLeft3" inherits="ArmoryStatFrameTemplate" id="3">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameLeft2" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameLeft4" inherits="ArmoryStatFrameTemplate" id="4">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameLeft3" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameLeft5" inherits="ArmoryStatFrameTemplate" id="5">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameLeft4" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameLeft6" inherits="ArmoryStatFrameTemplate" id="6">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameLeft5" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRight1" inherits="ArmoryStatFrameTemplate" id="1">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatRightTop">
+                <Offset>
+                  <AbsDimension x="6" y="-3"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRight2" inherits="ArmoryStatFrameTemplate" id="2">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameRight1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRight3" inherits="ArmoryStatFrameTemplate" id="3">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameRight2" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRight4" inherits="ArmoryStatFrameTemplate" id="4">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameRight3" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRight5" inherits="ArmoryStatFrameTemplate" id="5">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameRight4" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRight6" inherits="ArmoryStatFrameTemplate" id="6">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="ArmoryPlayerStatFrameRight5" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameLeftDropDown" inherits="ArmoryDropDownMenuTemplate" enableMouse="true">
+            <Anchors>
+              <Anchor point="BOTTOMLEFT" relativeTo="ArmoryPlayerStatLeftTop" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="-17" y="-8"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                ArmoryPlayerStatFrameLeftDropDown_OnLoad(self);
+              </OnLoad>
+              <OnShow>
+                ArmoryPlayerStatFrameLeftDropDown_OnLoad(self);
+              </OnShow>
+            </Scripts>
+          </Frame>
+          <Frame name="ArmoryPlayerStatFrameRightDropDown" inherits="ArmoryDropDownMenuTemplate" enableMouse="true">
+            <Anchors>
+              <Anchor point="BOTTOMLEFT" relativeTo="ArmoryPlayerStatRightTop" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="-17" y="-8"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                ArmoryPlayerStatFrameRightDropDown_OnLoad(self);
+              </OnLoad>
+              <OnShow>
+                ArmoryPlayerStatFrameRightDropDown_OnLoad(self);
+              </OnShow>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="ArmoryResistanceFrame">
+        <Size>
+          <AbsDimension x="32" y="160"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryPaperDollFrame" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="297" y="-77"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Frame name="ArmoryMagicResFrame1" inherits="ArmoryMagicResistanceFrameTemplate" id="6">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="ArmoryResistanceFrame" relativePoint="TOP"/>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+                  <TexCoords left="0" right="1.0" top="0.2265625" bottom="0.33984375"/>
+                </Texture>
+                <FontString name="ArmoryMagicResText1" inherits="GameFontHighlightSmall" text="X">
+                  <Anchors>
+                    <Anchor point="BOTTOM">
+                      <Offset>
+                        <AbsDimension x="0" y="3"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame name="ArmoryMagicResFrame2" inherits="ArmoryMagicResistanceFrameTemplate" id="2">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="ArmoryMagicResFrame1" relativePoint="BOTTOM"/>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+                  <TexCoords left="0" right="1.0" top="0" bottom="0.11328125"/>
+                </Texture>
+                <FontString name="ArmoryMagicResText2" inherits="GameFontHighlightSmall" text="X">
+                  <Anchors>
+                    <Anchor point="BOTTOM">
+                      <Offset>
+                        <AbsDimension x="0" y="3"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame name="ArmoryMagicResFrame3" inherits="ArmoryMagicResistanceFrameTemplate" id="3">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="ArmoryMagicResFrame2" relativePoint="BOTTOM"/>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+                  <TexCoords left="0" right="1.0" top="0.11328125" bottom="0.2265625"/>
+                </Texture>
+                <FontString name="ArmoryMagicResText3" inherits="GameFontHighlightSmall" text="X">
+                  <Anchors>
+                    <Anchor point="BOTTOM">
+                      <Offset>
+                        <AbsDimension x="0" y="3"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame name="ArmoryMagicResFrame4" inherits="ArmoryMagicResistanceFrameTemplate" id="4">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="ArmoryMagicResFrame3" relativePoint="BOTTOM"/>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+                  <TexCoords left="0" right="1.0" top="0.33984375" bottom="0.453125"/>
+                </Texture>
+                <FontString name="ArmoryMagicResText4" inherits="GameFontHighlightSmall" text="X">
+                  <Anchors>
+                    <Anchor point="BOTTOM">
+                      <Offset>
+                        <AbsDimension x="0" y="3"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame name="ArmoryMagicResFrame5" inherits="ArmoryMagicResistanceFrameTemplate" id="5">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="ArmoryMagicResFrame4" relativePoint="BOTTOM"/>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <Texture file="Interface\PaperDollInfoFrame\UI-Character-ResistanceIcons">
+                  <TexCoords left="0" right="1.0" top="0.453125" bottom="0.56640625"/>
+                </Texture>
+                <FontString name="ArmoryMagicResText5" inherits="GameFontHighlightSmall" text="X">
+                  <Anchors>
+                    <Anchor point="BOTTOM">
+                      <Offset>
+                        <AbsDimension x="0" y="3"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Button name="ArmoryHeadSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="21" y="-74"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryNeckSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryHeadSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryShoulderSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryNeckSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryBackSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryShoulderSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryChestSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryBackSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryShirtSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryChestSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryTabardSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryShirtSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryWristSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryTabardSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryHandsSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="305" y="-74"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryWaistSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryHandsSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLegsSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryWaistSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryFeetSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLegsSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryFinger0Slot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryFeetSlot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryFinger1Slot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryFinger0Slot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryTrinket0Slot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryFinger1Slot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryTrinket1Slot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryTrinket0Slot" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-4"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryMainHandSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="122" y="127"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmorySecondaryHandSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryMainHandSlot" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryRangedSlot" inherits="ArmoryPaperDollItemSlotButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmorySecondaryHandSlot" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Frame name="ArmoryAlternateSlotFrame"  hidden="true">
+        <Size>
+          <AbsDimension x="64" y="64" />
+        </Size>
+        <!--<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+          <BackgroundInsets>
+            <AbsInset left="4" right="4" top="4" bottom="4" />
+          </BackgroundInsets>
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <BorderColor r=".3" g=".3" b=".3"/>
+        </Backdrop>-->
+        <Scripts>
+          <OnUpdate>
+            ArmoryAlternateSlotFrame_OnUpdate(self, elapsed);
+          </OnUpdate>
+        </Scripts>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmoryPaperDollFrame_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ArmoryPaperDollFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnShow>
+        ArmoryPaperDollFrame_OnShow(self);
+      </OnShow>
+      <OnMouseUp>
+        ArmoryChildWindow_OnMouseUp(self, button);
+      </OnMouseUp>
+      <OnMouseDown>
+        ArmoryChildWindow_OnMouseDown(self, button);
+      </OnMouseDown>
+    </Scripts>
+  </Frame>
+</Ui>

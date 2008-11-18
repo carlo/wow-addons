@@ -1,0 +1,160 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryOtherFrame.lua"/>
+  <Button name="ArmoryOtherTabTemplate" inherits="TabButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="10" y="24"/>
+    </Size>
+    <Scripts>
+      <OnClick>
+        ArmoryOtherFrameTab_OnClick(self);
+      </OnClick>
+    </Scripts>
+  </Button>
+  <Frame name="ArmoryOtherFrame" setAllPoints="true" enableMouse="true" movable="true" parent="ArmoryFrame" hidden="true" id="5">
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="2" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="258" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="2" y="-257"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="258" y="-257"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="ArmoryOtherFrameTab1" inherits="ArmoryOtherTabTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="70" y="-49"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            PanelTemplates_SelectTab(self);
+          </OnLoad>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryOtherFrameTab2" inherits="ArmoryOtherTabTemplate" id="2">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryOtherFrameTab1" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryOtherFrameTab3" inherits="ArmoryOtherTabTemplate" id="3">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryOtherFrameTab2" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryOtherFrameTab4" inherits="ArmoryOtherTabTemplate" id="4">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryOtherFrameTab3" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+      <Button name="ArmoryOtherFrameTab5" inherits="ArmoryOtherTabTemplate" id="5">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryOtherFrameTab4" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-7" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>
+            PanelTemplates_DeselectTab(self);
+          </OnShow>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmoryOtherFrame_OnLoad(self);
+      </OnLoad>
+      <OnShow>
+        ArmoryOtherFrame_OnShow(self);
+      </OnShow>
+      <OnMouseUp>
+        ArmoryChildWindow_OnMouseUp(self, button);
+      </OnMouseUp>
+      <OnMouseDown>
+        ArmoryChildWindow_OnMouseDown(self, button);
+      </OnMouseDown>
+      <OnMouseWheel>
+        return;
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+</Ui>

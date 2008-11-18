@@ -1,0 +1,212 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryInventoryListViewFrame.lua"/>
+  <Button name="ArmoryInventoryListItemTemplate" inherits="ArmoryInventoryLabelTemplate" virtual="true">
+    <Scripts>
+      <OnEnter>
+        GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 80, 5);
+        ArmoryInventoryListItemButton_OnEnter(self);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+  <Frame name="ArmoryInventoryListViewFrame" parent="ArmoryInventoryFrame" hidden="true">
+    <Size>
+      <AbsDimension x="296" y="331"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-66" y="-98"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnShow>
+        ArmoryInventoryListViewFrame_OnShow(self);
+      </OnShow>
+    </Scripts>
+    <Frames>
+      <CheckButton name="ArmoryInventoryListViewFrameSearchAllCheckButton" inherits="UICheckButtonTemplate">
+        <Size>
+          <AbsDimension x="24" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryMoneyBackgroundFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            ArmoryInventoryListViewFrameSearchAllCheckButtonText:SetText(ARMORY_INVENTORY_SEARCH_ALL);
+          </OnLoad>
+          <OnClick>
+            ArmoryInventoryListViewSearchAll(self:GetChecked());
+          </OnClick>
+          <OnEnter>
+            GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+            GameTooltip:SetText(ARMORY_INVENTORY_SEARCH_ALL_TOOLTIP, nil, nil, nil, nil, 1);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+        <HitRectInsets>
+          <AbsInset left="0" right="-75" top="0" bottom="0"/>
+        </HitRectInsets>
+      </CheckButton>
+      <Button name="ArmoryInventoryLine1" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine2" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine1" relativePoint="BOTTOMLEFT" />
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine3" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine2" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine4" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine3" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine5" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine4" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine6" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine5" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine7" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine6" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine8" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine7" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine9" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine8" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine10" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine9" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine11" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine10" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine12" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine11" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine13" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine12" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine14" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine13" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine15" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine14" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine16" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine15" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine17" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine16" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine18" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine17" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine19" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine18" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryInventoryLine20" inherits="ArmoryInventoryListItemTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryInventoryLine19" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <ScrollFrame name="ArmoryInventoryListViewScrollFrame" inherits="FauxScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="296" y="331"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="106"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="-2"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, ARMORY_INVENTORY_HEIGHT, ArmoryInventoryListViewFrame_Update);
+          </OnVerticalScroll>
+        </Scripts>
+      </ScrollFrame>
+    </Frames>
+  </Frame>
+</Ui>
+

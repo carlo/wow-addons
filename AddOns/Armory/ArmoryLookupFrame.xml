@@ -1,0 +1,673 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+  <Script file="ArmoryLookupFrame.lua"/>
+  <Button name="ArmoryLookupLabelTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="285" y="16"/>
+    </Size>
+    <Scripts>
+      <OnClick>
+        ArmoryLookupFrameButton_OnClick(self);
+      </OnClick>
+      <OnEnter>
+        GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 80, 5);
+        ArmoryLookupFrameButton_OnEnter(self);
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-MinusButton-UP">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalTexture>
+    <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+      <Size>
+        <AbsDimension x="16" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="3" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </HighlightTexture>
+    <ButtonText name="$parentText">
+      <Size>
+        <AbsDimension x="0" y="13"/>
+      </Size>
+      <Anchors>
+        <Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+          <Offset>
+            <AbsDimension x="2" y="1"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </ButtonText>
+    <NormalFont style="GameFontNormalLeft" />
+    <HighlightFont style="GameFontHighlightLeft" />
+    <DisabledFont style="GameFontHighlightLeft" />
+  </Button>
+  <Frame name="ArmoryLookupFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+    <Size>
+      <AbsDimension x="384" y="512"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="-104"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="34" top="0" bottom="75"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="ArmoryLookupFramePortrait">
+          <Size>
+            <AbsDimension x="60" y="60"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="7" y="-6"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="BORDER">
+        <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT"/>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT"/>
+          </Anchors>
+        </Texture>
+        <FontString name="ArmoryLookupFrameTitleText" inherits="GameFontNormal" text="ARMORY_LOOKUP_TITLE">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="ArmoryLookupFrame" relativePoint="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-17"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="ArmoryLookupFrameTargetText" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="30" y="88"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <EditBox name="ArmoryLookupFrameEditBox" autoFocus="false">
+        <Size>
+          <AbsDimension x="128" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset x="90" y="-42"/>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset x="-5" y="0"/>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT">
+                  <Offset x="0" y="0"/>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="0" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnEnterPressed>
+            self:ClearFocus();
+            ArmoryLookupFrame_OnEnter(self);
+          </OnEnterPressed>
+          <OnEscapePressed>
+            self:ClearFocus();
+          </OnEscapePressed>
+          <OnTextChanged>
+            ArmoryLookupFrame_OnTextChanged(self);
+          </OnTextChanged>
+          <OnEditFocusLost>
+            self:HighlightText(0, 0);
+            if ( self:GetText() == "" ) then
+              if ( self:GetParent().type == ARMORY_LOOKUP_TYPE.LOOKUP_CHARACTER ) then
+                self:SetText(NAME);
+              else
+                self:SetText(SEARCH);
+              end
+            end
+          </OnEditFocusLost>
+          <OnEditFocusGained>
+            self:HighlightText();
+            if ( self:GetText() == SEARCH or self:GetText() == NAME ) then
+              self:SetText("");
+            end
+          </OnEditFocusGained>
+          <OnChar>
+            ArmoryLookupFrame_OnChar(self, text);
+          </OnChar>
+        </Scripts>
+        <FontString inherits="ChatFontSmall"/>
+      </EditBox>
+      <Frame name="ArmoryLookupTypeDropDown" inherits="ArmoryDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="ArmoryLookupFrameEditBox" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="ArmoryLookupTradeSkillDropDown" inherits="ArmoryDropDownMenuTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryLookupFrameEditBox" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="16" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="ArmoryLookupQuestDropDown" inherits="ArmoryDropDownMenuTemplate" hidden="true">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryLookupFrameEditBox" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="16" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <CheckButton name="ArmoryLookupFrameSearchExactCheckButton" inherits="UICheckButtonTemplate">
+        <Size>
+          <AbsDimension x="24" y="24"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupTypeDropDown" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="14" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            ArmoryLookupFrameSearchExactCheckButtonText:SetText(ARMORY_LOOKUP_SEARCH_EXACT);
+          </OnLoad>
+        </Scripts>
+        <HitRectInsets>
+          <AbsInset left="0" right="-75" top="0" bottom="0"/>
+        </HitRectInsets>
+      </CheckButton>
+      <Frame name="ArmoryLookupExpandButtonFrame">
+        <Size>
+          <AbsDimension x="54" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="15" y="-71"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="ArmoryLookupExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
+              <Size>
+                <AbsDimension x="8" y="32"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT"/>
+              </Anchors>
+            </Texture>
+            <Texture name="ArmoryLookupExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+              <Size>
+                <AbsDimension x="38" y="32"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="ArmoryLookupExpandTabLeft" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="0" y="6"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="ArmoryLookupExpandTabRight" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+              <Size>
+                <AbsDimension x="8" y="32"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="ArmoryLookupExpandTabMiddle" relativePoint="RIGHT"/>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Button name="ArmoryLookupExpandAllButton" hidden="false" inherits="ArmoryLookupLabelTemplate" id="9999">
+            <Size>
+              <AbsDimension x="40" y="22"/>
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="ArmoryLookupExpandTabLeft" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="3"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                self:SetText(ALL);
+              </OnLoad>
+              <OnClick>
+                ArmoryLookupExpandAllButton_OnClick(self);
+              </OnClick>
+              <OnEnter>
+                --
+              </OnEnter>
+              <OnLeave>
+                --
+              </OnLeave>
+            </Scripts>
+            <DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+              <Size>
+                <AbsDimension x="16" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+                  <Offset>
+                    <AbsDimension x="3" y="0"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </DisabledTexture>
+            <DisabledFont style="GameFontDisableLeft" />
+          </Button>
+        </Frames>
+      </Frame>
+      <Button name="ArmoryLookupFrameCloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="ArmoryLookupFrame" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-29" y="-8"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine1" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="23" y="-100"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine2" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine1" relativePoint="BOTTOMLEFT" />
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine3" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine2" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine4" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine3" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine5" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine4" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine6" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine5" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine7" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine6" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine8" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine7" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine9" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine8" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine10" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine9" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine11" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine10" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine12" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine11" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine13" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine12" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine14" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine13" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine15" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine14" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine16" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine15" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine17" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine16" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine18" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine17" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <Button name="ArmoryLookupLine19" inherits="ArmoryLookupLabelTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ArmoryLookupLine18" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Button>
+      <ScrollFrame name="ArmoryLookupScrollFrame" inherits="FauxScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="296" y="310"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="22" y="-96"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="256"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="5"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+            </Texture>
+            <Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+              <Size>
+                <AbsDimension x="31" y="106"/>
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="-2"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, ARMORY_LOOKUP_HEIGHT, ArmoryLookupFrame_Update);
+          </OnVerticalScroll>
+        </Scripts>
+      </ScrollFrame>
+      <Frame name="ArmoryLookupChannelDropDown">
+        <Size>
+          <AbsDimension x="40" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="ArmoryLookupFrame" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="216" y="-423"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="$parentLeft">
+              <Size>
+                <AbsDimension x="25" y="64"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="0" y="17"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentMiddle">
+              <Size>
+                <AbsDimension x="115" y="64"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentRight">
+              <Size>
+                <AbsDimension x="25" y="64"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+              </Anchors>
+            </Texture>
+            <FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+              <Size>
+                <AbsDimension x="0" y="10"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" relativeTo="$parentRight">
+                  <Offset>
+                    <AbsDimension x="-43" y="2"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Button name="$parentButton">
+            <Size>
+              <AbsDimension x="24" y="24"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPRIGHT" relativeTo="$parentRight">
+                <Offset>
+                  <AbsDimension x="-16" y="-18"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnClick>
+                ArmoryToggleDropDownMenu(1, nil, self:GetParent());
+                PlaySound("igMainMenuOptionCheckBoxOn");
+              </OnClick>
+            </Scripts>
+            <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+              <Size>
+                <AbsDimension x="24" y="24"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT"/>
+              </Anchors>
+            </NormalTexture>
+            <PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+              <Size>
+                <AbsDimension x="24" y="24"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT"/>
+              </Anchors>
+            </PushedTexture>
+            <DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+              <Size>
+                <AbsDimension x="24" y="24"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT"/>
+              </Anchors>
+            </DisabledTexture>
+            <HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+              <Size>
+                <AbsDimension x="24" y="24"/>
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT"/>
+              </Anchors>
+            </HighlightTexture>
+          </Button>
+        </Frames>
+        <Scripts>
+          <OnHide>
+            ArmoryCloseDropDownMenus();
+          </OnHide>
+        </Scripts>
+      </Frame>
+      <Button name="ArmoryLookupButton" inherits="UIPanelButtonTemplate" text="ARMORY_LOOKUP_BUTTON">
+        <Size>
+          <AbsDimension x="80" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="CENTER" relativeTo="ArmoryLookupFrame" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="303" y="-420"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            ArmoryLookupButton_OnClick(self);
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        ArmoryLookupFrame_OnLoad(self);
+      </OnLoad>
+      <OnUpdate>
+        ArmoryLookupFrame_OnUpdate(self, elapsed);
+      </OnUpdate>
+      <OnEvent>
+        ArmoryLookupFrame_OnEvent(self, event, ...);
+      </OnEvent>
+      <OnShow>
+        PlaySound("igCharacterInfoTab");
+        ArmoryLookupFrame_OnShow(self);
+      </OnShow>
+      <OnHide>
+        PlaySound("igMainMenuClose");
+      </OnHide>
+      <OnMouseDown>
+        if ( button == "LeftButton" ) then
+          self:StartMoving();
+          self.isMoving = true;
+        end
+      </OnMouseDown>
+      <OnMouseUp>
+        if ( self.isMoving ) then
+          self:StopMovingOrSizing();
+          self.isMoving = false;
+        end
+      </OnMouseUp>
+      <OnMouseWheel>
+        return;
+      </OnMouseWheel>
+    </Scripts>
+  </Frame>
+</Ui>
