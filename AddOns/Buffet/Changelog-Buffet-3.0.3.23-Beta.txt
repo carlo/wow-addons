@@ -1,0 +1,18 @@
+tag 3.0.3.23-Beta
+fbb6bc2f15f41ddc654b8d4fabc5f218e397592b
+Tekkub <tekkub@gmail.com>
+2008-11-08 01:08:44 -0700
+
+Weekly build
+
+
+--------------------
+
+Tekkub (6):
+      3178ad1: Merge commit '3.0.2.22-Beta'
+      0377929: Remove 2.4.3 compat
+      5af7d58: Embed update
+      7d69cee: Those argent guys are a bunch of potheads
+      f68ef2a: Update changelog for 3.0.3.23-Beta
+      cfa9f05: Weekly build 3.0.3.23-Beta
+

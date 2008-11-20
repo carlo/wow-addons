@@ -1,0 +1,25 @@
+## Interface: 30000
+## X-Curse-Packaged-Version: 3.0.3.23-Beta
+
+## Title: Buffet
+## Notes: Food/water macro generator
+## Author: Tekkub Stoutwrithe
+## Version: 3.0.3.23
+## X-Website: http://www.tekkub.net/
+## X-Email: tekkub-wow@googlegroups.com
+
+## SavedVariablesPerCharacter: BuffetDB
+
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
+LibStub.lua
+tekIDmemo.lua
+tekKonfigAboutPanel.lua
+tekKonfigHeading.lua
+tekKonfigButton.lua
+CallbackHandler-1.0.lua
+LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+Buffet.lua
+Config.lua
