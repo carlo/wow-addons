@@ -1,0 +1,22 @@
+## Interface: 30000
+## Version: 3.0.3b
+## Author: Thortok2000
+## X-Website: http://wowui.worldofwar.net/?p=mod&m=6669
+## Title: Swindler Preventer
+## Notes: Helps you prevent getting swindled by pointing out when a tradeable item could instead be bought from a vendor.  Currently supports Recipes, Vanity Pets, and Containers.
+## X-Category: Interface Enhancements
+## SavedVariables: SwindlerPreventerDB, SP_NewItemInfo, SP_NewVendorInfo, SP_NewVendorLocations
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
+GFWUtils.lua
+GFWTable.lua
+
+GFWOptions\Load.xml
+Dongle.lua
+
+localization.lua
+SwindlerPreventer_ItemInfo.lua
+SwindlerPreventer_Vendors.lua
+SwindlerPreventer.lua
+SwindlerPreventer.xml
