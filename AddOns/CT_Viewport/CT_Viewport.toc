@@ -1,5 +1,5 @@
 ## Interface: 30000
-## Version: 3.0 (CTMod 3.0)
+## Version: 3.001 (CTMod 3.0)
 ## Title: CT_Viewport
 ## Notes: Allows you to change the rendered world's size
 ## SavedVariablesPerCharacter: CT_Viewport_Saved

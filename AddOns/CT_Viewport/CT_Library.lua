@@ -11,7 +11,7 @@
 -----------------------------------------------
 -- Initialization
 
-local LIBRARY_VERSION = 1.12;
+local LIBRARY_VERSION = 1.13;
 local LIBRARY_NAME = "CT_Library";
 
 local _G = getfenv(0);
@@ -1816,37 +1816,7 @@ local optionsFrame, addonsFrame, currChar;
 
 -- Dropdown Handling
 local dropdownEntry, flaggedCharacters;
-local function populateCharDropdown()
-	local name, realm, options;
-	if ( not dropdownEntry ) then
-		dropdownEntry, flaggedCharacters = { }, { };
-	else
-		lib:clearTable(dropdownEntry);
-		lib:clearTable(flaggedCharacters);
-	end
-	
-	-- Prevent ourself from being added
-	flaggedCharacters[getCharKey()] = true;
-
-	for key, value in ipairs(modules) do
-		options = value.options;
-		if ( options ) then
-			for k, v in pairs(options) do
-				if ( not flaggedCharacters[k] ) then
-					name, realm = k:match("^CHAR%-([^-]+)%-(.+)$");
-					if ( name ) then
-						flaggedCharacters[k] = true;
-						dropdownEntry.text = name .. ", " .. realm;
-						dropdownEntry.value = k;
-						dropdownEntry.checked = nil;
-						dropdownEntry.func = dropdownClick;
-						UIDropDownMenu_AddButton(dropdownEntry);
-					end
-				end
-			end
-		end
-	end
-end
+local importRealm, importSetPlayer;
 
 local function populateAddonsList(char)
 	local importButton, num, obj, options = optionsFrame.importButton, 0;
@@ -1866,7 +1836,7 @@ local function populateAddonsList(char)
 	-- Position addons button
 	num = num + 1;
 	importButton:Show();
-	importButton:SetPoint("TOP", optionsFrame, 0, -75+(-20*num));
+	importButton:SetPoint("TOP", optionsFrame, 0, -95+(-20*num));
 	optionsFrame.note:Show();
 	
 	while ( true ) do
@@ -1881,6 +1851,127 @@ local function populateAddonsList(char)
 	
 	currChar = char;
 	addonsFrame:Show();
+end
+
+local function populateCharDropdown()
+	local players = {};
+	local name, realm, options;
+
+	if ( not dropdownEntry ) then
+		dropdownEntry, flaggedCharacters = { }, { };
+	else
+		lib:clearTable(dropdownEntry);
+		lib:clearTable(flaggedCharacters);
+	end
+	
+	-- Prevent ourself from being added
+	flaggedCharacters[getCharKey()] = true;
+
+	for key, value in ipairs(modules) do
+		options = value.options;
+		if ( options ) then
+			for k, v in pairs(options) do
+				if ( not flaggedCharacters[k] ) then
+					name, realm = k:match("^CHAR%-([^-]+)%-(.+)$");
+					if ( name and realm and realm == importRealm ) then
+						flaggedCharacters[k] = true;
+						tinsert(players, k);
+					end
+				end
+			end
+		end
+	end
+	sort(players);
+
+	for key, value in ipairs(players) do
+		name, realm = value:match("^CHAR%-([^-]+)%-(.+)$");
+		if ( name and realm ) then
+			dropdownEntry.text = name .. ", " .. realm;
+			dropdownEntry.value = value;
+			dropdownEntry.checked = nil;
+			dropdownEntry.func = dropdownClick;
+			UIDropDownMenu_AddButton(dropdownEntry);
+		end
+	end
+	if (importSetPlayer) then
+		if (importRealm) then
+			local value = players[1];
+			UIDropDownMenu_SetSelectedValue(CT_LibraryDropdown1, value);
+			populateAddonsList(value);
+		end
+	end
+end
+
+local function populateServerDropdown()
+	local servers = {};
+	local serversort = {};
+	local name, realm, options;
+
+	if ( not dropdownEntry ) then
+		dropdownEntry, flaggedCharacters = { }, { };
+	else
+		lib:clearTable(dropdownEntry);
+		lib:clearTable(flaggedCharacters);
+	end
+	
+	-- Prevent ourself from being added
+	flaggedCharacters[getCharKey()] = true;
+
+	for key, value in ipairs(modules) do
+		options = value.options;
+		if ( options ) then
+			for k, v in pairs(options) do
+				if ( not flaggedCharacters[k] ) then
+					name, realm = k:match("^CHAR%-([^-]+)%-(.+)$");
+					if ( name ) then
+						flaggedCharacters[k] = true;
+						if (not servers[realm]) then
+							servers[realm] = 1;
+						else
+							servers[realm] = servers[realm] + 1;
+						end
+					end
+				end
+			end
+		end
+	end
+	for k, v in pairs(servers) do
+		tinsert(serversort, k);
+	end
+	sort(serversort);
+
+	for key, value in ipairs(serversort) do
+		dropdownEntry.text = value .. " (" .. servers[value] .. ")";
+		dropdownEntry.value = value;
+		dropdownEntry.checked = nil;
+		dropdownEntry.func = dropdownClick;
+		UIDropDownMenu_AddButton(dropdownEntry);
+	end
+	if (not importRealm) then
+		local value = serversort[1];
+		UIDropDownMenu_SetSelectedValue(CT_LibraryDropdown0, value);
+		CT_LibraryDropdown1Label:Hide();
+		CT_LibraryDropdown1:Hide();
+	end
+end
+
+local function hideAddonsList()
+	local importButton, num, obj, options = optionsFrame.importButton, 0;
+
+	importButton:Hide();
+	optionsFrame.note:Hide();
+	
+	num = 1;
+	while ( true ) do
+		obj = addonsFrame[tostring(num)];
+		if ( not obj ) then
+			break;
+		end
+		
+		obj:Hide();
+		num = num + 1;
+	end
+	addonsFrame:Hide();
 end
 
 local function addonIsChecked(name)
@@ -1932,8 +2023,22 @@ end
 
 module.update = function(self, type, value)
 	if ( type == "char" and value ) then
-		self:setOption("char", nil, true);
-		populateAddonsList(value);
+		local name, realm = value:match("^CHAR%-([^-]+)%-(.+)$");
+		if (name and realm) then
+			self:setOption("char", nil, true);
+			populateAddonsList(value);
+		else
+			-- Server drop down
+			importRealm = value;
+			hideAddonsList();
+			self:setOption("char", nil, true);
+			-- Re initialize character pull down so it only has players from selected server.
+			importSetPlayer = 1;
+			populateCharDropdown();
+			importSetPlayer = nil;
+			CT_LibraryDropdown1Label:Show();
+			CT_LibraryDropdown1:Show();
+		end
 	end
 end
 
@@ -1941,18 +2046,26 @@ module.frame = function()
 	local addonsTable = { };
 	local optionsTable = {
 		"font#tl:5:-5#v:GameFontNormalLarge#Import From",
-		"font#tl:20:-25#v:ChatFontNormal#Character:",
-		"dropdown#s:175:20#tl:80:-26#o:char#n:CT_LibraryDropdown1#i:charDropdown",
+
+		"font#tl:20:-25#v:ChatFontNormal#Server:",
+		"dropdown#s:175:20#tl:80:-26#o:char#n:CT_LibraryDropdown0#i:serverDropdown",
+		
+		"font#tl:20:-45#n:CT_LibraryDropdown1Label#v:ChatFontNormal#Character:",
+		"dropdown#s:175:20#tl:80:-46#o:char#n:CT_LibraryDropdown1#i:charDropdown",
 		
 		["onload"] = function(self)
+			optionsFrame, addonsFrame = self, self.addons;
+
+			-- Server Dropdown
+			UIDropDownMenu_Initialize(self.serverDropdown, populateServerDropdown);
+
 			-- Character Dropdown
 			UIDropDownMenu_Initialize(self.charDropdown, populateCharDropdown);
-			optionsFrame, addonsFrame = self, self.addons;
 			
 			self.note:SetPoint("TOP", self.importButton, "BOTTOM");
 		end,
 		
-		["frame#tl:0:-65#r#i:addons#hidden"] = addonsTable,
+		["frame#tl:0:-85#r#i:addons#hidden"] = addonsTable,
 		
 		["button#s:145:30#i:importButton#hidden#v:GameMenuButtonTemplate#Import Settings"] = {
 			["onclick"] = import },

@@ -1,5 +1,5 @@
 ## Interface: 30000
-## Version: 3.001 (CTMod 3.0)
+## Version: 3.002 (CTMod 3.0)
 ## Title: CT_MailMod
 ## Notes: Heavily improves the in-game mail functionality.
 ## SavedVariables: CT_MailModOptions
