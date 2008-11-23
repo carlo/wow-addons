@@ -1,7 +1,7 @@
 local _, playerClass = UnitClass("player")
-if playerClass ~= "DRUID" and playerClass ~="MAGE" and playerClass ~="PALADIN" and playerClass ~="PRIEST" and playerClass ~="SHAMAN" and playerClass ~="WARLOCK" then return end
+if playerClass ~= "DRUID" and playerClass ~="MAGE" and playerClass ~="PALADIN" and playerClass ~="PRIEST" and playerClass ~="SHAMAN" and playerClass ~="WARLOCK" and playerClass ~= "DEATHKNIGHT" then return end
 local playerHealer = (playerClass == "PRIEST") or (playerClass == "SHAMAN") or (playerClass == "PALADIN") or (playerClass == "DRUID")
-local playerHybrid = (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN")
+local playerHybrid = (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN") or (playerClass == "DEATHKNIGHT")
 local hybridMana = (playerClass == "DRUID")
 
 --Libraries
@@ -525,7 +525,7 @@ function DrDamage:Caster_Options()
 			set = DrD_Set("FireDamage"),
 		}
 	end
-	if playerClass == "DEATH KNIGHT" or playerClass == "PRIEST" or playerClass == "WARLOCK" then
+	if playerClass == "DEATHKNIGHT" or playerClass == "PRIEST" or playerClass == "WARLOCK" then
 		calcTable.ShadowDamage = {
 			type = 'range',
 			name = L["Shadow Damage"],
@@ -538,7 +538,7 @@ function DrDamage:Caster_Options()
 			set = DrD_Set("ShadowDamage"),		
 		}
 	end
-	if playerClass == "DEATH KNIGHT" or playerClass == "MAGE" or playerClass == "SHAMAN" then
+	if playerClass == "DEATHKNIGHT" or playerClass == "MAGE" or playerClass == "SHAMAN" then
 		calcTable.FrostDamage = {
 			type = 'range',
 			name = L["Frost Damage"],

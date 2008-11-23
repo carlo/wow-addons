@@ -4,15 +4,10 @@
 
 -- Whats new info
 SMARTBUFF_WHATSNEW = "|cffffffffWhats new:|r\n\n"
-  .."- Fixed group buff support\n\n"
-  .."- Added buffs: Mage (Focus Magic), Warrior (Vigilance)\n\n"
-  .."- Added items: Warlock (Spellstone, Master Firestone)\n\n"
-  .."- Updated druids can cast any buff in tree form, no matter if cast 'Shapeshifted' is not set\n\n"
-  .."- Updated Titan support\n\n"
-  .."- Updated font size\n\n"
-  .."- Updated ruRU translation\n\n"
-  .."- Removed buffs: Druid (Omen of Clarity), Rogue (Crippling Poison II, Mind-numbing Poison II & III)\n\n"
-  .."- Removed option: 'Grp range check'\n\n"
+  .."- Updated spell list and levels\n\n"
+  .."- Added scroll support\n\n"
+  .."- Added items: oils, poisons, stones, food\n\n"
+  .."- Added buffs: Hunter (Aspect of the Dragonhawk), Rogue (Hunger for Blood)\n\n"  
   ;
 
 

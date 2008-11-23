@@ -208,13 +208,11 @@ function DrDamage:PlayerData()
 			["Name"] = "Scatter Shot",
 			[0] = { School = "Ranged", Shot = true, WeaponDamage = 0.5, Cooldown = 30 },
 			["None"] = { 0 },
-			[1] = { 0 },
 		},
 		[GetSpellInfo(34490)] = { --Processed --DALLYTEMP
 			["Name"] = "Silencing Shot",
 			[0] = { School = "Ranged", Shot = true, WeaponDamage = 0.5, Cooldown = 20 },
 			["None"] = { 0 },
-			[1] = { 0 },
 		},
 		[GetSpellInfo(34120)] = { --Processed --DALLYTEMP
 			["Name"] = "Steady Shot",
@@ -338,6 +336,7 @@ function DrDamage:PlayerData()
 		[GetSpellInfo(53265)] = {	[1] = { Effect = 1, Spells = "All", ModType = "Amount", Value = "Aspect Mastery" }, },
 		
 		--Marksmanship:
+		--Focused Aim
 		--Improved Hunter's Mark
 		--Mortal Shots
 		--Improved Arcane Shot
@@ -348,6 +347,7 @@ function DrDamage:PlayerData()
 		--Improved Barrage
 		--Improved Steady Shot
 		--Marked for Death
+		[GetSpellInfo(53620)] = { [1] = { Effect = 1, Spells = "All", ModType = "hitPerc", }, },
 		[GetSpellInfo(19421)] = {	[1] = { Effect = 0.1, Spells = "Physical", ModType = "Amount", Value = "Improved Hunter's Mark" }, }, -- Effect changed to AP bonus.-- DALLYTEMP
 		[GetSpellInfo(19485)] = {	[1] = { Effect = 0.06, Spells = "Ranged", ModType = "critM" }, },
 		[GetSpellInfo(19454)] = {	[1] = { Effect = 0.05, Spells = "Arcane Shot" }, },

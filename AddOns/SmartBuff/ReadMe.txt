@@ -97,7 +97,6 @@ aeldra@sonnenkinder.org
 
 ***********************************************************************
 
-!!! NEU !!!
 SmartDebuff
 Ein verschiebbares Fenster mit Knöpfen für alle Spieler in Solo/Party/Raid.
 Verknüpft deine Debuff Zauber auf links und rechts Klick (Links = Blau, Rechts = Rot) von den Debuff Knöpfen.
@@ -164,6 +163,11 @@ aeldra@sonnenkinder.org
 Changes: 
 Rev     Date        Description
 ------  ----------  -----------------------
+3.0c    2008-11-18  Updated spell list and levels
+                    Added scroll support
+                    Added items: oils, poisons, stones, food
+                    Added buffs: Hunter (Aspect of the Dragonhawk), Rogue (Hunger for Blood)
+                    
 3.0b    2008-10-25  Fixed group buff support
                     Added buffs: Mage (Focus Magic), Warrior (Vigilance)
                     Added items: Warlock (Spellstone, Master Firestone)

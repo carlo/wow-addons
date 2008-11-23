@@ -2,7 +2,7 @@ local _, playerClass = UnitClass("player")
 local playerHealer = (playerClass == "PRIEST") or (playerClass == "SHAMAN") or (playerClass == "PALADIN") or (playerClass == "DRUID")
 local playerCaster = (playerClass == "MAGE") or (playerClass == "PRIEST") or (playerClass == "WARLOCK")
 local playerMelee = (playerClass == "ROGUE") or (playerClass == "WARRIOR") or (playerClass == "HUNTER")
-local playerHybrid = (playerClass == "DEATH KNIGHT") or (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN")
+local playerHybrid = (playerClass == "DEATHKNIGHT") or (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN")
 -- Hybrid = Melee and Caster
 -- Death Knight = Melee, Caster = Hybrid only
 -- Druid = Melee, Caster, Healer = Hybrid, Healer

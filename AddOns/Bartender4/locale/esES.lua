@@ -30,9 +30,12 @@ if not L then return end
 -- L["Configure how the Out of Range Indicator should display on the buttons."] = true
 -- L["Configure the Bag Bar"] = true
 -- L["Configure the Button Tooltip."] = true
+-- L["Configure the Fade Out Alpha"] = true
+-- L["Configure the Fade Out Delay"] = true
 -- L["Configure the Micro Menu"] = true
 -- L["Configure the Pet Bar"] = true
 -- L["Configure the Reputation Bar"] = true
+-- L["Configure the VehicleBar"] = true
 -- L["Configure the XP Bar"] = true
 -- L["Configure the alpha of the bar."] = true
 -- L["Configure the padding of the buttons."] = true
@@ -43,6 +46,7 @@ if not L then return end
 -- L["Default Bar State"] = true
 -- L["Disabled"] = true
 -- L["Disabled in Combat"] = true
+-- L["Don't Page"] = true
 -- L["Enable Auto-Assist for this bar.\n Auto-Assist will automatically try to cast on your target's target if your target is no valid target for the selected spell."] = true
 -- L["Enable Bar Switching based on the actionbar controls provided by the game. \nSee Blizzard Key Bindings for assignments - Usually Shift-Mouse Wheel and Shift+1 - Shift+6."] = true
 -- L["Enable State-based Button Swaping"] = true
@@ -52,6 +56,7 @@ if not L then return end
 -- L["Enable the PetBar"] = true
 -- L["Enable the Reputation Bar"] = true
 -- L["Enable the StanceBar"] = true
+-- L["Enable the Vehicle Bar"] = true
 -- L["Enable the XP Bar"] = true
 -- L["Enable the use of a custom condition, disabling all of the above."] = true
 -- L["Enable/Disable the bar."] = true
@@ -98,6 +103,7 @@ if not L then return end
 -- L["Out of Mana Indicator"] = true
 -- L["Out of Range Indicator"] = true
 -- L["Padding"] = true
+-- L["Page %2d"] = true
 -- L["Pet Bar"] = true
 -- L["Possess Bar"] = true
 -- L["Reputation Bar"] = true
@@ -129,6 +135,8 @@ if not L then return end
 -- L["Toggle the use of the modifier-based self-cast functionality."] = true
 -- L["Toggle the use of the right-click self-cast functionality."] = true
 -- L["Use Custom Condition"] = true
+-- L["Vehicle Bar"] = true
+-- L["VehicleBar"] = true
 -- L["Visibility"] = true
 -- L["XP Bar"] = true
 -- L["You can set the bar to be always hidden, if you only wish to access it using key-bindings."] = true

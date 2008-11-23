@@ -20,7 +20,7 @@ function DrDamage:PlayerData()
 	end
 	
 	self.Calculation["Devouring Plague"] = self.Calculation["Shadow Word: Pain"]
-	self.Calculation["Vampiric Touch"] = self.Calculation["Shadow Word: Paind"]
+	self.Calculation["Vampiric Touch"] = self.Calculation["Shadow Word: Pain"]
 	
 	--General
 	self.Calculation["PRIEST"] = function ( calculation, ActiveAuras, _, _, baseSpell )
@@ -223,7 +223,7 @@ function DrDamage:PlayerData()
 					[4] = { 939, 991, 14, 15, spellLevel = 60, },
 					[5] = { 997, 1053, 22, 23, spellLevel = 60, },
 					[6] = { 1246, 1316, 23, 24, spellLevel = 68, }, --Guess --DALLYTEMP
-					[6] = { 2091, 2209, 0, 0, spellLevel = 76, },
+					[7] = { 2091, 2209, 0, 0, spellLevel = 76, },
 		},
 		[GetSpellInfo(34861)] = {
 					["Name"] = "Circle of Healing", --processed by zironic for 3.02,
@@ -233,8 +233,8 @@ function DrDamage:PlayerData()
 					[3] = { 327, 361, spellLevel = 60, },
 					[4] = { 370, 408, spellLevel = 65, },
 					[5] = { 409, 451, spellLevel = 70, },
-					[5] = { 589, 651, spellLevel = 75, },
-					[5] = { 684, 756, spellLevel = 80, },
+					[6] = { 589, 651, spellLevel = 75, },
+					[7] = { 684, 756, spellLevel = 80, },
 		},		
 		[GetSpellInfo(2061)] = {
 					["Name"] = "Flash Heal", --processed by zironic for 3.02, leveladjustment for last 3 ranks is obviously inaccurate
@@ -294,8 +294,8 @@ function DrDamage:PlayerData()
 					["Name"] = "Prayer of Mending", --processed by zironic for 3.02
 					[0] = { School = { "Holy", "Healing" }, canCrit = true, Cooldown = 10, sHits = 5, sFactor = 5, NoDPS = true },
 					[1] = { 800, 800, spellLevel = 68, },
-					[1] = { 905, 905, spellLevel = 74, },
-					[1] = { 1043, 1043, spellLevel = 79, },
+					[2] = { 905, 905, spellLevel = 74, },
+					[3] = { 1043, 1043, spellLevel = 79, },
 		},			
 		[GetSpellInfo(585)] = {
 					["Name"] = "Smite", --processed by zironic for 3.02, level adjustment for last 3 ranks will be non functional

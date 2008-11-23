@@ -44,7 +44,7 @@ GameTooltip:SetUnitDebuff("unit", [index] or ["name", "rank"][, "filter"]);
 ]]--
 
 
-SMARTBUFF_VERSION       = "v3.0b";
+SMARTBUFF_VERSION       = "v3.0c";
 SMARTBUFF_TITLE         = "SmartBuff";
 SMARTBUFF_SUBTITLE      = "Supports you in cast buffs";
 SMARTBUFF_DESC          = "Cast the most important buffs on you or party/raid members/pets";
@@ -852,11 +852,15 @@ function SMARTBUFF_SetBuffs()
   for _, buff in ipairs(SMARTBUFF_TRACKING) do
     n = SMARTBUFF_SetBuff(buff, n);
   end
-  
+
+  for _, buff in ipairs(SMARTBUFF_SCROLL) do
+    n = SMARTBUFF_SetBuff(buff, n);
+  end
+
   for _, buff in ipairs(SMARTBUFF_FOOD) do
     n = SMARTBUFF_SetBuff(buff, n);
   end
-    
+        
   cBuffsCombat = { };  
   SMARTBUFF_SetInCombatBuffs();
   
@@ -874,7 +878,7 @@ function SMARTBUFF_SetBuff(buff, i)
   cBuffs[i].Type = buff[3];
   cBuffs[i].CanCharge = false;
   cBuffs[i].IDS = SMARTBUFF_GetSpellID(cBuffs[i].BuffS);
-  if (cBuffs[i].IDS == nil and not (cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD)) then
+  if (cBuffs[i].IDS == nil and not (cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL)) then
     cBuffs[i] = nil;
     return i;
   end
@@ -1754,7 +1758,7 @@ function SMARTBUFF_BuffUnit(unit, subgroup, mode, spell)
         end
       end      
       
-      if (bUsable and not (cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD)) then
+      if (bUsable and not (cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL)) then
         -- check if you have enough mana/rage/energy to cast
         local isUsable, notEnoughMana = IsUsableSpell(buffnS);
         if (notEnoughMana) then
@@ -1766,7 +1770,7 @@ function SMARTBUFF_BuffUnit(unit, subgroup, mode, spell)
         end
       end      
       
-      if (bUsable and SMARTBUFF_Buffs[ct][buffnS].EnableS and (cBuffs[i].IDS ~= nil or cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD)
+      if (bUsable and SMARTBUFF_Buffs[ct][buffnS].EnableS and (cBuffs[i].IDS ~= nil or cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL)
         and ((mode ~= 1 and ((isCombat and SMARTBUFF_Buffs[ct][buffnS].CIn) or (not isCombat and SMARTBUFF_Buffs[ct][buffnS].COut)))
           or (mode == 1 and SMARTBUFF_Buffs[ct][buffnS].Reminder and ((not isCombat and SMARTBUFF_Buffs[ct][buffnS].COut) 
           or (isCombat and (SMARTBUFF_Buffs[ct][buffnS].CIn or SMARTBUFF_Options.ToggleAutoCombat)))))) then
@@ -1812,10 +1816,18 @@ function SMARTBUFF_BuffUnit(unit, subgroup, mode, spell)
                   end
                 end
               
-              -- Food ------------------------------------------------------------------------
-              elseif (cBuffs[i].Type == SMARTBUFF_CONST_FOOD) then
+              -- Food or Scroll ------------------------------------------------------------------------
+              elseif (cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL) then
               
-                buff, index, buffname, bt, charges = SMARTBUFF_CheckUnitBuffs(unit, SMARTBUFF_FOOD_AURA, cBuffs[i].BuffG);
+                if (cBuffs[i].Type == SMARTBUFF_CONST_SCROLL) then
+				          if (cBuffs[i].Exclude ~= "x") then
+					          buff, index, buffname, bt, charges = SMARTBUFF_CheckUnitBuffs(unit, cBuffs[i].Exclude, cBuffs[i].BuffG);
+					        else
+					          buff = nil;
+				          end
+                else
+                  buff, index, buffname, bt, charges = SMARTBUFF_CheckUnitBuffs(unit, SMARTBUFF_FOOD_AURA, cBuffs[i].BuffG);
+                end
                 if (buff == nil and cBuffs[i].DurationS >= 1 and rbTime > 0) then
                   --bt = GetPlayerBuffTimeLeft(index);
                   --charges = GetPlayerBuffApplications(index);
@@ -2037,8 +2049,8 @@ function SMARTBUFF_BuffUnit(unit, subgroup, mode, spell)
                     end                      
                     r = 50;
                     
-                  -- eat food
-                  elseif (cBuffs[i].Type == SMARTBUFF_CONST_FOOD) then
+                  -- eat food or use scroll
+                  elseif (cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL) then
                     local bag, slot, count, _ = SMARTBUFF_FindReagent(buffnS);
                     if (count > 0 or bExpire) then
                       sMsgWarning = "";
@@ -2061,7 +2073,7 @@ function SMARTBUFF_BuffUnit(unit, subgroup, mode, spell)
                   currentSpell = nil;
                   if (bufftarget == nil) then bufftarget = un; end
                   
-                  if (SMARTBUFF_CheckUnitLevel(unit, cBuffs[i].IDS, cBuffs[i].LevelsS) ~= nil or cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD) then
+                  if (SMARTBUFF_CheckUnitLevel(unit, cBuffs[i].IDS, cBuffs[i].LevelsS) ~= nil or cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL) then
                     -- clean up buff timer, if expired
                     if (bt and bt < 0 and (bExpire or bExpireOh)) then 
                       bt = 0;
@@ -3246,7 +3258,7 @@ function SmartBuff_BuffSetup_Show(i)
     else
       SmartBuff_BuffSetup_cbMH:Hide();
       SmartBuff_BuffSetup_cbOH:Hide();
-      if (cBuffs[i].Type ~= SMARTBUFF_CONST_FOOD) then
+      if (not (cBuffs[i].Type ~= SMARTBUFF_CONST_FOOD or cBuffs[i].Type ~= SMARTBUFF_CONST_SCROLL)) then
         SmartBuff_BuffSetup_txtManaLimit:Show();
       end
     end
@@ -3342,7 +3354,7 @@ function SmartBuff_BuffSetup_ToolTip(mode)
   local btype = cBuffs[i].Type
   
   GameTooltip:ClearLines();
-  if (btype == SMARTBUFF_CONST_INV or bytpe == SMARTBUFF_CONST_FOOD) then
+  if (btype == SMARTBUFF_CONST_INV or bytpe == SMARTBUFF_CONST_FOOD or bytpe == SMARTBUFF_CONST_SCROLL) then
     local bag, slot, count, texture = SMARTBUFF_FindReagent(cBuffs[i].BuffS);
     if (bag and slot) then
       GameTooltip:SetBagItem(bag, slot);
@@ -3571,7 +3583,7 @@ function SMARTBUFF_SetCheckButtonBuffs(mode)
   while (i <= maxCheckButtons) do
     objS = getglobal("SmartBuffOptionsFrame_cbBuffS"..i);
     objG = getglobal("SmartBuffOptionsFrame_cbBuffG"..i);
-    if (cBuffs[i] and (cBuffs[i].IDS ~= nil or cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD)) then
+    if (cBuffs[i] and (cBuffs[i].IDS ~= nil or cBuffs[i].Type == SMARTBUFF_CONST_INV or cBuffs[i].Type == SMARTBUFF_CONST_FOOD or cBuffs[i].Type == SMARTBUFF_CONST_SCROLL)) then
       if (cBuffs[i].IDG ~= nil and objG ~= nil) then
         getglobal(objS:GetName().."Text"):SetText("");
         --getglobal(objG:GetName().."Text"):SetText(cBuffs[i].BuffS .. "\n" .. cBuffs[i].BuffG);
@@ -3713,7 +3725,7 @@ function SmartBuff_PS_GetList()
     else
       return SMARTBUFF_Options.IgnoreList;
     end
-    ]]--
+    ]]
   end
   
   local name = cBuffs[iLastBuffSetup].BuffS;
@@ -3923,7 +3935,7 @@ function SMARTBUFF_OnPreClick(self, button, down)
     td = 0.8;
   elseif (lastBuffType == SMARTBUFF_CONST_WEAPON) then
     td = 3;
-  elseif (lastBuffType == SMARTBUFF_CONST_INV or lastBuffType == SMARTBUFF_CONST_FOOD) then
+  elseif (lastBuffType == SMARTBUFF_CONST_INV or lastBuffType == SMARTBUFF_CONST_FOOD or lastBuffType == SMARTBUFF_CONST_SCROLL) then
     td = 5;
   else
     td = GlobalCd;

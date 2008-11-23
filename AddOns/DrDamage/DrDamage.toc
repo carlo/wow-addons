@@ -5,7 +5,7 @@
 ## Notes-zhTW: 遊戲中計算傷害/治療數值的插件，考慮裝備、天賦、增益效果，計算精確的數值。
 ## Version: 1.6.0b
 ## SavedVariables: DrDamageDB
-## X-Curse-Packaged-Version: 1.6.0b-3
+## X-Curse-Packaged-Version: 1.6.0b-5
 
 ## X-Category: Interface Enhancements
 ## OptionalDeps: Ace2, FuBar, FlexBar2, InfiniBar, LibBabble-Inventory-3.0, LibGratuity-3.0, DewdropLib, FuBarPlugin-2.0

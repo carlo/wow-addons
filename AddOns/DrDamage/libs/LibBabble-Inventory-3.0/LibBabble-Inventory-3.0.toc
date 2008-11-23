@@ -6,7 +6,7 @@
 ## X-eMail: ckknight@gmail.com
 ## X-Category: Library
 ## X-License: MIT
-## X-Curse-Packaged-Version: r65
+## X-Curse-Packaged-Version: r66
 
 LibStub\LibStub.lua
 lib.xml

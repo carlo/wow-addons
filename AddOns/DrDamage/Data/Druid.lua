@@ -12,10 +12,10 @@ function DrDamage:PlayerData()
 	local rejaura = GetSpellInfo(774)
 	local regaura = GetSpellInfo(8936)
 	local lbaura = GetSpellInfo(33763)
-	self.Calculation["Nourish"] = function( calculation, ActiveAuras, _, spell )
-		if ( ActiveAuras["Rejuvenation"] or ActiveAuras["Regrowth"] or ActiveAuras["Lifebloom"] ) or not UnitExists("target") and ( UnitBuff("player", rejaura) or UnitBuff("player", regaura) or UnitBuff("player", lbaura) ) then
-			calculation.minDam = calculation.minDam * ( 1 + nourishBonus )
-			calculation.maxDam = calculation.maxDam * ( 1 + nourishBonus )
+	self.Calculation["Nourish"] = function( calculation, ActiveAuras, _, _, baseSpell )
+		if ( ActiveAuras["Rejuvenation"] or ActiveAuras["Regrowth"] or ActiveAuras["Lifebloom"] ) or ( not UnitExists("target") and ( ActiveAuras["RejuvenationS"] or ActiveAuras["RegrowthS"] or ActiveAuras["LifebloomS"] ) ) then
+			calculation.minDam = calculation.minDam * ( 1 + baseSpell.nourishBonus )
+			calculation.maxDam = calculation.maxDam * ( 1 + baseSpell.nourishBonus )
 		end
 	end
 	
@@ -216,9 +216,12 @@ function DrDamage:PlayerData()
 	--Rejuvenation (for Nourish bonus)
 	--Regrowth (for Nourish bonus)
 	--Lifebloom (for Nourish bonus)
-	self.TargetAura[GetSpellInfo(774)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="Rejuvenation", SelfCast = true, }
-	self.TargetAura[GetSpellInfo(8936)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="Regrowth", SelfCast = true, }
-	self.TargetAura[GetSpellInfo(33763)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="Lifebloom", SelfCast = true, }
+	self.TargetAura[GetSpellInfo(774)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="Rejuvenation", --[[SelfCast = true,]] }
+	self.PlayerAura[GetSpellInfo(774)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="RejuvenationS", --[[SelfCast = true,]] }
+	self.TargetAura[GetSpellInfo(8936)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="Regrowth", --[[SelfCast = true,]] }
+	self.PlayerAura[GetSpellInfo(8936)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="RegrowthS", --[[SelfCast = true,]] }
+	self.TargetAura[GetSpellInfo(33763)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="Lifebloom", --[[SelfCast = true,]] }
+	self.PlayerAura[GetSpellInfo(33763)] = { Spell = GetSpellInfo(50464), ModType = "ActiveAura", ActiveAura="LifebloomS", --[[SelfCast = true,]] }
 	--Faerie Fire
 	self.TargetAura[GetSpellInfo(770)] = { ModType = "ActiveAura", ActiveAura = "Faerie Fire", SelfCast = true, }
 	--Owlkin Frenzy
@@ -230,7 +233,7 @@ function DrDamage:PlayerData()
 	--Enrage
 	self.PlayerAura[GetSpellInfo(5229)] = { ModType = "ActiveAura", ActiveAura = "Enrage" }
 	--Master Shapshifter
-	self.PlayerAura[GetSpellInfo(48411)] = { ModType = "Activeaura", ActiveAura = "Master Shapeshifter" }
+	self.PlayerAura[GetSpellInfo(48411)] = { ModType = "ActiveAura", ActiveAura = "Master Shapeshifter" }
 	
 	self.spellInfo = { --Processed --DALLYTEMP
 		[GetSpellInfo(5176)] = {
@@ -414,8 +417,8 @@ function DrDamage:PlayerData()
 		},
 		[GetSpellInfo(50464)] = {
 				["Name"] = "Nourish",
-				[0] = { School = { "Nature", "Healing" }, canCrit = true, castTime = 1.5, },
-				[1] = { 1883, 2187, nourishBonus = 0.2, spellLevel = 80, },
+				[0] = { School = { "Nature", "Healing" }, nourishBonus = 0.2, canCrit = true, castTime = 1.5, },
+				[1] = { 1883, 2187, spellLevel = 80, },
 		},
 		--Feral
 		[GetSpellInfo(6807)] = { --Processed -DALLYTEMP

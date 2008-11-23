@@ -9,7 +9,7 @@ local function DrD_LoadAuras()
 	local playerHealer = (playerClass == "PRIEST") or (playerClass == "SHAMAN") or (playerClass == "PALADIN") or (playerClass == "DRUID")
 	local playerCaster = (playerClass == "MAGE") or (playerClass == "PRIEST") or (playerClass == "WARLOCK")
 	local playerMelee = (playerClass == "ROGUE") or (playerClass == "WARRIOR") or (playerClass == "HUNTER")
-	local playerHybrid = (playerClass == "DEATH KNIGHT") or (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN")	
+	local playerHybrid = (playerClass == "DEATHKNIGHT") or (playerClass == "DRUID") or (playerClass == "PALADIN") or (playerClass == "SHAMAN")	
 	local Aura = DrDamage.PlayerAura
 	local GetSpellInfo = GetSpellInfo
 	local arcane, fire, frost, nature, shadow, holy
@@ -17,9 +17,9 @@ local function DrD_LoadAuras()
 	if playerCaster or playerHybrid then
 		arcane = (playerClass == "DRUID") or (playerClass == "MAGE")
 		fire = (playerClass == "SHAMAN") or (playerClass == "WARLOCK") or (playerClass == "MAGE")
-		frost = (playerClass == "DEATH KNIGHT") or (playerClass == "SHAMAN") or (playerClass == "MAGE")
+		frost = (playerClass == "DEATHKNIGHT") or (playerClass == "SHAMAN") or (playerClass == "MAGE")
 		nature = (playerClass == "SHAMAN") or (playerClass == "DRUID")
-		shadow = (playerClass == "DEATH KNIGHT") or (playerClass == "PRIEST") or (playerClass == "WARLOCK")
+		shadow = (playerClass == "DEATHKNIGHT") or (playerClass == "PRIEST") or (playerClass == "WARLOCK")
 		holy = (playerClass == "PRIEST") or (playerClass == "PALADIN")
 	end
 	

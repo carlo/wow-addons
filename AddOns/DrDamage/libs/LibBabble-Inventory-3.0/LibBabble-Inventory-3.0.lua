@@ -1,6 +1,6 @@
 ﻿--[[
 Name: LibBabble-Inventory-3.0
-Revision: $Rev: 65 $
+Revision: $Rev: 66 $
 Author(s): ckknight (ckknight@gmail.com), Daviesh (oma_daviesh@hotmail.com)
 Documentation: http://www.wowace.com/wiki/LibBabble-Inventory-3.0
 SVN: http://svn.wowace.com/wowace/trunk/LibBabble-Inventory-3.0
@@ -9,7 +9,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibBabble-Inventory-3.0"
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 65 $"):match("(%d+)"))
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 66 $"):match("(%d+)"))
 
 -- #AUTODOC_NAMESPACE prototype
 
@@ -1580,17 +1580,17 @@ elseif GAME_LOCALE == "esES" then
 		["Yellow"] = "Amarillo",
 
 		--Glyphs  (New 3.0)
-		-- ["Glyph"] = true,
-		-- ["Warrior"] = true,
-		-- ["Paladin"] = true,
-		-- ["Hunter"] = true,
-		-- ["Rogue"] = true,
-		-- ["Priest"] = true,
-		-- ["Death Knight"] = true,
-		-- ["Shaman"] = true,
-		-- ["Mage"] = true,
-		-- ["Warlock"] = true,
-		-- ["Druid"] = true,
+		["Glyph"] = "Glifo",
+		["Warrior"] = "Guerrero",
+		["Paladin"] = "Paladín",
+		["Hunter"] = "Cazador",
+		["Rogue"] = "Pícaro",
+		["Priest"] = "Sacerdote",
+		["Death Knight"] = "Caballero de la Muerte",
+		["Shaman"] = "Chamán",
+		["Mage"] = "Mago",
+		["Warlock"] = "Brujo",
+		["Druid"] = "Druida",
 
 		--Key
 		["Key"] = "Llave",
